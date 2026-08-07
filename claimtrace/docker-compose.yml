@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/app/src
+      - ./parser/src:/app/parser
+      - ./engine/src:/app/engine
+    environment:
+      - PYTHONPATH=/app:/app/parser:/app/engine
+    env_file:
+      - .env
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    command: npm run dev -- --host 0.0.0.0
+
+  # FAISS index service (optional standalone — embedded in engine by default)
+  # retriever:
+  #   build:
+  #     context: ./engine
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8001:8001"
