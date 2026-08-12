@@ -16,7 +16,7 @@ def build_llm_client(
     provider: str = "openai",
     api_key: str = "",
     base_url: str | None = None,
-    model: str = "gpt-4o-mini",
+    model: str = "deepseek-chat",
 ) -> Any | None:
     """Build an OpenAI-compatible client for the configured provider.
 

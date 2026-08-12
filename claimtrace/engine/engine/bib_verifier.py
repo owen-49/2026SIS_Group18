@@ -13,7 +13,7 @@ These are real problems that happen constantly in academic writing.
 from dataclasses import dataclass, field
 from enum import Enum
 
-from .bib_parser import BibEntry
+from .bib_parser import BibEntry, _extract_last_name
 
 
 class FieldStatus(str, Enum):
@@ -180,7 +180,6 @@ def _compare_titles(bib_title: str, pdf_title: str) -> FieldResult:
     # Use both sequence similarity AND Levenshtein ratio.
     # A single char typo in a long title can score >0.96 on SequenceMatcher
     # but still be a real error. Levenshtein catches these.
-    from difflib import SequenceMatcher as SM
 
     levenshtein_ratio = 1 - _levenshtein_distance(bib_norm, pdf_norm) / max(len(bib_norm), len(pdf_norm), 1)
 
@@ -329,17 +328,8 @@ def _compare_dois(bib_doi: str, pdf_doi: str) -> FieldResult:
 
 
 def _extract_last_names(authors: list[str]) -> list[str]:
-    """Extract last names from author strings."""
-    last_names = []
-    for author in authors:
-        author = author.strip()
-        if "," in author:
-            last_names.append(author.split(",")[0].strip().lower())
-        else:
-            parts = author.split()
-            if parts:
-                last_names.append(parts[-1].strip(".,;").lower())
-    return last_names
+    """Extract last names from author strings (delegates to bib_parser)."""
+    return [_extract_last_name(a) for a in authors]
 
 
 def _levenshtein_distance(a: str, b: str) -> int:
@@ -359,23 +349,6 @@ def _levenshtein_distance(a: str, b: str) -> int:
             curr.append(min(insert, delete, replace))
         prev = curr
     return prev[-1]
-    """Extract last names from author strings.
-
-    Handles both "Last, First" and "First Last" formats.
-    """
-    last_names = []
-    for author in authors:
-        author = author.strip()
-        if "," in author:
-            # "Last, First" format
-            last_names.append(author.split(",")[0].strip().lower())
-        else:
-            # "First Last" format — take the last word
-            parts = author.split()
-            if parts:
-                last_names.append(parts[-1].strip(".,;").lower())
-    return last_names
-
 
 # ── Batch verification ──────────────────────────────────────
 

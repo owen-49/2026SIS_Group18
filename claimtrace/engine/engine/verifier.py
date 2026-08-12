@@ -61,11 +61,12 @@ Respond in JSON format only:
 class Verifier:
     """LLM-based claim verifier."""
 
-    def __init__(self, model: str = "gpt-4o"):
+    def __init__(self, model: str = "deepseek-chat"):
         """Initialize the verifier.
 
         Args:
-            model: OpenAI model identifier. Also supports Gemini/Claude via base_url override.
+            model: Model identifier. Defaults to "deepseek-chat".
+                   Also supports OpenAI/Gemini/Claude models.
         """
         self.model = model
 
