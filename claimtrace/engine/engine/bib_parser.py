@@ -76,15 +76,63 @@ def parse_bib_text(text: str) -> list[BibEntry]:
     """
     entries: list[BibEntry] = []
 
-    # Split on @entry_type{...} — handles @article, @inproceedings, @book, @misc, etc.
-    pattern = re.compile(r"@(\w+)\s*\{\s*([^,]+)\s*,\s*(.+?)\s*\}", re.DOTALL)
-    matches = pattern.findall(text)
+    # Find each @type{...} entry using brace counting.
+    # Regex can't handle nested braces in BibTeX values.
+    i = 0
+    while i < len(text):
+        # Find next @ that starts an entry
+        at_pos = text.find("@", i)
+        if at_pos == -1:
+            break
 
-    for entry_type, key, fields_text in matches:
-        key = key.strip()
+        # Extract entry type
+        match = re.match(r"@(\w+)\s*\{\s*", text[at_pos:])
+        if not match:
+            i = at_pos + 1
+            continue
+
+        entry_type = match.group(1)
+        brace_start = at_pos + match.end()  # position right after opening {
+
+        # Extract citation key — everything up to the first comma
+        # that's not inside braces
+        depth = 1
+        key_end = brace_start
+        while key_end < len(text) and depth > 0:
+            ch = text[key_end]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            elif ch == "," and depth == 1:
+                break
+            key_end += 1
+
+        key = text[brace_start:key_end].strip()
+        fields_start = key_end + 1  # skip the comma
+
+        # Find matching closing brace for the fields
+        depth = 1
+        fields_end = fields_start
+        while fields_end < len(text) and depth > 0:
+            ch = text[fields_end]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            fields_end += 1
+
+        fields_text = text[fields_start:fields_end].strip()
+
         entry = _parse_fields(entry_type.lower(), key, fields_text)
-        entry.raw_text = f"@{entry_type}{{{key},\n{fields_text}\n}}"
+        entry.raw_text = text[at_pos : fields_end + 1]
         entries.append(entry)
+
+        i = fields_end + 1
 
     return entries
 
@@ -102,18 +150,55 @@ def _parse_fields(entry_type: str, key: str, fields_text: str) -> BibEntry:
     """
     entry = BibEntry(key=key, entry_type=entry_type)
 
-    # Split fields on "=" but handle nested braces
-    # Strategy: find "fieldname = {value}" or "fieldname = "value""
-    field_pattern = re.compile(
-        r"(\w+)\s*=\s*[{\"]([^}\"]*)[}\"]", re.DOTALL
-    )
-    fields = field_pattern.findall(fields_text)
+    # Parse fields using brace counting (handles nested braces in LaTeX values)
+    i = 0
+    while i < len(fields_text):
+        # Find next "fieldname ="
+        fmatch = re.match(r"\s*(\w+)\s*=\s*", fields_text[i:])
+        if not fmatch:
+            i += 1
+            continue
 
-    for field_name, field_value in fields:
-        field_name = field_name.lower().strip()
-        field_value = field_value.strip()
+        field_name = fmatch.group(1).lower().strip()
+        i += fmatch.end()
 
-        # Remove leading/trailing whitespace from multi-line values
+        # Determine delimiter: { or "
+        if i >= len(fields_text):
+            break
+
+        delim = fields_text[i]
+        if delim not in ("{", '"'):
+            i += 1
+            continue
+
+        close_delim = "}" if delim == "{" else '"'
+        i += 1  # skip opening delimiter
+
+        # Extract value — use brace counting for {, simple for "
+        value_start = i
+        if delim == "{":
+            depth = 1
+            while i < len(fields_text) and depth > 0:
+                ch = fields_text[i]
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                i += 1
+        else:
+            # Quoted value — find closing "
+            while i < len(fields_text) and fields_text[i] != '"':
+                if fields_text[i] == "\\":
+                    i += 1  # skip escaped char
+                i += 1
+
+        field_value = fields_text[value_start:i].strip()
+        i += 1  # skip closing delimiter
+        i += 1  # skip trailing comma (may have whitespace)
+
+        # Normalise whitespace
         field_value = re.sub(r"\s+", " ", field_value).strip()
 
         if field_name == "title":

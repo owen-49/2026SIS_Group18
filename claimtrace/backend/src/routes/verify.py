@@ -12,7 +12,7 @@ def _get_verifier(request: Request):
 
     Centralised here so all verify/audit routes use the same setup.
     """
-    from engine.src.verifier import Verifier
+    from engine.verifier import Verifier
 
     llm_client = request.app.state.llm_client
     model = request.app.state.llm_model
@@ -33,8 +33,8 @@ async def verify_claim(request: VerifyRequest, req: Request):
         raise HTTPException(status_code=400, detail="Claim text is required.")
 
     # Import engine modules (lazy — only loaded when this endpoint is called)
-    from engine.src.embedder import Embedder
-    from engine.src.retriever import Retriever
+    from engine.embedder import Embedder
+    from engine.retriever import Retriever
 
     verifier, llm_client = _get_verifier(req)
 

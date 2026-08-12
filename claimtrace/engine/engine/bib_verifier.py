@@ -177,9 +177,16 @@ def _compare_titles(bib_title: str, pdf_title: str) -> FieldResult:
 
     similarity = SequenceMatcher(None, bib_norm, pdf_norm).ratio()
 
-    if similarity >= 0.85:
+    # Use both sequence similarity AND Levenshtein ratio.
+    # A single char typo in a long title can score >0.96 on SequenceMatcher
+    # but still be a real error. Levenshtein catches these.
+    from difflib import SequenceMatcher as SM
+
+    levenshtein_ratio = 1 - _levenshtein_distance(bib_norm, pdf_norm) / max(len(bib_norm), len(pdf_norm), 1)
+
+    if similarity >= 0.95 and levenshtein_ratio >= 0.98:
         return FieldResult("title", bib_title, pdf_title, FieldStatus.MATCH)
-    elif similarity >= 0.60:
+    elif similarity >= 0.80:
         return FieldResult(
             "title", bib_title, pdf_title, FieldStatus.MISMATCH,
             f"Titles are similar ({(similarity*100):.0f}%) but differ. "
@@ -322,6 +329,36 @@ def _compare_dois(bib_doi: str, pdf_doi: str) -> FieldResult:
 
 
 def _extract_last_names(authors: list[str]) -> list[str]:
+    """Extract last names from author strings."""
+    last_names = []
+    for author in authors:
+        author = author.strip()
+        if "," in author:
+            last_names.append(author.split(",")[0].strip().lower())
+        else:
+            parts = author.split()
+            if parts:
+                last_names.append(parts[-1].strip(".,;").lower())
+    return last_names
+
+
+def _levenshtein_distance(a: str, b: str) -> int:
+    """Compute Levenshtein (edit) distance between two strings."""
+    if len(a) < len(b):
+        a, b = b, a
+    if len(b) == 0:
+        return len(a)
+
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a):
+        curr = [i + 1]
+        for j, cb in enumerate(b):
+            insert = prev[j + 1] + 1
+            delete = curr[j] + 1
+            replace = prev[j] + (0 if ca == cb else 1)
+            curr.append(min(insert, delete, replace))
+        prev = curr
+    return prev[-1]
     """Extract last names from author strings.
 
     Handles both "Last, First" and "First Last" formats.

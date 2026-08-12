@@ -2,8 +2,8 @@
 
 import pytest
 
-from engine.src.embedder import Embedder
-from engine.src.retriever import RetrievalResult, Retriever
+from engine.embedder import Embedder
+from engine.retriever import RetrievalResult, Retriever
 
 
 class TestRetriever:

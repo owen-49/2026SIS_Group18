@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from engine.src.bib_parser import (
+from engine.bib_parser import (
     BibEntry,
     _clean_title,
     _parse_authors,

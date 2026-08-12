@@ -55,8 +55,8 @@ async def verify_bib(request: BibVerifyRequest, req: Request):
     # TODO W4-W5: Fetch parsed bib entries from bib store
     # For now, demonstrate the API shape with a stub
 
-    from engine.src.bib_parser import BibEntry
-    from engine.src.bib_verifier import (
+    from engine.bib_parser import BibEntry
+    from engine.bib_verifier import (
         BibVerificationResult,
         FieldResult,
         FieldStatus,
@@ -98,7 +98,7 @@ def _bib_result_to_response(
     result,
 ) -> BibEntryVerificationResult:
     """Convert engine BibVerificationResult to API response model."""
-    from engine.src.bib_verifier import BibVerificationResult
+    from engine.bib_verifier import BibVerificationResult
 
     fields = [
         BibFieldResult(

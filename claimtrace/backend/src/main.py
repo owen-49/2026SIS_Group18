@@ -44,7 +44,7 @@ async def startup():
     app.state.settings = settings
 
     # Build LLM client from configured provider
-    from engine.src.llm_client import build_llm_client
+    from engine.llm_client import build_llm_client
 
     provider = settings.llm_provider
     provider_configs = {

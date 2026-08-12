@@ -51,7 +51,7 @@ async def parse_pdf(file: UploadFile = File(...)):
     entry_count = 0
     if file_type == "bib":
         try:
-            from engine.src.bib_parser import parse_bib_file
+            from engine.bib_parser import parse_bib_file
             entries = parse_bib_file(file_path)
             entry_count = len(entries)
         except Exception:

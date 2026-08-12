@@ -4,7 +4,7 @@ Creates the right client for whatever provider is configured.
 Hides provider-specific setup from the rest of the codebase.
 
 Usage:
-    from engine.src.llm_client import build_llm_client
+    from engine.llm_client import build_llm_client
     client = build_llm_client(provider="openai", api_key="sk-...", model="gpt-4o-mini")
     response = client.chat.completions.create(model=model, messages=[...])
 """
