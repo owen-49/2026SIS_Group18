@@ -24,7 +24,7 @@ def build_llm_client(
     so we always return an OpenAI client — just pointed at different base URLs.
 
     Args:
-        provider: "openai" | "gemini" | "anthropic" | "ollama"
+        provider: "openai" | "deepseek" | "gemini" | "anthropic" | "ollama"
         api_key: API key for the provider.
         base_url: Override base URL (used by ollama and proxies).
         model: Not used in client construction, logged for debugging.
@@ -48,6 +48,16 @@ def build_llm_client(
         return OpenAI(
             api_key=api_key,
             base_url=base_url or "https://api.openai.com/v1",
+        )
+
+    if provider == "deepseek":
+        if not api_key:
+            return None
+        from openai import OpenAI
+
+        return OpenAI(
+            api_key=api_key,
+            base_url=base_url or "https://api.deepseek.com/v1",
         )
 
     if provider == "gemini":
@@ -90,6 +100,10 @@ def build_llm_client_from_env() -> Any | None:
         "openai": {
             "api_key": os.getenv("OPENAI_API_KEY", ""),
             "base_url": os.getenv("OPENAI_BASE_URL", None),
+        },
+        "deepseek": {
+            "api_key": os.getenv("OPENAI_API_KEY", ""),
+            "base_url": os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
         },
         "gemini": {
             "api_key": os.getenv("GEMINI_API_KEY", ""),
