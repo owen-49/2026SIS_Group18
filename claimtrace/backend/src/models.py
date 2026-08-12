@@ -19,6 +19,14 @@ class ParseStatus(str, Enum):
     FAILED = "failed"
 
 
+class BibFieldStatusEnum(str, Enum):
+    MATCH = "MATCH"
+    MISMATCH = "MISMATCH"
+    PDF_MISSING = "PDF_MISSING"
+    BIB_MISSING = "BIB_MISSING"
+    NOT_CHECKED = "NOT_CHECKED"
+
+
 # ── Request models ────────────────────────────────────────────
 
 
@@ -36,14 +44,26 @@ class AuditRequest(BaseModel):
     )
 
 
+class BibVerifyRequest(BaseModel):
+    bib_paper_id: str = Field(
+        ..., description="ID of the uploaded .bib file (from /api/parse)"
+    )
+    source_paper_ids: list[str] = Field(
+        default_factory=list,
+        description="IDs of uploaded source PDFs to cross-check against",
+    )
+
+
 # ── Response models ───────────────────────────────────────────
 
 
 class ParseResponse(BaseModel):
     paper_id: str
     status: ParseStatus
+    file_type: str = "pdf"  # "pdf" | "bib"
     pages: int = 0
     paragraph_count: int = 0
+    entry_count: int = 0  # number of bib entries parsed
     title: str | None = None
 
 
@@ -78,6 +98,34 @@ class AuditResponse(BaseModel):
     contradicted: int = 0
     not_found: int = 0
     results: list[CitationAuditResult] = []
+
+
+# ── Bib verification models ───────────────────────────────────
+
+
+class BibFieldResult(BaseModel):
+    field_name: str
+    bib_value: str
+    pdf_value: str
+    status: BibFieldStatusEnum
+    detail: str = ""
+
+
+class BibEntryVerificationResult(BaseModel):
+    citation_key: str
+    has_errors: bool
+    error_count: int
+    warning_count: int
+    summary: str
+    fields: list[BibFieldResult] = []
+
+
+class BibVerifyResponse(BaseModel):
+    bib_paper_id: str
+    total_entries: int
+    matched_entries: int
+    error_entries: int
+    results: list[BibEntryVerificationResult] = []
 
 
 class ErrorResponse(BaseModel):

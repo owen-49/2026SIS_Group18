@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routes import audit, health, parse, verify
+from .routes import audit, bib, health, parse, verify
 
 # ── Load configuration ─────────────────────────────────────
 settings = get_settings()
@@ -31,6 +31,7 @@ app.include_router(health.router, tags=["health"])
 app.include_router(parse.router, prefix="/api", tags=["parse"])
 app.include_router(verify.router, prefix="/api", tags=["verify"])
 app.include_router(audit.router, prefix="/api", tags=["audit"])
+app.include_router(bib.router, prefix="/api", tags=["bib"])
 
 
 @app.on_event("startup")
