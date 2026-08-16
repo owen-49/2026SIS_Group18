@@ -1,107 +1,109 @@
-/**
- * ClaimTrace Overleaf Content Script.
- *
- * Injects into Overleaf project pages. Listens for hover events
- * on \cite{...} elements and queries the ClaimTrace API.
- *
- * v0.1: Detects citation elements and logs hover events.
- *       Popup with real data coming in Sprint 3 (W7-W8).
- */
+const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 
-const API_BASE = "http://localhost:8000";
+function readVisibleEditorText() {
+  const selectors = [".cm-content", ".ace_content", "[contenteditable='true']", "textarea"];
+  const chunks = [];
+  for (const selector of selectors) {
+    document.querySelectorAll(selector).forEach((element) => {
+      const value = "value" in element ? element.value : element.textContent;
+      if (value && value.includes("@")) chunks.push(value);
+    });
+  }
+  return chunks.sort((a, b) => b.length - a.length)[0] || "";
+}
 
-// ── DOM Detection ──────────────────────────────────────────────
-
-/**
- * Find citation elements in Overleaf's editor DOM.
- *
- * Overleaf renders \cite{key} as a clickable span.
- * v0.1 selector: broad match, may need tuning per Overleaf updates.
- */
-function findCitationElements(): HTMLElement[] {
-  // Overleaf's Ace editor renders citations with specific classes
-  // This selector is a starting point — validate during W1 Spike 3
-  const selectors = [
-    '[data-cy="citation"]',
-    ".citation-element",
-    ".ace_cite", // fallback
-  ];
-
-  for (const sel of selectors) {
-    const elements = document.querySelectorAll(sel);
-    if (elements.length > 0) {
-      return Array.from(elements) as HTMLElement[];
+function extractEntries(source) {
+  const entries = [];
+  BIB_ENTRY_START.lastIndex = 0;
+  let start;
+  while ((start = BIB_ENTRY_START.exec(source))) {
+    let depth = 1;
+    let cursor = BIB_ENTRY_START.lastIndex;
+    while (cursor < source.length && depth > 0) {
+      if (source[cursor] === "{") depth += 1;
+      if (source[cursor] === "}") depth -= 1;
+      cursor += 1;
     }
+    if (depth === 0) entries.push(source.slice(start.index, cursor));
   }
-
-  return [];
+  return entries;
 }
 
-// ── Hover Handler ──────────────────────────────────────────────
+function readField(entry, field) {
+  const expression = new RegExp(`${field}\\s*=\\s*(?:\\{([^}]*)\\}|"([^"]*)")`, "i");
+  const match = entry.match(expression);
+  return (match?.[1] || match?.[2] || "").replace(/\s+/g, " ").trim();
+}
 
-let currentPopup: HTMLElement | null = null;
+function parseBibliography(source) {
+  return extractEntries(source).map((entry) => {
+    const citationKey = entry.match(/^@\w+\s*\{\s*([^,]+)/i)?.[1]?.trim() || "unknown";
+    const authorValue = readField(entry, "author");
+    const firstAuthor = authorValue.split(/\s+and\s+/i)[0]?.split(",")[0]?.trim();
+    const venue = readField(entry, "journal") || readField(entry, "booktitle") || "Source";
+    const doi = readField(entry, "doi");
+    return {
+      citationKey,
+      title: readField(entry, "title").replace(/[{}]/g, "") || citationKey,
+      authors: firstAuthor ? `${firstAuthor} et al.` : "Unknown authors",
+      venue,
+      year: readField(entry, "year") || "—",
+      url: readField(entry, "url") || (doi ? `https://doi.org/${doi}` : ""),
+      status: "linked",
+    };
+  });
+}
 
-function showPopup(citationKey: string, x: number, y: number) {
-  hidePopup();
+let promptDismissed = false;
+let promptTimer;
 
-  const popup = document.createElement("div");
-  popup.className = "claimtrace-popup";
-  popup.innerHTML = `
-    <div class="claimtrace-popup-header">
-      <span class="claimtrace-key">\\cite{${citationKey}}</span>
-      <span class="claimtrace-loading">Checking...</span>
-    </div>
-    <div class="claimtrace-popup-body">
-      <p>Loading verification from ClaimTrace...</p>
-    </div>
+function dismissPrompt() {
+  promptDismissed = true;
+  window.clearTimeout(promptTimer);
+  const prompt = document.getElementById("claimtrace-bib-prompt");
+  if (!prompt) return;
+  prompt.classList.add("claimtrace-prompt-leaving");
+  window.setTimeout(() => prompt.remove(), 180);
+}
+
+function ensurePrompt() {
+  if (promptDismissed || document.getElementById("claimtrace-bib-prompt")) return;
+  const prompt = document.createElement("div");
+  prompt.id = "claimtrace-bib-prompt";
+  prompt.setAttribute("role", "status");
+  prompt.innerHTML = `
+    <span class="claimtrace-prompt-mark">✓</span>
+    <span class="claimtrace-prompt-copy"><strong>Bibliography detected</strong><small>Turn your .bib file into a paper library</small></span>
+    <button class="claimtrace-prompt-open" type="button">Open ClaimTrace</button>
+    <button class="claimtrace-prompt-close" type="button" aria-label="Dismiss ClaimTrace prompt">×</button>
   `;
-
-  popup.style.position = "fixed";
-  popup.style.left = `${x + 10}px`;
-  popup.style.top = `${y + 10}px`;
-  popup.style.zIndex = "99999";
-
-  document.body.appendChild(popup);
-  currentPopup = popup;
-
-  // TODO W7-W8: Fetch real verification from API
-  // fetch(`${API_BASE}/api/verify/cite/${citationKey}`)
-  //   .then(r => r.json())
-  //   .then(data => updatePopup(data));
+  prompt.querySelector(".claimtrace-prompt-open").addEventListener("click", () => {
+    chrome.runtime.sendMessage({ type: "open_side_panel" });
+    dismissPrompt();
+  });
+  prompt.querySelector(".claimtrace-prompt-close").addEventListener("click", dismissPrompt);
+  document.body.appendChild(prompt);
+  promptTimer = window.setTimeout(dismissPrompt, 10000);
 }
 
-function hidePopup() {
-  if (currentPopup) {
-    currentPopup.remove();
-    currentPopup = null;
-  }
+let lastPayload = "";
+function scanOverleaf() {
+  const source = readVisibleEditorText();
+  const papers = parseBibliography(source);
+  const pageMentionsBib = document.body.textContent?.toLowerCase().includes(".bib");
+  if (papers.length || pageMentionsBib) ensurePrompt();
+  if (!papers.length) return;
+  const payload = JSON.stringify(papers);
+  if (payload === lastPayload) return;
+  lastPayload = payload;
+  chrome.runtime.sendMessage({ type: "bibliography_detected", papers });
 }
 
-// ── Initialize ─────────────────────────────────────────────────
+let timer;
+const observer = new MutationObserver(() => {
+  window.clearTimeout(timer);
+  timer = window.setTimeout(scanOverleaf, 500);
+});
 
-function init() {
-  console.log("[ClaimTrace] Extension loaded on Overleaf page.");
-
-  // Phase 1 (W1-W3): Passive detection only — log citation element count
-  const citations = findCitationElements();
-  console.log(`[ClaimTrace] Found ${citations.length} potential citation elements.`);
-
-  // TODO W7-W8: Attach hover listeners to citation elements
-  // citations.forEach(el => {
-  //   el.addEventListener("mouseenter", (e) => {
-  //     const key = extractCitationKey(el);
-  //     if (key) showPopup(key, e.clientX, e.clientY);
-  //   });
-  //   el.addEventListener("mouseleave", hidePopup);
-  // });
-}
-
-// Run when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
-
-// Export for debugging
-export { findCitationElements, showPopup, hidePopup };
+observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+scanOverleaf();

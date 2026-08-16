@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClaimTrace</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="panel-header">
+      <div class="brand"><span class="brand-mark">✓</span><div><strong>ClaimTrace</strong><small>Citation intelligence</small></div></div>
+      <button class="icon-button" id="settingsButton" aria-label="Settings">•••</button>
+    </header>
+
+    <main>
+      <section class="context-card">
+        <div><span class="context-dot"></span><strong id="sourceTitle">Overleaf bibliography</strong></div>
+        <small id="syncText">Connected to references.bib</small>
+      </section>
+
+      <label class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        <span class="sr-only">Search citations</span>
+        <input id="searchInput" type="search" placeholder="Search citations…" autocomplete="off" />
+      </label>
+
+      <section class="library-heading">
+        <div><span class="eyebrow">Paper library</span><h1><span id="paperCount">0</span> sources found</h1></div>
+        <button id="syncButton" class="sync-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"></path><path d="M20 2l-4 4a8 8 0 1 0 2 9"></path></svg>Sync</button>
+      </section>
+
+      <section id="paperList" class="paper-list" aria-live="polite"></section>
+      <section id="emptyState" class="empty-state" hidden><span>⌕</span><h2>No matching papers</h2><p>Try a title, author, year, or citation key.</p></section>
+    </main>
+
+    <footer class="panel-footer">
+      <div class="success-message"><span>✓</span><div><strong>Bibliography linked</strong><small id="footerDetail">Ready to trace citations</small></div></div>
+      <button id="openDashboard" type="button">Open dashboard <span>↗</span></button>
+    </footer>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
