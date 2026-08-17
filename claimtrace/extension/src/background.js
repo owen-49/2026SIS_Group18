@@ -22,6 +22,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     });
   }
 
+  if (message.type === "citations_detected" && Array.isArray(message.findings)) {
+    void chrome.storage.local.set({
+      claimtraceFindings: message.findings,
+      claimtraceCitationSource: "overleaf",
+      claimtraceCitationUpdatedAt: Date.now(),
+    });
+  }
+
   if (message.type === "open_side_panel" && sender.tab?.id) {
     void chrome.sidePanel.open({ tabId: sender.tab.id });
   }

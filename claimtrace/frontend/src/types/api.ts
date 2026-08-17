@@ -44,6 +44,11 @@ export interface CitationAuditResult {
   verdict: Verdict;
   confidence: number;
   risk_level: "high" | "medium" | "low";
+  source_location?: {
+    page: number;
+    quote: string;
+    annotation?: string;
+  };
 }
 
 export interface AuditResponse {

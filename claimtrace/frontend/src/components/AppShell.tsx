@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { usingMockApi } from "../api/client";
 import { Icon, type IconName } from "./Icon";
 
 const navigation: { to: string; label: string; icon: IconName; end?: boolean }[] = [
@@ -59,10 +58,6 @@ export function AppShell() {
           <button className="icon-button mobile-menu" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <Icon name="menu" />
           </button>
-          <Link className="topbar-status" to="/docs#demo-workspace" title="Learn about the current workspace mode">
-            <span className={usingMockApi ? "status-dot status-demo" : "status-dot"} />
-            {usingMockApi ? "Demo workspace" : "API connected"}
-          </Link>
           <Link className="help-button" to="/docs">Help & docs</Link>
         </header>
         <main className="content"><Outlet /></main>
