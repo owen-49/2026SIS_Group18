@@ -8,13 +8,20 @@ const activity = [
   { title: "transformer-survey.pdf", detail: "12 citations audited", time: "1 hour ago", tone: "neutral" },
 ];
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning.";
+  if (hour < 18) return "Good afternoon.";
+  return "Good evening.";
+}
+
 export function DashboardPage() {
   return (
     <div className="page-stack">
       <section className="page-heading heading-row">
         <div>
           <span className="eyebrow">Citation intelligence</span>
-          <h1>Good afternoon.</h1>
+          <h1>{getGreeting()}</h1>
           <p>Trace every academic claim back to the evidence that supports it.</p>
         </div>
         <Link className="button button-primary" to="/upload"><Icon name="upload" size={17} /> Upload papers</Link>

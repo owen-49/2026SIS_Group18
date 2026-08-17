@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
-import { uploadPaper } from "../api/client";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { uploadPaper, usingMockApi } from "../api/client";
 import { Icon } from "../components/Icon";
+import { saveWorkspacePaper } from "../data/workspacePapers";
 import type { ParsedPaper } from "../types/api";
 
 interface UploadItem {
@@ -11,29 +13,61 @@ interface UploadItem {
   error?: string;
 }
 
+interface UploadFeedback {
+  file: File;
+  progress: number;
+  stage: "uploading" | "analysing" | "error";
+  message?: string;
+}
+
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 export function UploadPage() {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const progressTimer = useRef<number>();
   const [items, setItems] = useState<UploadItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [feedback, setFeedback] = useState<UploadFeedback | null>(null);
+
+  useEffect(() => () => window.clearInterval(progressTimer.current), []);
 
   async function addFiles(files: FileList | File[]) {
     const validFiles = Array.from(files).filter((file) => /\.(pdf|bib)$/i.test(file.name));
+    if (!validFiles.length) return;
     const nextItems = validFiles.map((file) => ({ id: crypto.randomUUID(), file, state: "queued" as const }));
     setItems((current) => [...nextItems, ...current]);
 
     for (const item of nextItems) {
+      setFeedback({ file: item.file, progress: 8, stage: "uploading" });
+      progressTimer.current = window.setInterval(() => {
+        setFeedback((current) => current?.stage === "uploading"
+          ? { ...current, progress: Math.min(88, current.progress + 8) }
+          : current);
+      }, 100);
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, state: "uploading" } : entry));
       try {
         const result = await uploadPaper(item.file);
+        saveWorkspacePaper({ paperId: result.paper_id, fileName: item.file.name, uploadedAt: Date.now() });
+        window.clearInterval(progressTimer.current);
+        setFeedback({ file: item.file, progress: 100, stage: "analysing" });
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, state: "complete", result } : entry));
+        if (usingMockApi && item === nextItems[nextItems.length - 1]) {
+          window.setTimeout(() => navigate("/audit", {
+            state: { fileName: item.file.name, paperId: result.paper_id, justUploaded: true },
+          }), 650);
+        } else if (item === nextItems[nextItems.length - 1]) {
+          window.setTimeout(() => setFeedback(null), 650);
+        }
       } catch (error) {
+        window.clearInterval(progressTimer.current);
         const message = error instanceof Error ? error.message : "Upload failed";
+        setFeedback({ file: item.file, progress: 0, stage: "error", message });
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, state: "error", error: message } : entry));
+        break;
       }
     }
   }
@@ -70,6 +104,28 @@ export function UploadPage() {
             </div>
           ))}
         </section>
+      )}
+
+      {feedback && (
+        <div className="upload-feedback-overlay" role="dialog" aria-modal="true" aria-labelledby="upload-feedback-title">
+          <section className="upload-feedback-card">
+            <div className="upload-feedback-file">
+              <span className={`file-icon ${feedback.file.name.endsWith(".bib") ? "bib" : "pdf"}`}><Icon name="document" size={20} /></span>
+              <div><h2 id="upload-feedback-title">{feedback.file.name}</h2><p>{formatBytes(feedback.file.size)} · Research paper</p></div>
+            </div>
+            {feedback.stage === "error" ? (
+              <>
+                <p className="upload-feedback-error">{feedback.message}</p>
+                <button className="button button-secondary full-button" type="button" onClick={() => setFeedback(null)}>Choose another file</button>
+              </>
+            ) : (
+              <>
+                <div className="upload-feedback-progress"><i style={{ width: `${feedback.progress}%` }} /></div>
+                <div className="upload-feedback-meta"><span>{feedback.stage === "uploading" ? "Uploading…" : "Preparing demo review…"}</span><strong>{feedback.progress}%</strong></div>
+              </>
+            )}
+          </section>
+        </div>
       )}
     </div>
   );

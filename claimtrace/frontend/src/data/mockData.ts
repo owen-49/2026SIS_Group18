@@ -75,6 +75,10 @@ export const demoAudit: AuditResponse = {
       verdict: "SUPPORT",
       confidence: 0.94,
       risk_level: "low",
+      source_location: {
+        page: 3,
+        quote: "The Transformer removes recurrence in favour of attention mechanisms.",
+      },
     },
     {
       citation_key: "devlin2019bert",
@@ -82,6 +86,11 @@ export const demoAudit: AuditResponse = {
       verdict: "CONTRADICT",
       confidence: 0.89,
       risk_level: "high",
+      source_location: {
+        page: 3,
+        quote: "BERT was trained exclusively with a next-sentence prediction objective.",
+        annotation: "Claim contradicts the cited source",
+      },
     },
     {
       citation_key: "brown2020language",
@@ -89,6 +98,11 @@ export const demoAudit: AuditResponse = {
       verdict: "PARTIAL",
       confidence: 0.82,
       risk_level: "medium",
+      source_location: {
+        page: 3,
+        quote: "Larger language models always improve few-shot performance.",
+        annotation: "Claim is broader than the evidence",
+      },
     },
     {
       citation_key: "lewis2020retrieval",
@@ -96,6 +110,10 @@ export const demoAudit: AuditResponse = {
       verdict: "SUPPORT",
       confidence: 0.91,
       risk_level: "low",
+      source_location: {
+        page: 4,
+        quote: "RAG combines parametric and non-parametric memory.",
+      },
     },
     {
       citation_key: "smith2024survey",
@@ -103,6 +121,11 @@ export const demoAudit: AuditResponse = {
       verdict: "NOT_FOUND",
       confidence: 0.76,
       risk_level: "high",
+      source_location: {
+        page: 4,
+        quote: "Citation errors affect a majority of reviewed manuscripts.",
+        annotation: "Source could not be located",
+      },
     },
   ],
 };

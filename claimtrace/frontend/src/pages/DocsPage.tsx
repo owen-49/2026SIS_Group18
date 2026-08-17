@@ -31,7 +31,7 @@ export function DocsPage() {
         <div>
           <span className="eyebrow">Current environment</span>
           <h2>What does “Demo workspace” mean?</h2>
-          <p>The dashboard is using deterministic sample papers and audit results. You can explore every screen without running FastAPI, but uploads and changes are not permanently saved or shared between pages.</p>
+          <p>The dashboard is using deterministic sample audit results. Uploaded paper names are kept in this browser session so you can switch manuscripts, but the findings are not yet generated from those files.</p>
         </div>
         <span className="demo-pill"><i /> Mock API active</span>
       </section>
