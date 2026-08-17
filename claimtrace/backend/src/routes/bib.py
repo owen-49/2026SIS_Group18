@@ -24,7 +24,6 @@ async def parse_bib(request: Request):
 
     Request body: { "paper_id": "abc123" }
     """
-    from fastapi import Body
 
     body = await request.json()
     paper_id = body.get("paper_id", "")
@@ -57,9 +56,6 @@ async def verify_bib(request: BibVerifyRequest, req: Request):
 
     from engine.bib_parser import BibEntry
     from engine.bib_verifier import (
-        BibVerificationResult,
-        FieldResult,
-        FieldStatus,
         PdfMetadata,
         verify_bib_against_pdf,
     )
@@ -98,7 +94,6 @@ def _bib_result_to_response(
     result,
 ) -> BibEntryVerificationResult:
     """Convert engine BibVerificationResult to API response model."""
-    from engine.bib_verifier import BibVerificationResult
 
     fields = [
         BibFieldResult(

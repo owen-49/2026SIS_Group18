@@ -33,8 +33,6 @@ async def verify_claim(request: VerifyRequest, req: Request):
         raise HTTPException(status_code=400, detail="Claim text is required.")
 
     # Import engine modules (lazy — only loaded when this endpoint is called)
-    from engine.embedder import Embedder
-    from engine.retriever import Retriever
 
     verifier, llm_client = _get_verifier(req)
 

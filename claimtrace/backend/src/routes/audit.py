@@ -5,8 +5,6 @@ from fastapi import APIRouter, HTTPException
 from ..models import (
     AuditRequest,
     AuditResponse,
-    CitationAuditResult,
-    VerdictEnum,
 )
 
 router = APIRouter()
