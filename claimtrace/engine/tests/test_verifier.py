@@ -2,8 +2,8 @@
 
 import pytest
 
-from engine.src.retriever import RetrievalResult
-from engine.src.verifier import Verdict, VerificationResult, Verifier
+from engine.retriever import RetrievalResult
+from engine.verifier import Verdict, VerificationResult, Verifier
 
 
 class TestVerifier:

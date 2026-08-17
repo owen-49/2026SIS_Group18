@@ -1,4 +1,4 @@
-"""PDF upload and parsing endpoints."""
+"""PDF and BibTeX (.bib) upload and parsing endpoints."""
 
 import uuid
 from pathlib import Path
@@ -26,32 +26,54 @@ async def parse_pdf(file: UploadFile = File(...)):
     Returns:
         ParseResponse with paper ID and status.
     """
-    if not file.filename or not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are accepted.")
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided.")
+
+    ext = file.filename.lower().rsplit(".", 1)[-1] if "." in file.filename else ""
+    if ext not in ("pdf", "bib"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '.{ext}'. Only PDF and .bib files are accepted.",
+        )
 
     paper_id = str(uuid.uuid4())[:8]
+    file_type = ext  # "pdf" or "bib"
 
     # Save uploaded file
-    file_path = UPLOAD_DIR / f"{paper_id}.pdf"
+    file_path = UPLOAD_DIR / f"{paper_id}.{ext}"
     content = await file.read()
     if len(content) > 50 * 1024 * 1024:  # 50MB limit
         raise HTTPException(status_code=400, detail="File too large (max 50MB).")
 
     file_path.write_bytes(content)
 
-    # TODO W2-W3: Call parser.pdf_parser.parse_pdf() and element extractors
+    # Parse .bib files immediately (they're small text files)
+    entry_count = 0
+    if file_type == "bib":
+        try:
+            from engine.bib_parser import parse_bib_file
+            entries = parse_bib_file(file_path)
+            entry_count = len(entries)
+        except Exception:
+            entry_count = 0
+
+    # TODO W2-W3: For PDFs, call parser.pdf_parser.parse_pdf() and element extractors
     # For now, return stub with placeholder values
 
     _paper_store[paper_id] = {
         "file_path": str(file_path),
-        "status": ParseStatus.PENDING,
+        "file_type": file_type,
+        "status": ParseStatus.COMPLETED if file_type == "bib" else ParseStatus.PENDING,
+        "entry_count": entry_count,
     }
 
     return ParseResponse(
         paper_id=paper_id,
-        status=ParseStatus.PENDING,
+        status=ParseStatus.COMPLETED if file_type == "bib" else ParseStatus.PENDING,
+        file_type=file_type,
         pages=0,
         paragraph_count=0,
+        entry_count=entry_count,
     )
 
 
@@ -72,7 +94,9 @@ async def get_parse_status(paper_id: str):
     return ParseResponse(
         paper_id=paper_id,
         status=paper.get("status", ParseStatus.PENDING),
+        file_type=paper.get("file_type", "pdf"),
         pages=paper.get("pages", 0),
         paragraph_count=paper.get("paragraph_count", 0),
+        entry_count=paper.get("entry_count", 0),
         title=paper.get("title"),
     )
