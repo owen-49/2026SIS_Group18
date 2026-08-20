@@ -80,7 +80,6 @@ def build_llm_client(
             base_url=base_url or "https://api.anthropic.com/v1",
         )
 
-    # Unknown provider — return None, caller falls back to mock mode
     return None
 
 

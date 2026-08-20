@@ -54,7 +54,6 @@ class BibVerifyRequest(BaseModel):
     )
 
 
-# ── Response models ───────────────────────────────────────────
 
 
 class ParseResponse(BaseModel):
