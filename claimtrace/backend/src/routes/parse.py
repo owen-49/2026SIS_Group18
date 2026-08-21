@@ -5,11 +5,13 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
+from ..config import get_settings
 from ..models import ParseResponse, ParseStatus
 
 router = APIRouter()
 
-UPLOAD_DIR = Path("uploads")
+settings = get_settings()
+UPLOAD_DIR = settings.upload_dir
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 # In-memory store for parsed papers (replace with DB in production)
@@ -32,7 +34,7 @@ async def parse_pdf(file: UploadFile = File(...)):
     ext = file.filename.lower().rsplit(".", 1)[-1] if "." in file.filename else ""
     if ext not in ("pdf", "bib"):
         raise HTTPException(
-            status_code=400,
+            status_code=415,
             detail=f"Unsupported file type '.{ext}'. Only PDF and .bib files are accepted.",
         )
 
@@ -42,38 +44,35 @@ async def parse_pdf(file: UploadFile = File(...)):
     # Save uploaded file
     file_path = UPLOAD_DIR / f"{paper_id}.{ext}"
     content = await file.read()
-    if len(content) > 50 * 1024 * 1024:  # 50MB limit
-        raise HTTPException(status_code=400, detail="File too large (max 50MB).")
+    if not content:
+        raise HTTPException(status_code=400, detail="The uploaded file is empty.")
+    if len(content) > settings.max_upload_size_mb * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large (max {settings.max_upload_size_mb}MB).",
+        )
+
+    if file_type == "pdf" and not content.startswith(b"%PDF"):
+        raise HTTPException(status_code=415, detail="The uploaded file is not a valid PDF.")
 
     file_path.write_bytes(content)
-
-    # Parse .bib files immediately (they're small text files)
-    entry_count = 0
-    if file_type == "bib":
-        try:
-            from engine.bib_parser import parse_bib_file
-            entries = parse_bib_file(file_path)
-            entry_count = len(entries)
-        except Exception:
-            entry_count = 0
-
-    # TODO W2-W3: For PDFs, call parser.pdf_parser.parse_pdf() and element extractors
-    # For now, return stub with placeholder values
 
     _paper_store[paper_id] = {
         "file_path": str(file_path),
         "file_type": file_type,
-        "status": ParseStatus.COMPLETED if file_type == "bib" else ParseStatus.PENDING,
-        "entry_count": entry_count,
+        "status": ParseStatus.PENDING,
+        "entry_count": 0,
+        "title": Path(file.filename).stem,
     }
 
     return ParseResponse(
         paper_id=paper_id,
-        status=ParseStatus.COMPLETED if file_type == "bib" else ParseStatus.PENDING,
+        status=ParseStatus.PENDING,
         file_type=file_type,
         pages=0,
         paragraph_count=0,
-        entry_count=entry_count,
+        entry_count=0,
+        title=Path(file.filename).stem,
     )
 
 
