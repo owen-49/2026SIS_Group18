@@ -5,9 +5,8 @@ from fastapi import APIRouter, HTTPException
 from ..models import (
     AuditRequest,
     AuditResponse,
-    CitationAuditResult,
-    VerdictEnum,
 )
+from ..services.demo_service import build_demo_audit
 
 router = APIRouter()
 
@@ -26,19 +25,9 @@ async def audit_manuscript(request: AuditRequest):
     if not request.source_paper_ids:
         raise HTTPException(status_code=400, detail="At least one source paper is required.")
 
-    # TODO W5-W6: Real batch audit pipeline
-    # 1. Extract claims + \cite{...} pairs from manuscript
-    # 2. For each pair: retrieve + verify
-    # 3. Aggregate results + assign risk levels
-
-    return AuditResponse(
+    return build_demo_audit(
         manuscript_id=request.manuscript_id,
-        total_citations=0,
-        supported=0,
-        partial=0,
-        contradicted=0,
-        not_found=0,
-        results=[],
+        source_paper_ids=request.source_paper_ids,
     )
 
 
