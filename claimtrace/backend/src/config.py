@@ -58,6 +58,7 @@ class Settings:
     # ── Upload ────────────────────────────────────────────
     max_upload_size_mb: int = 50
     upload_dir: Path = Path("uploads")
+    papers_file: Path = Path("uploads/papers.json")
 
     @property
     def is_llm_configured(self) -> bool:
@@ -100,6 +101,9 @@ def _load_settings() -> Settings:
         "chrome-extension://*",
     ]
 
+    upload_dir = Path(os.getenv("UPLOAD_DIR", "uploads"))
+    papers_file = Path(os.getenv("PAPERS_FILE", str(upload_dir / "papers.json")))
+
     return Settings(
         # LLM
         llm_provider=os.getenv("CLAIMTRACE_LLM_PROVIDER", "openai"),
@@ -126,7 +130,8 @@ def _load_settings() -> Settings:
         cors_origins=origins,
         # Upload
         max_upload_size_mb=int(os.getenv("MAX_UPLOAD_SIZE_MB", "50")),
-        upload_dir=Path(os.getenv("UPLOAD_DIR", "uploads")),
+        upload_dir=upload_dir,
+        papers_file=papers_file,
     )
 
 
