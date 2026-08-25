@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Document Intelligence — PDF parsing and structure recovery for academic papers"
 requires-python = ">=3.11"
 dependencies = [
+    "opendataloader-pdf>=2.0,<3.0",
     "PyMuPDF>=1.24.0",
     "pdfplumber>=0.10.0",
     "pandas>=2.0.0",
