@@ -8,6 +8,7 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from ..config import get_settings
 from ..models import PaperRecord, ParseResponse
+from ..services.pipeline_service import PipelineError, process_uploaded_paper
 from ..storage.paper_store import PaperStoreError, create_paper, get_paper
 
 router = APIRouter()
@@ -126,6 +127,15 @@ async def parse_pdf(file: UploadFile = File(...)):
                 status_code=500,
                 detail="Unable to persist paper metadata.",
             ) from exc
+
+        if record.file_type == "pdf":
+            try:
+                record = process_uploaded_paper(record.paper_id)
+            except PipelineError as exc:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Unable to process the uploaded PDF.",
+                ) from exc
 
         return _to_parse_response(record)
     except HTTPException:

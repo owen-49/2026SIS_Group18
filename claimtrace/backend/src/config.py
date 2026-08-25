@@ -59,6 +59,7 @@ class Settings:
     max_upload_size_mb: int = 50
     upload_dir: Path = Path("uploads")
     papers_file: Path = Path("uploads/papers.json")
+    parsed_dir: Path = Path("uploads/parsed")
 
     @property
     def is_llm_configured(self) -> bool:
@@ -103,6 +104,7 @@ def _load_settings() -> Settings:
 
     upload_dir = Path(os.getenv("UPLOAD_DIR", "uploads"))
     papers_file = Path(os.getenv("PAPERS_FILE", str(upload_dir / "papers.json")))
+    parsed_dir = Path(os.getenv("PARSED_DIR", str(upload_dir / "parsed")))
 
     return Settings(
         # LLM
@@ -132,6 +134,7 @@ def _load_settings() -> Settings:
         max_upload_size_mb=int(os.getenv("MAX_UPLOAD_SIZE_MB", "50")),
         upload_dir=upload_dir,
         papers_file=papers_file,
+        parsed_dir=parsed_dir,
     )
 
 
