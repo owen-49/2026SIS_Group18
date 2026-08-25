@@ -3,9 +3,17 @@
 from fastapi import APIRouter, HTTPException
 
 from ..models import VerifyRequest, VerifyResponse
-from ..services.demo_service import build_demo_verification
+from ..services.verification_service import (
+    InvalidPaperError,
+    PaperNotFoundError,
+    PaperNotReadyError,
+    VerificationServiceError,
+    verify_paper_claim,
+)
 
 router = APIRouter()
+
+
 @router.post("/verify", response_model=VerifyResponse)
 async def verify_claim(request: VerifyRequest):
     """Verify a single claim against its cited source paper.
@@ -18,7 +26,16 @@ async def verify_claim(request: VerifyRequest):
     if not request.claim.strip():
         raise HTTPException(status_code=400, detail="Claim text is required.")
 
-    return build_demo_verification(
-        claim=request.claim.strip(),
-        source_paper_id=request.source_paper_id,
-    )
+    try:
+        return verify_paper_claim(
+            paper_id=request.source_paper_id,
+            claim=request.claim.strip(),
+        )
+    except PaperNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except PaperNotReadyError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except InvalidPaperError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except VerificationServiceError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc

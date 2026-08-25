@@ -121,7 +121,7 @@ export function UploadPage() {
             ) : (
               <>
                 <div className="upload-feedback-progress"><i style={{ width: `${feedback.progress}%` }} /></div>
-                <div className="upload-feedback-meta"><span>{feedback.stage === "uploading" ? "Uploading…" : "Preparing demo review…"}</span><strong>{feedback.progress}%</strong></div>
+                <div className="upload-feedback-meta"><span>{feedback.stage === "uploading" ? "Uploading…" : "Preparing paper for verification…"}</span><strong>{feedback.progress}%</strong></div>
               </>
             )}
           </section>

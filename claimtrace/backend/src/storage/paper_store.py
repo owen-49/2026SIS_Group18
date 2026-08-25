@@ -28,6 +28,7 @@ _UPDATABLE_FIELDS = {
     "entry_count",
     "title",
     "error_message",
+    "parsed_result_path",
 }
 
 
