@@ -3,18 +3,27 @@
 import pytest
 from backend.src.main import app
 from backend.src.routes import parse as parse_route
+from backend.src.storage import paper_store
 from fastapi.testclient import TestClient
 
 
 @pytest.fixture()
-def client(tmp_path, monkeypatch):
-    """Use an isolated upload folder and in-memory paper store per test."""
+def storage_paths(tmp_path, monkeypatch):
+    """Point file and JSON persistence at an isolated test directory."""
     upload_dir = tmp_path / "uploads"
     upload_dir.mkdir()
+    papers_file = upload_dir / "papers.json"
+
     monkeypatch.setattr(parse_route, "UPLOAD_DIR", upload_dir)
-    parse_route._paper_store.clear()
+    monkeypatch.setattr(paper_store, "PAPERS_FILE", papers_file)
+
+    return {"upload_dir": upload_dir, "papers_file": papers_file}
+
+
+@pytest.fixture()
+def client(storage_paths):
+    """Return an API client using isolated local persistence."""
+    del storage_paths
 
     with TestClient(app) as test_client:
         yield test_client
-
-    parse_route._paper_store.clear()

@@ -1,5 +1,10 @@
 """Frontend-facing API contract tests."""
 
+import json
+import uuid
+
+from backend.src.routes import parse as parse_route
+
 
 def test_health(client):
     response = client.get("/health")
@@ -22,10 +27,11 @@ def test_frontend_cors_preflight(client):
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3000"
 
 
-def test_upload_pdf(client):
+def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
+    content = b"%PDF-1.4\ntest content"
     response = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", b"%PDF-1.4\ntest content", "application/pdf")},
+        files={"file": ("paper.pdf", content, "application/pdf")},
     )
 
     assert response.status_code == 200
@@ -34,6 +40,87 @@ def test_upload_pdf(client):
     assert body["status"] == "pending"
     assert body["title"] == "paper"
     assert body["paper_id"]
+
+    uuid.UUID(body["paper_id"])
+    stored_file = storage_paths["upload_dir"] / f"{body['paper_id']}.pdf"
+    assert stored_file.read_bytes() == content
+
+    papers_file = storage_paths["papers_file"]
+    assert papers_file.exists()
+    metadata = json.loads(papers_file.read_text(encoding="utf-8"))
+    record = metadata["papers"][body["paper_id"]]
+    assert record["original_filename"] == "paper.pdf"
+    assert record["stored_filename"] == stored_file.name
+    assert record["file_size"] == len(content)
+    assert record["status"] == "pending"
+
+
+def test_uploaded_paper_can_be_read_from_json(client):
+    uploaded = client.post(
+        "/api/parse",
+        files={"file": ("paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+    ).json()
+
+    response = client.get(f"/api/parse/{uploaded['paper_id']}")
+
+    assert response.status_code == 200
+    assert response.json() == uploaded
+
+
+def test_list_papers_returns_empty_collection(client):
+    response = client.get("/api/papers")
+
+    assert response.status_code == 200
+    assert response.json() == {"total": 0, "papers": []}
+
+
+def test_list_papers_returns_newest_first_without_internal_paths(client):
+    first = client.post(
+        "/api/parse",
+        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+    ).json()
+    second = client.post(
+        "/api/parse",
+        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+    ).json()
+
+    response = client.get("/api/papers")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 2
+    assert [paper["paper_id"] for paper in body["papers"]] == [
+        second["paper_id"],
+        first["paper_id"],
+    ]
+    assert body["papers"][0]["original_filename"] == "second.pdf"
+    assert body["papers"][0]["file_size"] == len(b"%PDF-1.4\nsecond")
+    assert body["papers"][0]["status"] == "pending"
+    assert "created_at" in body["papers"][0]
+    assert "file_path" not in body["papers"][0]
+    assert "stored_filename" not in body["papers"][0]
+
+
+def test_list_papers_returns_500_for_corrupt_metadata(client, storage_paths):
+    storage_paths["papers_file"].write_text("{not valid json", encoding="utf-8")
+
+    response = client.get("/api/papers")
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Unable to read paper metadata."
+
+
+def test_each_upload_gets_a_unique_paper_id(client):
+    first = client.post(
+        "/api/parse",
+        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+    ).json()
+    second = client.post(
+        "/api/parse",
+        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+    ).json()
+
+    assert first["paper_id"] != second["paper_id"]
 
 
 def test_upload_bib(client):
@@ -55,13 +142,63 @@ def test_rejects_unsupported_file(client):
     assert response.status_code == 415
 
 
-def test_rejects_empty_file(client):
+def test_rejects_invalid_filename(client, storage_paths):
+    response = client.post(
+        "/api/parse",
+        files={"file": ("../paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+    )
+
+    assert response.status_code == 400
+    assert not list(storage_paths["upload_dir"].glob("*.pdf"))
+    assert not storage_paths["papers_file"].exists()
+
+
+def test_rejects_empty_file(client, storage_paths):
     response = client.post(
         "/api/parse",
         files={"file": ("empty.pdf", b"", "application/pdf")},
     )
 
     assert response.status_code == 400
+    assert not list(storage_paths["upload_dir"].glob("*.pdf"))
+    assert not list(storage_paths["upload_dir"].rglob("*.part"))
+    assert not storage_paths["papers_file"].exists()
+
+
+def test_rejects_invalid_pdf_without_leaving_files(client, storage_paths):
+    response = client.post(
+        "/api/parse",
+        files={"file": ("fake.pdf", b"not a PDF", "application/pdf")},
+    )
+
+    assert response.status_code == 415
+    assert not list(storage_paths["upload_dir"].glob("*.pdf"))
+    assert not list(storage_paths["upload_dir"].rglob("*.part"))
+    assert not storage_paths["papers_file"].exists()
+
+
+def test_rejects_oversized_file_without_leaving_files(
+    client,
+    storage_paths,
+    monkeypatch,
+):
+    monkeypatch.setattr(parse_route, "MAX_UPLOAD_SIZE_BYTES", 8)
+
+    response = client.post(
+        "/api/parse",
+        files={"file": ("large.pdf", b"%PDF-1.4 too large", "application/pdf")},
+    )
+
+    assert response.status_code == 413
+    assert not list(storage_paths["upload_dir"].glob("*.pdf"))
+    assert not list(storage_paths["upload_dir"].rglob("*.part"))
+    assert not storage_paths["papers_file"].exists()
+
+
+def test_unknown_paper_id_returns_404(client):
+    response = client.get("/api/parse/does-not-exist")
+
+    assert response.status_code == 404
 
 
 def test_verify_returns_frontend_contract(client):

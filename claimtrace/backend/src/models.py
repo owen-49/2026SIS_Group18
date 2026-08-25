@@ -1,6 +1,8 @@
 """Shared Pydantic models for the API."""
 
+from datetime import datetime
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -56,6 +58,25 @@ class BibVerifyRequest(BaseModel):
 
 
 
+class PaperRecord(BaseModel):
+    """Metadata persisted for an uploaded PDF or BibTeX file."""
+
+    paper_id: str
+    original_filename: str
+    stored_filename: str
+    file_path: str
+    file_type: Literal["pdf", "bib"]
+    file_size: int = Field(..., ge=0)
+    status: ParseStatus = ParseStatus.PENDING
+    pages: int = Field(default=0, ge=0)
+    paragraph_count: int = Field(default=0, ge=0)
+    entry_count: int = Field(default=0, ge=0)
+    title: str | None = None
+    error_message: str | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
 class ParseResponse(BaseModel):
     paper_id: str
     status: ParseStatus
@@ -64,6 +85,30 @@ class ParseResponse(BaseModel):
     paragraph_count: int = 0
     entry_count: int = 0  # number of bib entries parsed
     title: str | None = None
+
+
+class PaperListItem(BaseModel):
+    """Public metadata returned when listing uploaded papers."""
+
+    paper_id: str
+    original_filename: str
+    file_type: Literal["pdf", "bib"]
+    file_size: int = Field(..., ge=0)
+    status: ParseStatus
+    pages: int = Field(default=0, ge=0)
+    paragraph_count: int = Field(default=0, ge=0)
+    entry_count: int = Field(default=0, ge=0)
+    title: str | None = None
+    error_message: str | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class PaperListResponse(BaseModel):
+    """Collection of uploaded papers ordered from newest to oldest."""
+
+    total: int = Field(..., ge=0)
+    papers: list[PaperListItem] = Field(default_factory=list)
 
 
 class MatchResult(BaseModel):
