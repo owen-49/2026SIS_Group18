@@ -37,7 +37,9 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert response.status_code == 200
     body = response.json()
     assert body["file_type"] == "pdf"
-    assert body["status"] == "pending"
+    assert body["status"] == "completed"
+    assert body["pages"] == 2
+    assert body["paragraph_count"] == 3
     assert body["title"] == "paper"
     assert body["paper_id"]
 
@@ -52,7 +54,15 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert record["original_filename"] == "paper.pdf"
     assert record["stored_filename"] == stored_file.name
     assert record["file_size"] == len(content)
-    assert record["status"] == "pending"
+    assert record["status"] == "completed"
+    assert record["pages"] == 2
+    assert record["paragraph_count"] == 3
+
+    parsed_file = storage_paths["parsed_dir"] / f"{body['paper_id']}.json"
+    parsed = json.loads(parsed_file.read_text(encoding="utf-8"))
+    assert parsed["paper_id"] == body["paper_id"]
+    assert len(parsed["paragraphs"]) == 3
+    assert record["parsed_result_path"] == str(parsed_file)
 
 
 def test_uploaded_paper_can_be_read_from_json(client):
@@ -95,7 +105,7 @@ def test_list_papers_returns_newest_first_without_internal_paths(client):
     ]
     assert body["papers"][0]["original_filename"] == "second.pdf"
     assert body["papers"][0]["file_size"] == len(b"%PDF-1.4\nsecond")
-    assert body["papers"][0]["status"] == "pending"
+    assert body["papers"][0]["status"] == "completed"
     assert "created_at" in body["papers"][0]
     assert "file_path" not in body["papers"][0]
     assert "stored_filename" not in body["papers"][0]
@@ -202,11 +212,16 @@ def test_unknown_paper_id_returns_404(client):
 
 
 def test_verify_returns_frontend_contract(client):
+    uploaded = client.post(
+        "/api/parse",
+        files={"file": ("attention.pdf", b"%PDF-1.4\nattention", "application/pdf")},
+    ).json()
+
     response = client.post(
         "/api/verify",
         json={
             "claim": "Self-attention removes the need for recurrence.",
-            "source_paper_id": "paper-attention",
+            "source_paper_id": uploaded["paper_id"],
         },
     )
 
@@ -216,6 +231,18 @@ def test_verify_returns_frontend_contract(client):
     assert body["confidence"] > 0
     assert body["matches"]
     assert body["matches"][0]["passage_text"]
+
+
+def test_verify_unknown_paper_returns_404(client):
+    response = client.post(
+        "/api/verify",
+        json={
+            "claim": "A claim with a missing source paper.",
+            "source_paper_id": "does-not-exist",
+        },
+    )
+
+    assert response.status_code == 404
 
 
 def test_verify_rejects_empty_claim(client):

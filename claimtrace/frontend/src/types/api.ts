@@ -12,6 +12,26 @@ export interface ParsedPaper {
   file_name?: string;
 }
 
+export interface PaperListItem {
+  paper_id: string;
+  original_filename: string;
+  file_type: "pdf" | "bib";
+  file_size: number;
+  status: ParseStatus;
+  pages: number;
+  paragraph_count: number;
+  entry_count: number;
+  title?: string;
+  error_message?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaperListResponse {
+  total: number;
+  papers: PaperListItem[];
+}
+
 export interface LibraryPaper {
   id: string;
   citationKey: string;

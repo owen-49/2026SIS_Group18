@@ -65,6 +65,7 @@ class PaperRecord(BaseModel):
     original_filename: str
     stored_filename: str
     file_path: str
+    parsed_result_path: str | None = None
     file_type: Literal["pdf", "bib"]
     file_size: int = Field(..., ge=0)
     status: ParseStatus = ParseStatus.PENDING
@@ -75,6 +76,23 @@ class PaperRecord(BaseModel):
     error_message: str | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class ParsedParagraph(BaseModel):
+    """Stable paragraph contract between the backend and Parser team."""
+
+    text: str
+    page_start: int = Field(..., ge=1)
+    page_end: int = Field(..., ge=1)
+
+
+class ParsedDocument(BaseModel):
+    """Serializable Parser output persisted for later verification."""
+
+    paper_id: str
+    title: str | None = None
+    pages: int = Field(..., ge=1)
+    paragraphs: list[ParsedParagraph] = Field(default_factory=list)
 
 
 class ParseResponse(BaseModel):

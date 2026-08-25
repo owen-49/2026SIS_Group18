@@ -1,16 +1,39 @@
-import { useState } from "react";
-import { verifyClaim } from "../api/client";
+import { useEffect, useState } from "react";
+import { getPapers, verifyClaim } from "../api/client";
 import { Icon } from "../components/Icon";
 import { VerdictBadge } from "../components/VerdictBadge";
-import { libraryPapers } from "../data/mockData";
-import type { VerifyResponse } from "../types/api";
+import type { PaperListItem, VerifyResponse } from "../types/api";
 
 export function VerifyPage() {
   const [claim, setClaim] = useState("Self-attention enables the model to relate information from different positions in a sequence without recurrence.");
-  const [paperId, setPaperId] = useState(libraryPapers[0].id);
+  const [papers, setPapers] = useState<PaperListItem[]>([]);
+  const [paperId, setPaperId] = useState("");
+  const [papersLoading, setPapersLoading] = useState(true);
+  const [papersError, setPapersError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<VerifyResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void getPapers()
+      .then((response) => {
+        if (!active) return;
+        const readyPapers = response.papers.filter(
+          (paper) => paper.file_type === "pdf" && paper.status === "completed",
+        );
+        setPapers(readyPapers);
+        setPaperId((current) => current || readyPapers[0]?.paper_id || "");
+      })
+      .catch((caught) => {
+        if (!active) return;
+        setPapersError(caught instanceof Error ? caught.message : "Unable to load papers");
+      })
+      .finally(() => {
+        if (active) setPapersLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -28,9 +51,10 @@ export function VerifyPage() {
         <form className="panel form-panel" onSubmit={handleSubmit}>
           <div className="form-heading"><span className="step-number">1</span><div><h2>Claim and source</h2><p>Paste the exact sentence from your manuscript.</p></div></div>
           <label className="field"><span>Claim</span><textarea rows={6} value={claim} onChange={(event) => setClaim(event.target.value)} placeholder="Paste the claim you want to verify…" /><small>{claim.length} characters</small></label>
-          <label className="field"><span>Cited source</span><select value={paperId} onChange={(event) => setPaperId(event.target.value)}>{libraryPapers.map((paper) => <option value={paper.id} key={paper.id}>{paper.title} ({paper.year})</option>)}</select></label>
+          <label className="field"><span>Cited source</span><select value={paperId} onChange={(event) => setPaperId(event.target.value)} disabled={papersLoading || papers.length === 0}><option value="">{papersLoading ? "Loading uploaded papers…" : papers.length ? "Select a paper" : "No completed PDF available"}</option>{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label>
+          {papersError && <div className="inline-error">{papersError}</div>}
           {error && <div className="inline-error">{error}</div>}
-          <button className="button button-primary full-button" type="submit" disabled={loading || !claim.trim()}>{loading ? <><span className="spinner" /> Tracing evidence…</> : <><Icon name="verify" size={17} /> Verify claim</>}</button>
+          <button className="button button-primary full-button" type="submit" disabled={loading || !claim.trim() || !paperId}>{loading ? <><span className="spinner" /> Tracing evidence…</> : <><Icon name="verify" size={17} /> Verify claim</>}</button>
         </form>
 
         <section className={result ? "panel result-panel has-result" : "panel result-panel"}>

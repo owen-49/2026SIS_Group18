@@ -7,7 +7,7 @@ from ..storage.paper_store import PaperStoreError, list_papers
 
 router = APIRouter()
 
-_INTERNAL_FIELDS = {"stored_filename", "file_path"}
+_INTERNAL_FIELDS = {"stored_filename", "file_path", "parsed_result_path"}
 
 
 @router.get("/papers", response_model=PaperListResponse)

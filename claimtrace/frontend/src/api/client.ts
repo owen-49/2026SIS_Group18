@@ -1,8 +1,13 @@
-import { demoAudit, demoVerification } from "../data/mockData";
-import type { AuditResponse, ParsedPaper, VerifyResponse } from "../types/api";
+import { demoAudit, demoVerification, libraryPapers } from "../data/mockData";
+import type {
+  AuditResponse,
+  PaperListResponse,
+  ParsedPaper,
+  VerifyResponse,
+} from "../types/api";
 
-const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
-export const usingMockApi = import.meta.env.VITE_USE_MOCK_API !== "false";
+const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
+export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
 
 function apiUrl(path: string) {
   return `${API_BASE}${path}`;
@@ -45,6 +50,30 @@ export async function uploadPaper(file: File): Promise<ParsedPaper> {
   formData.append("file", file);
   const response = await fetch(apiUrl("/api/parse"), { method: "POST", body: formData });
   return { ...(await readResponse<ParsedPaper>(response)), file_name: file.name };
+}
+
+export async function getPapers(): Promise<PaperListResponse> {
+  if (usingMockApi) {
+    const timestamp = new Date(0).toISOString();
+    const papers = libraryPapers.map((paper) => ({
+      paper_id: paper.id,
+      original_filename: `${paper.citationKey}.pdf`,
+      file_type: "pdf" as const,
+      file_size: 0,
+      status: "completed" as const,
+      pages: 1,
+      paragraph_count: 1,
+      entry_count: 0,
+      title: paper.title,
+      error_message: null,
+      created_at: timestamp,
+      updated_at: timestamp,
+    }));
+    return { total: papers.length, papers };
+  }
+
+  const response = await fetch(apiUrl("/api/papers"));
+  return readResponse<PaperListResponse>(response);
 }
 
 export async function verifyClaim(claim: string, sourcePaperId: string): Promise<VerifyResponse> {
