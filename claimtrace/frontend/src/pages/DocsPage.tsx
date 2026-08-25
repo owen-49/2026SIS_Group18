@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { Icon, type IconName } from "../components/Icon";
 
 const workflows: { icon: IconName; title: string; text: string; to: string; action: string }[] = [
-  { icon: "upload", title: "Add your sources", text: "Upload a manuscript, cited PDFs, or a BibTeX file to create the evidence base.", to: "/upload", action: "Upload papers" },
-  { icon: "verify", title: "Check one claim", text: "Select a cited source and compare a manuscript claim with the closest source passage.", to: "/verify", action: "Verify a claim" },
+  { icon: "upload", title: "Add your manuscripts", text: "Open the upload window inside Paper Library and add the PDFs you want ClaimTrace to review.", to: "/library?upload=1", action: "Open Paper Library" },
+  { icon: "verify", title: "Review extracted claims", text: "Choose an uploaded manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Review claims" },
   { icon: "audit", title: "Review a full paper", text: "Rank citations by risk and inspect unsupported, partial, or contradictory claims first.", to: "/audit", action: "Open batch audit" },
 ];
 
@@ -68,7 +68,7 @@ export function DocsPage() {
       </section>
 
       <section className="panel api-doc-card">
-        <div><span className="eyebrow">Backend integration</span><h2>Switch from demo data to FastAPI</h2><p>Create <code>frontend/.env.local</code> with these values, then restart the Vite server. Some backend pipelines are still placeholders, so Demo workspace currently provides the most complete experience.</p></div>
+        <div><span className="eyebrow">Backend integration</span><h2>Switch from demo data to FastAPI</h2><p>Create <code>frontend/.env.local</code> with these values, then restart the Vite server. Automatic claim review expects <code>GET /api/papers/:paper_id/claims</code>; the interface shows an unavailable state until that analysis endpoint exists.</p></div>
         <pre><code>{`VITE_USE_MOCK_API=false\nVITE_API_URL=http://localhost:8000`}</code></pre>
       </section>
     </div>

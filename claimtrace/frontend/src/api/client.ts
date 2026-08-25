@@ -1,10 +1,6 @@
-import { demoAudit, demoVerification, libraryPapers } from "../data/mockData";
-import type {
-  AuditResponse,
-  PaperListResponse,
-  ParsedPaper,
-  VerifyResponse,
-} from "../types/api";
+import { demoAudit, demoPaperClaims, demoVerification } from "../data/mockData";
+import { getWorkspacePapers } from "../data/workspacePapers";
+import type { AuditResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
@@ -52,28 +48,46 @@ export async function uploadPaper(file: File): Promise<ParsedPaper> {
   return { ...(await readResponse<ParsedPaper>(response)), file_name: file.name };
 }
 
-export async function getPapers(): Promise<PaperListResponse> {
+export async function listPapers(signal?: AbortSignal): Promise<PaperListResponse> {
   if (usingMockApi) {
-    const timestamp = new Date(0).toISOString();
-    const papers = libraryPapers.map((paper) => ({
-      paper_id: paper.id,
-      original_filename: `${paper.citationKey}.pdf`,
+    await wait(350);
+    const papers = getWorkspacePapers().map((paper, index) => ({
+      paper_id: paper.paperId,
+      original_filename: paper.fileName,
       file_type: "pdf" as const,
-      file_size: 0,
+      file_size: 1_640_000 + index * 120_000,
       status: "completed" as const,
-      pages: 1,
-      paragraph_count: 1,
+      pages: 12 + index * 2,
+      paragraph_count: 146 + index * 18,
       entry_count: 0,
-      title: paper.title,
+      title: paper.fileName.replace(/\.pdf$/i, "").replace(/[-_]+/g, " "),
       error_message: null,
-      created_at: timestamp,
-      updated_at: timestamp,
+      created_at: paper.uploadedAt
+        ? new Date(paper.uploadedAt).toISOString()
+        : new Date(Date.UTC(2026, 7, 16, 4, 30)).toISOString(),
+      updated_at: paper.uploadedAt
+        ? new Date(paper.uploadedAt).toISOString()
+        : new Date(Date.UTC(2026, 7, 16, 4, 30)).toISOString(),
     }));
     return { total: papers.length, papers };
   }
 
-  const response = await fetch(apiUrl("/api/papers"));
-  return readResponse<PaperListResponse>(response);
+  const response = await fetch(apiUrl("/api/papers"), { signal });
+  const result = await readResponse<PaperListResponse>(response);
+  if (!Array.isArray(result.papers)) throw new Error("The paper library response is invalid.");
+  return result;
+}
+
+export async function getPaperClaims(paperId: string, signal?: AbortSignal): Promise<PaperClaimsResponse> {
+  if (usingMockApi) {
+    await wait(600);
+    return { ...demoPaperClaims, manuscript_id: paperId };
+  }
+
+  const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}/claims`), { signal });
+  const result = await readResponse<PaperClaimsResponse>(response);
+  if (!Array.isArray(result.claims)) throw new Error("The extracted claims response is invalid.");
+  return result;
 }
 
 export async function verifyClaim(claim: string, sourcePaperId: string): Promise<VerifyResponse> {

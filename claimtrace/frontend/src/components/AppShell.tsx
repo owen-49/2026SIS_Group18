@@ -5,8 +5,7 @@ import { Icon, type IconName } from "./Icon";
 const navigation: { to: string; label: string; icon: IconName; end?: boolean }[] = [
   { to: "/", label: "Overview", icon: "spark", end: true },
   { to: "/library", label: "Paper library", icon: "library" },
-  { to: "/upload", label: "Upload papers", icon: "upload" },
-  { to: "/verify", label: "Verify a claim", icon: "verify" },
+  { to: "/verify", label: "Review claims", icon: "verify" },
   { to: "/audit", label: "Batch audit", icon: "audit" },
 ];
 

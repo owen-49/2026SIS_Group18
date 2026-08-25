@@ -6,8 +6,8 @@ export interface WorkspacePaper {
 
 const STORAGE_KEY = "claimtrace.workspacePapers";
 const DEMO_PAPER: WorkspacePaper = {
-  paperId: "transformer-survey.pdf",
-  fileName: "transformer-survey.pdf",
+  paperId: "paper-manuscript",
+  fileName: "transformer-literature-review.pdf",
   uploadedAt: 0,
 };
 
