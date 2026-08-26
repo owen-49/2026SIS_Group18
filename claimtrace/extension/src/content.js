@@ -18,7 +18,7 @@ const API_BASE = "http://localhost:8000";
  * Overleaf renders \cite{key} as a clickable span.
  * v0.1 selector: broad match, may need tuning per Overleaf updates.
  */
-function findCitationElements(): HTMLElement[] {
+function findCitationElements() {
   // Overleaf's Ace editor renders citations with specific classes
   // This selector is a starting point — validate during W1 Spike 3
   const selectors = [
@@ -30,7 +30,7 @@ function findCitationElements(): HTMLElement[] {
   for (const sel of selectors) {
     const elements = document.querySelectorAll(sel);
     if (elements.length > 0) {
-      return Array.from(elements) as HTMLElement[];
+      return Array.from(elements);
     }
   }
 
@@ -39,9 +39,8 @@ function findCitationElements(): HTMLElement[] {
 
 // ── Hover Handler ──────────────────────────────────────────────
 
-let currentPopup: HTMLElement | null = null;
-
-function showPopup(citationKey: string, x: number, y: number) {
+let currentPopup = null;
+function showPopup(citationKey, x, y) {
   hidePopup();
 
   const popup = document.createElement("div");
@@ -79,6 +78,40 @@ function hidePopup() {
 
 // ── Initialize ─────────────────────────────────────────────────
 
+
+
+function getPageContent() {
+  const editor = document.querySelector(".cm-content");
+
+  return {
+    title: document.title,
+    url: window.location.href,
+    editorFound: !!editor,
+
+    content: editor
+      ? editor.innerText
+      : document.body.innerText
+  };
+}
+
+chrome.runtime.onMessage.addListener(
+  (message, sender, sendResponse) => {
+
+    if (message.action === "getPageContent") {
+
+      const pageData = getPageContent();
+
+      console.log(
+        "[ClaimTrace] Page content requested."
+      );
+
+      console.log(pageData);
+
+      sendResponse(pageData);
+    }
+  }
+);
+
 function init() {
   console.log("[ClaimTrace] Extension loaded on Overleaf page.");
 
@@ -104,4 +137,4 @@ if (document.readyState === "loading") {
 }
 
 // Export for debugging
-export { findCitationElements, showPopup, hidePopup };
+// export { findCitationElements, showPopup, hidePopup };
