@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { runAudit, usingMockApi } from "../api/client";
 import { Icon } from "../components/Icon";
@@ -44,9 +44,10 @@ export function AuditPage() {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
-  const [selectedKey, setSelectedKey] = useState("");
+  const [selectedKey, setSelectedKey] = useState(demoAudit.results[0]?.citation_key || "");
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [showComplete, setShowComplete] = useState(false);
+  const citationDocumentRef = useRef<HTMLDivElement>(null);
   const [papers] = useState(getWorkspacePapers);
   const [currentPaperId, setCurrentPaperId] = useState(() => locationState?.paperId || getWorkspacePapers()[0].paperId);
   const currentPaper = papers.find((paper) => paper.paperId === currentPaperId) || papers[0];
@@ -67,11 +68,15 @@ export function AuditPage() {
     }
   }
 
-  function focusCitation(citationKey: string) {
-    setSelectedKey(citationKey);
+  function scrollToManuscriptClaim(citationKey: string) {
     window.setTimeout(() => {
       document.getElementById(`source-${citationKey}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+  }
+
+  function focusCitation(citationKey: string) {
+    setSelectedKey(citationKey);
+    scrollToManuscriptClaim(citationKey);
   }
 
   const results = useMemo(() => (audit?.results || []).filter((item) => {
@@ -80,6 +85,32 @@ export function AuditPage() {
     const value = query.toLowerCase();
     return matchesFilter && (!value || item.claim.toLowerCase().includes(value) || item.citation_key.toLowerCase().includes(value));
   }), [audit, filter, query]);
+
+  const selectedCitation = audit?.results.find((item) => item.citation_key === selectedKey) || audit?.results[0] || null;
+
+  const scrollToSourceMatch = useCallback(() => {
+    const container = citationDocumentRef.current;
+    const match = container?.querySelector<HTMLElement>("[data-source-match='true']");
+    if (!container || !match) return;
+    const top = match.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 48;
+    container.scrollTo({ top, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(scrollToSourceMatch, 80);
+    return () => window.clearTimeout(timer);
+  }, [scrollToSourceMatch, selectedCitation?.citation_key]);
+
+  function chooseFilter(nextFilter: Filter) {
+    setFilter(nextFilter);
+    const firstMatch = audit?.results.find((item) => nextFilter === "ALL"
+      || (nextFilter === "FLAGGED" ? item.risk_level === "high" : item.verdict === nextFilter));
+    if (firstMatch) focusCitation(firstMatch.citation_key);
+  }
+
+  function revealSelectedCitation() {
+    document.getElementById("selected-citation-document")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   const markClass = (citationKey: string, tone: "support" | "partial" | "danger") =>
     `source-mark source-mark-${tone}${selectedKey === citationKey ? " selected" : ""}`;
@@ -150,8 +181,14 @@ export function AuditPage() {
 
           <aside className="panel findings-panel">
             <div className="findings-heading"><div><h2>Citation findings</h2><p>Select a finding to locate it in the original text.</p></div><span>{results.length} shown</span></div>
+            <label className="citation-article-picker">
+              <span>Citation article</span>
+              <select value={selectedCitation?.citation_key || ""} onChange={(event) => focusCitation(event.target.value)}>
+                {(audit?.results || []).map((item) => <option value={item.citation_key} key={item.citation_key}>{item.citation_key} — {item.cited_source?.title || "Source not found"}</option>)}
+              </select>
+            </label>
             <label className="search-field compact findings-search"><Icon name="search" size={17} /><span className="sr-only">Search findings</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search citations…" /></label>
-            <div className="filter-tabs findings-filters">{filterOptions.map((option) => <button className={filter === option.value ? "active" : ""} key={option.value} onClick={() => setFilter(option.value)}>{option.label}</button>)}</div>
+            <div className="filter-tabs findings-filters">{filterOptions.map((option) => <button className={filter === option.value ? "active" : ""} key={option.value} onClick={() => chooseFilter(option.value)}>{option.label}</button>)}</div>
             <div className="finding-list">
               {results.map((item) => (
                 <button className={selectedKey === item.citation_key ? "finding-card active" : "finding-card"} type="button" key={`${item.citation_key}-${item.claim}`} onClick={() => focusCitation(item.citation_key)}>
@@ -164,6 +201,51 @@ export function AuditPage() {
             </div>
           </aside>
         </section>
+
+        {selectedCitation && (
+          <section className="panel citation-evidence-panel" id="selected-citation-document">
+            <header className="citation-evidence-heading">
+              <div><span className="eyebrow">Selected citation</span><h2>{selectedCitation.cited_source?.title || selectedCitation.citation_key}</h2><p>{selectedCitation.cited_source ? `${selectedCitation.cited_source.authors.join(", ")} · ${selectedCitation.cited_source.venue || "Unknown venue"} · ${selectedCitation.cited_source.year || "Unknown year"}` : "The original cited article could not be confirmed in an academic database."}</p></div>
+              <VerdictBadge verdict={selectedCitation.verdict} />
+            </header>
+            <div className="citation-evidence-grid">
+              <article className="citation-source-reader">
+                <header className="manuscript-toolbar citation-source-toolbar"><div><h2>Citation article — full original text</h2><p>{selectedCitation.cited_source?.title || selectedCitation.citation_key}</p></div><div><span>{selectedCitation.source_document ? usingMockApi ? "Complete demo document" : selectedCitation.source_document.pages.length === selectedCitation.source_document.total_pages ? `Complete · ${selectedCitation.source_document.total_pages} pages` : `${selectedCitation.source_document.pages.length} of ${selectedCitation.source_document.total_pages} pages` : selectedCitation.cited_source?.database || "Academic database"}</span>{selectedCitation.source_document?.matched_location && <button className="button button-secondary" type="button" onClick={scrollToSourceMatch}><Icon name="search" size={14} /> Jump to AI match</button>}</div></header>
+                {selectedCitation.source_document ? (
+                  <div className="manuscript-scroll citation-source-scroll" ref={citationDocumentRef}>
+                    {selectedCitation.source_document.pages.map((page) => (
+                      <section className="manuscript-sheet citation-source-sheet" key={page.page}>
+                        <small>{page.page} / {selectedCitation.source_document?.total_pages}</small>
+                        {page.heading && <h2>{page.heading}</h2>}
+                        {page.paragraphs.map((paragraph, paragraphIndex) => {
+                          const matched = selectedCitation.source_document?.matched_location?.page === page.page
+                            && selectedCitation.source_document.matched_location.paragraph_index === paragraphIndex;
+                          return <p className={matched ? "matched-source-paragraph" : ""} data-source-match={matched ? "true" : undefined} key={`${page.page}-${paragraphIndex}`}>{paragraph}{matched && <mark>AI matched passage · Page {page.page}, paragraph {paragraphIndex + 1}</mark>}</p>;
+                        })}
+                      </section>
+                    ))}
+                  </div>
+                ) : <div className="citation-source-empty">{selectedCitation.source_passage ? <blockquote>“{selectedCitation.source_passage}”</blockquote> : <div className="missing-source-passage"><Icon name="search" size={20} /><span><strong>Original text unavailable</strong><p>The cited article was not found, so ClaimTrace cannot present or verify its source passage.</p></span></div>}</div>}
+                {selectedCitation.cited_source?.url && <footer className="citation-source-footer"><a className="inline-link" href={selectedCitation.cited_source.url} target="_blank" rel="noreferrer">Open database record <Icon name="external" size={14} /></a></footer>}
+              </article>
+            </div>
+            {!selectedCitation.cited_source && selectedCitation.similar_sources?.length ? <div className="audit-similar-sources"><strong>Similar database result</strong>{selectedCitation.similar_sources.map((source) => <span key={source.source_paper_id || source.citation_key}>{source.title}<small>{Math.round(source.similarity * 100)}% title/metadata similarity · not the confirmed citation</small></span>)}</div> : null}
+          </section>
+        )}
+
+        {selectedCitation && (
+          <section className="audit-ai-dock" aria-live="polite">
+            <div className="audit-ai-dock-inner">
+              <div className="audit-ai-dock-title"><span><Icon name="spark" size={16} /></span><div><small>AI comparison</small><strong>{selectedCitation.citation_key}</strong></div></div>
+              <div className="audit-ai-comparison-flow">
+                <article className="audit-ai-claim" role="button" tabIndex={0} title="Locate this claim in the original manuscript" onMouseEnter={() => scrollToManuscriptClaim(selectedCitation.citation_key)} onFocus={() => scrollToManuscriptClaim(selectedCitation.citation_key)} onClick={() => scrollToManuscriptClaim(selectedCitation.citation_key)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); scrollToManuscriptClaim(selectedCitation.citation_key); } }}><span>Manuscript claim · hover to locate</span><p>“{selectedCitation.claim}”</p></article>
+                <span className="audit-ai-flow-arrow"><Icon name="arrow" size={17} /></span>
+                <article className="audit-ai-assessment"><span>Assessment</span><p>{selectedCitation.comparison_rationale || "No AI comparison explanation was returned for this citation."}</p></article>
+              </div>
+              <div className="audit-ai-dock-result"><div><VerdictBadge verdict={selectedCitation.verdict} /><strong>{Math.round(selectedCitation.confidence * 100)}%</strong></div><button className="button button-secondary" type="button" disabled={!selectedCitation.cited_source} onClick={revealSelectedCitation}>{selectedCitation.cited_source ? "Full article" : "Source missing"} <Icon name="arrow" size={14} /></button>{usingMockApi && <small>Demo signal</small>}</div>
+            </div>
+          </section>
+        )}
       </>}
 
       {showComplete && (

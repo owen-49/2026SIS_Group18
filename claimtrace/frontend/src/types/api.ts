@@ -12,7 +12,7 @@ export interface ParsedPaper {
   file_name?: string;
 }
 
-export interface PaperListItem {
+export interface PaperRecord {
   paper_id: string;
   original_filename: string;
   file_type: "pdf" | "bib";
@@ -21,15 +21,71 @@ export interface PaperListItem {
   pages: number;
   paragraph_count: number;
   entry_count: number;
-  title?: string;
-  error_message?: string | null;
+  title: string | null;
+  error_message: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface PaperListResponse {
   total: number;
-  papers: PaperListItem[];
+  papers: PaperRecord[];
+}
+
+export type CitationResolutionStatus = "identified" | "searching" | "not_found";
+
+export interface IdentifiedSource {
+  source_paper_id: string | null;
+  citation_key: string;
+  title: string;
+  authors: string[];
+  venue: string | null;
+  year: number | null;
+  doi: string | null;
+  url: string | null;
+  database: string | null;
+}
+
+export interface SimilarSource extends IdentifiedSource {
+  similarity: number;
+}
+
+export interface SourceDocumentPage {
+  page: number;
+  heading: string | null;
+  paragraphs: string[];
+}
+
+export interface SourceDocument {
+  total_pages: number;
+  pages: SourceDocumentPage[];
+  matched_location: {
+    page: number;
+    paragraph_index: number;
+  } | null;
+}
+
+export interface ExtractedClaim {
+  claim_id: string;
+  text: string;
+  page: number | null;
+  citation_marker: string;
+  resolution_status: CitationResolutionStatus;
+  cited_source: IdentifiedSource | null;
+  similar_sources?: SimilarSource[];
+  source_document?: SourceDocument | null;
+  manuscript_location?: {
+    page: number;
+    paragraph_index: number;
+  } | null;
+}
+
+export interface PaperClaimsResponse {
+  manuscript_id: string;
+  status: ParseStatus;
+  claims: ExtractedClaim[];
+  error_message: string | null;
+  manuscript_document?: SourceDocument | null;
 }
 
 export interface LibraryPaper {
@@ -69,6 +125,11 @@ export interface CitationAuditResult {
     quote: string;
     annotation?: string;
   };
+  cited_source?: IdentifiedSource | null;
+  source_passage?: string | null;
+  source_document?: SourceDocument | null;
+  comparison_rationale?: string | null;
+  similar_sources?: SimilarSource[];
 }
 
 export interface AuditResponse {
