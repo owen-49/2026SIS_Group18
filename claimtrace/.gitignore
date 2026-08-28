@@ -34,5 +34,8 @@ uploads/
 parser/tests/test_data/*.pdf
 !parser/tests/test_data/.gitkeep
 
+# Archify visual-check evidence (screenshots + receipt + contact sheet)
+docs/*.visual-check.*
+
 # Docker
 docker-compose.override.yml
