@@ -56,6 +56,33 @@ class BibVerifyRequest(BaseModel):
     )
 
 
+class BibParseRequest(BaseModel):
+    paper_id: str = Field(..., description="ID of an uploaded .bib file")
+
+
+class BibEntryRecord(BaseModel):
+    """Serializable representation of an Engine BibEntry."""
+
+    key: str
+    entry_type: str = "article"
+    title: str = ""
+    authors: list[str] = Field(default_factory=list)
+    year: int | None = None
+    venue: str = ""
+    volume: str = ""
+    number: str = ""
+    pages: str = ""
+    doi: str = ""
+    url: str = ""
+    publisher: str = ""
+    raw_text: str = ""
+
+
+class ParsedBibDocument(BaseModel):
+    """Persisted BibTeX Parser output for later verification."""
+
+    paper_id: str
+    entries: list[BibEntryRecord] = Field(default_factory=list)
 
 
 class PaperRecord(BaseModel):
@@ -179,7 +206,7 @@ class BibEntryVerificationResult(BaseModel):
     error_count: int
     warning_count: int
     summary: str
-    fields: list[BibFieldResult] = []
+    fields: list[BibFieldResult] = Field(default_factory=list)
 
 
 class BibVerifyResponse(BaseModel):
@@ -187,7 +214,7 @@ class BibVerifyResponse(BaseModel):
     total_entries: int
     matched_entries: int
     error_entries: int
-    results: list[BibEntryVerificationResult] = []
+    results: list[BibEntryVerificationResult] = Field(default_factory=list)
 
 
 class ErrorResponse(BaseModel):

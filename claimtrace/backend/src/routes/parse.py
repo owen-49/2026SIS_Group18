@@ -8,6 +8,11 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from ..config import get_settings
 from ..models import PaperRecord, ParseResponse
+from ..services.bib_service import (
+    BibProcessingError,
+    InvalidBibPaperError,
+    process_uploaded_bib,
+)
 from ..services.pipeline_service import PipelineError, process_uploaded_paper
 from ..storage.paper_store import PaperStoreError, create_paper, get_paper
 
@@ -135,6 +140,16 @@ async def parse_pdf(file: UploadFile = File(...)):
                 raise HTTPException(
                     status_code=500,
                     detail="Unable to process the uploaded PDF.",
+                ) from exc
+        else:
+            try:
+                record = process_uploaded_bib(record.paper_id)
+            except InvalidBibPaperError as exc:
+                raise HTTPException(status_code=422, detail=str(exc)) from exc
+            except BibProcessingError as exc:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Unable to process the uploaded BibTeX file.",
                 ) from exc
 
         return _to_parse_response(record)
