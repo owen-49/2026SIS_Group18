@@ -32,6 +32,33 @@ export interface PaperListResponse {
   papers: PaperRecord[];
 }
 
+export type BibFieldStatus = "MATCH" | "MISMATCH" | "PDF_MISSING" | "BIB_MISSING" | "NOT_CHECKED";
+
+export interface BibFieldResult {
+  field_name: string;
+  bib_value: string;
+  pdf_value: string;
+  status: BibFieldStatus;
+  detail: string;
+}
+
+export interface BibEntryVerificationResult {
+  citation_key: string;
+  has_errors: boolean;
+  error_count: number;
+  warning_count: number;
+  summary: string;
+  fields: BibFieldResult[];
+}
+
+export interface BibVerifyResponse {
+  bib_paper_id: string;
+  total_entries: number;
+  matched_entries: number;
+  error_entries: number;
+  results: BibEntryVerificationResult[];
+}
+
 export type CitationResolutionStatus = "identified" | "searching" | "not_found";
 
 export interface IdentifiedSource {

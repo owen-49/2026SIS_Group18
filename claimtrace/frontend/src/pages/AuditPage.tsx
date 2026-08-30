@@ -181,12 +181,6 @@ export function AuditPage() {
 
           <aside className="panel findings-panel">
             <div className="findings-heading"><div><h2>Citation findings</h2><p>Select a finding to locate it in the original text.</p></div><span>{results.length} shown</span></div>
-            <label className="citation-article-picker">
-              <span>Citation article</span>
-              <select value={selectedCitation?.citation_key || ""} onChange={(event) => focusCitation(event.target.value)}>
-                {(audit?.results || []).map((item) => <option value={item.citation_key} key={item.citation_key}>{item.citation_key} — {item.cited_source?.title || "Source not found"}</option>)}
-              </select>
-            </label>
             <label className="search-field compact findings-search"><Icon name="search" size={17} /><span className="sr-only">Search findings</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search citations…" /></label>
             <div className="filter-tabs findings-filters">{filterOptions.map((option) => <button className={filter === option.value ? "active" : ""} key={option.value} onClick={() => chooseFilter(option.value)}>{option.label}</button>)}</div>
             <div className="finding-list">

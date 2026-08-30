@@ -2,6 +2,12 @@ export interface WorkspacePaper {
   paperId: string;
   fileName: string;
   uploadedAt: number;
+  fileType?: "pdf" | "bib";
+  fileSize?: number;
+  status?: "pending" | "processing" | "completed" | "failed";
+  pages?: number;
+  paragraphCount?: number;
+  entryCount?: number;
 }
 
 const STORAGE_KEY = "claimtrace.workspacePapers";

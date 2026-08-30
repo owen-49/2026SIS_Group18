@@ -35,6 +35,6 @@ npm run build
 - `/verify` — manuscript claim and database citation review
 - `/audit` — batch citation audit
 
-In real API mode, `/library` loads persisted records from `GET /api/papers` and displays uploaded PDFs only. Academic-database articles used for citation comparison are shown in review results, never mixed into Paper Library.
+In real API mode, `/library` loads persisted PDF and BibTeX records from `GET /api/papers`. It uploads either format through `POST /api/parse`, refreshes pending processing state through `GET /api/parse/{paper_id}`, and displays backend error messages for failed requests and records. Completed BibTeX records can be checked against completed source PDFs through `POST /api/verify/bib`; `PDF_MISSING` is shown as unavailable PDF metadata, not as an API failure. Academic-database articles used for citation comparison are shown in review results, never mixed into Paper Library.
 
 The `/verify` screen is analysis-driven: it selects an uploaded manuscript, shows its extracted text on the left, loads claim-and-citation pairs from `GET /api/papers/{paper_id}/claims`, and shows database citation resolution on the right. An identified cited source is automatic; a missing citation may return optional `similar_sources` candidates that the user can choose for comparison without treating the candidate as the original citation. Until the claims endpoint is available, real API mode shows an explicit unavailable or pending state.
