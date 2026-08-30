@@ -18,6 +18,7 @@ const DEMO_SOURCES = {
 const citationLocations = new Map();
 const citationLineFindings = new WeakMap();
 const paperLibrary = new Map(Object.entries(DEMO_SOURCES));
+const backendFindings = new Map();
 let citationTargets = [];
 let activeCitationTarget;
 let hoverHideTimer;
@@ -141,6 +142,8 @@ function sentenceAroundCitation(lineText, start, end) {
 }
 
 function demoVerdict(citationKey) {
+  const backendFinding = backendFindings.get(citationKey);
+  if (backendFinding) return backendFinding;
   return DEMO_VERDICTS[citationKey] || {
     verdict: "SUPPORT",
     label: "Supported",
@@ -178,7 +181,7 @@ function getHoverCard() {
     <section class="claimtrace-hover-section claimtrace-hover-claim-section"><span>Claim</span><strong class="claimtrace-hover-claim"></strong></section>
     <section class="claimtrace-hover-source"><span>Source</span><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small><code class="claimtrace-hover-key"></code></section>
     <section class="claimtrace-hover-section"><span>Assessment</span><p class="claimtrace-hover-detail"></p><small class="claimtrace-hover-annotation"></small></section>
-    <footer>Local preview · no backend verification</footer>
+    <footer class="claimtrace-hover-status"></footer>
   `;
   document.body.appendChild(card);
   return card;
@@ -193,7 +196,7 @@ function showCitationHover(target) {
   const card = getHoverCard();
   card.className = `claimtrace-hover-visible claimtrace-hover-${tone}`;
   card.querySelector(".claimtrace-hover-verdict").textContent = finding.label;
-  card.querySelector(".claimtrace-hover-confidence").textContent = `Demo signal ${Math.round(finding.confidence * 100)}%`;
+  card.querySelector(".claimtrace-hover-confidence").textContent = `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
   card.querySelector(".claimtrace-hover-claim").textContent = finding.claim;
   card.querySelector(".claimtrace-hover-title").textContent = source?.title || "Source details unavailable";
   card.querySelector(".claimtrace-hover-meta").textContent = source
@@ -202,6 +205,9 @@ function showCitationHover(target) {
   card.querySelector(".claimtrace-hover-key").textContent = `\\cite{${finding.citationKey}}`;
   card.querySelector(".claimtrace-hover-detail").textContent = finding.rationale;
   card.querySelector(".claimtrace-hover-annotation").textContent = finding.annotation;
+  card.querySelector(".claimtrace-hover-status").textContent = finding.preview
+    ? "Local preview · no matching backend source PDF"
+    : "Backend verified against an uploaded source PDF";
 
   if (activeCitationTarget && activeCitationTarget !== target) {
     activeCitationTarget.line.classList.remove("claimtrace-hover-line");
@@ -268,7 +274,10 @@ function annotateCitationLines() {
           confidence: preview.confidence,
           annotation: preview.annotation,
           rationale: preview.rationale,
-          preview: true,
+          matches: preview.matches || [],
+          sourcePaperId: preview.sourcePaperId,
+          backendReason: preview.backendReason,
+          preview: preview.preview !== false,
         };
         findings.push(finding);
         lineFindings.push(finding);
@@ -285,7 +294,7 @@ function annotateCitationLines() {
     );
     const tone = strongest.verdict === "SUPPORT" ? "support" : strongest.verdict === "PARTIAL" ? "partial" : "danger";
     line.classList.add("claimtrace-citation-line", `claimtrace-tone-${tone}`);
-    line.dataset.claimtraceLabel = `ClaimTrace · local preview · ${strongest.label}`;
+    line.dataset.claimtraceLabel = `ClaimTrace · ${strongest.preview ? "local preview" : "backend verification"} · ${strongest.label}`;
     line.dataset.claimtraceLocation = strongest.id;
     citationLineFindings.set(line, lineFindings);
   });
@@ -340,7 +349,7 @@ function scanOverleaf() {
     const payload = JSON.stringify(papers);
     if (payload !== lastPaperPayload) {
       lastPaperPayload = payload;
-      chrome.runtime.sendMessage({ type: "bibliography_detected", papers });
+      chrome.runtime.sendMessage({ type: "bibliography_detected", papers, bibSource: source });
     }
   }
 
@@ -395,9 +404,24 @@ document.addEventListener("mousemove", (event) => {
 });
 document.addEventListener("mouseleave", () => hideCitationHover(0));
 
-chrome.storage.local.get(["claimtracePapers"], ({ claimtracePapers }) => mergePaperLibrary(claimtracePapers));
+chrome.storage.local.get(["claimtracePapers", "claimtraceFindings"], ({ claimtracePapers, claimtraceFindings }) => {
+  mergePaperLibrary(claimtracePapers);
+  backendFindings.clear();
+  (claimtraceFindings || []).filter((finding) => finding.preview === false).forEach((finding) => {
+    backendFindings.set(finding.citationKey, finding);
+  });
+  if (backendFindings.size) annotateCitationLines();
+});
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && changes.claimtracePapers?.newValue) mergePaperLibrary(changes.claimtracePapers.newValue);
+  if (areaName !== "local") return;
+  if (changes.claimtracePapers?.newValue) mergePaperLibrary(changes.claimtracePapers.newValue);
+  if (changes.claimtraceFindings?.newValue) {
+    backendFindings.clear();
+    (changes.claimtraceFindings.newValue || []).filter((finding) => finding.preview === false).forEach((finding) => {
+      backendFindings.set(finding.citationKey, finding);
+    });
+    annotateCitationLines();
+  }
 });
 
 function isClaimTraceMutation(mutation) {

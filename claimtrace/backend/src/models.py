@@ -118,6 +118,10 @@ class ParsedDocument(BaseModel):
 
     paper_id: str
     title: str | None = None
+    authors: list[str] = Field(default_factory=list)
+    year: int | None = None
+    venue: str | None = None
+    doi: str | None = None
     pages: int = Field(..., ge=1)
     paragraphs: list[ParsedParagraph] = Field(default_factory=list)
 

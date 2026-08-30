@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from backend.src.storage.bib_document_store import load_bib_document
+from backend.tests.pdf_fixtures import make_test_pdf
 
 SAMPLE_BIB = b"""
 @article{attention2024,
@@ -110,12 +111,19 @@ def test_verify_bib_returns_one_pdf_missing_result_per_entry(client):
 
 def test_verify_bib_uses_available_pdf_title_metadata(client):
     uploaded_bib = _upload_bib(client).json()
+    pdf_content = make_test_pdf(
+        "Attention Mechanisms in Deep Learning",
+        "Smith, John and Doe, Jane",
+        "Journal of Machine Learning Research",
+        "2024",
+        "doi: 10.1234/example",
+    )
     uploaded_pdf = client.post(
         "/api/parse",
         files={
             "file": (
                 "Attention Mechanisms in Deep Learning.pdf",
-                b"%PDF-1.4\ntest",
+                pdf_content,
                 "application/pdf",
             )
         },
@@ -133,8 +141,10 @@ def test_verify_bib_uses_available_pdf_title_metadata(client):
     result = response.json()["results"][0]
     statuses = {field["field_name"]: field["status"] for field in result["fields"]}
     assert statuses["title"] == "MATCH"
-    assert statuses["year"] == "PDF_MISSING"
-    assert statuses["authors"] == "PDF_MISSING"
+    assert statuses["year"] == "MATCH"
+    assert statuses["authors"] == "MATCH"
+    assert statuses["venue"] == "MATCH"
+    assert statuses["doi"] == "BIB_MISSING"
 
 
 def test_verify_unknown_bib_returns_404(client):
@@ -147,9 +157,10 @@ def test_verify_unknown_bib_returns_404(client):
 
 
 def test_verify_rejects_pdf_as_bib_file(client):
+    pdf_content = make_test_pdf("paper")
     uploaded_pdf = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+        files={"file": ("paper.pdf", pdf_content, "application/pdf")},
     ).json()
 
     response = client.post(

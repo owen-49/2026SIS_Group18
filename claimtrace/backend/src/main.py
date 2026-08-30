@@ -18,7 +18,8 @@ app = FastAPI(
 # CORS: allow frontend dev server and extension
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=[origin for origin in settings.cors_origins if "*" not in origin],
+    allow_origin_regex=r"^chrome-extension://[a-z]{32}$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
