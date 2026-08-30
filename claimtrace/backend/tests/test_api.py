@@ -4,6 +4,7 @@ import json
 import uuid
 
 from backend.src.routes import parse as parse_route
+from backend.tests.pdf_fixtures import make_test_pdf
 
 
 def test_health(client):
@@ -27,8 +28,22 @@ def test_frontend_cors_preflight(client):
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3000"
 
 
+def test_extension_cors_preflight(client):
+    extension_origin = f"chrome-extension://{'a' * 32}"
+    response = client.options(
+        "/api/papers",
+        headers={
+            "Origin": extension_origin,
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == extension_origin
+
+
 def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
-    content = b"%PDF-1.4\ntest content"
+    content = make_test_pdf("paper", "A test source paper.")
     response = client.post(
         "/api/parse",
         files={"file": ("paper.pdf", content, "application/pdf")},
@@ -38,8 +53,8 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     body = response.json()
     assert body["file_type"] == "pdf"
     assert body["status"] == "completed"
-    assert body["pages"] == 2
-    assert body["paragraph_count"] == 3
+    assert body["pages"] == 1
+    assert body["paragraph_count"] > 0
     assert body["title"] == "paper"
     assert body["paper_id"]
 
@@ -55,20 +70,21 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert record["stored_filename"] == stored_file.name
     assert record["file_size"] == len(content)
     assert record["status"] == "completed"
-    assert record["pages"] == 2
-    assert record["paragraph_count"] == 3
+    assert record["pages"] == body["pages"]
+    assert record["paragraph_count"] == body["paragraph_count"]
 
     parsed_file = storage_paths["parsed_dir"] / f"{body['paper_id']}.json"
     parsed = json.loads(parsed_file.read_text(encoding="utf-8"))
     assert parsed["paper_id"] == body["paper_id"]
-    assert len(parsed["paragraphs"]) == 3
+    assert len(parsed["paragraphs"]) == body["paragraph_count"]
     assert record["parsed_result_path"] == str(parsed_file)
 
 
 def test_uploaded_paper_can_be_read_from_json(client):
+    content = make_test_pdf("paper", "A test source paper.")
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+        files={"file": ("paper.pdf", content, "application/pdf")},
     ).json()
 
     response = client.get(f"/api/parse/{uploaded['paper_id']}")
@@ -85,13 +101,15 @@ def test_list_papers_returns_empty_collection(client):
 
 
 def test_list_papers_returns_newest_first_without_internal_paths(client):
+    first_content = make_test_pdf("first")
+    second_content = make_test_pdf("second")
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+        files={"file": ("first.pdf", first_content, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+        files={"file": ("second.pdf", second_content, "application/pdf")},
     ).json()
 
     response = client.get("/api/papers")
@@ -104,7 +122,7 @@ def test_list_papers_returns_newest_first_without_internal_paths(client):
         first["paper_id"],
     ]
     assert body["papers"][0]["original_filename"] == "second.pdf"
-    assert body["papers"][0]["file_size"] == len(b"%PDF-1.4\nsecond")
+    assert body["papers"][0]["file_size"] == len(second_content)
     assert body["papers"][0]["status"] == "completed"
     assert "created_at" in body["papers"][0]
     assert "file_path" not in body["papers"][0]
@@ -121,13 +139,15 @@ def test_list_papers_returns_500_for_corrupt_metadata(client, storage_paths):
 
 
 def test_each_upload_gets_a_unique_paper_id(client):
+    first_content = make_test_pdf("first")
+    second_content = make_test_pdf("second")
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+        files={"file": ("first.pdf", first_content, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+        files={"file": ("second.pdf", second_content, "application/pdf")},
     ).json()
 
     assert first["paper_id"] != second["paper_id"]
@@ -212,9 +232,13 @@ def test_unknown_paper_id_returns_404(client):
 
 
 def test_verify_returns_frontend_contract(client):
+    content = make_test_pdf(
+        "attention",
+        "Self-attention removes the need for recurrence.",
+    )
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("attention.pdf", b"%PDF-1.4\nattention", "application/pdf")},
+        files={"file": ("attention.pdf", content, "application/pdf")},
     ).json()
 
     response = client.post(

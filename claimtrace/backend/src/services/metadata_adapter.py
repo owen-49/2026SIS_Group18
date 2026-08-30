@@ -6,11 +6,11 @@ from ..models import ParsedDocument
 
 
 def pdf_metadata_from_parsed(document: ParsedDocument) -> PdfMetadata:
-    """Build PdfMetadata while tolerating fields the Parser has not added yet."""
+    """Build the Engine metadata contract from persisted Parser output."""
     return PdfMetadata(
         title=document.title or "",
-        authors=list(getattr(document, "authors", None) or []),
-        year=getattr(document, "year", None),
-        venue=getattr(document, "venue", None) or "",
-        doi=getattr(document, "doi", None) or "",
+        authors=list(document.authors),
+        year=document.year,
+        venue=document.venue or "",
+        doi=document.doi or "",
     )

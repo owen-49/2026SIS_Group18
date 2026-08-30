@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from backend.src.storage.bib_document_store import load_bib_document
+from backend.tests.pdf_fixtures import make_test_pdf
 
 SAMPLE_BIB = b"""
 @article{attention2024,
@@ -69,6 +70,39 @@ def test_parse_bib_compatibility_endpoint_reuses_real_parser(client):
     assert response.json()["entry_count"] == 3
 
 
+def test_replace_bib_reuses_paper_id_and_does_not_create_duplicate(client, storage_paths):
+    uploaded = _upload_bib(client).json()
+    replacement = b"""
+@article{updated2025,
+  title={Updated Citation Record},
+  author={Smith, John},
+  year={2025},
+  journal={Journal of Updated Research}
+}
+"""
+
+    response = client.put(
+        f"/api/parse/{uploaded['paper_id']}",
+        files={"file": ("references.bib", replacement, "text/plain")},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["paper_id"] == uploaded["paper_id"]
+    assert body["status"] == "completed"
+    assert body["entry_count"] == 1
+
+    papers = client.get("/api/papers").json()
+    assert papers["total"] == 1
+    assert papers["papers"][0]["paper_id"] == uploaded["paper_id"]
+    assert papers["papers"][0]["file_size"] == len(replacement)
+
+    stored_file = storage_paths["upload_dir"] / f"{uploaded['paper_id']}.bib"
+    assert stored_file.read_bytes() == replacement
+    parsed = load_bib_document(storage_paths["bib_parsed_dir"] / f"{uploaded['paper_id']}.json")
+    assert [entry.key for entry in parsed.entries] == ["updated2025"]
+
+
 def test_uploaded_bib_status_can_be_read(client):
     uploaded = _upload_bib(client).json()
 
@@ -110,12 +144,19 @@ def test_verify_bib_returns_one_pdf_missing_result_per_entry(client):
 
 def test_verify_bib_uses_available_pdf_title_metadata(client):
     uploaded_bib = _upload_bib(client).json()
+    pdf_content = make_test_pdf(
+        "Attention Mechanisms in Deep Learning",
+        "Smith, John and Doe, Jane",
+        "Journal of Machine Learning Research",
+        "2024",
+        "doi: 10.1234/example",
+    )
     uploaded_pdf = client.post(
         "/api/parse",
         files={
             "file": (
                 "Attention Mechanisms in Deep Learning.pdf",
-                b"%PDF-1.4\ntest",
+                pdf_content,
                 "application/pdf",
             )
         },
@@ -133,8 +174,10 @@ def test_verify_bib_uses_available_pdf_title_metadata(client):
     result = response.json()["results"][0]
     statuses = {field["field_name"]: field["status"] for field in result["fields"]}
     assert statuses["title"] == "MATCH"
-    assert statuses["year"] == "PDF_MISSING"
-    assert statuses["authors"] == "PDF_MISSING"
+    assert statuses["year"] == "MATCH"
+    assert statuses["authors"] == "MATCH"
+    assert statuses["venue"] == "MATCH"
+    assert statuses["doi"] == "BIB_MISSING"
 
 
 def test_verify_unknown_bib_returns_404(client):
@@ -147,9 +190,10 @@ def test_verify_unknown_bib_returns_404(client):
 
 
 def test_verify_rejects_pdf_as_bib_file(client):
+    pdf_content = make_test_pdf("paper")
     uploaded_pdf = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+        files={"file": ("paper.pdf", pdf_content, "application/pdf")},
     ).json()
 
     response = client.post(
