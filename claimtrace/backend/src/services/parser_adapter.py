@@ -95,7 +95,12 @@ def _split_author_line(value: str) -> list[str]:
     cleaned = re.sub(r"\s*\([^)]*\)", "", value)
     parts = re.split(r"\s+(?:and|&)\s+|\s*;\s*", cleaned, flags=re.IGNORECASE)
     if len(parts) == 1 and "," in cleaned:
-        parts = re.split(r"\s*,\s*(?=[A-Z][A-Za-z'’.-]+(?:\s|$))", cleaned)
+        # A single comma is normally the surname/given-name separator in
+        # "Last, First". Only split comma-delimited author lists when there
+        # is more than one comma (or an explicit and/semicolon separator).
+        parts = [cleaned] if cleaned.count(",") == 1 else re.split(
+            r"\s*,\s*(?=[A-Z][A-Za-z'’.-]+(?:\s|$))", cleaned
+        )
     return [part.strip(" ,") for part in parts if part.strip(" ,")]
 
 

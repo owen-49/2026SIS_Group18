@@ -30,6 +30,13 @@ Branch: `backend/real-parser-extension-integration`
 - The backend accepts `.bib` and `.pdf`; the extension only sends `.bib`.
 - The response includes `paper_id`, `status`, `file_type`, and parse counts.
 
+For a previously synchronized bibliography, the extension stores a SHA-256
+hash of the source text. An unchanged source reuses the existing paper ID
+without uploading again. When the source changes, it uses the additive
+`PUT /api/parse/{paper_id}` endpoint to replace the existing BibTeX content
+and keep the same Library record. The original `POST /api/parse` contract is
+unchanged and is used when no synchronized record exists.
+
 ### List uploaded papers
 
 `GET /api/papers` returns persisted paper records. The extension uses completed
@@ -86,7 +93,10 @@ and:
 ```
 
 The background worker stores backend findings in `chrome.storage.local` and
-the content script re-renders them when they arrive.
+the content script re-renders them when they arrive. Each finding keeps its
+unique citation-location `id`, so two occurrences of the same citation key
+receive independent verification results. The worker also ignores stale
+claim-sync results and only matches PDFs whose status is `completed`.
 
 ## Error and fallback behavior
 
@@ -113,7 +123,7 @@ treated as the long-term metadata implementation.
 
 ## Validation
 
-- Backend tests: 35 passed.
+- Backend tests: 37 passed.
 - Bib Parser/Verifier tests: 67 passed.
 - PDF Parser tests: 7 passed, 1 skipped.
 - `ruff check backend`: passed.
@@ -123,6 +133,8 @@ The full Parser test collection still requires the optional
 
 ## Explicit non-scope
 
-This branch does not modify Siyuan's Bib backend routes, Bib storage logic,
-Bib response models, or the React web frontend. The existing Engine verifier
-also remains the repository's deterministic local implementation.
+This branch preserves the existing Bib POST/response contract and does not
+modify the React web frontend. It adds only the non-breaking Bib replacement
+endpoint and the mutable file-size field needed to reuse a synchronized
+Library record. The existing Engine verifier remains the repository's
+deterministic local implementation.

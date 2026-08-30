@@ -23,6 +23,7 @@ STORE_VERSION = 1
 _STORE_LOCK = RLock()
 _UPDATABLE_FIELDS = {
     "status",
+    "file_size",
     "pages",
     "paragraph_count",
     "entry_count",

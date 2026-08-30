@@ -14,6 +14,12 @@ const VERDICT_LABELS = {
   NOT_FOUND: "Not found",
 };
 
+let latestBibliographyRequest = 0;
+let latestClaimsRequest = 0;
+let activeBibPaperId;
+let activeBibSourceHash;
+let bibliographySyncChain = Promise.resolve();
+
 async function apiJson(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
@@ -50,6 +56,16 @@ async function loadBackendPapers() {
   return Array.isArray(response.papers) ? response.papers : [];
 }
 
+function completedPdfPapers(papers) {
+  return papers.filter((paper) => paper.file_type === "pdf" && paper.status === "completed");
+}
+
+async function hashText(value) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 function sourcePaperFor(citationKey, localPapers, sourcePapers) {
   const localPaper = localPapers.find((paper) => paper.citationKey === citationKey);
   if (!localPaper) return undefined;
@@ -70,13 +86,38 @@ function previewFinding(finding, reason) {
   };
 }
 
-async function syncBibliography(bibSource) {
+async function syncBibliography(bibSource, requestId) {
   try {
+    if (requestId !== latestBibliographyRequest) return;
+    const bibSourceHash = await hashText(bibSource);
+    if (requestId !== latestBibliographyRequest) return;
+
+    const storedBib = await chrome.storage.local.get([
+      "claimtraceBibPaperId",
+      "claimtraceBibSourceHash",
+    ]);
+    if (requestId !== latestBibliographyRequest) return;
+
+    const bibPaperId = activeBibPaperId || storedBib.claimtraceBibPaperId;
+    const previousBibSourceHash = activeBibSourceHash || storedBib.claimtraceBibSourceHash;
     const form = new FormData();
     form.append("file", new Blob([bibSource], { type: "text/plain" }), "overleaf-references.bib");
-    const parsed = await apiJson("/api/parse", { method: "POST", body: form });
+    let parsed;
+    if (bibPaperId && previousBibSourceHash === bibSourceHash) {
+      parsed = { paper_id: bibPaperId };
+    } else {
+      const existingPaperId = bibPaperId;
+      parsed = await apiJson(
+        existingPaperId ? `/api/parse/${encodeURIComponent(existingPaperId)}` : "/api/parse",
+        { method: existingPaperId ? "PUT" : "POST", body: form },
+      );
+    }
+    activeBibPaperId = parsed.paper_id;
+    activeBibSourceHash = bibSourceHash;
+    if (requestId !== latestBibliographyRequest) return;
+
     const backendPapers = await loadBackendPapers();
-    const sourcePapers = backendPapers.filter((paper) => paper.file_type === "pdf");
+    const sourcePapers = completedPdfPapers(backendPapers);
     const verification = await apiJson("/api/verify/bib", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -85,12 +126,15 @@ async function syncBibliography(bibSource) {
         source_paper_ids: sourcePapers.map((paper) => paper.paper_id),
       }),
     });
+    if (requestId !== latestBibliographyRequest) return;
 
     await chrome.storage.local.set({
       claimtraceBibPaperId: parsed.paper_id,
+      claimtraceBibSourceHash: bibSourceHash,
       claimtraceBibVerification: verification,
       claimtraceSourcePapers: sourcePapers,
     });
+    if (requestId !== latestBibliographyRequest) return;
     await setBackendStatus({
       connected: true,
       message: sourcePapers.length
@@ -99,10 +143,17 @@ async function syncBibliography(bibSource) {
     });
 
     const stored = await chrome.storage.local.get(["claimtraceFindings", "claimtracePapers"]);
-    if (Array.isArray(stored.claimtraceFindings)) {
-      await syncClaims(stored.claimtraceFindings, stored.claimtracePapers || [], sourcePapers);
+    if (requestId === latestBibliographyRequest && Array.isArray(stored.claimtraceFindings)) {
+      const claimsRequestId = ++latestClaimsRequest;
+      await syncClaims(
+        stored.claimtraceFindings,
+        stored.claimtracePapers || [],
+        sourcePapers,
+        claimsRequestId,
+      );
     }
   } catch (error) {
+    if (requestId !== latestBibliographyRequest) return;
     await setBackendStatus({
       connected: false,
       message: error instanceof Error ? error.message : "Backend verification is unavailable",
@@ -110,10 +161,12 @@ async function syncBibliography(bibSource) {
   }
 }
 
-async function syncClaims(findings, localPapers, knownSourcePapers) {
+async function syncClaims(findings, localPapers, knownSourcePapers, requestId) {
   try {
+    if (requestId !== latestClaimsRequest) return;
     const stored = await chrome.storage.local.get(["claimtraceBibVerification", "claimtraceSourcePapers"]);
-    const sourcePapers = knownSourcePapers || stored.claimtraceSourcePapers || [];
+    if (requestId !== latestClaimsRequest) return;
+    const sourcePapers = completedPdfPapers(knownSourcePapers || stored.claimtraceSourcePapers || []);
     const verificationByKey = new Map(
       (stored.claimtraceBibVerification?.results || []).map((result) => [result.citation_key, result]),
     );
@@ -155,10 +208,12 @@ async function syncClaims(findings, localPapers, knownSourcePapers) {
       }
     }));
 
+    if (requestId !== latestClaimsRequest) return;
     await chrome.storage.local.set({
       claimtraceFindings: syncedFindings,
       claimtraceCitationUpdatedAt: Date.now(),
     });
+    if (requestId !== latestClaimsRequest) return;
     await setBackendStatus({
       connected: true,
       message: syncedFindings.some((finding) => !finding.preview)
@@ -166,6 +221,7 @@ async function syncClaims(findings, localPapers, knownSourcePapers) {
         : "Backend is connected; unmatched citations remain local previews",
     });
   } catch (error) {
+    if (requestId !== latestClaimsRequest) return;
     await setBackendStatus({
       connected: false,
       message: error instanceof Error ? error.message : "Backend verification is unavailable",
@@ -193,18 +249,28 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       claimtraceUpdatedAt: Date.now(),
     });
     if (typeof message.bibSource === "string" && message.bibSource.trim()) {
-      void syncBibliography(message.bibSource);
+      const requestId = ++latestBibliographyRequest;
+      bibliographySyncChain = bibliographySyncChain
+        .catch(() => undefined)
+        .then(() => syncBibliography(message.bibSource, requestId));
+      void bibliographySyncChain;
     }
   }
 
   if (message.type === "citations_detected" && Array.isArray(message.findings)) {
+    const requestId = ++latestClaimsRequest;
     void chrome.storage.local.set({
       claimtraceFindings: message.findings,
       claimtraceCitationSource: "overleaf",
       claimtraceCitationUpdatedAt: Date.now(),
     });
     void chrome.storage.local.get(["claimtracePapers", "claimtraceSourcePapers"])
-      .then((stored) => syncClaims(message.findings, stored.claimtracePapers || [], stored.claimtraceSourcePapers || []));
+      .then((stored) => syncClaims(
+        message.findings,
+        stored.claimtracePapers || [],
+        stored.claimtraceSourcePapers || [],
+        requestId,
+      ));
   }
 
   if (message.type === "open_side_panel" && sender.tab?.id) {

@@ -9,12 +9,13 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 from ..config import get_settings
 from ..models import PaperRecord, ParseResponse
 from ..services.bib_service import (
+    BibPaperNotFoundError,
     BibProcessingError,
     InvalidBibPaperError,
     process_uploaded_bib,
 )
 from ..services.pipeline_service import PipelineError, process_uploaded_paper
-from ..storage.paper_store import PaperStoreError, create_paper, get_paper
+from ..storage.paper_store import PaperStoreError, create_paper, get_paper, update_paper
 
 router = APIRouter()
 
@@ -159,6 +160,71 @@ async def parse_pdf(file: UploadFile = File(...)):
     except OSError as exc:
         temporary_path.unlink(missing_ok=True)
         final_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=500, detail="Unable to save the uploaded file.") from exc
+    finally:
+        await file.close()
+
+
+@router.put("/parse/{paper_id}", response_model=ParseResponse)
+async def replace_bib(paper_id: str, file: UploadFile = File(...)):
+    """Replace an existing BibTeX upload while keeping its paper ID."""
+    try:
+        record = get_paper(paper_id)
+    except PaperStoreError as exc:
+        raise HTTPException(status_code=500, detail="Unable to read paper metadata.") from exc
+
+    if record is None:
+        raise HTTPException(status_code=404, detail="Paper not found.")
+    if record.file_type != "bib":
+        raise HTTPException(status_code=422, detail="Only BibTeX papers can be replaced.")
+
+    original_filename, file_type = _validate_filename(file.filename)
+    if file_type != "bib":
+        raise HTTPException(
+            status_code=422,
+            detail="Replacement files must use the .bib extension.",
+        )
+
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    temporary_dir = UPLOAD_DIR / ".tmp"
+    temporary_dir.mkdir(parents=True, exist_ok=True)
+    temporary_path = temporary_dir / f"{paper_id}-{uuid.uuid4()}.part"
+    final_path = Path(record.file_path)
+
+    try:
+        file_size, _ = await _write_upload_to_temporary_file(file, temporary_path)
+        if file_size == 0:
+            raise HTTPException(status_code=400, detail="The uploaded file is empty.")
+
+        temporary_path.replace(final_path)
+        try:
+            updated = update_paper(paper_id, {"file_size": file_size})
+        except PaperStoreError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail="Unable to persist paper metadata.",
+            ) from exc
+        if updated is None:
+            raise HTTPException(status_code=404, detail="Paper not found.")
+
+        try:
+            updated = process_uploaded_bib(paper_id)
+        except InvalidBibPaperError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except BibPaperNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except BibProcessingError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail="Unable to process the uploaded BibTeX file.",
+            ) from exc
+
+        return _to_parse_response(updated)
+    except HTTPException:
+        temporary_path.unlink(missing_ok=True)
+        raise
+    except OSError as exc:
+        temporary_path.unlink(missing_ok=True)
         raise HTTPException(status_code=500, detail="Unable to save the uploaded file.") from exc
     finally:
         await file.close()

@@ -141,8 +141,8 @@ function sentenceAroundCitation(lineText, start, end) {
   return cleanClaim(lineText.slice(sentenceStart, sentenceEnd));
 }
 
-function demoVerdict(citationKey) {
-  const backendFinding = backendFindings.get(citationKey);
+function demoVerdict(findingId, citationKey) {
+  const backendFinding = backendFindings.get(findingId);
   if (backendFinding) return backendFinding;
   return DEMO_VERDICTS[citationKey] || {
     verdict: "SUPPORT",
@@ -262,8 +262,8 @@ function annotateCitationLines() {
       const range = rangeForOffsets(line, match.index, CITE_PATTERN.lastIndex);
       const keys = match[1].split(",").map((key) => key.trim()).filter(Boolean);
       keys.forEach((citationKey, keyIndex) => {
-        const preview = demoVerdict(citationKey);
         const locationId = `${lineIndex + 1}-${match.index}-${keyIndex}-${citationKey}`;
+        const preview = demoVerdict(locationId, citationKey);
         const finding = {
           id: locationId,
           citationKey,
@@ -408,7 +408,7 @@ chrome.storage.local.get(["claimtracePapers", "claimtraceFindings"], ({ claimtra
   mergePaperLibrary(claimtracePapers);
   backendFindings.clear();
   (claimtraceFindings || []).filter((finding) => finding.preview === false).forEach((finding) => {
-    backendFindings.set(finding.citationKey, finding);
+    if (finding.id) backendFindings.set(finding.id, finding);
   });
   if (backendFindings.size) annotateCitationLines();
 });
@@ -418,7 +418,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   if (changes.claimtraceFindings?.newValue) {
     backendFindings.clear();
     (changes.claimtraceFindings.newValue || []).filter((finding) => finding.preview === false).forEach((finding) => {
-      backendFindings.set(finding.citationKey, finding);
+      if (finding.id) backendFindings.set(finding.id, finding);
     });
     annotateCitationLines();
   }

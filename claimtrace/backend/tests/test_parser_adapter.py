@@ -28,3 +28,19 @@ def test_parse_document_uses_real_parser_and_preserves_metadata(tmp_path):
     assert document.pages == 1
     assert document.paragraphs
     assert "Self-attention" in document.paragraphs[0].text
+
+
+def test_parse_document_preserves_single_last_first_author(tmp_path):
+    pdf_path = tmp_path / "paper.pdf"
+    pdf_path.write_bytes(
+        make_test_pdf(
+            "A Paper With One Author",
+            "Smith, John",
+            "Journal of Example Research",
+            "2024",
+        )
+    )
+
+    document = parse_document("paper-id", pdf_path)
+
+    assert document.authors == ["Smith, John"]
