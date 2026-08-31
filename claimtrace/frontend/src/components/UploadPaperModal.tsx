@@ -12,8 +12,9 @@ interface UploadPaperModalProps {
 interface UploadItem {
   id: string;
   file: File;
-  state: "queued" | "uploading" | "complete" | "error";
+  state: "queued" | "uploading" | "processing" | "complete" | "error";
   paperId?: string;
+  summary?: string;
   error?: string;
 }
 
@@ -26,6 +27,7 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<UploadItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -39,7 +41,12 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
   if (!open) return null;
 
   async function addFiles(files: FileList | File[]) {
-    const validFiles = Array.from(files).filter((file) => file.name.toLowerCase().endsWith(".pdf"));
+    const selectedFiles = Array.from(files);
+    const validFiles = selectedFiles.filter((file) => /\.(pdf|bib)$/i.test(file.name));
+    const invalidCount = selectedFiles.length - validFiles.length;
+    setSelectionError(invalidCount > 0
+      ? `${invalidCount} ${invalidCount === 1 ? "file was" : "files were"} skipped. Only PDF and .bib files are supported.`
+      : null);
     if (!validFiles.length) return;
 
     const nextItems = validFiles.map((file) => ({
@@ -53,9 +60,28 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, state: "uploading" } : entry));
       try {
         const result = await uploadPaper(item.file);
-        saveWorkspacePaper({ paperId: result.paper_id, fileName: item.file.name, uploadedAt: Date.now() });
+        saveWorkspacePaper({
+          paperId: result.paper_id,
+          fileName: item.file.name,
+          uploadedAt: Date.now(),
+          fileType: result.file_type,
+          fileSize: item.file.size,
+          status: result.status,
+          pages: result.pages,
+          paragraphCount: result.paragraph_count,
+          entryCount: result.entry_count,
+        });
+        const summary = result.file_type === "bib"
+          ? `${result.entry_count} ${result.entry_count === 1 ? "entry" : "entries"}`
+          : `${result.pages} ${result.pages === 1 ? "page" : "pages"} · ${result.paragraph_count} paragraphs`;
         setItems((current) => current.map((entry) => entry.id === item.id
-          ? { ...entry, state: "complete", paperId: result.paper_id }
+          ? {
+              ...entry,
+              state: result.status === "completed" ? "complete" : result.status === "failed" ? "error" : "processing",
+              paperId: result.paper_id,
+              summary,
+              error: result.status === "failed" ? "The backend could not process this file." : undefined,
+            }
           : entry));
         await onUploaded();
       } catch (error) {
@@ -63,6 +89,7 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
         setItems((current) => current.map((entry) => entry.id === item.id
           ? { ...entry, state: "error", error: message }
           : entry));
+        await onUploaded();
       }
     }
   }
@@ -77,8 +104,8 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
         <header className="library-upload-heading">
           <div>
             <span className="eyebrow">Paper library</span>
-            <h2 id="library-upload-title">Upload manuscripts</h2>
-            <p>Uploaded PDFs appear only in your Paper Library.</p>
+            <h2 id="library-upload-title">Upload files</h2>
+            <p>Upload PDF manuscripts and BibTeX bibliographies to your Library.</p>
           </div>
           <button className="icon-button" type="button" aria-label="Close upload window" disabled={uploading} onClick={onClose}><Icon name="x" /></button>
         </header>
@@ -94,29 +121,31 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
             void addFiles(event.dataTransfer.files);
           }}
         >
-          <input ref={inputRef} className="sr-only" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => {
+          <input ref={inputRef} className="sr-only" type="file" accept=".pdf,.bib,application/pdf,application/x-bibtex,text/x-bibtex" multiple onChange={(event) => {
             if (event.target.files) void addFiles(event.target.files);
             event.target.value = "";
           }} />
           <span className="drop-icon"><Icon name="upload" size={24} /></span>
-          <div><h3>Drop PDF manuscripts here</h3><p>PDF · up to 50 MB per file</p></div>
+          <div><h3>Drop PDF or BibTeX files here</h3><p>PDF or .bib · backend size limits apply</p></div>
           <button className="button button-secondary" type="button" onClick={() => inputRef.current?.click()}>Choose files</button>
         </div>
+
+        {selectionError && <p className="library-upload-selection-error" role="alert">{selectionError}</p>}
 
         {items.length > 0 && (
           <div className="library-modal-queue">
             {items.map((item) => (
               <div className="upload-row" key={item.id}>
-                <span className="file-icon"><Icon name="document" size={18} /></span>
+                <span className={item.file.name.toLowerCase().endsWith(".bib") ? "file-icon bib" : "file-icon"}><Icon name="document" size={18} /></span>
                 <div className="file-meta">
                   <strong>{item.file.name}</strong>
-                  <p>{formatBytes(item.file.size)}{item.paperId ? ` · ID ${item.paperId}` : ""}</p>
-                  {item.state === "uploading" && <span className="progress"><i /></span>}
+                  <p>{formatBytes(item.file.size)}{item.summary ? ` · ${item.summary}` : ""}{item.paperId ? ` · ID ${item.paperId}` : ""}</p>
+                  {(item.state === "uploading" || item.state === "processing") && <span className="progress"><i /></span>}
                   {item.error && <small className="error-text">{item.error}</small>}
                 </div>
                 <span className={`upload-state state-${item.state}`}>
                   {item.state === "complete" && <Icon name="check" size={14} />}
-                  {item.state === "queued" ? "Queued" : item.state === "uploading" ? "Uploading" : item.state === "complete" ? "Added" : "Failed"}
+                  {item.state === "queued" ? "Queued" : item.state === "uploading" ? "Uploading" : item.state === "processing" ? "Processing" : item.state === "complete" ? "Added" : "Failed"}
                 </span>
                 <button className="icon-button" type="button" aria-label={`Remove ${item.file.name}`} disabled={item.state === "uploading"} onClick={() => setItems((current) => current.filter((entry) => entry.id !== item.id))}><Icon name="x" size={16} /></button>
               </div>
@@ -125,7 +154,7 @@ export function UploadPaperModal({ open, onClose, onUploaded }: UploadPaperModal
         )}
 
         <footer className="library-upload-footer">
-          <span><Icon name="shield" size={16} /> Academic database matches are kept outside this library.</span>
+          <span><Icon name="shield" size={16} /> Files are parsed and persisted by the configured backend.</span>
           <button className="button button-primary" type="button" disabled={uploading} onClick={onClose}>{uploading ? "Uploading…" : "Done"}</button>
         </footer>
       </section>
