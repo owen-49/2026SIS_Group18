@@ -5154,8 +5154,8 @@
         <text data-detail="context" x="986" y="304" class="t-muted" font-size="9" text-anchor="middle">bib · 检索 · 判定</text>
         </g>
 
-        <g id="node-storage" data-node-id="storage" data-node-label="Storage" tabindex="0" role="button" aria-label="聚焦Storage，papers.json + parsed/, FastAPI 后端（本地进程）" aria-pressed="false" data-node-kind="database" data-node-sublabel="papers.json + parsed/" data-node-context="FastAPI 后端（本地进程）">
-          <title>Storage · papers.json + parsed/ · FastAPI 后端（本地进程）</title>
+        <g id="node-storage" data-node-id="storage" data-node-label="Storage" tabindex="0" role="button" aria-label="聚焦Storage，3 stores, FastAPI 后端（本地进程）" aria-pressed="false" data-node-kind="database" data-node-sublabel="3 stores" data-node-context="FastAPI 后端（本地进程）">
+          <title>Storage · 3 stores · FastAPI 后端（本地进程）</title>
           <rect x="1140" y="120" width="132" height="60" rx="6" class="c-mask"/>
           <rect x="1140" y="120" width="132" height="60" rx="6" class="c-database" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1146 126) scale(0.6875)">
@@ -5163,7 +5163,7 @@
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="1206" y="148" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Storage</text>
-        <text data-detail="context" x="1206" y="164" class="t-muted" font-size="9" text-anchor="middle">papers.json + parsed/</text>
+        <text data-detail="context" x="1206" y="164" class="t-muted" font-size="9" text-anchor="middle">3 stores</text>
         </g>
 
         <g id="node-llm" data-node-id="llm" data-node-label="外部 LLM" tabindex="0" role="button" aria-label="聚焦外部 LLM，OpenAI / Gemini / Claude, 架构组件" aria-pressed="false" data-node-kind="external" data-node-sublabel="OpenAI / Gemini / Claude" data-node-context="架构组件">
@@ -5453,6 +5453,18 @@
           <li>&bull; 客户端 ↔ 后端：REST / CORS —— 唯一网络边界</li>
           <li>&bull; 后端 ↔ 本地文件系统：papers.json + parsed/ 目录</li>
           <li>&bull; 后端 ↔ 外部 LLM：隐私 —— 只发送 claim + 匹配段落，不发全文</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>两条验证路径</h3>
+        </div>
+        <ul>
+          <li>&bull; Claim 验证：POST /api/verify → verification_service → engine 包（retriever + verifier）→ 外部 LLM</li>
+          <li>&bull; Bib 验证：POST /api/verify/bib → bib_verification_service → engine 包（bib_parser + bib_verifier）→ 与 PDF 元数据逐字段比对</li>
+          <li>&bull; 两条路径共用 API Routes 入口，但走不同的 service 与 engine 模块</li>
         </ul>
       </div>
 
