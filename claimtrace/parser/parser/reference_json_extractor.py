@@ -16,22 +16,313 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Iterable, Protocol
 
-from opendataloader_adapter import (
+import pymupdf
+
+from .opendataloader_adapter import (
     ConvertedDocument,
     DocumentElement,
     convert_pdf,
 )
-from reference_line_extractor import (
-    LayoutReferenceCandidate,
-    extract_reference_lines,
-    split_hanging_indent_lines,
+
+
+class TextElement(Protocol):
+    """Small structural interface used by the style classifier."""
+
+    content: str
+
+
+BRACKET_NUMBER_PATTERN = re.compile(r"^\s*\[\d+\]\s+")
+PLAIN_NUMBER_PATTERN = re.compile(r"^\s*\d+[.)]\s+")
+PARENTHESIZED_DATE_PATTERN = re.compile(
+    r"\((?:(?:18|19|20)\d{2}[a-z]?|n\.?d\.?)"
+    r"(?:,\s*[A-Za-z]+\s+\d{1,2})?\)",
+    flags=re.IGNORECASE,
 )
-from reference_style import (
-    detect_reference_family,
-    find_author_year_starts,
-    looks_like_reference_start,
+APA_AUTHOR_DATE_PATTERN = re.compile(
+    r"^[^()]{2,180}?\.\s*"
+    r"\((?:(?:18|19|20)\d{2}[a-z]?|n\.?d\.?)"
+    r"(?:,\s*[A-Za-z]+\s+\d{1,2})?\)\.",
+    flags=re.IGNORECASE,
 )
+AUTHOR_LEAD_PATTERN = re.compile(
+    r"^[A-Z\u00c0-\u024f][\w\u00c0-\u024f'\u2019-]+"
+    r"(?:,|\s+[A-Z]{1,4}(?:\s|,))"
+)
+AUTHOR_TITLE_PATTERN = re.compile(
+    r"^[A-Z\u00c0-\u024f][\w\u00c0-\u024f'\u2019-]+,\s+"
+    r"[A-Z\u00c0-\u024f][^()]{2,120}\."
+)
+INLINE_AUTHOR_YEAR_START_PATTERN = re.compile(
+    r"(?<![\w])"
+    r"(?:"
+    r"[A-Z\u00c0-\u024f][\w\u00c0-\u024f'\u2019-]+"
+    r"(?:,\s*|\s+)[A-Z]{1,4}(?:\.|\b)"
+    r"(?:[A-Za-z\u00c0-\u024f'\u2019.,&\s-]{0,160}?)"
+    r"|"
+    r"[A-Z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\u2019-]+"
+    r"(?:\s+[A-Z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\u2019-]+){1,8}\."
+    r")\s*"
+    r"\((?:(?:18|19|20)\d{2}[a-z]?|n\.?d\.?)"
+    r"(?:,\s*[A-Za-z]+\s+\d{1,2})?\)",
+)
+
+
+@dataclass(frozen=True)
+class ReferenceStyleDetection:
+    """Detected reference family plus inspectable scoring evidence."""
+
+    family: str
+    confidence: float
+    evidence: dict[str, float] = field(default_factory=dict)
+
+
+def _ratio(count: int, total: int) -> float:
+    return round(count / total, 3) if total else 0.0
+
+
+def looks_like_reference_start(text: str) -> bool:
+    """Return whether text has a common reference-entry opening."""
+
+    normalized = " ".join(text.split()).strip()
+    if not normalized:
+        return False
+
+    if BRACKET_NUMBER_PATTERN.match(normalized) or PLAIN_NUMBER_PATTERN.match(normalized):
+        return True
+
+    author_year = INLINE_AUTHOR_YEAR_START_PATTERN.match(normalized)
+    if author_year and author_year.end() <= 220:
+        return True
+
+    if APA_AUTHOR_DATE_PATTERN.match(normalized[:240]):
+        return True
+
+    return bool(AUTHOR_TITLE_PATTERN.match(normalized[:180]))
+
+
+def find_author_year_starts(text: str) -> list[int]:
+    """Find likely author-year entry starts inside one text element."""
+
+    return [match.start() for match in INLINE_AUTHOR_YEAR_START_PATTERN.finditer(text)]
+
+
+def detect_reference_family(
+    elements: Iterable[TextElement],
+    sample_size: int = 30,
+) -> ReferenceStyleDetection:
+    """Classify a reference list using several weak signals together."""
+
+    texts = [
+        " ".join(element.content.split()).strip() for element in elements if element.content.strip()
+    ][:sample_size]
+    total = len(texts)
+
+    if not total:
+        return ReferenceStyleDetection("unknown", 0.0, {"sample_size": 0.0})
+
+    bracketed = sum(bool(BRACKET_NUMBER_PATTERN.match(text)) for text in texts)
+    plain = sum(bool(PLAIN_NUMBER_PATTERN.match(text)) for text in texts)
+    parenthesized_date = sum(bool(PARENTHESIZED_DATE_PATTERN.search(text[:220])) for text in texts)
+    apa_date = sum(bool(APA_AUTHOR_DATE_PATTERN.search(text[:240])) for text in texts)
+    author_lead = sum(bool(AUTHOR_LEAD_PATTERN.search(text[:180])) for text in texts)
+    author_title = sum(bool(AUTHOR_TITLE_PATTERN.search(text[:180])) for text in texts)
+
+    evidence = {
+        "sample_size": float(total),
+        "bracketed_number_ratio": _ratio(bracketed, total),
+        "plain_number_ratio": _ratio(plain, total),
+        "parenthesized_date_ratio": _ratio(parenthesized_date, total),
+        "apa_punctuation_ratio": _ratio(apa_date, total),
+        "author_lead_ratio": _ratio(author_lead, total),
+        "author_title_ratio": _ratio(author_title, total),
+    }
+
+    minimum_repeated_signal = 2 if total >= 2 else 1
+
+    if bracketed >= minimum_repeated_signal and bracketed >= plain:
+        return ReferenceStyleDetection(
+            "bracket-numbered",
+            min(1.0, 0.55 + 0.45 * bracketed / total),
+            evidence,
+        )
+
+    if plain >= minimum_repeated_signal:
+        return ReferenceStyleDetection(
+            "plain-numbered",
+            min(1.0, 0.55 + 0.45 * plain / total),
+            evidence,
+        )
+
+    if parenthesized_date >= minimum_repeated_signal:
+        apa_share = apa_date / parenthesized_date
+        if apa_share >= 0.55:
+            return ReferenceStyleDetection(
+                "author-year-parenthesized",
+                min(0.98, 0.5 + 0.3 * parenthesized_date / total + 0.18 * apa_share),
+                evidence,
+            )
+
+        if author_lead >= minimum_repeated_signal:
+            return ReferenceStyleDetection(
+                "author-year-inline",
+                min(0.95, 0.48 + 0.35 * parenthesized_date / total),
+                evidence,
+            )
+
+    if author_title >= minimum_repeated_signal and parenthesized_date == 0:
+        return ReferenceStyleDetection(
+            "author-title",
+            min(0.85, 0.45 + 0.35 * author_title / total),
+            evidence,
+        )
+
+    return ReferenceStyleDetection(
+        "unknown-unnumbered",
+        max(0.1, min(0.49, 0.2 + 0.2 * author_lead / total)),
+        evidence,
+    )
+
+
+@dataclass(frozen=True)
+class PDFTextLine:
+    """One text line with its one-indexed page and PDF coordinates."""
+
+    text: str
+    page: int
+    bbox: tuple[float, float, float, float]
+
+
+@dataclass
+class LayoutReferenceCandidate:
+    """Reference text assembled from hanging-indent lines."""
+
+    text: str
+    pages: list[int] = field(default_factory=list)
+    bounding_boxes: list[tuple[float, float, float, float]] = field(default_factory=list)
+
+
+def _normalise_label(text: str) -> str:
+    value = " ".join(text.lower().split()).strip()
+    return re.sub(r"[:.\s]+$", "", value)
+
+
+def _line_from_dict(line: dict, page_number: int) -> PDFTextLine | None:
+    spans = line.get("spans", [])
+    text = "".join(str(span.get("text", "")) for span in spans).strip()
+    bbox = line.get("bbox")
+
+    if not text or not isinstance(bbox, (list, tuple)) or len(bbox) != 4:
+        return None
+
+    return PDFTextLine(
+        text=text,
+        page=page_number,
+        bbox=tuple(float(value) for value in bbox),
+    )
+
+
+def extract_reference_lines(
+    pdf_path: Path,
+    start_page: int,
+    heading: str,
+) -> list[PDFTextLine]:
+    """Read reference-region text lines from a PDF using PyMuPDF."""
+
+    lines: list[PDFTextLine] = []
+    heading_label = _normalise_label(heading)
+
+    with pymupdf.open(Path(pdf_path)) as document:
+        first_page_index = max(0, start_page - 1)
+
+        for page_index in range(first_page_index, len(document)):
+            page = document[page_index]
+            page_number = page_index + 1
+            page_lines: list[PDFTextLine] = []
+
+            for block in page.get_text("dict", sort=True).get("blocks", []):
+                for raw_line in block.get("lines", []):
+                    line = _line_from_dict(raw_line, page_number)
+                    if line is not None:
+                        page_lines.append(line)
+
+            top_boundary = 44.0
+            if page_index == first_page_index:
+                matching_headings = [
+                    line for line in page_lines if _normalise_label(line.text) == heading_label
+                ]
+                if matching_headings:
+                    top_boundary = max(line.bbox[3] for line in matching_headings)
+
+            for line in page_lines:
+                if line.bbox[1] <= top_boundary:
+                    continue
+                if line.bbox[3] >= page.rect.height - 30.0:
+                    continue
+                if re.fullmatch(r"\s*\d+\s*", line.text):
+                    continue
+                lines.append(line)
+
+    return lines
+
+
+def _append_line(
+    candidate: LayoutReferenceCandidate,
+    line: PDFTextLine,
+) -> None:
+    separator = "" if candidate.text.rstrip().endswith("-") else " "
+    candidate.text = f"{candidate.text.rstrip()}{separator}{line.text.lstrip()}"
+
+    if line.page not in candidate.pages:
+        candidate.pages.append(line.page)
+    candidate.bounding_boxes.append(line.bbox)
+
+
+def split_hanging_indent_lines(
+    lines: list[PDFTextLine],
+    x_tolerance: float = 4.0,
+    minimum_indent: float = 5.0,
+) -> list[LayoutReferenceCandidate]:
+    """Split lines where flush-left lines start hanging-indent entries.
+
+    An empty result means the lines do not contain strong enough hanging-
+    indent evidence, allowing the caller to retain the normal extraction.
+    """
+
+    if len(lines) < 4:
+        return []
+
+    left_edges = [line.bbox[0] for line in lines]
+    base_x = min(left_edges)
+    flush_left = [x for x in left_edges if x <= base_x + x_tolerance]
+    indented = [x for x in left_edges if x >= base_x + minimum_indent]
+
+    if len(flush_left) < 2 or len(indented) < 2:
+        return []
+
+    candidates: list[LayoutReferenceCandidate] = []
+    current: LayoutReferenceCandidate | None = None
+
+    for line in lines:
+        starts_entry = line.bbox[0] <= base_x + x_tolerance
+
+        if starts_entry:
+            if current is not None and current.text.strip():
+                candidates.append(current)
+            current = LayoutReferenceCandidate(
+                text=line.text.strip(),
+                pages=[line.page],
+                bounding_boxes=[line.bbox],
+            )
+        elif current is not None:
+            _append_line(current, line)
+
+    if current is not None and current.text.strip():
+        candidates.append(current)
+
+    return candidates
+
 
 REFERENCE_HEADINGS = {
     "references",
@@ -66,9 +357,8 @@ NUMBERED_REFERENCE_PATTERN = re.compile(
     r"(?P<plain_number>\d+)[.)])\s*"
 )
 
-INLINE_REFERENCE_START_PATTERN = re.compile(
-    r"(?m)(?=^\s*(?:\[\d+\]|\d+[.)])\s+)"
-)
+INLINE_REFERENCE_START_PATTERN = re.compile(r"(?m)(?=^\s*(?:\[\d+\]|\d+[.)])\s+)")
+
 
 @dataclass
 class Reference:
@@ -78,9 +368,7 @@ class Reference:
     number: int | None = None
     page_start: int | None = None
     page_end: int | None = None
-    bounding_boxes: list[tuple[float, float, float, float]] = field(
-        default_factory=list
-    )
+    bounding_boxes: list[tuple[float, float, float, float]] = field(default_factory=list)
 
 
 @dataclass
@@ -113,9 +401,7 @@ class ReferenceCandidate:
 
     text: str
     pages: list[int] = field(default_factory=list)
-    bounding_boxes: list[tuple[float, float, float, float]] = field(
-        default_factory=list
-    )
+    bounding_boxes: list[tuple[float, float, float, float]] = field(default_factory=list)
 
 
 def _normalise_heading(text: str) -> str:
@@ -149,16 +435,9 @@ def _column_boundary(elements: list[DocumentElement]) -> float | None:
     """Return the strongest two-column gutter boundary, when present."""
 
     x_positions = sorted(
-        {
-            round(element.bbox[0], 1)
-            for element in elements
-            if element.bbox is not None
-        }
+        {round(element.bbox[0], 1) for element in elements if element.bbox is not None}
     )
-    gaps = [
-        (right - left, (left + right) / 2)
-        for left, right in zip(x_positions, x_positions[1:])
-    ]
+    gaps = [(right - left, (left + right) / 2) for left, right in zip(x_positions, x_positions[1:])]
     largest_gap, boundary = max(gaps, default=(0.0, 0.0))
 
     # Typical hanging indentation is much smaller than a column gutter.
@@ -185,10 +464,7 @@ def _prior_later_column_references(
         element
         for element in document.elements
         if element.page == heading.page
-        and (
-            element is heading
-            or looks_like_reference_start(element.content)
-        )
+        and (element is heading or looks_like_reference_start(element.content))
     ]
     boundary = _column_boundary(page_candidates)
 
@@ -212,9 +488,7 @@ def _count_reference_like_entries_after(
 ) -> int:
     """Count plausible entries after a heading candidate."""
 
-    following_elements = document.elements[
-        heading_index + 1 : heading_index + 1 + lookahead
-    ]
+    following_elements = document.elements[heading_index + 1 : heading_index + 1 + lookahead]
     recovered_elements = _prior_later_column_references(
         document,
         heading_index,
@@ -266,9 +540,7 @@ def find_reference_section(
         if following_entry_count < 2:
             continue
 
-        heading_type_score = (
-            1 if element.element_type == "heading" else 0
-        )
+        heading_type_score = 1 if element.element_type == "heading" else 0
 
         candidates.append(
             (
@@ -347,11 +619,7 @@ def detect_reference_style(elements: list[DocumentElement]) -> str:
 def _split_element_text(text: str) -> list[str]:
     """Split one element when it contains several numbered references."""
 
-    parts = [
-        part.strip()
-        for part in INLINE_REFERENCE_START_PATTERN.split(text)
-        if part.strip()
-    ]
+    parts = [part.strip() for part in INLINE_REFERENCE_START_PATTERN.split(text) if part.strip()]
 
     return parts or [text.strip()]
 
@@ -418,10 +686,7 @@ def _bbox_column_order(
     right_column.sort(key=top_to_bottom)
     unpositioned.sort(key=lambda item: item[0])
 
-    return [
-        element
-        for _, element in left_column + right_column + unpositioned
-    ]
+    return [element for _, element in left_column + right_column + unpositioned]
 
 
 def order_reference_elements(
@@ -447,10 +712,7 @@ def _append_candidate_metadata(
     if element.page and element.page not in candidate.pages:
         candidate.pages.append(element.page)
 
-    if (
-        element.bbox is not None
-        and element.bbox not in candidate.bounding_boxes
-    ):
+    if element.bbox is not None and element.bbox not in candidate.bounding_boxes:
         candidate.bounding_boxes.append(element.bbox)
 
 
@@ -543,11 +805,7 @@ def _reference_numbering_warning(
 ) -> str | None:
     """Describe missing or out-of-order numbered references."""
 
-    numbers = [
-        reference.number
-        for reference in references
-        if reference.number is not None
-    ]
+    numbers = [reference.number for reference in references if reference.number is not None]
     if len(numbers) < 2:
         return None
 
@@ -562,9 +820,7 @@ def _reference_numbering_warning(
         if following > current + 1:
             start = current + 1
             end = following - 1
-            missing_ranges.append(
-                str(start) if start == end else f"{start}-{end}"
-            )
+            missing_ranges.append(str(start) if start == end else f"{start}-{end}")
         elif following <= current:
             out_of_order = True
 
@@ -601,9 +857,7 @@ def extract_references_from_document(
     )
 
     references = [
-        parse_reference_candidate(candidate)
-        for candidate in candidates
-        if candidate.text.strip()
+        parse_reference_candidate(candidate) for candidate in candidates if candidate.text.strip()
     ]
 
     warnings: list[str] = []
@@ -615,9 +869,7 @@ def extract_references_from_document(
         )
 
     if not references:
-        warnings.append(
-            "The reference heading was found, but no entries were extracted."
-        )
+        warnings.append("The reference heading was found, but no entries were extracted.")
 
     numbering_warning = _reference_numbering_warning(references)
     if numbering_warning:
@@ -629,11 +881,7 @@ def extract_references_from_document(
         start_page=section.page,
         end_page=(
             max(
-                (
-                    reference.page_end
-                    for reference in references
-                    if reference.page_end is not None
-                ),
+                (reference.page_end for reference in references if reference.page_end is not None),
                 default=section.page,
             )
         ),
@@ -676,16 +924,9 @@ def extract_references(pdf_path: Path) -> ReferenceList:
         )
         for candidate in layout_candidates
     ]
-    result.references = [
-        parse_reference_candidate(candidate)
-        for candidate in candidates
-    ]
+    result.references = [parse_reference_candidate(candidate) for candidate in candidates]
     result.end_page = max(
-        (
-            reference.page_end
-            for reference in result.references
-            if reference.page_end is not None
-        ),
+        (reference.page_end for reference in result.references if reference.page_end is not None),
         default=result.start_page,
     )
     return result
@@ -708,10 +949,7 @@ def _needs_hanging_indent_fallback(
     if len(elements) < 2:
         return False
 
-    detected_starts = sum(
-        len(find_author_year_starts(element.content))
-        for element in elements
-    )
+    detected_starts = sum(len(find_author_year_starts(element.content)) for element in elements)
     return detected_starts > len(elements) * 1.25
 
 
@@ -724,10 +962,7 @@ def _layout_candidates_are_better(
     if len(candidates) <= len(result.references) or len(candidates) < 2:
         return False
 
-    recognizable = sum(
-        looks_like_reference_start(candidate.text)
-        for candidate in candidates
-    )
+    recognizable = sum(looks_like_reference_start(candidate.text) for candidate in candidates)
     return recognizable / len(candidates) >= 0.8
 
 
@@ -741,10 +976,7 @@ def reference_list_to_dict(reference_list: ReferenceList) -> dict:
 
     return {
         "source_file": reference_list.source_file,
-        "references": [
-            {"raw_text": reference.raw_text}
-            for reference in reference_list.references
-        ],
+        "references": [{"raw_text": reference.raw_text} for reference in reference_list.references],
     }
 
 

@@ -2,20 +2,24 @@
 
 import json
 
-from opendataloader_adapter import (
+from parser.opendataloader_adapter import (
     ConvertedDocument,
     DocumentElement,
+    load_opendataloader_json,
 )
-from reference_extractor import (
+from claimtrace.parser.parser.reference_json_extractor import (
+    LayoutReferenceCandidate,
+    PDFTextLine,
     _layout_candidates_are_better,
     _needs_hanging_indent_fallback,
+    detect_reference_family,
     detect_reference_style,
     extract_references_from_document,
     find_reference_section,
     reference_list_to_json,
+    split_hanging_indent_lines,
     split_reference_entries,
 )
-from reference_line_extractor import LayoutReferenceCandidate
 
 
 def element(
@@ -151,9 +155,7 @@ class TestSplitReferenceEntries:
         entries = split_reference_entries(elements)
 
         assert len(entries) == 2
-        assert entries[0].text == (
-            "[1] First reference. Continuation of first reference."
-        )
+        assert entries[0].text == ("[1] First reference. Continuation of first reference.")
         assert entries[1].text == "[2] Second reference."
 
     def test_splits_plain_numbered_references(self):
@@ -300,8 +302,7 @@ class TestSplitReferenceEntries:
     def test_splits_leading_continuation_from_following_apa_reference(self):
         elements = [
             element(
-                "Previous reference continuation. Beta, B. (2021). "
-                "A complete new reference.",
+                "Previous reference continuation. Beta, B. (2021). A complete new reference.",
                 8,
             )
         ]
@@ -481,8 +482,7 @@ class TestEndToEndExtraction:
                 element("Body text.", 1),
                 element("References", 8, "heading"),
                 element(
-                    '[1] A. Author, "A useful paper," Journal, 2021. '
-                    "doi:10.1234/example.5678",
+                    '[1] A. Author, "A useful paper," Journal, 2021. doi:10.1234/example.5678',
                     8,
                 ),
                 element(
@@ -596,9 +596,7 @@ class TestEndToEndExtraction:
         assert result.heading is None
         assert result.start_page is None
         assert result.warnings
-        assert result.warnings[0] == (
-            "Reference-list heading was not found."
-        )
+        assert result.warnings[0] == ("Reference-list heading was not found.")
 
     def test_result_is_valid_json(self):
         document = sample_document(
@@ -609,8 +607,7 @@ class TestEndToEndExtraction:
                     8,
                 ),
                 element(
-                    "[2] B. Author. Another title. 2022. "
-                    "https://example.org/paper",
+                    "[2] B. Author. Another title. 2022. https://example.org/paper",
                     8,
                 ),
             ]
@@ -623,17 +620,8 @@ class TestEndToEndExtraction:
         assert parsed == {
             "source_file": "sample.pdf",
             "references": [
-                {
-                    "raw_text": (
-                        "[1] A. Author. Example title. 2021."
-                    )
-                },
-                {
-                    "raw_text": (
-                        "[2] B. Author. Another title. 2022. "
-                        "https://example.org/paper"
-                    )
-                },
+                {"raw_text": ("[1] A. Author. Example title. 2021.")},
+                {"raw_text": ("[2] B. Author. Another title. 2022. https://example.org/paper")},
             ],
         }
 
@@ -644,13 +632,11 @@ class TestHangingIndentFallback:
             [
                 element("References", 8, "heading"),
                 element(
-                    "Alpha, A. (2020). First. Beta, B. (2021). Second. "
-                    "Gamma, G. (2022). Third.",
+                    "Alpha, A. (2020). First. Beta, B. (2021). Second. Gamma, G. (2022). Third.",
                     8,
                 ),
                 element(
-                    "Delta, D. (2023). Fourth. Echo, E. (2024). Fifth. "
-                    "Foxtrot, F. (2025). Sixth.",
+                    "Delta, D. (2023). Fourth. Echo, E. (2024). Fifth. Foxtrot, F. (2025). Sixth.",
                     8,
                 ),
             ]
@@ -677,3 +663,197 @@ class TestHangingIndentFallback:
 
         assert _layout_candidates_are_better(candidates, existing)
         assert not _layout_candidates_are_better(candidates[:2], existing)
+
+
+def test_preserves_line_boundaries_and_layout_metadata(tmp_path):
+    source = tmp_path / "converted.json"
+    source.write_text(
+        json.dumps(
+            {
+                "file name": "paper.pdf",
+                "number of pages": 2,
+                "kids": [
+                    {
+                        "type": "paragraph",
+                        "content": "Smith, J. (2022). Title.\n   Continued URL.",
+                        "page number": 2,
+                        "bounding box": [51, 100, 289, 130],
+                        "font": "Example",
+                        "font size": "9.5",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    document = load_opendataloader_json(source)
+
+    assert document.file_name == "paper.pdf"
+    assert document.page_count == 2
+    assert len(document.elements) == 1
+    assert document.elements[0].content == ("Smith, J. (2022). Title.\nContinued URL.")
+    assert document.elements[0].bbox == (51.0, 100.0, 289.0, 130.0)
+    assert document.elements[0].font_size == 9.5
+
+
+def test_inherits_page_and_does_not_duplicate_nested_text(tmp_path):
+    source = tmp_path / "nested.json"
+    source.write_text(
+        json.dumps(
+            {
+                "number of pages": 1,
+                "kids": [
+                    {
+                        "type": "page",
+                        "page number": 1,
+                        "kids": [
+                            {
+                                "type": "paragraph",
+                                "content": "Complete paragraph.",
+                                "kids": [
+                                    {"type": "span", "content": "Complete"},
+                                    {"type": "span", "content": "paragraph."},
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    document = load_opendataloader_json(source)
+
+    assert [element.content for element in document.elements] == ["Complete paragraph."]
+    assert document.elements[0].page == 1
+
+
+def pdf_line(
+    text: str,
+    page: int,
+    x: float,
+    y: float,
+) -> PDFTextLine:
+    return PDFTextLine(text=text, page=page, bbox=(x, y, 500.0, y + 10.0))
+
+
+def test_splits_hanging_indent_references():
+    lines = [
+        pdf_line("Alpha, A. (2020). First", 8, 39.0, 100.0),
+        pdf_line("reference title. Journal.", 8, 51.0, 112.0),
+        pdf_line("Beta, B. (2021). Second", 8, 39.0, 136.0),
+        pdf_line("reference title. Journal.", 8, 51.0, 148.0),
+    ]
+
+    candidates = split_hanging_indent_lines(lines)
+
+    assert [candidate.text for candidate in candidates] == [
+        "Alpha, A. (2020). First reference title. Journal.",
+        "Beta, B. (2021). Second reference title. Journal.",
+    ]
+
+
+def test_keeps_cross_page_continuation_with_previous_reference():
+    lines = [
+        pdf_line("Alpha, A. (2020). First reference.", 8, 39.0, 100.0),
+        pdf_line("Its continuation", 8, 51.0, 112.0),
+        pdf_line("continues on the next page.", 9, 51.0, 50.0),
+        pdf_line("Beta, B. (2021). Second reference.", 9, 39.0, 74.0),
+        pdf_line("Second continuation.", 9, 51.0, 86.0),
+    ]
+
+    candidates = split_hanging_indent_lines(lines)
+
+    assert len(candidates) == 2
+    assert candidates[0].pages == [8, 9]
+    assert candidates[0].text.endswith("continues on the next page.")
+    assert candidates[1].pages == [9]
+
+
+def test_preserves_hyphen_without_adding_line_break_space():
+    lines = [
+        pdf_line("Alpha, A. (2020). Knowledge-", 8, 39.0, 100.0),
+        pdf_line("based innovation.", 8, 51.0, 112.0),
+        pdf_line("Beta, B. (2021). Another", 8, 39.0, 136.0),
+        pdf_line("reference.", 8, 51.0, 148.0),
+    ]
+
+    candidates = split_hanging_indent_lines(lines)
+
+    assert "Knowledge-based" in candidates[0].text
+
+
+def test_rejects_lines_without_hanging_indent_evidence():
+    lines = [
+        pdf_line("Alpha, A. (2020). First reference.", 8, 39.0, 100.0),
+        pdf_line("Beta, B. (2021). Second reference.", 8, 39.0, 124.0),
+        pdf_line("Gamma, G. (2022). Third reference.", 8, 39.0, 148.0),
+        pdf_line("Delta, D. (2023). Fourth reference.", 8, 39.0, 172.0),
+    ]
+
+    assert split_hanging_indent_lines(lines) == []
+
+
+def detect_family(*texts: str):
+    return detect_reference_family([element(text, 8) for text in texts])
+
+
+def test_detects_bracket_numbered_family():
+    result = detect_family(
+        "[1] A. Author, A paper, 2022.",
+        "[2] B. Author, Another paper, 2023.",
+    )
+
+    assert result.family == "bracket-numbered"
+    assert result.confidence >= 0.9
+
+
+def test_detects_plain_numbered_family():
+    result = detect_family(
+        "1. A. Author, A paper, 2022.",
+        "2) B. Author, Another paper, 2023.",
+    )
+
+    assert result.family == "plain-numbered"
+
+
+def test_detects_apa_parenthesized_family():
+    result = detect_family(
+        "Smith, J. A., & Doe, B. (2022). A useful paper. Journal, 2(1), 1-9.",
+        "World Health Organization. (n.d.). Health guidance. https://example.org",
+        "Example report. (2023a). Publisher.",
+    )
+
+    assert result.family == "author-year-parenthesized"
+    assert result.evidence["parenthesized_date_ratio"] == 1.0
+
+
+def test_detects_springer_author_year_family():
+    result = detect_family(
+        "Bao SF, Mo HH, Dong ZL, Chen PS (2014) Increment calculation of soil strength.",
+        "Chai JC, Carter JP, Hayashi S (2006) Vacuum consolidation and loading.",
+        "Ming JP, Zhao WB (2005) Study on groundwater level.",
+    )
+
+    assert result.family == "author-year-inline"
+
+
+def test_detects_author_title_family_without_years():
+    result = detect_family(
+        "Smith, John. The Example Book. Example Press.",
+        "Taylor, Anne. Another Example. Sample Journal.",
+    )
+
+    assert result.family == "author-title"
+
+
+def test_ambiguous_content_remains_unknown():
+    result = detect_family(
+        "Documentation available from the project website.",
+        "A second irregular source without recognizable structure.",
+    )
+
+    assert result.family == "unknown-unnumbered"
+    assert result.confidence < 0.5
