@@ -1,69 +1,96 @@
-/* ClaimTrace Overleaf Popup Styles */
+#claimtrace-bib-prompt,
+#claimtrace-citation-hover { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
-.claimtrace-popup {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  width: 380px;
-  max-height: 400px;
-  overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.claimtrace-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 14px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
-  border-radius: 8px 8px 0 0;
-}
-
-.claimtrace-key {
-  font-family: "SF Mono", "Fira Code", monospace;
-  font-size: 12px;
-  color: #2563eb;
-  background: #eff6ff;
-  padding: 2px 8px;
+.claimtrace-citation-line {
+  position: relative !important;
   border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
 }
+.claimtrace-citation-line.claimtrace-hover-line { cursor: text; }
+.claimtrace-citation-line.claimtrace-tone-support.claimtrace-hover-line { background: rgba(33, 166, 126, .15) !important; box-shadow: inset 3px 0 #159477; }
+.claimtrace-citation-line.claimtrace-tone-partial.claimtrace-hover-line { background: rgba(216, 154, 63, .17) !important; box-shadow: inset 3px 0 #d09237; }
+.claimtrace-citation-line.claimtrace-tone-danger.claimtrace-hover-line { background: rgba(208, 82, 82, .16) !important; box-shadow: inset 3px 0 #c85151; }
+.claimtrace-citation-line.claimtrace-focus-line { animation: claimtrace-focus-pulse 900ms ease-in-out 2; }
+@keyframes claimtrace-focus-pulse { 50% { background: rgba(78, 193, 159, .25); box-shadow: inset 4px 0 #24ad88, 0 0 0 2px rgba(36,173,136,.15); } }
+::highlight(claimtrace-citations-support) { color: #08705f; background: rgba(61, 184, 149, .12); text-decoration: underline 1px rgba(21, 148, 119, .55); }
+::highlight(claimtrace-citations-partial) { color: #855711; background: rgba(224, 164, 72, .14); text-decoration: underline 1px rgba(208, 146, 55, .6); }
+::highlight(claimtrace-citations-danger) { color: #9d3434; background: rgba(216, 92, 92, .13); text-decoration: underline 1px rgba(200, 81, 81, .6); }
+::highlight(claimtrace-citation-active) { color: #075f51; background: rgba(55, 190, 151, .28); text-decoration: underline 2px #159477; }
 
-.claimtrace-loading {
-  font-size: 11px;
-  color: #999;
+#claimtrace-citation-hover {
+  position: fixed;
+  z-index: 2147483647;
+  width: min(360px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 12px 13px;
+  color: #17352f;
+  background: #fbfffd;
+  border: 1px solid #c8ddd7;
+  border-radius: 11px;
+  box-shadow: 0 14px 36px rgba(15, 42, 36, .2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px) scale(.985);
+  transform-origin: top left;
+  transition: opacity 130ms ease, transform 130ms ease;
 }
+#claimtrace-citation-hover.claimtrace-hover-visible { opacity: 1; transform: translateY(0) scale(1); }
+#claimtrace-citation-hover .claimtrace-hover-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+#claimtrace-citation-hover .claimtrace-hover-verdict { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; color: #08705f; background: #dff4ed; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .01em; }
+#claimtrace-citation-hover.claimtrace-hover-partial .claimtrace-hover-verdict { color: #855711; background: #f9ebd1; }
+#claimtrace-citation-hover.claimtrace-hover-danger .claimtrace-hover-verdict { color: #9d3434; background: #fae1e1; }
+#claimtrace-citation-hover .claimtrace-hover-top small { color: #74857f; font-size: 9px; font-weight: 650; }
+#claimtrace-citation-hover section { margin-top: 10px; }
+#claimtrace-citation-hover section > span { display: block; margin-bottom: 4px; color: #81918c; font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+#claimtrace-citation-hover .claimtrace-hover-claim { display: block; color: #183d35; font-size: 11px; font-weight: 700; line-height: 1.45; }
+#claimtrace-citation-hover .claimtrace-hover-source { padding: 9px 10px; background: #eff8f5; border: 1px solid #dcece7; border-radius: 8px; }
+#claimtrace-citation-hover .claimtrace-hover-title { display: block; color: #234a41; font-size: 10px; line-height: 1.35; }
+#claimtrace-citation-hover .claimtrace-hover-meta { display: block; margin-top: 3px; color: #71857e; font-size: 9px; line-height: 1.35; }
+#claimtrace-citation-hover .claimtrace-hover-key { display: inline-block; max-width: 100%; margin-top: 7px; overflow: hidden; padding: 3px 6px; color: #397067; background: #fff; border: 1px solid #d9e9e4; border-radius: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 9px; text-overflow: ellipsis; vertical-align: top; white-space: nowrap; }
+#claimtrace-citation-hover .claimtrace-hover-detail { margin: 0; color: #596d66; font-size: 10px; line-height: 1.5; }
+#claimtrace-citation-hover .claimtrace-hover-annotation { display: block; margin-top: 6px; color: #08705f; font-size: 9px; font-weight: 750; }
+#claimtrace-citation-hover.claimtrace-hover-partial .claimtrace-hover-annotation { color: #855711; }
+#claimtrace-citation-hover.claimtrace-hover-danger .claimtrace-hover-annotation { color: #9d3434; }
+#claimtrace-citation-hover footer { margin: 10px -13px -12px; padding: 8px 13px; color: #81918c; background: #f5faf8; border-top: 1px solid #e2ece9; border-radius: 0 0 11px 11px; font-size: 8px; }
 
-.claimtrace-popup-body {
-  padding: 14px;
+#claimtrace-bib-prompt {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 2147483647;
+  display: grid;
+  grid-template-columns: 34px 1fr auto 26px;
+  align-items: center;
+  gap: 10px;
+  min-width: 430px;
+  padding: 11px 13px;
+  color: #17352f;
+  background: #f8fffc;
+  border: 1px solid #b7dfd3;
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(15, 42, 36, .2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transform: translateX(-50%);
+  animation: claimtrace-prompt-enter 180ms ease-out;
 }
-
-/* Verdict colors */
-.claimtrace-verdict-support {
-  color: #16a34a;
-}
-
-.claimtrace-verdict-partial {
-  color: #f59e0b;
-}
-
-.claimtrace-verdict-contradict {
-  color: #dc2626;
-}
-
-.claimtrace-verdict-notfound {
-  color: #999;
-}
-
-/* Source passage highlight */
-.claimtrace-passage {
-  background: #fffbeb;
-  border-left: 3px solid #f59e0b;
-  padding: 8px 12px;
-  margin: 8px 0;
-  font-size: 12px;
-  color: #444;
+#claimtrace-bib-prompt.claimtrace-prompt-leaving { opacity: 0; transform: translate(-50%, 8px); transition: 180ms ease; }
+#claimtrace-bib-prompt .claimtrace-prompt-mark { display: grid; width: 32px; height: 32px; place-items: center; color: #fff; background: #087d69; border-radius: 9px; font-weight: 800; }
+#claimtrace-bib-prompt .claimtrace-prompt-copy { min-width: 0; }
+#claimtrace-bib-prompt strong, #claimtrace-bib-prompt small { display: block; }
+#claimtrace-bib-prompt strong { font-size: 12px; }
+#claimtrace-bib-prompt small { margin-top: 2px; color: #70827c; font-size: 10px; }
+#claimtrace-bib-prompt button { font-family: inherit; cursor: pointer; }
+#claimtrace-bib-prompt .claimtrace-prompt-open { padding: 8px 10px; color: #fff; background: #087d69; border: 0; border-radius: 8px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+#claimtrace-bib-prompt .claimtrace-prompt-open:hover { background: #086554; }
+#claimtrace-bib-prompt .claimtrace-prompt-close { display: grid; width: 26px; height: 26px; place-items: center; padding: 0; color: #788a83; background: transparent; border: 0; border-radius: 6px; font-size: 18px; line-height: 1; }
+#claimtrace-bib-prompt .claimtrace-prompt-close:hover { color: #28483f; background: #e4f1ed; }
+@keyframes claimtrace-prompt-enter { from { opacity: 0; transform: translate(-50%, 8px); } }
+@media (max-width: 600px) {
+  #claimtrace-bib-prompt { right: 12px; left: 12px; min-width: 0; grid-template-columns: 32px 1fr 26px; transform: none; }
+  #claimtrace-bib-prompt .claimtrace-prompt-open { grid-column: 2 / 4; width: 100%; }
+  #claimtrace-bib-prompt .claimtrace-prompt-close { grid-column: 3; grid-row: 1; }
+  #claimtrace-bib-prompt.claimtrace-prompt-leaving { transform: translateY(8px); }
+  @keyframes claimtrace-prompt-enter { from { opacity: 0; transform: translateY(8px); } }
 }

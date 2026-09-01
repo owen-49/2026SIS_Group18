@@ -1,26 +1,24 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppShell } from "./components/AppShell";
 import { AuditPage } from "./pages/AuditPage";
-import { UploadPage } from "./pages/UploadPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { DocsPage } from "./pages/DocsPage";
+import { ExtensionSetupPage } from "./pages/ExtensionSetupPage";
+import { LibraryPage } from "./pages/LibraryPage";
 import { VerifyPage } from "./pages/VerifyPage";
 
 export function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>ClaimTrace</h1>
-        <nav>
-          <a href="/">Upload</a>
-          <a href="/verify">Verify</a>
-          <a href="/audit">Audit</a>
-        </nav>
-      </header>
-      <main>
-        <Routes>
-          <Route path="/" element={<UploadPage />} />
-          <Route path="/verify" element={<VerifyPage />} />
-          <Route path="/audit" element={<AuditPage />} />
-        </Routes>
-      </main>
-    </div>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="upload" element={<Navigate to="/library?upload=1" replace />} />
+        <Route path="verify" element={<VerifyPage />} />
+        <Route path="audit" element={<AuditPage />} />
+        <Route path="extension-setup" element={<ExtensionSetupPage />} />
+        <Route path="docs" element={<DocsPage />} />
+      </Route>
+    </Routes>
   );
 }

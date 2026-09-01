@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClaimTrace</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="panel-header">
+      <div class="brand"><span class="brand-mark">✓</span><div><strong>ClaimTrace</strong><small>Citation intelligence</small></div></div>
+    </header>
+
+    <main>
+      <section class="context-card">
+        <div><span class="context-dot"></span><strong id="sourceTitle">Overleaf project</strong></div>
+        <small id="syncText">Waiting for editor content</small>
+      </section>
+
+      <div class="view-tabs" role="tablist" aria-label="ClaimTrace views">
+        <button id="citationsTab" class="active" type="button" role="tab" aria-selected="true">Citations <span id="citationTabCount">0</span></button>
+        <button id="papersTab" type="button" role="tab" aria-selected="false">Papers <span id="paperTabCount">0</span></button>
+      </div>
+
+      <label class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        <span class="sr-only">Search citations</span>
+        <input id="searchInput" type="search" placeholder="Search citations…" autocomplete="off" />
+      </label>
+
+      <section id="citationsView">
+        <div class="library-heading"><div><span class="eyebrow">Editor findings</span><h1><span id="citationCount">0</span> cited claims found</h1></div>
+          <button id="syncButton" class="sync-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"></path><path d="M20 2l-4 4a8 8 0 1 0 2 9"></path></svg>Sync</button>
+        </div>
+        <section id="citationList" class="citation-list" aria-live="polite"></section>
+        <section id="citationEmptyState" class="empty-state" hidden><span>⌕</span><h2>No cited claims detected</h2><p>Open a <code>.tex</code> file containing <code>\cite{...}</code>.</p></section>
+      </section>
+
+      <section id="papersView" hidden>
+        <div class="library-heading"><div><span class="eyebrow">Paper library</span><h1><span id="paperCount">0</span> sources found</h1></div></div>
+        <section id="paperList" class="paper-list" aria-live="polite"></section>
+        <section id="emptyState" class="empty-state" hidden><span>⌕</span><h2>No matching papers</h2><p>Open <code>references.bib</code> or try another search.</p></section>
+      </section>
+    </main>
+
+    <footer class="panel-footer">
+      <div class="success-message"><span>i</span><div><strong>ClaimTrace backend</strong><small id="footerDetail">No backend verification is running</small></div></div>
+      <button id="openDashboard" type="button">Open audit workspace <span>↗</span></button>
+    </footer>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

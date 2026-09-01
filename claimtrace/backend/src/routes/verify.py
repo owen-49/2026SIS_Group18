@@ -2,7 +2,14 @@
 
 from fastapi import APIRouter, HTTPException
 
-from ..models import MatchResult, VerdictEnum, VerifyRequest, VerifyResponse
+from ..models import VerifyRequest, VerifyResponse
+from ..services.verification_service import (
+    InvalidPaperError,
+    PaperNotFoundError,
+    PaperNotReadyError,
+    VerificationServiceError,
+    verify_paper_claim,
+)
 
 router = APIRouter()
 
@@ -16,24 +23,19 @@ async def verify_claim(request: VerifyRequest):
     Returns the verdict (SUPPORT/PARTIAL/CONTRADICT/NOT_FOUND) with
     matching passages and rationale.
     """
-    # TODO W3-W4: Wire to engine.retriever + engine.verifier
-    # For now, return a stub response
-
     if not request.claim.strip():
         raise HTTPException(status_code=400, detail="Claim text is required.")
 
-    # Placeholder — real verification will call Pair 2's engine
-    return VerifyResponse(
-        claim=request.claim,
-        verdict=VerdictEnum.NOT_FOUND,
-        confidence=0.0,
-        rationale="Verification engine not yet integrated. This is a placeholder response.",
-        matches=[
-            MatchResult(
-                passage_text="(Stub: source passage will appear here after W3 integration)",
-                similarity=0.0,
-                entailment_label=VerdictEnum.NOT_FOUND,
-                confidence=0.0,
-            )
-        ],
-    )
+    try:
+        return verify_paper_claim(
+            paper_id=request.source_paper_id,
+            claim=request.claim.strip(),
+        )
+    except PaperNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except PaperNotReadyError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except InvalidPaperError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except VerificationServiceError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
