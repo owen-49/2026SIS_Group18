@@ -61,6 +61,15 @@ class Settings:
     papers_file: Path = Path("uploads/papers.json")
     parsed_dir: Path = Path("uploads/parsed")
 
+    # ── Parser ───────────────────────────────────────────
+    # Yi Jiang's PDF-to-Markdown converter uses Java locally by default.
+    # Set PARSER_HYBRID to "docling-fast" or "hancom-ai" when the optional
+    # local hybrid service is running on PARSER_HYBRID_URL.
+    parser_hybrid: str = "off"
+    parser_hybrid_mode: str | None = None
+    parser_hybrid_url: str = "http://localhost:5002"
+    parser_use_struct_tree: bool = False
+
     @property
     def is_llm_configured(self) -> bool:
         """Check whether any LLM provider has a valid API key set.
@@ -135,6 +144,10 @@ def _load_settings() -> Settings:
         upload_dir=upload_dir,
         papers_file=papers_file,
         parsed_dir=parsed_dir,
+        parser_hybrid=os.getenv("PARSER_HYBRID", "off"),
+        parser_hybrid_mode=os.getenv("PARSER_HYBRID_MODE") or None,
+        parser_hybrid_url=os.getenv("PARSER_HYBRID_URL", "http://localhost:5002"),
+        parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
     )
 
 

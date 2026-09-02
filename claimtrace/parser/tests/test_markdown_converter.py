@@ -5,6 +5,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 import pytest
 
+from parser import markdown_converter as md_module
 from parser.markdown_converter import (
     HybridBackendError,
     convert_pdf_to_markdown,
@@ -51,7 +52,11 @@ class TestValidation:
 
 
 class TestLocalMode:
-    def test_converts_and_returns_text(self, sample_pdf: Path):
+    def test_converts_and_returns_text(
+        self, sample_pdf: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Keep the test from clearing generated_markdown in the repository.
+        monkeypatch.setattr(md_module, "DEFAULT_OUTPUT_DIR", tmp_path / "generated")
         text = convert_pdf_to_markdown(sample_pdf, hybrid="off")
         assert "Introduction" in text
         assert "test paragraph" in text

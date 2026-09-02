@@ -27,8 +27,8 @@ def test_frontend_cors_preflight(client):
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3000"
 
 
-def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
-    content = b"%PDF-1.4\ntest content"
+def test_upload_pdf_persists_file_and_metadata(client, storage_paths, sample_pdf_bytes):
+    content = sample_pdf_bytes
     response = client.post(
         "/api/parse",
         files={"file": ("paper.pdf", content, "application/pdf")},
@@ -39,8 +39,8 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert body["file_type"] == "pdf"
     assert body["status"] == "completed"
     assert body["pages"] == 2
-    assert body["paragraph_count"] == 3
-    assert body["title"] == "paper"
+    assert body["paragraph_count"] >= 2
+    assert body["title"] == "1 Introduction"
     assert body["paper_id"]
 
     uuid.UUID(body["paper_id"])
@@ -56,19 +56,21 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert record["file_size"] == len(content)
     assert record["status"] == "completed"
     assert record["pages"] == 2
-    assert record["paragraph_count"] == 3
+    assert record["paragraph_count"] == body["paragraph_count"]
 
     parsed_file = storage_paths["parsed_dir"] / f"{body['paper_id']}.json"
     parsed = json.loads(parsed_file.read_text(encoding="utf-8"))
     assert parsed["paper_id"] == body["paper_id"]
-    assert len(parsed["paragraphs"]) == 3
+    assert len(parsed["paragraphs"]) == body["paragraph_count"]
+    assert any("Self-attention" in paragraph["text"] for paragraph in parsed["paragraphs"])
+    assert (storage_paths["parsed_dir"] / "markdown" / f"{body['paper_id']}.md").exists()
     assert record["parsed_result_path"] == str(parsed_file)
 
 
-def test_uploaded_paper_can_be_read_from_json(client):
+def test_uploaded_paper_can_be_read_from_json(client, sample_pdf_bytes):
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", b"%PDF-1.4\ntest", "application/pdf")},
+        files={"file": ("paper.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.get(f"/api/parse/{uploaded['paper_id']}")
@@ -84,14 +86,14 @@ def test_list_papers_returns_empty_collection(client):
     assert response.json() == {"total": 0, "papers": []}
 
 
-def test_list_papers_returns_newest_first_without_internal_paths(client):
+def test_list_papers_returns_newest_first_without_internal_paths(client, sample_pdf_bytes):
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+        files={"file": ("first.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+        files={"file": ("second.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.get("/api/papers")
@@ -104,7 +106,7 @@ def test_list_papers_returns_newest_first_without_internal_paths(client):
         first["paper_id"],
     ]
     assert body["papers"][0]["original_filename"] == "second.pdf"
-    assert body["papers"][0]["file_size"] == len(b"%PDF-1.4\nsecond")
+    assert body["papers"][0]["file_size"] == len(sample_pdf_bytes)
     assert body["papers"][0]["status"] == "completed"
     assert "created_at" in body["papers"][0]
     assert "file_path" not in body["papers"][0]
@@ -120,14 +122,14 @@ def test_list_papers_returns_500_for_corrupt_metadata(client, storage_paths):
     assert response.json()["detail"] == "Unable to read paper metadata."
 
 
-def test_each_upload_gets_a_unique_paper_id(client):
+def test_each_upload_gets_a_unique_paper_id(client, sample_pdf_bytes):
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", b"%PDF-1.4\nfirst", "application/pdf")},
+        files={"file": ("first.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", b"%PDF-1.4\nsecond", "application/pdf")},
+        files={"file": ("second.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     assert first["paper_id"] != second["paper_id"]
@@ -211,10 +213,10 @@ def test_unknown_paper_id_returns_404(client):
     assert response.status_code == 404
 
 
-def test_verify_returns_frontend_contract(client):
+def test_verify_returns_frontend_contract(client, sample_pdf_bytes):
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("attention.pdf", b"%PDF-1.4\nattention", "application/pdf")},
+        files={"file": ("attention.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.post(

@@ -1,5 +1,6 @@
 """Shared backend API test fixtures."""
 
+import fitz
 import pytest
 from backend.src.main import app
 from backend.src.routes import parse as parse_route
@@ -24,6 +25,30 @@ def storage_paths(tmp_path, monkeypatch):
         "papers_file": papers_file,
         "parsed_dir": parsed_dir,
     }
+
+
+@pytest.fixture()
+def sample_pdf_bytes():
+    """Return a valid two-page PDF for Parser-backed API tests."""
+    document = fitz.open()
+    first_page = document.new_page()
+    first_page.insert_text((72, 72), "1 Introduction", fontsize=20)
+    first_page.insert_text(
+        (72, 115),
+        "Self-attention enables the model to relate information from different positions "
+        "without recurrence.",
+        fontsize=11,
+    )
+    second_page = document.new_page()
+    second_page.insert_text((72, 72), "2 Methods", fontsize=20)
+    second_page.insert_text(
+        (72, 115),
+        "The experiment evaluates citation verification quality using source passages.",
+        fontsize=11,
+    )
+    pdf_bytes = document.tobytes()
+    document.close()
+    return pdf_bytes
 
 
 @pytest.fixture()
