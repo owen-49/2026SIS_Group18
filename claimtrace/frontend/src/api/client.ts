@@ -1,6 +1,6 @@
 import { demoAudit, demoPaperClaims, demoVerification } from "../data/mockData";
 import { getWorkspacePapers } from "../data/workspacePapers";
-import type { AuditResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
+import type { AuditResponse, BibVerifyResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
@@ -14,8 +14,12 @@ async function readResponse<T>(response: Response): Promise<T> {
 
   let message = `Request failed (${response.status})`;
   try {
-    const body = (await response.json()) as { detail?: string };
-    if (body.detail) message = body.detail;
+    const body = (await response.json()) as { detail?: string | Array<{ msg?: string }> };
+    if (typeof body.detail === "string") message = body.detail;
+    if (Array.isArray(body.detail)) {
+      const details = body.detail.map((item) => item.msg).filter(Boolean).join("; ");
+      if (details) message = details;
+    }
   } catch {
     // Keep the status-based fallback when the server does not return JSON.
   }
@@ -54,13 +58,13 @@ export async function listPapers(signal?: AbortSignal): Promise<PaperListRespons
     const papers = getWorkspacePapers().map((paper, index) => ({
       paper_id: paper.paperId,
       original_filename: paper.fileName,
-      file_type: "pdf" as const,
-      file_size: 1_640_000 + index * 120_000,
-      status: "completed" as const,
-      pages: 12 + index * 2,
-      paragraph_count: 146 + index * 18,
-      entry_count: 0,
-      title: paper.fileName.replace(/\.pdf$/i, "").replace(/[-_]+/g, " "),
+      file_type: paper.fileType || "pdf",
+      file_size: paper.fileSize ?? 1_640_000 + index * 120_000,
+      status: paper.status || "completed",
+      pages: paper.pages ?? (paper.fileType === "bib" ? 0 : 12 + index * 2),
+      paragraph_count: paper.paragraphCount ?? (paper.fileType === "bib" ? 0 : 146 + index * 18),
+      entry_count: paper.entryCount ?? 0,
+      title: paper.fileName.replace(/\.(pdf|bib)$/i, "").replace(/[-_]+/g, " "),
       error_message: null,
       created_at: paper.uploadedAt
         ? new Date(paper.uploadedAt).toISOString()
@@ -76,6 +80,65 @@ export async function listPapers(signal?: AbortSignal): Promise<PaperListRespons
   const result = await readResponse<PaperListResponse>(response);
   if (!Array.isArray(result.papers)) throw new Error("The paper library response is invalid.");
   return result;
+}
+
+export async function getParseStatus(paperId: string, signal?: AbortSignal): Promise<ParsedPaper> {
+  if (usingMockApi) {
+    await wait(200);
+    const paper = getWorkspacePapers().find((entry) => entry.paperId === paperId);
+    if (!paper) throw new Error("File not found in the demo workspace.");
+    return {
+      paper_id: paper.paperId,
+      status: paper.status || "completed",
+      file_type: paper.fileType || "pdf",
+      pages: paper.pages || 0,
+      paragraph_count: paper.paragraphCount || 0,
+      entry_count: paper.entryCount || 0,
+      title: paper.fileName.replace(/\.(pdf|bib)$/i, ""),
+      file_name: paper.fileName,
+    };
+  }
+
+  const response = await fetch(apiUrl(`/api/parse/${encodeURIComponent(paperId)}`), { signal });
+  return readResponse<ParsedPaper>(response);
+}
+
+export async function verifyBib(
+  bibPaperId: string,
+  sourcePaperIds: string[],
+  signal?: AbortSignal,
+): Promise<BibVerifyResponse> {
+  if (usingMockApi) {
+    await wait(650);
+    return {
+      bib_paper_id: bibPaperId,
+      total_entries: 1,
+      matched_entries: 0,
+      error_entries: 0,
+      results: [{
+        citation_key: "demo-entry",
+        has_errors: false,
+        error_count: 0,
+        warning_count: 1,
+        summary: "Demo preview: PDF metadata is not available for comparison.",
+        fields: [{
+          field_name: "title",
+          bib_value: "Example bibliography title",
+          pdf_value: "",
+          status: "PDF_MISSING",
+          detail: "Demo result only — connect the FastAPI backend for real metadata verification.",
+        }],
+      }],
+    };
+  }
+
+  const response = await fetch(apiUrl("/api/verify/bib"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bib_paper_id: bibPaperId, source_paper_ids: sourcePaperIds }),
+    signal,
+  });
+  return readResponse<BibVerifyResponse>(response);
 }
 
 export async function getPaperClaims(paperId: string, signal?: AbortSignal): Promise<PaperClaimsResponse> {

@@ -4,7 +4,7 @@ import fitz
 import pytest
 from backend.src.main import app
 from backend.src.routes import parse as parse_route
-from backend.src.storage import paper_store, parsed_document_store
+from backend.src.storage import bib_document_store, paper_store, parsed_document_store
 from fastapi.testclient import TestClient
 
 
@@ -15,15 +15,18 @@ def storage_paths(tmp_path, monkeypatch):
     upload_dir.mkdir()
     papers_file = upload_dir / "papers.json"
     parsed_dir = tmp_path / "parsed"
+    bib_parsed_dir = parsed_dir / "bib"
 
     monkeypatch.setattr(parse_route, "UPLOAD_DIR", upload_dir)
     monkeypatch.setattr(paper_store, "PAPERS_FILE", papers_file)
     monkeypatch.setattr(parsed_document_store, "PARSED_DIR", parsed_dir)
+    monkeypatch.setattr(bib_document_store, "BIB_PARSED_DIR", bib_parsed_dir)
 
     return {
         "upload_dir": upload_dir,
         "papers_file": papers_file,
         "parsed_dir": parsed_dir,
+        "bib_parsed_dir": bib_parsed_dir,
     }
 
 

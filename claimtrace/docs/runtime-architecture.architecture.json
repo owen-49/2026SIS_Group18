@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ClaimTrace Runtime Architecture",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "dashboard", "type": "frontend", "label": "Web Dashboard", "sublabel": "React · Vite · TS", "pos": [40, 240], "size": [132, 60] },
+    { "id": "extension", "type": "frontend", "label": "Chrome Extension", "sublabel": "Overleaf hover", "pos": [40, 380], "size": [132, 60] },
+    { "id": "api", "type": "backend", "label": "API Routes", "sublabel": "FastAPI · 6 端点", "pos": [260, 260], "size": [132, 60] },
+    { "id": "pipeline", "type": "backend", "label": "Pipeline Service", "sublabel": "上传编排", "pos": [480, 120], "size": [142, 60] },
+    { "id": "verify_svc", "type": "backend", "label": "Verification Service", "sublabel": "验证编排", "pos": [480, 260], "size": [150, 60] },
+    { "id": "parser_adapter", "type": "backend", "label": "Parser Adapter", "sublabel": "封装 parser 包", "pos": [700, 120], "size": [142, 60] },
+    { "id": "engine_adapter", "type": "backend", "label": "Engine Adapter", "sublabel": "封装 engine 包", "pos": [700, 260], "size": [142, 60] },
+    { "id": "parser_pkg", "type": "backend", "label": "Parser 包", "sublabel": "PDF → 段落 + 元数据", "pos": [920, 120], "size": [132, 60] },
+    { "id": "engine_pkg", "type": "backend", "label": "Engine 包", "sublabel": "bib · 检索 · 判定", "pos": [920, 260], "size": [132, 60] },
+    { "id": "storage", "type": "database", "label": "Storage", "sublabel": "3 stores", "pos": [1140, 120], "size": [132, 60] },
+    { "id": "llm", "type": "external", "label": "外部 LLM", "sublabel": "OpenAI / Gemini / Claude", "pos": [1140, 260], "size": [132, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "客户端（浏览器）", "wraps": ["dashboard", "extension"], "pad": 18 },
+    { "kind": "region", "label": "FastAPI 后端（本地进程）", "wraps": ["api", "pipeline", "verify_svc", "parser_adapter", "engine_adapter", "storage", "parser_pkg", "engine_pkg"], "pad": 18 },
+    { "kind": "region", "label": "Python 包（进程内 import）", "wraps": ["parser_pkg", "engine_pkg"], "pad": 14 }
+  ],
+  "connections": [
+    { "from": "dashboard", "to": "api", "label": "REST /api/*", "variant": "emphasis" },
+    { "from": "extension", "to": "api", "label": "复用 /api/*", "variant": "dashed" },
+    { "from": "api", "to": "pipeline", "variant": "default", "fromSide": "top", "toSide": "bottom" },
+    { "from": "api", "to": "verify_svc", "variant": "emphasis" },
+    { "from": "pipeline", "to": "parser_adapter", "variant": "default" },
+    { "from": "parser_adapter", "to": "parser_pkg", "label": "import", "variant": "default" },
+    { "from": "parser_pkg", "to": "storage", "label": "落盘", "variant": "default" },
+    { "from": "verify_svc", "to": "engine_adapter", "variant": "default" },
+    { "from": "engine_adapter", "to": "engine_pkg", "label": "import", "variant": "default" },
+    { "from": "engine_pkg", "to": "llm", "label": "HTTPS", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "主路径 · 一次引用验证", "items": ["Web Dashboard 上传 PDF → API Routes（POST /api/parse）", "Pipeline Service 编排解析 → Parser Adapter → Parser 包", "结果经 Storage 落盘（papers.json + parsed/）", "验证时：Verification Service → Engine Adapter → Engine 包", "Engine 包检索匹配段落 → 外部 LLM 判定 → 返回 verdict"] },
+    { "dot": "violet", "title": "信任边界（三处）", "items": ["客户端 ↔ 后端：REST / CORS —— 唯一网络边界", "后端 ↔ 本地文件系统：papers.json + parsed/ 目录", "后端 ↔ 外部 LLM：隐私 —— 只发送 claim + 匹配段落，不发全文"] },
+    { "dot": "rose", "title": "两条验证路径", "items": ["Claim 验证：POST /api/verify → verification_service → engine 包（retriever + verifier）→ 外部 LLM", "Bib 验证：POST /api/verify/bib → bib_verification_service → engine 包（bib_parser + bib_verifier）→ 与 PDF 元数据逐字段比对", "两条路径共用 API Routes 入口，但走不同的 service 与 engine 模块"] },
+    { "dot": "emerald", "title": "关键设计决策", "items": ["文件持久化而非数据库（数据量小、无并发、无复杂查询）", "多 provider LLM 抽象（llm_client 工厂 · 未配置 key 时 mock 降级）", "展示原文证据而非只给判定（抗幻觉的信任设计）"] }
+  ]
+}

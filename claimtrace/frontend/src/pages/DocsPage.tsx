@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Icon, type IconName } from "../components/Icon";
 
 const workflows: { icon: IconName; title: string; text: string; to: string; action: string }[] = [
-  { icon: "upload", title: "Add your manuscripts", text: "Open the upload window inside Paper Library and add the PDFs you want ClaimTrace to review.", to: "/library?upload=1", action: "Open Paper Library" },
+  { icon: "upload", title: "Add your files", text: "Open Paper Library to upload PDF manuscripts or BibTeX bibliographies and track their backend parsing status.", to: "/library?upload=1", action: "Open Paper Library" },
   { icon: "verify", title: "Review extracted claims", text: "Choose an uploaded manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Review claims" },
   { icon: "audit", title: "Review a full paper", text: "Rank citations by risk and inspect unsupported, partial, or contradictory claims first.", to: "/audit", action: "Open batch audit" },
 ];

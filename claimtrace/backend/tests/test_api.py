@@ -27,6 +27,20 @@ def test_frontend_cors_preflight(client):
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3000"
 
 
+def test_extension_cors_preflight(client):
+    extension_origin = f"chrome-extension://{'a' * 32}"
+    response = client.options(
+        "/api/papers",
+        headers={
+            "Origin": extension_origin,
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == extension_origin
+
+
 def test_upload_pdf_persists_file_and_metadata(client, storage_paths, sample_pdf_bytes):
     content = sample_pdf_bytes
     response = client.post(

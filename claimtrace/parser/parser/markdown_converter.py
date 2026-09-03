@@ -23,8 +23,9 @@ Both modes require Java 11+ on the machine (the CLI is a JVM app).
     set, otherwise docling model loading fails with a GBK decoding error.
 """
 
-import subprocess
+import re
 import shutil
+import subprocess
 import urllib.error
 import urllib.request
 import warnings
@@ -37,6 +38,9 @@ DEFAULT_HYBRID_BACKEND = "docling-fast"
 DEFAULT_HYBRID_URL = "http://localhost:5002"
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "generated_markdown"
 _HEALTH_CHECK_TIMEOUT_SECONDS = 2.0
+
+# Matches `![](path)` and `![](<path>)` image references.
+_IMAGE_REF_RE = re.compile(r"!\[[^\]]*\]\((?:<([^>]+)>|([^)\s]+))\)")
 
 
 class HybridBackendError(RuntimeError):
@@ -87,6 +91,35 @@ def is_backend_reachable(
             return response.status == 200
     except (urllib.error.URLError, OSError):
         return False
+
+
+def _deduplicate_image_references(markdown: str) -> str:
+    """Keep only the last occurrence of each duplicated image reference.
+
+    The hybrid converter can emit the same figure twice: once in extraction
+    order at the document head (without caption context) and once at its
+    inline position in the body. Keeping the last occurrence preserves the
+    caption context and drops the leading cluster. Only standalone image
+    lines are removed; lines mixing text and an image are left untouched.
+    """
+    lines = markdown.splitlines()
+
+    last_line: dict[str, int] = {}
+    for index, line in enumerate(lines):
+        match = _IMAGE_REF_RE.search(line)
+        if match:
+            last_line[match.group(1) or match.group(2)] = index
+
+    kept = []
+    for index, line in enumerate(lines):
+        match = _IMAGE_REF_RE.search(line)
+        if match and match.group(0) == line.strip():
+            path = match.group(1) or match.group(2)
+            if last_line[path] != index:
+                continue
+        kept.append(line)
+
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip() + "\n"
 
 
 def _validate_pdf(pdf_path: Path) -> None:
@@ -142,7 +175,9 @@ def convert_pdf_to_markdown(
         quiet: Suppress the JVM CLI console output.
 
     Returns:
-        The generated Markdown text.
+        The generated Markdown text. Duplicated image references (the
+        same figure emitted both at the document head and inline) are
+        collapsed to their last occurrence.
 
     Raises:
         FileNotFoundError: If the PDF does not exist or Java is missing.
@@ -186,7 +221,11 @@ def convert_pdf_to_markdown(
                     "Conversion produced no Markdown file; expected "
                     f"{markdown_path}"
                 )
-            return markdown_path.read_text(encoding="utf-8")
+            markdown_text = _deduplicate_image_references(
+                markdown_path.read_text(encoding="utf-8")
+            )
+            markdown_path.write_text(markdown_text, encoding="utf-8")
+            return markdown_text
     except subprocess.CalledProcessError as exc:
         raise HybridBackendError(f"PDF conversion failed: {exc}") from exc
     except FileNotFoundError as exc:

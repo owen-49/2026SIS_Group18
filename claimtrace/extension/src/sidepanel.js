@@ -83,7 +83,7 @@ function renderFindings() {
     <span class="citation-card-top"><span class="citation-verdict">${escapeHtml(finding.label)}</span><span class="citation-line">Editor location</span></span>
     <strong>${escapeHtml(finding.claim)}</strong>
     <span class="citation-card-meta"><code>\\cite{${escapeHtml(finding.citationKey)}}</code><span>Locate in editor →</span></span>
-    <small>${escapeHtml(finding.annotation)} · local demo signal</small>
+    <small>${escapeHtml(finding.annotation)} · ${finding.preview ? "local preview" : "backend verified"}</small>
   </button>`).join("");
 }
 
@@ -109,17 +109,19 @@ async function loadWorkspace() {
     "claimtraceSource",
     "claimtraceFindings",
     "claimtraceCitationSource",
+    "claimtraceBackendStatus",
   ]);
   papers = Array.isArray(stored.claimtracePapers) ? stored.claimtracePapers : [];
   findings = Array.isArray(stored.claimtraceFindings) ? stored.claimtraceFindings : [];
+  const backendStatus = stored.claimtraceBackendStatus || {};
   const hasOverleafContent = stored.claimtraceSource === "overleaf" || stored.claimtraceCitationSource === "overleaf";
   sourceTitle.textContent = hasOverleafContent ? "Overleaf project" : "Extension preview";
   syncText.textContent = findings.length
     ? `${findings.length} cited claims annotated in the editor`
     : papers.length ? `${papers.length} bibliography entries linked` : "Open a .tex or .bib file to begin";
-  footerDetail.textContent = findings.length
-    ? "Verdicts are deterministic demo signals"
-    : "No backend verification is running";
+  footerDetail.textContent = backendStatus.message || (findings.length
+    ? "Unmatched citations are shown as local previews"
+    : "No backend verification is running");
   if (!viewChosen) activeView = findings.length ? "citations" : "papers";
   setView(activeView, false);
 }
@@ -153,7 +155,7 @@ citationList.addEventListener("click", (event) => {
 });
 document.getElementById("openDashboard").addEventListener("click", () => chrome.tabs.create({ url: "http://localhost:3000/audit" }));
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings)) void loadWorkspace();
+  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus)) void loadWorkspace();
 });
 
 void loadWorkspace();
