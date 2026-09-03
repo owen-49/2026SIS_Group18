@@ -141,6 +141,59 @@ function sentenceAroundCitation(lineText, start, end) {
   return cleanClaim(lineText.slice(sentenceStart, sentenceEnd));
 }
 
+function claimAroundCitation(lines, lineIndex, start, end) {
+  const currentText = lines[lineIndex]?.textContent || "";
+
+  // First try the current editor line.
+  let claim = sentenceAroundCitation(currentText, start, end);
+
+  // If we got a meaningful claim, use it.
+  const meaningful = claim
+    .replace(/\[[^\]]+\]/g, "")
+    .replace(/[^\p{L}\p{N}]/gu, "")
+    .trim();
+
+  if (meaningful.length >= 10) {
+    return claim;
+  }
+
+  // Otherwise gather nearby editor lines.
+  const from = Math.max(0, lineIndex - 2);
+  const to = Math.min(lines.length - 1, lineIndex + 1);
+
+  const pieces = [];
+
+  for (let i = from; i <= to; i += 1) {
+    pieces.push(lines[i]?.textContent || "");
+  }
+
+  const context = pieces
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const citationText = currentText.slice(start, end);
+
+  // Locate this citation inside the larger context.
+  let citationIndex = context.lastIndexOf(citationText);
+
+  if (citationIndex < 0) {
+    citationIndex = context.indexOf("\\cite");
+  }
+
+  if (citationIndex < 0) {
+    return claim;
+  }
+
+  const citationEnd = citationIndex + citationText.length;
+
+  return sentenceAroundCitation(
+    context,
+    citationIndex,
+    citationEnd,
+  );
+}
+
 function demoVerdict(findingId, citationKey) {
   const backendFinding = backendFindings.get(findingId);
   if (backendFinding) return backendFinding;
@@ -258,8 +311,12 @@ function annotateCitationLines() {
     CITE_PATTERN.lastIndex = 0;
     let match;
     while ((match = CITE_PATTERN.exec(text))) {
-      const claim = sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
-      const range = rangeForOffsets(line, match.index, CITE_PATTERN.lastIndex);
+     const claim = claimAroundCitation(
+  lines,
+  lineIndex,
+  match.index,
+  CITE_PATTERN.lastIndex,
+);
       const keys = match[1].split(",").map((key) => key.trim()).filter(Boolean);
       keys.forEach((citationKey, keyIndex) => {
         const locationId = `${lineIndex + 1}-${match.index}-${keyIndex}-${citationKey}`;
