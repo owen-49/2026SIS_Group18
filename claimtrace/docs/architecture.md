@@ -106,6 +106,7 @@ sequenceDiagram
     FE->>API: POST /api/parse (file_type=bib)
     API->>E: parse_bib_file()
     E-->>API: list[BibEntry]
+    API->>API: persist ParsedBibDocument(entries)
     API-->>FE: bib_paper_id + entry_count
 
     U->>FE: 上传源论文 PDF (若干)
@@ -130,6 +131,7 @@ sequenceDiagram
 |------|------|------|
 | `/health` | GET | 健康检查 |
 | `/api/parse` | POST | 上传 PDF / .bib，返回 `paper_id` |
+| `/api/parse/bib` | POST | 重新解析并返回已保存的 BibTeX 条目 |
 | `/api/parse/{id}` | GET | 查询解析状态 |
 | `/api/papers` | GET | 列出论文库 |
 | `/api/verify` | POST | 验证单条 claim |
@@ -142,6 +144,20 @@ sequenceDiagram
 Request:  multipart/form-data { file: PDF | .bib }
 Response: { paper_id, status, file_type, pages, paragraph_count, entry_count, title? }
 ```
+
+### POST /api/parse/bib
+
+```
+Request:  { paper_id: str }
+Response: {
+  paper_id, status, file_type: "bib", entry_count,
+  entries: [{ key, entry_type, title, authors, year, venue, ... }]
+}
+```
+
+The endpoint re-runs the real Engine parser for the uploaded `.bib` file and
+returns the entries read back from the persisted `ParsedBibDocument`. It does
+not return placeholder or hardcoded bibliography data.
 
 ### POST /api/verify
 

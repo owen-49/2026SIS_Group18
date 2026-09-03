@@ -136,6 +136,13 @@ class ParseResponse(BaseModel):
     title: str | None = None
 
 
+class BibParseResponse(ParseResponse):
+    """Detailed response containing the entries persisted from a BibTeX file."""
+
+    file_type: Literal["bib"] = "bib"
+    entries: list[BibEntryRecord] = Field(default_factory=list)
+
+
 class PaperListItem(BaseModel):
     """Public metadata returned when listing uploaded papers."""
 
