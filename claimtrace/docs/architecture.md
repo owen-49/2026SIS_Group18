@@ -19,7 +19,7 @@ flowchart TB
         direction LR
         subgraph ROUTES["Routes"]
             R_PARSE["/api/parse"]
-            R_PAPERS["/api/papers"]
+            R_PAPERS["/api/papers<br/>/claims"]
             R_VERIFY["/api/verify"]
             R_AUDIT["/api/audit"]
             R_BIB["/api/verify/bib"]
@@ -121,6 +121,33 @@ sequenceDiagram
     FE-->>U: 展示每个 bib 条目的字段比对结果
 ```
 
+### 2.3 manuscript claims / batch audit 流程
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant API as FastAPI
+    participant P as Persisted Parser output
+    participant E as Local evidence analyser
+    participant LLM as Optional LLM
+
+    FE->>API: GET /api/papers/{paper_id}/claims
+    API->>P: load ParsedDocument JSON
+    P-->>API: paragraphs + page locations
+    API->>API: extract citation-bearing sentences
+    API-->>FE: claims + manuscript_document
+
+    FE->>API: POST /api/audit {manuscript_id, source_paper_ids}
+    API->>P: load manuscript and source ParsedDocument JSON
+    API->>E: rank source sentences for every extracted claim
+    E-->>API: evidence passage + page location
+    opt LLM configured
+        API->>LLM: classify claim against retrieved passage
+        LLM-->>API: SUPPORT/PARTIAL/CONTRADICT/NOT_FOUND
+    end
+    API-->>FE: verdicts + source documents + evidence locations
+```
+
 ---
 
 ## 3. API 契约
@@ -134,6 +161,7 @@ sequenceDiagram
 | `/api/parse/bib` | POST | 重新解析并返回已保存的 BibTeX 条目 |
 | `/api/parse/{id}` | GET | 查询解析状态 |
 | `/api/papers` | GET | 列出论文库 |
+| `/api/papers/{id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
 | `/api/verify` | POST | 验证单条 claim |
 | `/api/audit` | POST | 批量审计 |
 | `/api/verify/bib` | POST | 交叉校验 bib 元数据 |
@@ -176,9 +204,29 @@ Request:  { manuscript_id: str, source_paper_ids: [str] }
 Response: {
   manuscript_id, total_citations, supported, partial,
   contradicted, not_found,
-  results: [{ citation_key, claim, verdict, confidence, risk_level }]
+  manuscript_document,
+  results: [{ citation_key, claim, verdict, confidence, risk_level,
+    manuscript_location, source_location, cited_source,
+    source_passage, source_document, comparison_rationale }]
 }
 ```
+
+### GET /api/papers/{id}/claims
+
+```text
+Response: {
+  manuscript_id, status, error_message?, manuscript_document?,
+  claims: [{ claim_id, text, page, citation_marker,
+    resolution_status, cited_source?, similar_sources?,
+    source_document?, manuscript_location? }]
+}
+```
+
+The endpoint reads the JSON produced by the PDF Parser pipeline. It extracts
+LaTeX, numeric, and author-year citation markers from manuscript sentences,
+skips the references section, and assigns stable page/paragraph locations.
+When a persisted BibTeX record and a matching uploaded source PDF are
+available, the response also includes the resolved local source metadata.
 
 ### POST /api/verify/bib
 
@@ -223,7 +271,7 @@ Response: {
 `papers.json` + 文件存储替代 Postgres/MySQL。理由：数据量小（几篇到几十篇论文）、无多用户并发、无复杂查询。省下的时间投入 PDF 解析和检索准确率。若后续需要查询/多用户，SQLite 是零成本升级路径。
 
 ### 2. 多 Provider LLM 抽象
-`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。未配置 key 时自动降级为 **mock mode**（返回 NOT_FOUND），保证 CI 和本地开发能跑。
+`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。未配置 key 时，audit 使用已上传 PDF 的本地证据匹配；配置 key 后再用 LLM 对召回证据分类，保证 CI 和本地开发能跑。
 
 ### 3. 两阶段检索（Paragraph → Sentence）
 段落级 embedding 保证召回，句子级重排保证精度。避免纯句子切分（噪声大）和纯段落切分（精度低）各自的缺陷。
@@ -242,4 +290,5 @@ Response: {
 |------|------|------|
 | `ParsedPaper` 首页元数据未填充 | bib 验证暂时只能返回 `PDF_MISSING` | Parser 队 |
 | 前端默认 mock（`VITE_USE_MOCK_API=true`） | 端到端未完全串真实后端 | Frontend |
+| 语义 embedding/FAISS 尚未作为 audit 的默认依赖 | 未配置 LLM 时先使用确定性的本地词法证据排序 | Engine / Backend |
 | markdown converter 测试产物误提交 | git 卫生问题（暂不处理） | 全员 |

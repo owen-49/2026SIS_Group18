@@ -182,12 +182,95 @@ class VerifyResponse(BaseModel):
     matches: list[MatchResult] = []
 
 
+class DocumentLocation(BaseModel):
+    """Location of a paragraph in a parsed document."""
+
+    page: int = Field(..., ge=1)
+    paragraph_index: int = Field(..., ge=0)
+
+
+class SourceDocumentPage(BaseModel):
+    """Page-level text used by the review clients."""
+
+    page: int = Field(..., ge=1)
+    heading: str | None = None
+    paragraphs: list[str] = Field(default_factory=list)
+
+
+class SourceDocument(BaseModel):
+    """A displayable view of a persisted parsed document."""
+
+    total_pages: int = Field(..., ge=1)
+    pages: list[SourceDocumentPage] = Field(default_factory=list)
+    matched_location: DocumentLocation | None = None
+
+
+class IdentifiedSource(BaseModel):
+    """Bibliographic metadata associated with a claim's source."""
+
+    source_paper_id: str | None = None
+    citation_key: str
+    title: str
+    authors: list[str] = Field(default_factory=list)
+    venue: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    url: str | None = None
+    database: str | None = None
+
+
+class SimilarSource(IdentifiedSource):
+    """A source candidate returned when exact resolution is unavailable."""
+
+    similarity: float = Field(..., ge=0.0, le=1.0)
+
+
+class ExtractedClaim(BaseModel):
+    """A manuscript sentence linked to one citation marker."""
+
+    claim_id: str
+    text: str
+    page: int | None = Field(default=None, ge=1)
+    citation_marker: str
+    resolution_status: Literal["identified", "searching", "not_found"]
+    cited_source: IdentifiedSource | None = None
+    similar_sources: list[SimilarSource] = Field(default_factory=list)
+    source_document: SourceDocument | None = None
+    manuscript_location: DocumentLocation | None = None
+
+
+class PaperClaimsResponse(BaseModel):
+    """Claims extracted from one persisted manuscript."""
+
+    manuscript_id: str
+    status: ParseStatus
+    claims: list[ExtractedClaim] = Field(default_factory=list)
+    error_message: str | None = None
+    manuscript_document: SourceDocument | None = None
+
+
+class SourceLocation(BaseModel):
+    """Evidence location returned for an audit result."""
+
+    page: int = Field(..., ge=1)
+    quote: str
+    annotation: str | None = None
+
+
 class CitationAuditResult(BaseModel):
     citation_key: str
     claim: str
     verdict: VerdictEnum
     confidence: float
     risk_level: str  # "high", "medium", "low"
+    claim_id: str | None = None
+    manuscript_location: DocumentLocation | None = None
+    source_location: SourceLocation | None = None
+    cited_source: IdentifiedSource | None = None
+    source_passage: str | None = None
+    source_document: SourceDocument | None = None
+    comparison_rationale: str | None = None
+    similar_sources: list[SimilarSource] = Field(default_factory=list)
 
 
 class AuditResponse(BaseModel):
@@ -197,7 +280,8 @@ class AuditResponse(BaseModel):
     partial: int = 0
     contradicted: int = 0
     not_found: int = 0
-    results: list[CitationAuditResult] = []
+    results: list[CitationAuditResult] = Field(default_factory=list)
+    manuscript_document: SourceDocument | None = None
 
 
 # ── Bib verification models ───────────────────────────────────

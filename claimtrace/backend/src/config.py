@@ -75,7 +75,7 @@ class Settings:
         """Check whether any LLM provider has a valid API key set.
 
         Returns False in CI / local-dev-without-keys — the verifier
-        will fall back to mock mode.
+        will use local deterministic evidence matching.
         """
         key_checks = {
             "openai": self.openai_api_key,

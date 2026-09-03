@@ -1,18 +1,24 @@
 """Batch audit endpoints — verify all citations in a manuscript."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from ..models import (
     AuditRequest,
     AuditResponse,
 )
-from ..services.demo_service import build_demo_audit
+from ..services.analysis_service import (
+    AnalysisPaperNotFoundError,
+    AnalysisPaperNotReadyError,
+    AnalysisServiceError,
+    InvalidAnalysisPaperError,
+    run_audit,
+)
 
 router = APIRouter()
 
 
 @router.post("/audit", response_model=AuditResponse)
-async def audit_manuscript(request: AuditRequest):
+async def audit_manuscript(request: AuditRequest, http_request: Request):
     """Run a full citation audit on a manuscript.
 
     Verifies every claim-citation pair in the manuscript against
@@ -25,10 +31,21 @@ async def audit_manuscript(request: AuditRequest):
     if not request.source_paper_ids:
         raise HTTPException(status_code=400, detail="At least one source paper is required.")
 
-    return build_demo_audit(
-        manuscript_id=request.manuscript_id,
-        source_paper_ids=request.source_paper_ids,
-    )
+    try:
+        return run_audit(
+            manuscript_id=request.manuscript_id.strip(),
+            source_paper_ids=request.source_paper_ids,
+            llm_client=getattr(http_request.app.state, "llm_client", None),
+            llm_model=getattr(http_request.app.state, "llm_model", ""),
+        )
+    except AnalysisPaperNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except AnalysisPaperNotReadyError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except InvalidAnalysisPaperError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except AnalysisServiceError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @router.get("/audit/{audit_id}", response_model=AuditResponse)

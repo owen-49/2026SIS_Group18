@@ -74,4 +74,4 @@ async def startup():
         print(f"[ClaimTrace] LLM ready: {provider}/{settings.llm_model_name}")
     else:
         print(f"[ClaimTrace] LLM NOT configured ({provider}). "
-              f"Set API key in .env. Verifier will run in mock mode.")
+              f"Set API key in .env. Audit will use local evidence matching.")

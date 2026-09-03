@@ -1,4 +1,4 @@
-"""Stable adapter for Engine integration using deterministic mock logic."""
+"""Stable local adapter for claim comparison against parsed PDF content."""
 
 import re
 
@@ -26,7 +26,7 @@ def _similarity(claim: str, passage: str) -> float:
 
 
 def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
-    """Compare a claim with mock Parser output using deterministic overlap."""
+    """Compare a claim with persisted Parser output using deterministic overlap."""
     clean_claim = claim.strip()
     if not clean_claim:
         raise EngineAdapterError("Claim text is required.")
@@ -56,9 +56,9 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
     ]
 
     rationale = (
-        "Mock Engine result: the highest-overlap parsed passage supports the claim."
+        "Local evidence analysis: the highest-overlap parsed passage supports the claim."
         if verdict == VerdictEnum.SUPPORT
-        else "Mock Engine result: no parsed passage has enough lexical overlap with the claim."
+        else "Local evidence analysis: no parsed passage has enough lexical overlap with the claim."
     )
     return VerifyResponse(
         claim=clean_claim,
