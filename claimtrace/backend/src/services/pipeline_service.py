@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from ..models import PaperRecord, ParseStatus
+from ..storage import parsed_document_store
 from ..storage.paper_store import PaperStoreError, get_paper, update_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
@@ -39,6 +40,7 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
             paper_id,
             Path(processing.file_path),
             title=processing.title,
+            output_dir=parsed_document_store.PARSED_DIR / "markdown",
         )
         parsed_path = save_parsed_document(parsed)
         completed = update_paper(
