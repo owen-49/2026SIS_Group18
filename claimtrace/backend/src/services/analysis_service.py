@@ -1,28 +1,17 @@
-"""Persisted claim extraction and citation-audit orchestration.
+"""Extract single-Verify claims from persisted Parser output.
 
-The service deliberately starts from the Parser output saved by the upload
-pipeline.  It does not manufacture claims or source records: citation
-markers come from the manuscript text, source metadata comes from uploaded
-PDF/BibTeX records, and evidence comes from the parsed source paragraphs.
-
-When an LLM client is configured, it classifies the best retrieved passage.
-Local development and CI use the deterministic lexical analyser instead, so
-the API remains useful without downloading an embedding model or calling an
-external provider.
+Source resolution is local association, not external publication verification.
 """
 
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
 from ..models import (
-    AuditResponse,
-    CitationAuditResult,
     DocumentLocation,
     ExtractedClaim,
     IdentifiedSource,
@@ -31,11 +20,8 @@ from ..models import (
     ParsedBibDocument,
     ParsedDocument,
     ParseStatus,
-    SimilarSource,
     SourceDocument,
     SourceDocumentPage,
-    SourceLocation,
-    VerdictEnum,
 )
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
 from ..storage.paper_store import PaperStoreError, get_paper, list_papers
@@ -129,14 +115,6 @@ class _LoadedPdf:
     view: _DocumentView
 
 
-@dataclass(frozen=True)
-class _Passage:
-    text: str
-    source: _LoadedPdf
-    location: DocumentLocation
-    score: float
-
-
 def _normalise_text(text: str) -> str:
     """Collapse PDF/Markdown whitespace without changing visible wording."""
     return re.sub(r"\s+", " ", text).strip()
@@ -149,15 +127,6 @@ def _tokens(text: str) -> set[str]:
         for token in _TOKEN_RE.findall(text)
         if len(token) > 2 and token.casefold() not in _STOP_WORDS
     }
-
-
-def _similarity(claim: str, passage: str) -> float:
-    """Measure how much of a claim is covered by a candidate passage."""
-    claim_tokens = _tokens(claim)
-    passage_tokens = _tokens(passage)
-    if not claim_tokens or not passage_tokens:
-        return 0.0
-    return min(1.0, len(claim_tokens & passage_tokens) / len(claim_tokens))
 
 
 def _split_sentences(text: str) -> list[str]:
@@ -234,12 +203,12 @@ def _citation_markers(text: str) -> list[str]:
 
 
 def _citation_keys(marker: str) -> list[str]:
-    """Return direct BibTeX keys or numeric references represented by a marker."""
+    """Return a direct key only when one citation identifies one source."""
     latex_match = re.search(r"\{([^{}]+)\}", marker)
     if latex_match:
-        return [key.strip() for key in latex_match.group(1).split(",") if key.strip()]
-    numbers = re.findall(r"\d+", marker)
-    return numbers[:1]
+        keys = [key.strip() for key in latex_match.group(1).split(",") if key.strip()]
+        return keys if len(keys) == 1 else []
+    return []
 
 
 def _first_author_surname(authors: Iterable[str]) -> str:
@@ -251,33 +220,40 @@ def _first_author_surname(authors: Iterable[str]) -> str:
 
 def _find_bib_entry(marker: str, entries: list[Any]) -> Any | None:
     """Resolve a marker against persisted BibTeX entries when possible."""
+    if _NUMERIC_CITATION_RE.fullmatch(marker):
+        # A numeric manuscript reference is not a BibTeX key or storage index.
+        return None
     clean_marker = marker.strip("()[]【】 ")
     keys = {key.casefold() for key in _citation_keys(marker)}
     if clean_marker:
         keys.add(clean_marker.casefold())
-    for entry in entries:
-        if entry.key.casefold() in keys:
-            return entry
+    direct = [entry for entry in entries if entry.key.casefold() in keys]
+    if len(direct) == 1:
+        return direct[0]
+    if direct:
+        return None
 
-    numbers = re.findall(r"\d+", marker)
-    if numbers and not _LATEX_CITATION_RE.fullmatch(marker):
-        index = int(numbers[0]) - 1
-        if 0 <= index < len(entries):
-            return entries[index]
-
+    # Numeric labels are not positions in an uploaded BibTeX file.
     year_match = _YEAR_RE.search(marker)
     if year_match:
         year = int(year_match.group(0))
         marker_tokens = _tokens(marker)
-        for entry in entries:
-            surname = _first_author_surname(entry.authors)
-            if entry.year == year and surname and surname in marker_tokens:
-                return entry
+        candidates = [entry for entry in entries
+                      if entry.year == year and _first_author_surname(entry.authors)
+                      and _first_author_surname(entry.authors) in marker_tokens]
+        if len(candidates) == 1:
+            return candidates[0]
     return None
 
 
 def _load_bibliography_entries(records: list[PaperRecord]) -> list[Any]:
     """Read completed BibTeX entries for citation-key resolution."""
+    records = [record for record in records
+               if record.file_type == "bib" and record.status == ParseStatus.COMPLETED]
+    if len(records) != 1:
+        # No manuscript/bibliography association exists yet. Do not guess which
+        # uploaded bibliography belongs to this manuscript when several exist.
+        return []
     entries: list[Any] = []
     for record in records:
         if (
@@ -520,302 +496,4 @@ def get_paper_claims(paper_id: str) -> PaperClaimsResponse:
         claims=claims,
         error_message=None,
         manuscript_document=view.document,
-    )
-
-
-def _passages_for_source(claim: str, source: _LoadedPdf) -> list[_Passage]:
-    """Create sentence-level evidence candidates for one source PDF."""
-    passages: list[_Passage] = []
-    for paragraph_index, paragraph in enumerate(source.parsed.paragraphs):
-        location = source.view.paragraph_locations.get(paragraph_index)
-        if location is None:
-            continue
-        sentences = _split_sentences(paragraph.text) or [_normalise_text(paragraph.text)]
-        for sentence in sentences:
-            if not sentence:
-                continue
-            passages.append(
-                _Passage(
-                    text=sentence,
-                    source=source,
-                    location=location,
-                    score=round(_similarity(claim, sentence), 4),
-                )
-            )
-    return sorted(
-        passages,
-        key=lambda passage: (-passage.score, passage.source.record.paper_id, passage.location.page),
-    )
-
-
-def _rank_passages(claim: str, sources: list[_LoadedPdf]) -> list[_Passage]:
-    """Rank evidence across the source PDFs supplied to the audit request."""
-    passages = [
-        passage
-        for source in sources
-        for passage in _passages_for_source(claim, source)
-    ]
-    return sorted(
-        passages,
-        key=lambda passage: (
-            -passage.score,
-            passage.source.record.paper_id,
-            passage.location.page,
-            passage.location.paragraph_index,
-        ),
-    )
-
-
-def _llm_classification(
-    claim: str,
-    passage: str,
-    *,
-    client: Any | None,
-    model: str,
-) -> tuple[VerdictEnum, float, str] | None:
-    """Ask a configured OpenAI-compatible client for entailment classification."""
-    if client is None:
-        return None
-    prompt = f"""You are a citation verification assistant for academic papers.
-Determine whether the source passage supports the manuscript claim.
-
-SOURCE PASSAGE:
-\"\"\"
-{passage}
-\"\"\"
-
-MANUSCRIPT CLAIM:
-\"\"\"
-{claim}
-\"\"\"
-
-Return JSON only with this shape:
-{{\"label\": \"SUPPORT\" | \"PARTIAL\" | \"CONTRADICT\" | \"NOT_FOUND\", "
-        "\"rationale\": \"brief explanation grounded in the passage\"}}"""
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            response_format={"type": "json_object"},
-        )
-        content = response.choices[0].message.content
-        parsed = json.loads(content)
-        verdict = VerdictEnum(str(parsed.get("label", "NOT_FOUND")).upper())
-        rationale = str(parsed.get("rationale", "No rationale was returned.")).strip()
-        confidence = 0.85 if verdict in {VerdictEnum.SUPPORT, VerdictEnum.PARTIAL} else 0.3
-        return verdict, confidence, rationale or "No rationale was returned."
-    except Exception:
-        # The persisted local evidence result is still useful if a provider is
-        # unavailable or returns malformed data.  Do not turn an audit into a
-        # 500 just because optional LLM enrichment failed.
-        return None
-
-
-def _local_classification(claim: str, passage: _Passage | None) -> tuple[VerdictEnum, float, str]:
-    """Classify evidence deterministically when no LLM is available."""
-    if passage is None or passage.score < 0.2:
-        score = passage.score if passage else 0.0
-        confidence = round(0.2 + score * 0.15, 4)
-        return (
-            VerdictEnum.NOT_FOUND,
-            confidence,
-            "No sufficiently similar passage was found in the uploaded source PDFs.",
-        )
-    if passage.score >= 0.65:
-        confidence = round(min(0.95, 0.55 + passage.score * 0.4), 4)
-        return (
-            VerdictEnum.SUPPORT,
-            confidence,
-            "The highest-overlap passage in the uploaded source PDFs supports the claim.",
-        )
-    confidence = round(min(0.85, 0.45 + passage.score * 0.35), 4)
-    return (
-        VerdictEnum.PARTIAL,
-        confidence,
-        "The uploaded source PDFs contain overlapping evidence, but the match is incomplete.",
-    )
-
-
-def _risk_level(verdict: VerdictEnum) -> str:
-    """Map a verdict to the review risk shown by the frontend."""
-    if verdict == VerdictEnum.SUPPORT:
-        return "low"
-    if verdict == VerdictEnum.PARTIAL:
-        return "medium"
-    return "high"
-
-
-def _similar_source_candidates(
-    marker: str,
-    ranked: list[_Passage],
-    *,
-    chosen: _LoadedPdf | None,
-) -> list[SimilarSource]:
-    """Return distinct alternative PDFs for unresolved citations."""
-    candidates: list[SimilarSource] = []
-    seen: set[str] = set()
-    for passage in ranked:
-        paper_id = passage.source.record.paper_id
-        if paper_id in seen or passage.source is chosen or passage.score <= 0:
-            continue
-        seen.add(paper_id)
-        source = _source_from_pdf(passage.source, marker)
-        candidates.append(SimilarSource(**source.model_dump(), similarity=passage.score))
-        if len(candidates) == 3:
-            break
-    return candidates
-
-
-def run_audit(
-    manuscript_id: str,
-    source_paper_ids: list[str],
-    *,
-    llm_client: Any | None = None,
-    llm_model: str = "",
-) -> AuditResponse:
-    """Extract manuscript claims and compare each with uploaded source PDFs."""
-    try:
-        manuscript_record = get_paper(manuscript_id)
-    except PaperStoreError as exc:
-        raise AnalysisServiceError("Unable to read paper metadata.") from exc
-    if manuscript_record is None:
-        raise AnalysisPaperNotFoundError("Manuscript not found.")
-    if manuscript_record.file_type != "pdf":
-        raise InvalidAnalysisPaperError("Only a PDF manuscript can be audited.")
-    if manuscript_record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
-        raise AnalysisPaperNotReadyError("Manuscript parsing has not completed.")
-    if manuscript_record.status == ParseStatus.FAILED:
-        raise InvalidAnalysisPaperError(
-            manuscript_record.error_message or "Manuscript parsing failed."
-        )
-
-    source_ids = list(dict.fromkeys(source_paper_ids))
-    sources: list[_LoadedPdf] = []
-    for source_id in source_ids:
-        try:
-            record = get_paper(source_id)
-        except PaperStoreError as exc:
-            raise AnalysisServiceError("Unable to read source paper metadata.") from exc
-        if record is None:
-            raise AnalysisPaperNotFoundError(f"Source paper not found: {source_id}.")
-        if record.file_type != "pdf":
-            raise InvalidAnalysisPaperError(f"Source paper is not a PDF: {source_id}.")
-        if record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
-            raise AnalysisPaperNotReadyError(
-                f"Source paper parsing has not completed: {source_id}."
-            )
-        if record.status == ParseStatus.FAILED:
-            raise InvalidAnalysisPaperError(
-                record.error_message or f"Source paper parsing failed: {source_id}."
-            )
-        sources.append(_load_completed_pdf(record))
-
-    manuscript = _load_completed_pdf(manuscript_record)
-    try:
-        records = list_papers()
-    except PaperStoreError as exc:
-        raise AnalysisServiceError("Unable to read paper metadata.") from exc
-    entries = _load_bibliography_entries(records)
-    claims, manuscript_view = extract_claims(
-        manuscript.parsed,
-        manuscript_id=manuscript_id,
-        bibliography_entries=entries,
-        source_pdfs=sources,
-    )
-
-    results: list[CitationAuditResult] = []
-    for claim in claims:
-        resolved_id = claim.cited_source.source_paper_id if claim.cited_source else None
-        allowed_sources = [source for source in sources if source.record.paper_id == resolved_id]
-        if not allowed_sources:
-            allowed_sources = sources
-
-        ranked = _rank_passages(claim.text, allowed_sources)
-        best = ranked[0] if ranked else None
-        local_verdict, local_confidence, local_rationale = _local_classification(claim.text, best)
-        llm_result = _llm_classification(
-            claim.text,
-            best.text if best and best.score >= 0.2 else "",
-            client=llm_client,
-            model=llm_model,
-        ) if best and best.score >= 0.2 else None
-        verdict, confidence, rationale = llm_result or (
-            local_verdict,
-            local_confidence,
-            local_rationale,
-        )
-
-        selected_source = best.source if best else None
-        cited_source = (
-            claim.cited_source
-            if resolved_id and selected_source and selected_source.record.paper_id == resolved_id
-            else _source_from_pdf(selected_source, claim.citation_marker)
-            if selected_source
-            else claim.cited_source
-        )
-        source_document = None
-        source_location = None
-        source_passage = None
-        if best:
-            source_passage = best.text
-            source_document = best.source.view.document.model_copy(
-                update={"matched_location": best.location}
-            )
-            source_location = SourceLocation(
-                page=best.location.page,
-                quote=best.text,
-                annotation=(
-                    "Matched source passage"
-                    if verdict == VerdictEnum.SUPPORT
-                    else "Evidence partially overlaps the claim"
-                    if verdict == VerdictEnum.PARTIAL
-                    else "Source analysis found a high-risk result"
-                ),
-            )
-        if resolved_id and not any(source.record.paper_id == resolved_id for source in sources):
-            rationale = (
-                "The BibTeX record was identified, but its uploaded source PDF was not "
-                "included in this audit request."
-            )
-            verdict = VerdictEnum.NOT_FOUND
-            confidence = 0.2
-            cited_source = claim.cited_source
-            source_document = None
-            source_location = None
-            source_passage = None
-
-        results.append(
-            CitationAuditResult(
-                citation_key=claim.cited_source.citation_key
-                if claim.cited_source
-                else claim.citation_marker,
-                claim=claim.text,
-                verdict=verdict,
-                confidence=round(confidence, 4),
-                risk_level=_risk_level(verdict),
-                claim_id=claim.claim_id,
-                manuscript_location=claim.manuscript_location,
-                source_location=source_location,
-                cited_source=cited_source,
-                source_passage=source_passage,
-                source_document=source_document,
-                comparison_rationale=rationale,
-                similar_sources=_similar_source_candidates(
-                    claim.citation_marker,
-                    ranked,
-                    chosen=selected_source,
-                ) if not claim.cited_source else [],
-            )
-        )
-
-    return AuditResponse(
-        manuscript_id=manuscript_id,
-        total_citations=len(results),
-        supported=sum(result.verdict == VerdictEnum.SUPPORT for result in results),
-        partial=sum(result.verdict == VerdictEnum.PARTIAL for result in results),
-        contradicted=sum(result.verdict == VerdictEnum.CONTRADICT for result in results),
-        not_found=sum(result.verdict == VerdictEnum.NOT_FOUND for result in results),
-        results=results,
-        manuscript_document=manuscript_view.document,
     )

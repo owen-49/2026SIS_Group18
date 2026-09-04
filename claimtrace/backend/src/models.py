@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class VerdictEnum(str, Enum):
@@ -40,10 +40,19 @@ class VerifyRequest(BaseModel):
 
 
 class AuditRequest(BaseModel):
-    manuscript_id: str = Field(..., description="ID of the uploaded manuscript")
-    source_paper_ids: list[str] = Field(
-        ..., description="IDs of all source papers cited in the manuscript"
-    )
+    """Audit one persisted bibliography or one manuscript reference list."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    bib_paper_id: str | None = Field(default=None, min_length=1)
+    manuscript_id: str | None = Field(default=None, min_length=1)
+    # Accepted for old clients, but never used as proof of publication existence.
+    source_paper_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def require_one_input(self):
+        if bool(self.bib_paper_id) == bool(self.manuscript_id):
+            raise ValueError("Provide exactly one of bib_paper_id or manuscript_id.")
+        return self
 
 
 class BibVerifyRequest(BaseModel):
@@ -246,41 +255,6 @@ class PaperClaimsResponse(BaseModel):
     status: ParseStatus
     claims: list[ExtractedClaim] = Field(default_factory=list)
     error_message: str | None = None
-    manuscript_document: SourceDocument | None = None
-
-
-class SourceLocation(BaseModel):
-    """Evidence location returned for an audit result."""
-
-    page: int = Field(..., ge=1)
-    quote: str
-    annotation: str | None = None
-
-
-class CitationAuditResult(BaseModel):
-    citation_key: str
-    claim: str
-    verdict: VerdictEnum
-    confidence: float
-    risk_level: str  # "high", "medium", "low"
-    claim_id: str | None = None
-    manuscript_location: DocumentLocation | None = None
-    source_location: SourceLocation | None = None
-    cited_source: IdentifiedSource | None = None
-    source_passage: str | None = None
-    source_document: SourceDocument | None = None
-    comparison_rationale: str | None = None
-    similar_sources: list[SimilarSource] = Field(default_factory=list)
-
-
-class AuditResponse(BaseModel):
-    manuscript_id: str
-    total_citations: int
-    supported: int = 0
-    partial: int = 0
-    contradicted: int = 0
-    not_found: int = 0
-    results: list[CitationAuditResult] = Field(default_factory=list)
     manuscript_document: SourceDocument | None = None
 
 

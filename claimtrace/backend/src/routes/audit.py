@@ -1,62 +1,57 @@
-"""Batch audit endpoints — verify all citations in a manuscript."""
+"""Bibliography existence/metadata Audit, independent of claim-support Verify."""
 
-from fastapi import APIRouter, HTTPException, Request
+import logging
+from uuid import UUID
 
-from ..models import (
-    AuditRequest,
-    AuditResponse,
-)
-from ..services.analysis_service import (
-    AnalysisPaperNotFoundError,
-    AnalysisPaperNotReadyError,
-    AnalysisServiceError,
-    InvalidAnalysisPaperError,
-    run_audit,
-)
+from fastapi import APIRouter, Depends, HTTPException, Request
+
+from ..audit_models import BibliographyAuditResponse
+from ..models import AuditRequest
+from ..services.bibliography_audit_service import run_bibliography_audit
+from ..services.bibliography_lookup import BibliographyLookup
+from ..services.reference_input_service import AuditInputError
+from ..storage.audit_store import load_audit, save_audit
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
-@router.post("/audit", response_model=AuditResponse)
-async def audit_manuscript(request: AuditRequest, http_request: Request):
-    """Run a full citation audit on a manuscript.
+def get_bibliography_lookup(request: Request) -> BibliographyLookup | None:
+    """Integration hook for the external lookup team's implementation."""
+    return getattr(request.app.state, "bibliography_lookup", None)
 
-    Verifies every claim-citation pair in the manuscript against
-    the uploaded source papers.
 
-    Returns a risk-ranked report of all citations.
-    """
-    if not request.manuscript_id:
-        raise HTTPException(status_code=400, detail="Manuscript ID is required.")
-    if not request.source_paper_ids:
-        raise HTTPException(status_code=400, detail="At least one source paper is required.")
-
+@router.post("/audit", response_model=BibliographyAuditResponse)
+def audit_bibliography(request: AuditRequest, lookup=Depends(get_bibliography_lookup)):
+    # FastAPI runs sync handlers in its worker pool, keeping blocking Parser
+    # calls (and future bounded external queries) off the event loop.
     try:
-        return run_audit(
-            manuscript_id=request.manuscript_id.strip(),
-            source_paper_ids=request.source_paper_ids,
-            llm_client=getattr(http_request.app.state, "llm_client", None),
-            llm_model=getattr(http_request.app.state, "llm_model", ""),
-        )
-    except AnalysisPaperNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except AnalysisPaperNotReadyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except InvalidAnalysisPaperError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except AnalysisServiceError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        report = run_bibliography_audit(request, lookup)
+        save_audit(report)
+        return report
+    except AuditInputError as exc:
+        if exc.status_code >= 500:
+            logger.exception("Unable to prepare bibliography input")
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail={"code": exc.code, "message": str(exc)},
+        ) from exc
+    except OSError as exc:
+        logger.exception("Unable to save bibliography audit")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "code": "AUDIT_STORAGE_FAILED",
+                "message": "Unable to save the audit report.",
+            },
+        ) from exc
 
 
-@router.get("/audit/{audit_id}", response_model=AuditResponse)
-async def get_audit_result(audit_id: str):
-    """Get the results of a previously run audit.
-
-    Args:
-        audit_id: The audit ID returned by POST /api/audit.
-
-    Returns:
-        AuditResponse with all citation results.
-    """
-    # TODO W6: Retrieve from audit result store
-    raise HTTPException(status_code=404, detail="Audit not found (not yet implemented).")
+@router.get("/audit/{audit_id}", response_model=BibliographyAuditResponse)
+def get_audit_result(audit_id: UUID):
+    try:
+        return load_audit(audit_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Audit not found.") from exc
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=500, detail="Unable to read the audit report.") from exc

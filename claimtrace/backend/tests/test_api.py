@@ -303,7 +303,7 @@ def test_verify_rejects_empty_claim(client):
     assert response.status_code == 400
 
 
-def test_claims_and_audit_use_persisted_parser_output(client, storage_paths):
+def test_claims_use_persisted_parser_output(client, storage_paths):
     manuscript = _persist_parsed_pdf(
         storage_paths,
         "manuscript-1",
@@ -328,7 +328,7 @@ def test_claims_and_audit_use_persisted_parser_output(client, storage_paths):
             ],
         ),
     )
-    source = _persist_parsed_pdf(
+    _persist_parsed_pdf(
         storage_paths,
         "source-1",
         "attention-source.pdf",
@@ -359,38 +359,6 @@ def test_claims_and_audit_use_persisted_parser_output(client, storage_paths):
     assert claim["manuscript_location"] == {"page": 1, "paragraph_index": 0}
     assert claims_body["manuscript_document"]["total_pages"] == 2
 
-    response = client.post(
-        "/api/audit",
-        json={
-            "manuscript_id": manuscript.paper_id,
-            "source_paper_ids": [source.paper_id],
-        },
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["total_citations"] == 1
-    assert len(body["results"]) == 1
-    assert (
-        body["supported"]
-        + body["partial"]
-        + body["contradicted"]
-        + body["not_found"]
-        == body["total_citations"]
-    )
-    result = body["results"][0]
-    assert result["verdict"] == "SUPPORT"
-    assert result["cited_source"]["source_paper_id"] == source.paper_id
-    assert result["source_location"] == {
-        "page": 1,
-        "quote": "Self-attention improves sequence modelling without recurrence.",
-        "annotation": "Matched source passage",
-    }
-    assert result["source_document"]["matched_location"] == {
-        "page": 1,
-        "paragraph_index": 0,
-    }
-    assert "Demo" not in result["comparison_rationale"]
 
 
 def test_claims_unknown_paper_returns_404(client):
@@ -461,12 +429,3 @@ def test_claims_resolve_bib_key_to_matching_local_pdf(client, storage_paths):
     assert claim["cited_source"]["source_paper_id"] == source.paper_id
     assert claim["cited_source"]["citation_key"] == "attention2024"
     assert claim["source_document"]["total_pages"] == 1
-
-
-def test_audit_rejects_empty_sources(client):
-    response = client.post(
-        "/api/audit",
-        json={"manuscript_id": "manuscript.pdf", "source_paper_ids": []},
-    )
-
-    assert response.status_code == 400

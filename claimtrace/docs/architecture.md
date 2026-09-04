@@ -121,32 +121,19 @@ sequenceDiagram
     FE-->>U: 展示每个 bib 条目的字段比对结果
 ```
 
-### 2.3 manuscript claims / batch audit 流程
+### 2.3 Single Verify claims / bibliography Audit
 
-```mermaid
-sequenceDiagram
-    participant FE as Frontend
-    participant API as FastAPI
-    participant P as Persisted Parser output
-    participant E as Local evidence analyser
-    participant LLM as Optional LLM
+Single Verify reads persisted Parser paragraphs through
+`GET /api/papers/{paper_id}/claims`. Claim text and page locations remain available.
+Local source association is not external publication verification.
 
-    FE->>API: GET /api/papers/{paper_id}/claims
-    API->>P: load ParsedDocument JSON
-    P-->>API: paragraphs + page locations
-    API->>API: extract citation-bearing sentences
-    API-->>FE: claims + manuscript_document
-
-    FE->>API: POST /api/audit {manuscript_id, source_paper_ids}
-    API->>P: load manuscript and source ParsedDocument JSON
-    API->>E: rank source sentences for every extracted claim
-    E-->>API: evidence passage + page location
-    opt LLM configured
-        API->>LLM: classify claim against retrieved passage
-        LLM-->>API: SUPPORT/PARTIAL/CONTRADICT/NOT_FOUND
-    end
-    API-->>FE: verdicts + source documents + evidence locations
-```
+Bibliography Audit reads persisted Bib entries or calls the existing PDF reference
+extractor, then delegates publication lookup to an external-record adapter and
+compares metadata through the existing Engine comparator. It never ranks source
+passages or classifies claim support. The external lookup implementation is still
+missing; unconfigured lookups return `EXTERNAL_LOOKUP_NOT_CONFIGURED`.
+See [backend Audit contract and handoff](backend-audit-handoff.md) for boundaries,
+team dependencies, and the frontend migration still required.
 
 ---
 
@@ -199,17 +186,21 @@ Response: {
 
 ### POST /api/audit
 
-```
-Request:  { manuscript_id: str, source_paper_ids: [str] }
+```text
+Request: { bib_paper_id: str } OR { manuscript_id: str }
 Response: {
-  manuscript_id, total_citations, supported, partial,
-  contradicted, not_found,
-  manuscript_document,
-  results: [{ citation_key, claim, verdict, confidence, risk_level,
-    manuscript_location, source_location, cited_source,
-    source_passage, source_document, comparison_rationale }]
+  contract_version: 2, audit_id, input_paper_id, input_type, checked_at,
+  status, total_entries, counts, warnings,
+  results: [{ entry, status, reason, field_checks,
+              matched_record, candidates, lookup_attempts }]
 }
 ```
+
+Source PDFs are not required. Results distinguish `VERIFIED`,
+`METADATA_MISMATCH`, `NEEDS_REVIEW`, `NOT_FOUND`, and `LOOKUP_FAILED`.
+`NOT_FOUND` does not prove fabrication. `GET /api/audit/{audit_id}` reads stored
+results. See `backend/src/audit_models.py` and the handoff for the full v2 schema.
+The existing Audit frontend has not yet migrated to this breaking contract.
 
 ### GET /api/papers/{id}/claims
 
@@ -271,13 +262,13 @@ Response: {
 `papers.json` + 文件存储替代 Postgres/MySQL。理由：数据量小（几篇到几十篇论文）、无多用户并发、无复杂查询。省下的时间投入 PDF 解析和检索准确率。若后续需要查询/多用户，SQLite 是零成本升级路径。
 
 ### 2. 多 Provider LLM 抽象
-`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。未配置 key 时，audit 使用已上传 PDF 的本地证据匹配；配置 key 后再用 LLM 对召回证据分类，保证 CI 和本地开发能跑。
+`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。语义分类仅属于单条 Verify。文献 Audit 不使用 LLM 支持度分类，其外部记录查询适配器仍待接入。
 
 ### 3. 两阶段检索（Paragraph → Sentence）
 段落级 embedding 保证召回，句子级重排保证精度。避免纯句子切分（噪声大）和纯段落切分（精度低）各自的缺陷。
 
 ### 4. 展示证据而非只给结论
-核心信任设计：每条判定都**附带匹配到的原文段落**，用户能自己判断 AI 对不对。LLM 只做「给定原文 + claim 的支撑关系分类」，不凭记忆生成引用——这正是防御「LLM 幻觉」的关键（见 pitch Q&A）。
+单条 Verify 的信任设计：每条语义判定都**附带匹配到的原文段落**，用户能自己判断 AI 对不对。LLM 只做「给定原文 + claim 的支撑关系分类」，不凭记忆生成引用——这正是防御「LLM 幻觉」的关键（见 pitch Q&A）。
 
 ### 5. 目录级所有权（Monorepo）
 `frontend/`、`backend/`、`engine/`、`parser/` 各自独立成包，跨模块通过类型化 API 契约交互，而非共享代码。每队只改自己的目录，从源头消除 Git 冲突。
@@ -290,5 +281,7 @@ Response: {
 |------|------|------|
 | `ParsedPaper` 首页元数据未填充 | bib 验证暂时只能返回 `PDF_MISSING` | Parser 队 |
 | 前端默认 mock（`VITE_USE_MOCK_API=true`） | 端到端未完全串真实后端 | Frontend |
-| 语义 embedding/FAISS 尚未作为 audit 的默认依赖 | 未配置 LLM 时先使用确定性的本地词法证据排序 | Engine / Backend |
+| Audit 外部记录查询未实现 | 返回查询未配置，不能完成真实性核实 | Backend / 待确定查询模块负责人 |
+| Audit 前端仍使用旧语义契约 | 需要保留布局并迁移到元数据字段差异及五类状态 | Frontend |
+| PDF 参考文献抽取仅返回原始文本 | 完整字段比对需要结构化条目 | Parser / Engine |
 | markdown converter 测试产物误提交 | git 卫生问题（暂不处理） | 全员 |
