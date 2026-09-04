@@ -5,7 +5,7 @@ Engine's FAISS retriever). Entailment verification is delegated to the real
 Engine Verifier backed by the configured LLM (DeepSeek / OpenAI / Gemini / ...).
 
 When no LLM client is configured (no API key), it falls back to the old
-deterministic mock verdict so CI and local dev without keys still work.
+deterministic lexical verdict so CI and local dev without keys still work.
 """
 
 import re
@@ -74,7 +74,7 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
 
     Ranks paragraphs by lexical overlap to pick the best-matching passage,
     then asks the Engine Verifier (backed by the configured LLM) for an
-    entailment verdict. Falls back to a deterministic mock verdict when no
+    entailment verdict. Falls back to a deterministic lexical verdict when no
     LLM client is available.
     """
     clean_claim = claim.strip()
@@ -113,9 +113,10 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
         verdict = VerdictEnum.SUPPORT if best_score >= 0.2 else VerdictEnum.NOT_FOUND
         confidence = min(0.95, 0.55 + best_score) if verdict == VerdictEnum.SUPPORT else 0.2
         rationale = (
-            "Mock Engine result: the highest-overlap parsed passage supports the claim."
+            "Local evidence analysis: the highest-overlap parsed passage supports the claim."
             if verdict == VerdictEnum.SUPPORT
-            else "Mock Engine result: no parsed passage has enough lexical overlap with the claim."
+            else "Local evidence analysis: no parsed passage has enough lexical overlap "
+            "with the claim."
         )
 
     # ── 3. Build matches (top-3 passages) ───────────────────

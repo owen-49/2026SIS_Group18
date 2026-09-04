@@ -77,5 +77,8 @@ async def startup():
     if app.state.llm_client:
         print(f"[ClaimTrace] LLM ready: {provider}/{settings.llm_model_name}")
     else:
-        print(f"[ClaimTrace] LLM NOT configured ({provider}). "
-              f"Set API key in .env. Verifier will run in mock mode.")
+        print(
+            f"[ClaimTrace] LLM NOT configured ({provider}). "
+            "Set API key in .env. Single Verify uses a lexical baseline; "
+            "bibliography Audit needs an external lookup adapter."
+        )

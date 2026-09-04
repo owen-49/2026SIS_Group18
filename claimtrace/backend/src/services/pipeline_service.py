@@ -9,6 +9,7 @@ from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
     save_parsed_document,
 )
+from ..storage.reference_store import invalidate_references
 from .parser_adapter import ParserAdapterError, parse_document
 
 
@@ -36,6 +37,7 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
         if processing is None:
             raise PipelineError("Uploaded paper record was not found.")
 
+        invalidate_references(paper_id)
         parsed = parse_document(
             paper_id,
             Path(processing.file_path),

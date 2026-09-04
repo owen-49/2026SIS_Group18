@@ -66,8 +66,64 @@ def test_parse_bib_compatibility_endpoint_reuses_real_parser(client):
     )
 
     assert response.status_code == 200
-    assert response.json()["status"] == "completed"
-    assert response.json()["entry_count"] == 3
+    body = response.json()
+    assert body["status"] == "completed"
+    assert body["file_type"] == "bib"
+    assert body["entry_count"] == 3
+    assert [entry["key"] for entry in body["entries"]] == [
+        "attention2024",
+        "retrieval2023",
+        "metadata2022",
+    ]
+    assert body["entries"][0]["authors"] == ["Smith, John", "Doe, Jane"]
+
+
+def test_parse_bib_response_changes_with_persisted_upload(client):
+    bib = b"""
+@article{different2025,
+  title={A Different Paper},
+  author={Taylor, Alex},
+  year={2025},
+  journal={Journal of Different Results}
+}
+"""
+    uploaded = client.post(
+        "/api/parse",
+        files={"file": ("different.bib", bib, "text/plain")},
+    ).json()
+
+    response = client.post(
+        "/api/parse/bib",
+        json={"paper_id": uploaded["paper_id"]},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["entry_count"] == 1
+    assert body["entries"] == [
+        {
+            "key": "different2025",
+            "entry_type": "article",
+            "title": "A Different Paper",
+            "authors": ["Taylor, Alex"],
+            "year": 2025,
+            "venue": "Journal of Different Results",
+            "volume": "",
+            "number": "",
+            "pages": "",
+            "doi": "",
+            "url": "",
+            "publisher": "",
+            "raw_text": (
+                "@article{different2025,\n"
+                "  title={A Different Paper},\n"
+                "  author={Taylor, Alex},\n"
+                "  year={2025},\n"
+                "  journal={Journal of Different Results}\n"
+                "}"
+            ),
+        }
+    ]
 
 
 def test_replace_bib_reuses_paper_id_and_does_not_create_duplicate(client, storage_paths):

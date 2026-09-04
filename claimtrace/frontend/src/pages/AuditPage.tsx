@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { runAudit, usingMockApi } from "../api/client";
+import { listPapers, runAudit, usingMockApi } from "../api/client";
 import { Icon } from "../components/Icon";
 import { VerdictBadge } from "../components/VerdictBadge";
 import { demoAudit } from "../data/mockData";
 import { getWorkspacePapers } from "../data/workspacePapers";
-import type { AuditResponse, Verdict } from "../types/api";
+import type { AuditResponse, ParseStatus, Verdict } from "../types/api";
 
 type Filter = "ALL" | "FLAGGED" | Verdict;
 
@@ -13,6 +13,14 @@ interface AuditLocationState {
   fileName?: string;
   paperId?: string;
   justUploaded?: boolean;
+}
+
+interface AuditPaperOption {
+  paperId: string;
+  fileName: string;
+  fileType?: "pdf" | "bib";
+  status?: ParseStatus;
+  pages?: number;
 }
 
 const filterOptions: { value: Filter; label: string }[] = [
@@ -40,18 +48,71 @@ const demoPageCopy: Record<number, { title: string; paragraphs: string[] }> = {
 export function AuditPage() {
   const location = useLocation();
   const locationState = location.state as AuditLocationState | null;
-  const [audit, setAudit] = useState<AuditResponse | null>(demoAudit);
+  const [audit, setAudit] = useState<AuditResponse | null>(usingMockApi ? demoAudit : null);
   const [loading, setLoading] = useState(false);
+  const [papersLoading, setPapersLoading] = useState(!usingMockApi);
+  const [papersError, setPapersError] = useState<string | null>(null);
+  const [auditError, setAuditError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
   const [selectedKey, setSelectedKey] = useState(demoAudit.results[0]?.citation_key || "");
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [showComplete, setShowComplete] = useState(false);
   const citationDocumentRef = useRef<HTMLDivElement>(null);
-  const [papers] = useState(getWorkspacePapers);
-  const [currentPaperId, setCurrentPaperId] = useState(() => locationState?.paperId || getWorkspacePapers()[0].paperId);
+  const [papers, setPapers] = useState<AuditPaperOption[]>(() => usingMockApi ? getWorkspacePapers() : []);
+  const [currentPaperId, setCurrentPaperId] = useState(() => (
+    locationState?.paperId
+      || (usingMockApi ? getWorkspacePapers()[0]?.paperId || "" : "")
+  ));
   const currentPaper = papers.find((paper) => paper.paperId === currentPaperId) || papers[0];
   const manuscriptName = currentPaper?.fileName || locationState?.fileName || audit?.manuscript_id || "transformer-survey.pdf";
+
+  useEffect(() => {
+    if (usingMockApi) return;
+    const controller = new AbortController();
+    setPapersLoading(true);
+    setPapersError(null);
+    void listPapers(controller.signal).then((response) => {
+      if (controller.signal.aborted) return;
+      const pdfs = response.papers
+        .filter((paper) => paper.file_type === "pdf")
+        .map((paper) => ({
+          paperId: paper.paper_id,
+          fileName: paper.original_filename,
+          fileType: paper.file_type,
+          status: paper.status,
+          pages: paper.pages,
+        }));
+      setPapers(pdfs);
+      setCurrentPaperId((current) => {
+        if (current && pdfs.some((paper) => paper.paperId === current)) return current;
+        if (locationState?.paperId && pdfs.some((paper) => paper.paperId === locationState.paperId)) return locationState.paperId;
+        return pdfs[0]?.paperId || "";
+      });
+    }).catch((error: unknown) => {
+      if (!controller.signal.aborted) {
+        setPapersError(error instanceof Error ? error.message : "Unable to load uploaded manuscripts.");
+      }
+    }).finally(() => {
+      if (!controller.signal.aborted) setPapersLoading(false);
+    });
+    return () => controller.abort();
+  }, [locationState?.paperId]);
+
+  const sourcePaperIds = useMemo(
+    () => papers.filter((paper) => paper.paperId !== currentPaperId
+      && paper.fileType !== "bib"
+      && (usingMockApi || paper.status === "completed"))
+      .map((paper) => paper.paperId),
+    [currentPaperId, papers],
+  );
+
+  useEffect(() => {
+    if (usingMockApi) return;
+    setAudit(null);
+    setSelectedKey("");
+    setAuditError(null);
+  }, [currentPaperId]);
 
   useEffect(() => {
     if (!locationState?.justUploaded) return;
@@ -61,8 +122,13 @@ export function AuditPage() {
 
   async function refreshAudit() {
     setLoading(true);
+    setAuditError(null);
     try {
-      setAudit(await runAudit(currentPaperId, ["paper-attention", "paper-bert", "paper-gpt3", "paper-rag"]));
+      const response = await runAudit(currentPaperId, sourcePaperIds);
+      setAudit(response);
+      setSelectedKey(response.results[0]?.citation_key || "");
+    } catch (error) {
+      setAuditError(error instanceof Error ? error.message : "Unable to run the citation audit.");
     } finally {
       setLoading(false);
     }
@@ -118,30 +184,42 @@ export function AuditPage() {
   const sentenceClass = (citationKey: string, tone: "support" | "partial" | "danger") =>
     `citation-sentence citation-sentence-${tone}${hoveredKey === citationKey || selectedKey === citationKey ? " active" : ""}`;
 
+  const supportPercentage = audit?.total_citations ? audit.supported / audit.total_citations * 100 : 0;
+  const partialPercentage = audit?.total_citations ? audit.partial / audit.total_citations * 100 : 0;
+  const highRiskPercentage = audit?.total_citations
+    ? (audit.contradicted + audit.not_found) / audit.total_citations * 100
+    : 0;
+
   return (
     <div className="page-stack audit-review-page">
       <section className="page-heading heading-row">
         <div><span className="eyebrow">Risk-ranked review</span><h1>Batch audit</h1><p>Inspect every result in the original manuscript context and jump directly to the cited sentence.</p></div>
         <div className="audit-heading-actions">
-          <label className="manuscript-picker"><span>Current manuscript</span><select value={currentPaperId} onChange={(event) => setCurrentPaperId(event.target.value)}>{papers.map((paper) => <option value={paper.paperId} key={paper.paperId}>{paper.fileName}</option>)}</select></label>
-          <button className="button button-primary" type="button" disabled={loading} onClick={() => void refreshAudit()}>{loading ? <><span className="spinner" /> Auditing…</> : <><Icon name="audit" size={17} /> Run audit</>}</button>
+          <label className="manuscript-picker"><span>Current manuscript</span><select value={currentPaperId} disabled={!usingMockApi && (papersLoading || Boolean(papersError) || papers.length === 0)} onChange={(event) => setCurrentPaperId(event.target.value)}>{papers.map((paper) => <option value={paper.paperId} key={paper.paperId}>{paper.fileName}</option>)}</select></label>
+          <button className="button button-primary" type="button" disabled={loading || (!usingMockApi && (!currentPaperId || sourcePaperIds.length === 0))} onClick={() => void refreshAudit()}>{loading ? <><span className="spinner" /> Auditing…</> : <><Icon name="audit" size={17} /> Run audit</>}</button>
         </div>
       </section>
 
+      {!usingMockApi && papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading persisted PDF records from your Paper Library.</p></section>}
+      {!usingMockApi && !papersLoading && papersError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Couldn’t load uploaded manuscripts</h2><p>{papersError}</p><button className="button button-secondary" type="button" onClick={() => window.location.reload()}>Try again</button></section>}
+      {!usingMockApi && !papersLoading && !papersError && papers.length === 0 && <section className="library-state panel"><span className="library-state-icon"><Icon name="document" /></span><h2>No uploaded PDF manuscript</h2><p>Upload a manuscript and at least one source PDF in Paper Library before running an audit.</p></section>}
+      {!usingMockApi && !papersLoading && !papersError && papers.length > 0 && sourcePaperIds.length === 0 && <section className="library-state panel"><span className="library-state-icon"><Icon name="search" /></span><h2>No source PDF selected</h2><p>Upload at least one additional completed PDF so the manuscript claims can be compared with source evidence.</p></section>}
+      {auditError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Audit could not be completed</h2><p>{auditError}</p></section>}
+
       {audit && <>
         <section className="audit-summary panel">
-          <div className="audit-score"><div className="score-ring"><strong>{Math.round((audit.supported / audit.total_citations) * 100)}</strong><small>% supported</small></div><div><span className="eyebrow">{manuscriptName}</span><h2>{audit.total_citations} citations checked</h2><p>{audit.contradicted + audit.not_found} high-risk claims should be reviewed before submission.</p></div></div>
-          <div className="summary-bars"><div><span>Supported <b>{audit.supported}</b></span><i><em style={{ width: `${audit.supported / audit.total_citations * 100}%` }} /></i></div><div><span>Partial <b>{audit.partial}</b></span><i><em className="partial-bar" style={{ width: `${audit.partial / audit.total_citations * 100}%` }} /></i></div><div><span>Contradicted / missing <b>{audit.contradicted + audit.not_found}</b></span><i><em className="danger-bar" style={{ width: `${(audit.contradicted + audit.not_found) / audit.total_citations * 100}%` }} /></i></div></div>
+          <div className="audit-score"><div className="score-ring"><strong>{Math.round(supportPercentage)}</strong><small>% supported</small></div><div><span className="eyebrow">{manuscriptName}</span><h2>{audit.total_citations} citations checked</h2><p>{audit.contradicted + audit.not_found} high-risk claims should be reviewed before submission.</p></div></div>
+          <div className="summary-bars"><div><span>Supported <b>{audit.supported}</b></span><i><em style={{ width: `${supportPercentage}%` }} /></i></div><div><span>Partial <b>{audit.partial}</b></span><i><em className="partial-bar" style={{ width: `${partialPercentage}%` }} /></i></div><div><span>Contradicted / missing <b>{audit.contradicted + audit.not_found}</b></span><i><em className="danger-bar" style={{ width: `${highRiskPercentage}%` }} /></i></div></div>
         </section>
 
         <section className="audit-review-grid">
           <article className="panel manuscript-panel">
             <header className="manuscript-toolbar">
               <div><h2>Original manuscript</h2><p>{manuscriptName}</p></div>
-              <span>{usingMockApi ? "Full demo manuscript · 12 pages" : "Full manuscript · 12 pages"}</span>
+              <span>{usingMockApi ? "Full demo manuscript · 12 pages" : audit.manuscript_document ? `Parsed manuscript · ${audit.manuscript_document.total_pages} pages` : "Parsed manuscript"}</span>
             </header>
             <div className="manuscript-scroll">
-              {Array.from({ length: 12 }, (_, index) => index + 1).map((page) => {
+              {usingMockApi && <>{Array.from({ length: 12 }, (_, index) => index + 1).map((page) => {
                 if (page === 3) return (
                   <section className="manuscript-sheet" aria-label="Manuscript page 3" key={page}>
                     <small>3 / 12</small>
@@ -175,7 +253,22 @@ export function AuditPage() {
                     {content.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </section>
                 );
-              })}
+              })}</>}
+              {!usingMockApi && audit.manuscript_document ? audit.manuscript_document.pages.map((page) => (
+                <section className="manuscript-sheet" aria-label={`Manuscript page ${page.page}`} key={page.page}>
+                  <small>{page.page} / {audit.manuscript_document?.total_pages}</small>
+                  {page.heading && <h2>{page.heading}</h2>}
+                  {page.paragraphs.map((paragraph, paragraphIndex) => {
+                    const matched = audit.results.find((item) => item.manuscript_location?.page === page.page
+                      && item.manuscript_location.paragraph_index === paragraphIndex);
+                    if (!matched) return <p key={`${page.page}-${paragraphIndex}`}>{paragraph}</p>;
+                    const tone = matched.verdict === "SUPPORT" ? "support" : matched.verdict === "PARTIAL" ? "partial" : "danger";
+                    return <p className={sentenceClass(matched.citation_key, tone)} data-manuscript-match={selectedKey === matched.citation_key ? "true" : undefined} key={`${page.page}-${paragraphIndex}`}>
+                      {paragraph} <button id={`source-${matched.citation_key}`} className={markClass(matched.citation_key, tone)} type="button" onFocus={() => setHoveredKey(matched.citation_key)} onBlur={() => setHoveredKey(null)} onClick={() => focusCitation(matched.citation_key)}>{matched.citation_key}</button>
+                    </p>;
+                  })}
+                </section>
+              )) : !usingMockApi ? <div className="manuscript-loading"><Icon name="audit" /><strong>Run the audit to load the parsed manuscript.</strong></div> : null}
             </div>
           </article>
 
@@ -187,7 +280,7 @@ export function AuditPage() {
               {results.map((item) => (
                 <button className={selectedKey === item.citation_key ? "finding-card active" : "finding-card"} type="button" key={`${item.citation_key}-${item.claim}`} onClick={() => focusCitation(item.citation_key)}>
                   <span className={`risk-dot risk-${item.risk_level}`} />
-                  <span className="finding-copy"><strong>{item.claim}</strong><small>Page {item.source_location?.page || "—"} · <code>{item.citation_key}</code></small>{item.source_location?.annotation && <em>{item.source_location.annotation}</em>}</span>
+                  <span className="finding-copy"><strong>{item.claim}</strong><small>Page {item.manuscript_location?.page || "—"} · <code>{item.citation_key}</code></small>{item.source_location?.annotation && <em>{item.source_location.annotation}</em>}</span>
                   <span className="finding-result"><VerdictBadge verdict={item.verdict} /><small>{usingMockApi ? "Demo signal" : "Confidence"} {Math.round(item.confidence * 100)}%</small></span>
                 </button>
               ))}
@@ -242,7 +335,7 @@ export function AuditPage() {
         )}
       </>}
 
-      {showComplete && (
+      {showComplete && usingMockApi && (
         <div className="audit-complete-overlay" role="dialog" aria-modal="true" aria-labelledby="audit-complete-title">
           <section className="audit-complete-card">
             <span><Icon name="check" size={30} /></span>

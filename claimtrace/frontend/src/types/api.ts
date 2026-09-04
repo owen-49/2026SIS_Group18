@@ -147,6 +147,11 @@ export interface CitationAuditResult {
   verdict: Verdict;
   confidence: number;
   risk_level: "high" | "medium" | "low";
+  claim_id?: string | null;
+  manuscript_location?: {
+    page: number;
+    paragraph_index: number;
+  } | null;
   source_location?: {
     page: number;
     quote: string;
@@ -167,4 +172,5 @@ export interface AuditResponse {
   contradicted: number;
   not_found: number;
   results: CitationAuditResult[];
+  manuscript_document?: SourceDocument | null;
 }
