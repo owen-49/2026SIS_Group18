@@ -118,13 +118,17 @@ that refactor for this backend integration.
   Audit as batch entailment or interpret not-found entries as fake references.
 
 These revisions clarify the older Chinese/English User Stories and C4 descriptions.
-Those team-owned documents are not wholesale rewritten here. Keep PR #18 Draft until
-the lookup implementation, PDF field gap, and frontend contract migration are resolved
-or an explicitly agreed smaller backend-only scope is approved.
+Those team-owned documents are not wholesale rewritten here. PR #18 is being opened
+for formal review at the author's request. Review readiness does not mean the lookup
+implementation, PDF field gap, or frontend migration is complete; these remain
+explicit scope decisions for reviewers before approving a merge.
 
 ## Validation
 
-Backend tests plus Engine Bib parser/comparator tests: 129 passed. Ruff passed.
+After integrating main b6504b4, backend tests plus Engine Bib parser/comparator
+tests: 131 passed. Ruff passed. Two Verify regression tests cover LLM verdict/
+rationale preservation and the no-client lexical baseline; LLM responses are
+simulated without paid API calls. Main's Verify implementation is preserved.
 The real PDF extractor was also invoked with OpenDataLoader/Java on a generated
 one-page reference-list PDF: it ran but returned zero references with the warning
 Reference-list heading was not found. This is an unresolved Parser recognition
