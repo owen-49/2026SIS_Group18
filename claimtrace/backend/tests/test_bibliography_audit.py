@@ -1,6 +1,8 @@
 """API contract tests use an explicit fake external adapter, never live queries."""
 
+import json
 from datetime import UTC, datetime
+from pathlib import Path
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -12,10 +14,11 @@ from backend.src.audit_models import (
     LookupResult,
 )
 from backend.src.main import app
-from backend.src.models import PaperRecord, ParseStatus
-from backend.src.services import reference_input_service
+from backend.src.models import PaperRecord, ParsedDocument, ParseStatus
+from backend.src.services import pipeline_service, reference_input_service
 from backend.src.services.analysis_service import _find_bib_entry, _load_bibliography_entries
 from backend.src.storage.paper_store import create_paper
+from backend.src.storage.reference_store import ReferenceStoreError, reference_path
 from engine.bib_parser import BibEntry
 from pydantic import ValidationError
 
@@ -234,6 +237,141 @@ def test_parser_dependency_error_is_explained(client, storage_paths, monkeypatch
     response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
     assert response.status_code == 503
     assert response.json()["detail"]["code"] == "REFERENCE_PARSER_UNAVAILABLE"
+
+
+@pytest.mark.parametrize("raw_entries", [[], [{"raw_text": "Smith (2024). Example."}]])
+def test_reads_parser_public_reference_json_without_reextracting(
+    client,
+    storage_paths,
+    monkeypatch,
+    raw_entries,
+):
+    record = persist_manuscript(storage_paths)
+    artifact = reference_path(record.paper_id)
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text(
+        json.dumps(
+            {
+                "source_file": record.stored_filename,
+                "references": raw_entries,
+            }
+        ),
+        encoding="utf-8",
+    )
+    original = artifact.read_bytes()
+    # A persisted result remains usable without the original PDF or Parser runtime.
+    Path(record.file_path).unlink()
+
+    def unexpected_extract(path):
+        pytest.fail("Persisted Reference JSON must be reused")
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", unexpected_extract)
+    response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
+    assert response.status_code == 200
+    assert response.json()["total_entries"] == len(raw_entries)
+    assert artifact.read_bytes() == original
+    if raw_entries:
+        entry = response.json()["results"][0]["entry"]
+        assert entry["metadata"]["raw_text"] == raw_entries[0]["raw_text"]
+        assert entry["page_start"] is None
+    else:
+        assert response.json()["status"] == "needs_review"
+
+
+def test_extracts_once_then_reuses_fields_and_warnings(client, storage_paths, monkeypatch):
+    record = persist_manuscript(storage_paths)
+    calls = []
+
+    def extract(path):
+        calls.append(path)
+        return SimpleNamespace(
+            references=[
+                SimpleNamespace(
+                    raw_text="[7] Smith (2024). Example.",
+                    number=7,
+                    page_start=3,
+                    page_end=4,
+                )
+            ],
+            warnings=["Check the reference boundary"],
+        )
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+    bodies = [
+        client.post("/api/audit", json={"manuscript_id": record.paper_id}).json() for _ in range(2)
+    ]
+    assert len(calls) == 1
+    assert bodies[0]["results"][0]["entry"] == bodies[1]["results"][0]["entry"]
+    assert bodies[0]["warnings"] == bodies[1]["warnings"]
+    assert bodies[1]["results"][0]["entry"]["page_end"] == 4
+    saved = json.loads(reference_path(record.paper_id).read_text(encoding="utf-8"))
+    assert saved["paper_id"] == record.paper_id
+    assert len(saved["source_sha256"]) == 64
+
+    Path(record.file_path).write_bytes(b"different manuscript")
+    stale = client.post("/api/audit", json={"manuscript_id": record.paper_id})
+    assert stale.status_code == 500
+    assert stale.json()["detail"]["code"] == "REFERENCE_ARTIFACT_ERROR"
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        "{broken",
+        "{}",
+        '{"source_file":"manuscript.pdf","references":[{}]}',
+        '{"source_file":"unrelated.pdf","references":[]}',
+        '{"source_file":"manuscript.pdf","paper_id":"another-paper","references":[]}',
+    ],
+)
+def test_bad_artifact_is_not_silently_replaced(client, storage_paths, monkeypatch, payload):
+    record = persist_manuscript(storage_paths)
+    artifact = reference_path(record.paper_id)
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text(payload, encoding="utf-8")
+
+    def unexpected_extract(path):
+        pytest.fail("A damaged artifact must not trigger a hidden re-extraction")
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", unexpected_extract)
+    response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
+    assert response.status_code == 500
+    assert response.json()["detail"]["code"] == "REFERENCE_ARTIFACT_ERROR"
+    assert artifact.read_text(encoding="utf-8") == payload
+
+
+def test_reference_storage_failure_is_reported(client, storage_paths, monkeypatch):
+    record = persist_manuscript(storage_paths)
+    monkeypatch.setattr(
+        reference_input_service,
+        "extract_pdf_references",
+        lambda path: SimpleNamespace(references=[], warnings=[]),
+    )
+
+    def fail_save(*args):
+        raise ReferenceStoreError("Disk unavailable")
+
+    monkeypatch.setattr(reference_input_service, "save_references", fail_save)
+    response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
+    assert response.status_code == 500
+    assert response.json()["detail"]["code"] == "REFERENCE_ARTIFACT_ERROR"
+
+
+def test_explicit_pdf_reprocessing_invalidates_old_references(storage_paths, monkeypatch):
+    record = persist_manuscript(storage_paths)
+    artifact = reference_path(record.paper_id)
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text("old artifact", encoding="utf-8")
+
+    def parse(paper_id, *args, **kwargs):
+        assert not artifact.exists()
+        return ParsedDocument(paper_id=paper_id, pages=1)
+
+    monkeypatch.setattr(pipeline_service, "parse_document", parse)
+    completed = pipeline_service.process_uploaded_paper(record.paper_id)
+    assert completed.status == ParseStatus.COMPLETED
+    assert not artifact.exists()
 
 
 def test_legacy_source_ids_are_not_treated_as_existence_evidence(client):

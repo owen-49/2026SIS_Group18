@@ -1,12 +1,23 @@
 """Consume existing Bib storage and the Parser team's reference-list extractor."""
 
 from pathlib import Path
+from threading import Lock
 from uuid import NAMESPACE_URL, uuid5
 
 from ..audit_models import ReferenceEntry
-from ..models import AuditRequest, BibEntryRecord, ParseStatus
+from ..models import AuditRequest, BibEntryRecord, PaperRecord, ParseStatus
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
 from ..storage.paper_store import PaperStoreError, get_paper
+from ..storage.reference_store import (
+    ReferenceStoreError,
+    StoredReference,
+    StoredReferenceList,
+    load_references,
+    save_references,
+    source_digest,
+)
+
+_REFERENCE_LOCKS = [Lock() for _ in range(32)]
 
 
 class AuditInputError(RuntimeError):
@@ -38,6 +49,52 @@ def extract_pdf_references(path: Path):
             "The existing reference Parser could not process the PDF. "
             "Check its OpenDataLoader/Java dependencies and backend logs.",
         ) from exc
+
+
+def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
+    """Reuse a valid artifact, extracting only when absent (one worker process)."""
+    with _REFERENCE_LOCKS[hash(record.paper_id) % len(_REFERENCE_LOCKS)]:
+        path = Path(record.file_path)
+        try:
+            saved = load_references(record.paper_id)
+            if saved is not None:
+                allowed_names = {path.name, record.original_filename, record.stored_filename}
+                if Path(saved.source_file).name not in allowed_names:
+                    raise ReferenceStoreError("Reference artifact source filename does not match.")
+                if saved.source_sha256 and path.is_file():
+                    if saved.source_sha256 != source_digest(path):
+                        raise ReferenceStoreError("Reference artifact is stale; reprocess the PDF.")
+                return saved
+            if not path.is_file():
+                raise AuditInputError(
+                    500, "INPUT_FILE_MISSING", "Uploaded manuscript PDF is missing."
+                )
+            digest = source_digest(path)
+            extracted = extract_pdf_references(path)
+            saved = StoredReferenceList(
+                source_file=path.name,
+                paper_id=record.paper_id,
+                source_sha256=digest,
+                references=[
+                    StoredReference(
+                        raw_text=reference.raw_text,
+                        number=reference.number,
+                        page_start=reference.page_start,
+                        page_end=reference.page_end,
+                    )
+                    for reference in extracted.references
+                ],
+                warnings=list(extracted.warnings),
+            )
+            save_references(record.paper_id, saved)
+            return saved
+        except (ReferenceStoreError, OSError, ValueError) as exc:
+            raise AuditInputError(
+                500,
+                "REFERENCE_ARTIFACT_ERROR",
+                "Reference JSON is invalid, stale, or unavailable for storage; reprocess the PDF "
+                "or check backend logs. It was not silently re-extracted.",
+            ) from exc
 
 
 def load_audit_references(
@@ -78,10 +135,7 @@ def load_audit_references(
             for index, entry in enumerate(document.entries)
         ]
     else:
-        path = Path(record.file_path)
-        if not path.is_file():
-            raise AuditInputError(500, "INPUT_FILE_MISSING", "Uploaded manuscript PDF is missing.")
-        references = extract_pdf_references(path)
+        references = persisted_pdf_references(record)
         warnings.extend(references.warnings)
         warnings.append(
             "The existing PDF reference extractor returns raw text and locations, not structured "

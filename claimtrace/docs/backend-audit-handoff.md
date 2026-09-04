@@ -14,7 +14,11 @@ Audit display layout; populate it with bibliographic records and field differenc
 - Replace the semantic batch loop with bibliography input, lookup adapter, existing
   Engine field comparison, five result states, and persisted Audit results.
 - Read a selected uploaded Bib from `ParsedBibDocument`; reuse the Parser team's
-  `reference_json_extractor.extract_references` for an uploaded manuscript PDF.
+  `reference_json_extractor.extract_references` only when no persisted reference artifact exists.
+  PDF Audit first reads `PARSED_DIR/{paper_id}.references.json`; a missing artifact is
+  extracted once and saved atomically, including warnings and available locations.
+  Invalid/mismatched/stale artifacts return `REFERENCE_ARTIFACT_ERROR` without
+  silent re-extraction. Explicit PDF reprocessing invalidates old references.
 - Reuse `engine.bib_verifier.verify_bib_against_pdf` through a backend adapter.
   Its `PdfMetadata` object carries external metadata here; no source PDF is read.
 - Preserve both values of each compared field. Existing fuzzy Engine matches are
@@ -65,6 +69,10 @@ processing finished, not that all entries were verified. Empty extraction return
 Input failures use HTTP 404/409/422; missing Parser/runtime dependencies use 503;
 storage failures use 500, with `detail: {code, message}`. FastAPI request validation
 continues to use its standard 422 error list.
+
+For ready-to-forward teammate messages and the artifact lifecycle contract, see
+[PR #18 review follow-up](pr18-team-review-followup.zh-CN.md). New Engine/provider
+integration is deferred at the author's request; no production lookup was added.
 
 ## Existing integration gaps and next ownership decisions
 
@@ -126,7 +134,9 @@ explicit scope decisions for reviewers before approving a merge.
 ## Validation
 
 After integrating main b6504b4, backend tests plus Engine Bib parser/comparator
-tests: 131 passed. Ruff passed. Two Verify regression tests cover LLM verdict/
+tests: 141 passed after the reference-artifact reuse fix. Ruff passed. Ten additional
+reference tests cover persisted JSON reuse, invalid/stale artifacts, extraction
+caching, storage failures and explicit reprocessing invalidation. Two Verify regression tests cover LLM verdict/
 rationale preservation and the no-client lexical baseline; LLM responses are
 simulated without paid API calls. Main's Verify implementation is preserved.
 The real PDF extractor was also invoked with OpenDataLoader/Java on a generated
