@@ -19,7 +19,7 @@ class Settings:
     """Application settings loaded from environment variables."""
 
     # ── LLM Provider ──────────────────────────────────────
-    llm_provider: str = "openai"  # openai | gemini | anthropic | ollama
+    llm_provider: str = "openai"  # openai | deepseek | gemini | anthropic | ollama
 
     # ── OpenAI ────────────────────────────────────────────
     openai_api_key: str = ""
@@ -33,6 +33,11 @@ class Settings:
     # ── Anthropic Claude ──────────────────────────────────
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-5"
+
+    # ── DeepSeek ──────────────────────────────────────────
+    deepseek_api_key: str = ""
+    deepseek_model: str = "deepseek-chat"
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
 
     # ── Ollama (local) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434/v1"
@@ -79,6 +84,7 @@ class Settings:
         """
         key_checks = {
             "openai": self.openai_api_key,
+            "deepseek": self.deepseek_api_key,
             "gemini": self.gemini_api_key,
             "anthropic": self.anthropic_api_key,
             "ollama": True,  # ollama is always "configured" since it's local
@@ -90,6 +96,7 @@ class Settings:
         """Return the model name for the active provider."""
         model_map = {
             "openai": self.openai_model,
+            "deepseek": self.deepseek_model,
             "gemini": self.gemini_model,
             "anthropic": self.anthropic_model,
             "ollama": self.ollama_model,
@@ -122,6 +129,10 @@ def _load_settings() -> Settings:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         openai_model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
         openai_base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        # DeepSeek
+        deepseek_api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+        deepseek_model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+        deepseek_base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"),
         # Gemini
         gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),

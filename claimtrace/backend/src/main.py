@@ -60,6 +60,10 @@ async def startup():
             "api_key": settings.anthropic_api_key,
             "base_url": None,
         },
+        "deepseek": {
+            "api_key": settings.deepseek_api_key,
+            "base_url": settings.deepseek_base_url,
+        },
         "ollama": {
             "api_key": "",
             "base_url": settings.ollama_base_url,
