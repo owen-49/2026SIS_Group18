@@ -7,7 +7,7 @@ from parser.opendataloader_adapter import (
     DocumentElement,
     load_opendataloader_json,
 )
-from claimtrace.parser.parser.reference_json_extractor import (
+from parser.reference_json_extractor import (
     LayoutReferenceCandidate,
     PDFTextLine,
     _layout_candidates_are_better,
@@ -752,6 +752,50 @@ def test_splits_hanging_indent_references():
     assert [candidate.text for candidate in candidates] == [
         "Alpha, A. (2020). First reference title. Journal.",
         "Beta, B. (2021). Second reference title. Journal.",
+    ]
+
+
+def test_splits_two_column_hanging_indent_references():
+    lines = [
+        pdf_line("Left A, A. (2020). First", 8, 39.0, 100.0),
+        pdf_line("left-column reference.", 8, 51.0, 112.0),
+        pdf_line("Left B, B. (2021). Second", 8, 39.0, 136.0),
+        pdf_line("left-column reference.", 8, 51.0, 148.0),
+        pdf_line("Right A, A. (2022). First", 8, 306.0, 100.0),
+        pdf_line("right-column reference.", 8, 318.0, 112.0),
+        pdf_line("Right B, B. (2023). Second", 8, 306.0, 136.0),
+        pdf_line("right-column reference.", 8, 318.0, 148.0),
+    ]
+
+    candidates = split_hanging_indent_lines(lines)
+
+    assert [candidate.text for candidate in candidates] == [
+        "Left A, A. (2020). First left-column reference.",
+        "Left B, B. (2021). Second left-column reference.",
+        "Right A, A. (2022). First right-column reference.",
+        "Right B, B. (2023). Second right-column reference.",
+    ]
+
+
+def test_restores_column_order_before_splitting_hanging_indents():
+    lines = [
+        pdf_line("Left A, A. (2020). First", 8, 39.0, 100.0),
+        pdf_line("Right A, A. (2022). Third", 8, 306.0, 100.0),
+        pdf_line("left-column reference.", 8, 51.0, 112.0),
+        pdf_line("right-column reference.", 8, 318.0, 112.0),
+        pdf_line("Left B, B. (2021). Second", 8, 39.0, 136.0),
+        pdf_line("Right B, B. (2023). Fourth", 8, 306.0, 136.0),
+        pdf_line("left-column reference.", 8, 51.0, 148.0),
+        pdf_line("right-column reference.", 8, 318.0, 148.0),
+    ]
+
+    candidates = split_hanging_indent_lines(lines)
+
+    assert [candidate.text.split(",", 1)[0] for candidate in candidates] == [
+        "Left A",
+        "Left B",
+        "Right A",
+        "Right B",
     ]
 
 

@@ -279,6 +279,59 @@ def _append_line(
     candidate.bounding_boxes.append(line.bbox)
 
 
+def _hanging_indent_column_boundary(
+    lines: list[PDFTextLine],
+) -> float | None:
+    """Return a likely gutter between two reference-list columns."""
+
+    x_positions = sorted({round(line.bbox[0], 1) for line in lines})
+    gaps = [
+        (right - left, (left + right) / 2)
+        for left, right in zip(x_positions, x_positions[1:])
+    ]
+    largest_gap, boundary = max(gaps, default=(0.0, 0.0))
+
+    if largest_gap < 40.0:
+        return None
+
+    left_count = sum(line.bbox[0] <= boundary for line in lines)
+    right_count = len(lines) - left_count
+    return boundary if left_count >= 2 and right_count >= 2 else None
+
+
+def _ordered_lines_with_column_bases(
+    lines: list[PDFTextLine],
+) -> list[tuple[PDFTextLine, float]]:
+    """Order lines by page and column and attach each column's base x."""
+
+    boundary = _hanging_indent_column_boundary(lines)
+    if boundary is None:
+        base_x = min(line.bbox[0] for line in lines)
+        return [(line, base_x) for line in lines]
+
+    left_lines = [line for line in lines if line.bbox[0] <= boundary]
+    right_lines = [line for line in lines if line.bbox[0] > boundary]
+    column_bases = (
+        min(line.bbox[0] for line in left_lines),
+        min(line.bbox[0] for line in right_lines),
+    )
+
+    pages: dict[int, list[PDFTextLine]] = {}
+    for line in lines:
+        pages.setdefault(line.page, []).append(line)
+
+    ordered: list[tuple[PDFTextLine, float]] = []
+    for page in sorted(pages):
+        page_lines = pages[page]
+        for column, base_x in (
+            ([line for line in page_lines if line.bbox[0] <= boundary], column_bases[0]),
+            ([line for line in page_lines if line.bbox[0] > boundary], column_bases[1]),
+        ):
+            ordered.extend((line, base_x) for line in column)
+
+    return ordered
+
+
 def split_hanging_indent_lines(
     lines: list[PDFTextLine],
     x_tolerance: float = 4.0,
@@ -293,10 +346,13 @@ def split_hanging_indent_lines(
     if len(lines) < 4:
         return []
 
-    left_edges = [line.bbox[0] for line in lines]
-    base_x = min(left_edges)
-    flush_left = [x for x in left_edges if x <= base_x + x_tolerance]
-    indented = [x for x in left_edges if x >= base_x + minimum_indent]
+    ordered_lines = _ordered_lines_with_column_bases(lines)
+    flush_left = [
+        line for line, base_x in ordered_lines if line.bbox[0] <= base_x + x_tolerance
+    ]
+    indented = [
+        line for line, base_x in ordered_lines if line.bbox[0] >= base_x + minimum_indent
+    ]
 
     if len(flush_left) < 2 or len(indented) < 2:
         return []
@@ -304,7 +360,7 @@ def split_hanging_indent_lines(
     candidates: list[LayoutReferenceCandidate] = []
     current: LayoutReferenceCandidate | None = None
 
-    for line in lines:
+    for line, base_x in ordered_lines:
         starts_entry = line.bbox[0] <= base_x + x_tolerance
 
         if starts_entry:
