@@ -70,7 +70,7 @@ export function ExtensionSetupPage() {
           <h1>Set up ClaimTrace in Overleaf</h1>
           <p>Load the local Manifest V3 extension and turn your BibTeX file into a searchable paper library.</p>
         </div>
-        <Link className="button button-secondary" to="/"><span aria-hidden="true">←</span> Back to overview</Link>
+        <Link className="button button-secondary" to="/audit"><span aria-hidden="true">←</span> Back to batch audit</Link>
       </section>
 
       <section className="setup-hero panel">
@@ -123,7 +123,7 @@ export function ExtensionSetupPage() {
       <section className="setup-complete">
         <span><Icon name="check" size={20} /></span>
         <div><h2>Extension installed?</h2><p>Open the demo paper library or return to Overleaf and try the complete workflow.</p></div>
-        <Link className="button button-light" to="/library">View paper library <Icon name="arrow" size={15} /></Link>
+        <Link className="button button-light" to="/audit">Open batch audit <Icon name="arrow" size={15} /></Link>
       </section>
     </div>
   );

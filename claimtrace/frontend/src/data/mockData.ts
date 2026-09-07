@@ -220,7 +220,7 @@ demoPaperClaims.claims[1].manuscript_location = { page: 5, paragraph_index: 1 };
 demoPaperClaims.claims[2].source_document = null;
 demoPaperClaims.claims[2].manuscript_location = { page: 9, paragraph_index: 1 };
 
-export const demoAudit: AuditResponse = {
+export const demoClaimAudit = {
   manuscript_id: "transformer-survey.pdf",
   total_citations: 12,
   supported: 8,
@@ -359,6 +359,48 @@ export const demoAudit: AuditResponse = {
           similarity: 0.86,
         },
       ],
+    },
+  ],
+};
+
+export const demoAudit: AuditResponse = {
+  contract_version: 2,
+  audit_id: "demo-audit",
+  input_paper_id: "transformer-survey.pdf",
+  input_type: "pdf",
+  checked_at: "2026-08-16T04:30:00Z",
+  status: "needs_review",
+  total_entries: 4,
+  counts: { VERIFIED: 1, METADATA_MISMATCH: 1, NEEDS_REVIEW: 1, NOT_FOUND: 1, LOOKUP_FAILED: 0 },
+  warnings: [],
+  results: [
+    {
+      entry: { entry_id: "vaswani2017attention", number: 1, page_start: 12, page_end: 12, metadata: { key: "vaswani2017attention", title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
+      status: "VERIFIED", reason: "A matching publication record was found and its metadata agrees.",
+      field_checks: [{ field_name: "title", input_value: "Attention Is All You Need", source_value: "Attention Is All You Need", status: "MATCH", detail: "Exact normalized title match." }],
+      matched_record: { provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
+      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
+    },
+    {
+      entry: { entry_id: "devlin2019bert", number: 2, page_start: 12, page_end: 12, metadata: { key: "devlin2019bert", title: "BERT Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2018, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
+      status: "METADATA_MISMATCH", reason: "The publication was found, but the input year differs from the source record.",
+      field_checks: [{ field_name: "year", input_value: "2018", source_value: "2019", status: "MISMATCH", detail: "Publication year differs." }],
+      matched_record: { provider: "Demo Scholar", record_id: "N19-1423", url: "https://aclanthology.org/N19-1423", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2019, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
+      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
+    },
+    {
+      entry: { entry_id: "smith2024survey", number: 3, page_start: 12, page_end: 12, metadata: { key: "smith2024survey", title: "Citation Errors in Scientific Manuscripts", authors: ["Alex Smith"], year: 2024, venue: "", doi: "" } },
+      status: "NOT_FOUND", reason: "No acceptable publication record was found after all configured lookup paths completed.",
+      field_checks: [], matched_record: null, candidates: [],
+      lookup_attempts: [{ provider: "Demo Scholar", outcome: "not_found", error_code: null, detail: "No matching record." }],
+    },
+    {
+      entry: { entry_id: "attention-incomplete", number: 4, page_start: 12, page_end: 12, metadata: { key: "attention-incomplete", title: "Attention Is All You Need for Translation", authors: [], year: null, venue: "", doi: "" } },
+      status: "NEEDS_REVIEW",
+      reason: "Example: the exact citation is unconfirmed. A similar title was found, but missing author and year details require review.",
+      field_checks: [], matched_record: null,
+      candidates: [{ provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } }],
+      lookup_attempts: [{ provider: "Demo Scholar", outcome: "ambiguous", error_code: null, detail: "Sample candidate only; the original citation has not been identified." }],
     },
   ],
 };

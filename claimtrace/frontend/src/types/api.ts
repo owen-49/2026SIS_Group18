@@ -165,12 +165,37 @@ export interface CitationAuditResult {
 }
 
 export interface AuditResponse {
-  manuscript_id: string;
-  total_citations: number;
-  supported: number;
-  partial: number;
-  contradicted: number;
-  not_found: number;
-  results: CitationAuditResult[];
-  manuscript_document?: SourceDocument | null;
+  contract_version: 2;
+  audit_id: string;
+  input_paper_id: string;
+  input_type: "bib" | "pdf";
+  checked_at: string;
+  status: "completed" | "completed_with_errors" | "needs_review";
+  total_entries: number;
+  counts: Record<AuditStatus, number>;
+  results: AuditResult[];
+  warnings: string[];
+}
+
+export type AuditStatus = "VERIFIED" | "METADATA_MISMATCH" | "NEEDS_REVIEW" | "NOT_FOUND" | "LOOKUP_FAILED";
+export type AuditFieldStatus = "MATCH" | "MISMATCH" | "INPUT_MISSING" | "SOURCE_MISSING" | "NOT_CHECKED";
+
+export interface AuditMetadata {
+  key?: string; entry_type?: string; title: string; authors: string[]; year: number | null;
+  venue: string; volume?: string; number?: string; pages?: string; doi: string;
+  url?: string; publisher?: string; raw_text?: string;
+}
+
+export interface AuditExternalRecord {
+  provider: string; record_id: string; url: string; retrieved_at: string; metadata: AuditMetadata;
+}
+
+export interface AuditResult {
+  entry: { entry_id: string; metadata: AuditMetadata; number: number | null; page_start: number | null; page_end: number | null };
+  status: AuditStatus;
+  reason: string;
+  field_checks: Array<{ field_name: string; input_value: string; source_value: string; status: AuditFieldStatus; detail: string }>;
+  matched_record: AuditExternalRecord | null;
+  candidates: AuditExternalRecord[];
+  lookup_attempts: Array<{ provider: string; outcome: "found" | "ambiguous" | "not_found" | "failed"; error_code: string | null; detail: string }>;
 }
