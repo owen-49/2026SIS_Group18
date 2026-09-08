@@ -1,8 +1,10 @@
-# SourceResolver 对接文档（给 Backend 组员）
+# Engine 新功能对接文档（给 Backend 组员）
 
-> 目的：把 engine 新增的 `SourceResolver` 接入 backend，让 `/api/verify` 支持「只传 claim + 引用，自动定位并解析源论文」。  
-> 状态：**engine 层已完成**，backend 层**待接**。  
-> 最后更新：2026-09-07
+> 本文涵盖 engine 新增的两个功能，状态都是 **engine 层已完成、backend 层待接**：
+> 1. **SourceResolver**（Part 1）—— 把 claim 的引用自动定位并解析成源论文段落，供 verify 判定。
+> 2. **ScholarSearch**（Part 2）—— 在 Google Scholar 上搜索 reference，供 audit 判定文献是否真实存在。
+>
+> 最后更新：2026-09-08
 
 ---
 
@@ -246,3 +248,148 @@ cd claimtrace/backend && python -m pytest tests/ -v
 ```
 
 这就是 SourceResolver 要接的最后一环。engine 的「引用 → 段落 → 检索」已经就绪，backend 只需补 `locate` 和 `parse` 两个函数。
+
+---
+
+# Part 2: ScholarSearch 对接（audit 文献搜索）
+
+## 1. 功能概述
+
+`engine/scholar_search.py` 是 audit 的「外部文献查找」实现——之前 `bibliography_lookup.py` 的 `BibliographyLookup` Protocol 是空的（返回 `EXTERNAL_LOOKUP_NOT_CONFIGURED`）。这个模块在 Google Scholar 上搜索 reference，判断文献是否真实存在。
+
+它对应 audit 的核心问题：**「这条引用的文献真的存在吗？」**（区别于 verify 的「claim 被源文献支撑吗？」）。
+
+## 2. engine 已完成的 API
+
+```python
+from engine.scholar_search import search_scholar, ScholarSearchOutcome, ScholarResult
+
+outcome = search_scholar(
+    title="Attention Is All You Need",
+    authors=["Vaswani, Ashish"],
+    year=2017,
+    max_results=3,
+)
+# outcome.status  → "found" | "ambiguous" | "not_found" | "failed"
+# outcome.results → list[ScholarResult]
+# outcome.error   → 失败原因（failed 时）
+```
+
+`ScholarResult` 字段：`title`, `authors`, `year`, `venue`, `url`。
+
+**查询策略**：精确标题（引号包住）+ 第一作者姓氏 + 年份限定。
+
+## 3. backend 要做的：实现 `BibliographyLookup`
+
+`backend/src/services/bibliography_lookup.py` 里的 Protocol 目前是空的。实现一个 `GoogleScholarLookup`：
+
+```python
+# backend/src/services/bibliography_lookup.py（改造）
+from engine.scholar_search import search_scholar
+from ..audit_models import (
+    BibliographicMetadata, ExternalRecord, LookupAttempt, LookupResult, ReferenceEntry,
+)
+from datetime import UTC, datetime
+
+
+class GoogleScholarLookup:
+    """Resolve references against Google Scholar via the engine module."""
+
+    def lookup(self, entry: ReferenceEntry) -> LookupResult:
+        outcome = search_scholar(
+            title=entry.metadata.title,
+            authors=entry.metadata.authors,
+            year=entry.metadata.year,
+        )
+
+        attempt = LookupAttempt(
+            provider="google_scholar",
+            outcome=outcome.status,  # found/ambiguous/not_found/failed 直接对齐
+            error_code=("SCHOLAR_SEARCH_FAILED" if outcome.status == "failed" else None),
+            detail=outcome.error,
+        )
+
+        records = [
+            ExternalRecord(
+                provider="google_scholar",
+                record_id=f"scholar:{r.url or r.title}",  # 需要稳定的 id，见注意事项
+                url=r.url or "https://scholar.google.com/",  # ExternalRecord.url 是 HttpUrl 必填
+                retrieved_at=datetime.now(UTC),
+                metadata=BibliographicMetadata(
+                    title=r.title,
+                    authors=r.authors,
+                    year=r.year,
+                    venue=r.venue,
+                    doi="",  # Scholar snippet 通常不含 DOI
+                ),
+            )
+            for r in outcome.results
+        ]
+
+        return LookupResult(
+            outcome=outcome.status,
+            records=records,
+            attempts=[attempt],
+            reason=_reason_for(outcome),
+        )
+```
+
+**注意**：`LookupResult` 的 validator 有约束——`found` 要求恰好 1 条 record，`ambiguous` 要求 ≥1 条，`not_found` 要求无 record。engine 的 `search_scholar` 已经保证了这些对应关系（found=1 条、ambiguous=多条、not_found=0 条），所以直接映射即可。
+
+## 4. 字段映射速查
+
+| `ScholarSearchOutcome.status` | `LookupResult.outcome` | 后续 `AuditStatus` |
+|-------------------------------|------------------------|--------------------|
+| `found` | `found` | `VERIFIED` 或 `METADATA_MISMATCH`（由 `compare_external_metadata` 决定） |
+| `ambiguous` | `ambiguous` | `NEEDS_REVIEW` |
+| `not_found` | `not_found` | `NOT_FOUND` |
+| `failed` | `failed` | `LOOKUP_FAILED` |
+
+## 5. 数据流
+
+```
+reference entry（title/authors/year）
+   → search_scholar()   [engine，Google Scholar]
+   → ScholarSearchOutcome
+   → GoogleScholarLookup.lookup()   [backend，转 LookupResult]
+   → bibliography_audit_service.audit_reference()
+   → compare_external_metadata()   [复用 engine 的 bib_verifier 比对元数据]
+   → AuditStatus (VERIFIED/MISMATCH/NEEDS_REVIEW/NOT_FOUND/LOOKUP_FAILED)
+```
+
+## 6. 已知限制（务必知道）
+
+1. **scholarly 会被 Google 反爬限流**：连续搜索多个 reference 容易触发验证码/block，返回 `failed`。这是免费方案（scholarly）的固有限制。如果 demo 要连续搜很多条，需要 SerpAPI（付费稳定）或代理轮换。`failed` 会正确降级，不会崩。
+
+2. **year 和 venue 可能缺失**：Scholar 的搜索 snippet 有时不给 `pub_year`（显示 `None`）或 `venue` 显示 `"NA"`。这是 scholarly 的限制，不影响核心的 title/authors 匹配。audit 主要靠 title 匹配。
+
+3. **结果不稳定**：同一个查询两次可能返回不同结果（依赖 free-proxy 轮换）。测试时不要断言精确的搜索结果，用 mock（见 §7）。
+
+4. **ExternalRecord.url 是必填的 HttpUrl**：Scholar 的 `pub_url` 可能是相对路径或空。映射时要兜底一个合法 URL。
+
+5. **依赖已加**：`scholarly>=1.7.0` 已加进 `engine/pyproject.toml`，backend 装 engine 时会自动带上。
+
+## 7. 测试方法
+
+engine 层已有测试（`engine/tests/test_scholar_search.py`，7 个用例，用 mock scholarly 不依赖网络）。backend 接入后：
+
+```bash
+# engine 测试（确认搜索模块本身没问题）
+cd claimtrace/engine && python -m pytest tests/test_scholar_search.py -v
+
+# backend 测试（接入后，用 mock 的 search_scholar）
+cd claimtrace/backend && python -m pytest tests/test_bibliography_audit.py -v
+```
+
+**backend 验收标准**：
+- `GoogleScholarLookup.lookup` 对 `found` 返回 `LookupResult(outcome="found", 1 条 record)`
+- 对 `not_found` 返回空 records + `not_found` outcome
+- 对 `failed` 返回 `failed` + 明确 error_code
+
+## 8. 真实搜索已验证
+
+2026-09-08 实测（真实网络）：
+- `"Attention Is All You Need" + Vaswani` → `ambiguous`（arXiv + NeurIPS 两个版本，正确）
+- `"Emergent Abilities of Large Language Models" + Wei` → `found`（1 个结果，正确）
+
+结论：搜索能返回正确的 title/authors，year/venue 依赖 scholarly snippet 的完整度。
