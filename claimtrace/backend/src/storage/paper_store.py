@@ -138,6 +138,31 @@ def list_papers(*, papers_file: Path | None = None) -> list[PaperRecord]:
     return sorted(records, key=lambda record: record.created_at, reverse=True)
 
 
+def delete_paper(
+    paper_id: str,
+    *,
+    papers_file: Path | None = None,
+) -> PaperRecord | None:
+    """Remove and return one persisted paper record."""
+    target = papers_file or PAPERS_FILE
+
+    with _STORE_LOCK:
+        data = _read_store(target)
+        raw_record = data["papers"].get(paper_id)
+        if raw_record is None:
+            return None
+
+        try:
+            record = PaperRecord.model_validate(raw_record)
+        except ValidationError as exc:
+            raise PaperStoreError(f"Invalid metadata for paper: {paper_id}") from exc
+
+        del data["papers"][paper_id]
+        _write_store(target, data)
+
+    return record
+
+
 def update_paper(
     paper_id: str,
     updates: dict[str, Any],
