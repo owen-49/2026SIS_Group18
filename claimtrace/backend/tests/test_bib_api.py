@@ -209,6 +209,48 @@ def test_delete_bib_restores_files_when_metadata_update_fails(
     assert get_paper(paper_id) is not None
 
 
+def test_delete_bib_reports_and_recovers_post_commit_cleanup_failure(
+    client, storage_paths, monkeypatch
+):
+    uploaded = _upload_bib(client).json()
+    paper_id = uploaded["paper_id"]
+    raw_path = storage_paths["upload_dir"] / f"{paper_id}.bib"
+    original_remove = paper_deletion_service._remove_staged_artifact
+    failed_once = False
+
+    def fail_first_cleanup(path):
+        nonlocal failed_once
+        if not failed_once:
+            failed_once = True
+            raise OSError("simulated post-commit cleanup failure")
+        original_remove(path)
+
+    monkeypatch.setattr(
+        paper_deletion_service,
+        "_remove_staged_artifact",
+        fail_first_cleanup,
+    )
+
+    response = client.delete(f"/api/papers/{paper_id}")
+
+    assert response.status_code == 202
+    assert response.json() == {"paper_id": paper_id, "status": "cleanup_pending"}
+    assert get_paper(paper_id) is None
+    assert not raw_path.exists()
+    assert list(storage_paths["upload_dir"].glob(f".{paper_id}.bib.deleting-*"))
+
+    monkeypatch.setattr(
+        paper_deletion_service,
+        "_remove_staged_artifact",
+        original_remove,
+    )
+    retry = client.delete(f"/api/papers/{paper_id}")
+
+    assert retry.status_code == 204
+    assert not list(storage_paths["upload_dir"].rglob("*.deleting-*"))
+    assert not (storage_paths["upload_dir"] / ".pending-deletions").exists()
+
+
 def test_upload_without_bib_entries_returns_422_and_records_failure(client, storage_paths):
     response = client.post(
         "/api/parse",

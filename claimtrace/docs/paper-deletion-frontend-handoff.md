@@ -20,6 +20,17 @@ DELETE /api/papers/{paper_id}
 
 The response body is empty. After a successful deletion, remove the item from the Library view or reload the list with `GET /api/papers`.
 
+### Deletion accepted; local cleanup will be retried
+
+```http
+202 Accepted
+Content-Type: application/json
+
+{"paper_id":"<paper_id>","status":"cleanup_pending"}
+```
+
+The Library record has already been removed, but the backend could not finish purging one or more staged local artifacts. Treat the item as deleted in the Library. The backend retains a recovery record and retries cleanup when the application restarts or the same delete request is sent again.
+
 ### Paper not found
 
 ```http
@@ -38,15 +49,16 @@ Content-Type: application/json
 {"detail":"Unable to delete the paper and its local artifacts."}
 ```
 
-If deletion fails, keep the item in the Library and show the error to the user.
+If deletion fails before the Library record is removed, keep the item in the Library and show the error to the user.
 
 ## Required frontend behaviour
 
 1. Show a delete action for both PDF and BibTeX items in the Library.
 2. Ask the user to confirm before calling the API because deletion is permanent.
 3. On `204`, remove the item from the UI or refresh `GET /api/papers`.
-4. On `404` or `500`, keep the item visible and show an error message.
-5. Prevent repeated clicks while the delete request is in progress.
+4. On `202`, also remove the item and optionally show that local cleanup is pending.
+5. On `404` or `500`, keep the item visible and show an error message.
+6. Prevent repeated clicks while the delete request is in progress.
 
 ## Example request
 
@@ -57,7 +69,7 @@ async function deletePaper(paperId: string): Promise<void> {
     { method: "DELETE" },
   );
 
-  if (response.status === 204) return;
+  if (response.status === 204 || response.status === 202) return;
 
   const body = await response.json().catch(() => null);
   throw new Error(body?.detail ?? "Unable to delete the paper.");
@@ -74,10 +86,10 @@ For the selected Library record, the backend removes its local upload, Library m
 - Deleting a BibTeX file returns `204` and it disappears from `GET /api/papers`.
 - Refreshing the page does not bring a deleted item back.
 - Deleting an unknown or already deleted ID returns `404`.
+- A post-commit cleanup failure returns `202`; the item remains absent after refresh and cleanup can be retried safely.
 - A failed request does not remove the item from the current Library view.
 
 ## Backend validation
 
-- Full backend test suite: **81 passed**.
+- Full backend test suite: **83 passed**.
 - Backend Ruff check: **passed**.
-

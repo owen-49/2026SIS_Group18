@@ -9,6 +9,7 @@ from ..audit_models import BibliographyAuditResponse
 from ..models import AuditRequest
 from ..services.bibliography_audit_service import run_bibliography_audit
 from ..services.bibliography_lookup import BibliographyLookup
+from ..services.paper_lifecycle import paper_lifecycle_lock
 from ..services.reference_input_service import AuditInputError
 from ..storage.audit_store import load_audit, save_audit
 
@@ -26,8 +27,12 @@ def audit_bibliography(request: AuditRequest, lookup=Depends(get_bibliography_lo
     # FastAPI runs sync handlers in its worker pool, keeping blocking Parser
     # calls (and future bounded external queries) off the event loop.
     try:
-        report = run_bibliography_audit(request, lookup)
-        save_audit(report)
+        paper_id = request.bib_paper_id or request.manuscript_id
+        if paper_id is None:  # The request model normally rejects this before routing.
+            raise AuditInputError(422, "INPUT_REQUIRED", "An audit input is required.")
+        with paper_lifecycle_lock(paper_id):
+            report = run_bibliography_audit(request, lookup)
+            save_audit(report)
         return report
     except AuditInputError as exc:
         if exc.status_code >= 500:
