@@ -43,6 +43,10 @@ async def startup():
     # Store settings in app.state so routes can access them
     app.state.settings = settings
 
+    from .services.google_scholar_lookup import GoogleScholarLookup
+
+    app.state.bibliography_lookup = GoogleScholarLookup()
+
     # Build LLM client from configured provider
     from engine.llm_client import build_llm_client
 
@@ -80,5 +84,5 @@ async def startup():
         print(
             f"[ClaimTrace] LLM NOT configured ({provider}). "
             "Set API key in .env. Single Verify uses a lexical baseline; "
-            "bibliography Audit needs an external lookup adapter."
+            "Bibliography Audit uses Google Scholar without an LLM."
         )
