@@ -2,9 +2,41 @@
 
 import json
 import uuid
+from datetime import UTC, datetime
 
+from backend.src.models import PaperRecord, ParsedDocument, ParsedParagraph, ParseStatus
 from backend.src.routes import parse as parse_route
-from backend.tests.pdf_fixtures import make_test_pdf
+from backend.src.storage.paper_store import create_paper, update_paper
+from backend.src.storage.parsed_document_store import save_parsed_document
+
+
+def _persist_parsed_pdf(storage_paths, paper_id: str, filename: str, document: ParsedDocument):
+    """Create the same persisted records produced by the upload pipeline."""
+    pdf_path = storage_paths["upload_dir"] / f"{paper_id}.pdf"
+    pdf_path.write_bytes(b"persisted-test-pdf")
+    timestamp = datetime.now(UTC)
+    record = PaperRecord(
+        paper_id=paper_id,
+        original_filename=filename,
+        stored_filename=pdf_path.name,
+        file_path=str(pdf_path),
+        file_type="pdf",
+        file_size=pdf_path.stat().st_size,
+        status=ParseStatus.COMPLETED,
+        pages=document.pages,
+        paragraph_count=len(document.paragraphs),
+        title=document.title,
+        created_at=timestamp,
+        updated_at=timestamp,
+    )
+    create_paper(record)
+    parsed_path = save_parsed_document(document)
+    updated = update_paper(
+        paper_id,
+        {"parsed_result_path": str(parsed_path)},
+    )
+    assert updated is not None
+    return updated
 
 
 def test_health(client):
@@ -42,8 +74,8 @@ def test_extension_cors_preflight(client):
     assert response.headers["access-control-allow-origin"] == extension_origin
 
 
-def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
-    content = make_test_pdf("paper", "A test source paper.")
+def test_upload_pdf_persists_file_and_metadata(client, storage_paths, sample_pdf_bytes):
+    content = sample_pdf_bytes
     response = client.post(
         "/api/parse",
         files={"file": ("paper.pdf", content, "application/pdf")},
@@ -53,9 +85,9 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     body = response.json()
     assert body["file_type"] == "pdf"
     assert body["status"] == "completed"
-    assert body["pages"] == 1
-    assert body["paragraph_count"] > 0
-    assert body["title"] == "paper"
+    assert body["pages"] == 2
+    assert body["paragraph_count"] >= 2
+    assert body["title"] == "1 Introduction"
     assert body["paper_id"]
 
     uuid.UUID(body["paper_id"])
@@ -70,21 +102,22 @@ def test_upload_pdf_persists_file_and_metadata(client, storage_paths):
     assert record["stored_filename"] == stored_file.name
     assert record["file_size"] == len(content)
     assert record["status"] == "completed"
-    assert record["pages"] == body["pages"]
+    assert record["pages"] == 2
     assert record["paragraph_count"] == body["paragraph_count"]
 
     parsed_file = storage_paths["parsed_dir"] / f"{body['paper_id']}.json"
     parsed = json.loads(parsed_file.read_text(encoding="utf-8"))
     assert parsed["paper_id"] == body["paper_id"]
     assert len(parsed["paragraphs"]) == body["paragraph_count"]
+    assert any("Self-attention" in paragraph["text"] for paragraph in parsed["paragraphs"])
+    assert (storage_paths["parsed_dir"] / "markdown" / f"{body['paper_id']}.md").exists()
     assert record["parsed_result_path"] == str(parsed_file)
 
 
-def test_uploaded_paper_can_be_read_from_json(client):
-    content = make_test_pdf("paper", "A test source paper.")
+def test_uploaded_paper_can_be_read_from_json(client, sample_pdf_bytes):
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("paper.pdf", content, "application/pdf")},
+        files={"file": ("paper.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.get(f"/api/parse/{uploaded['paper_id']}")
@@ -100,16 +133,14 @@ def test_list_papers_returns_empty_collection(client):
     assert response.json() == {"total": 0, "papers": []}
 
 
-def test_list_papers_returns_newest_first_without_internal_paths(client):
-    first_content = make_test_pdf("first")
-    second_content = make_test_pdf("second")
+def test_list_papers_returns_newest_first_without_internal_paths(client, sample_pdf_bytes):
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", first_content, "application/pdf")},
+        files={"file": ("first.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", second_content, "application/pdf")},
+        files={"file": ("second.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.get("/api/papers")
@@ -122,7 +153,7 @@ def test_list_papers_returns_newest_first_without_internal_paths(client):
         first["paper_id"],
     ]
     assert body["papers"][0]["original_filename"] == "second.pdf"
-    assert body["papers"][0]["file_size"] == len(second_content)
+    assert body["papers"][0]["file_size"] == len(sample_pdf_bytes)
     assert body["papers"][0]["status"] == "completed"
     assert "created_at" in body["papers"][0]
     assert "file_path" not in body["papers"][0]
@@ -138,16 +169,14 @@ def test_list_papers_returns_500_for_corrupt_metadata(client, storage_paths):
     assert response.json()["detail"] == "Unable to read paper metadata."
 
 
-def test_each_upload_gets_a_unique_paper_id(client):
-    first_content = make_test_pdf("first")
-    second_content = make_test_pdf("second")
+def test_each_upload_gets_a_unique_paper_id(client, sample_pdf_bytes):
     first = client.post(
         "/api/parse",
-        files={"file": ("first.pdf", first_content, "application/pdf")},
+        files={"file": ("first.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
     second = client.post(
         "/api/parse",
-        files={"file": ("second.pdf", second_content, "application/pdf")},
+        files={"file": ("second.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     assert first["paper_id"] != second["paper_id"]
@@ -231,14 +260,10 @@ def test_unknown_paper_id_returns_404(client):
     assert response.status_code == 404
 
 
-def test_verify_returns_frontend_contract(client):
-    content = make_test_pdf(
-        "attention",
-        "Self-attention removes the need for recurrence.",
-    )
+def test_verify_returns_frontend_contract(client, sample_pdf_bytes):
     uploaded = client.post(
         "/api/parse",
-        files={"file": ("attention.pdf", content, "application/pdf")},
+        files={"file": ("attention.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
 
     response = client.post(
@@ -278,32 +303,129 @@ def test_verify_rejects_empty_claim(client):
     assert response.status_code == 400
 
 
-def test_audit_returns_consistent_non_empty_result(client):
-    response = client.post(
-        "/api/audit",
-        json={
-            "manuscript_id": "transformer-survey.pdf",
-            "source_paper_ids": ["paper-attention", "paper-bert"],
+def test_claims_use_persisted_parser_output(client, storage_paths):
+    manuscript = _persist_parsed_pdf(
+        storage_paths,
+        "manuscript-1",
+        "manuscript.pdf",
+        ParsedDocument(
+            paper_id="manuscript-1",
+            title="Research Manuscript",
+            pages=2,
+            paragraphs=[
+                ParsedParagraph(text="1 Introduction", page_start=1, page_end=1),
+                ParsedParagraph(
+                    text="Self-attention improves sequence modelling without recurrence [1].",
+                    page_start=1,
+                    page_end=1,
+                ),
+                ParsedParagraph(text="References", page_start=2, page_end=2),
+                ParsedParagraph(
+                    text="[1] Attention source article.",
+                    page_start=2,
+                    page_end=2,
+                ),
+            ],
+        ),
+    )
+    _persist_parsed_pdf(
+        storage_paths,
+        "source-1",
+        "attention-source.pdf",
+        ParsedDocument(
+            paper_id="source-1",
+            title="Attention Source Article",
+            authors=["Smith, Jane"],
+            year=2024,
+            pages=1,
+            paragraphs=[
+                ParsedParagraph(
+                    text="Self-attention improves sequence modelling without recurrence.",
+                    page_start=1,
+                    page_end=1,
+                )
+            ],
+        ),
+    )
+
+    claims_response = client.get(f"/api/papers/{manuscript.paper_id}/claims")
+    assert claims_response.status_code == 200
+    claims_body = claims_response.json()
+    assert claims_body["status"] == "completed"
+    assert len(claims_body["claims"]) == 1
+    claim = claims_body["claims"][0]
+    assert claim["text"] == "Self-attention improves sequence modelling without recurrence [1]."
+    assert claim["citation_marker"] == "[1]"
+    assert claim["manuscript_location"] == {"page": 1, "paragraph_index": 0}
+    assert claims_body["manuscript_document"]["total_pages"] == 2
+
+
+
+def test_claims_unknown_paper_returns_404(client):
+    response = client.get("/api/papers/does-not-exist/claims")
+
+    assert response.status_code == 404
+
+
+def test_claims_resolve_bib_key_to_matching_local_pdf(client, storage_paths):
+    bib_response = client.post(
+        "/api/parse",
+        files={
+            "file": (
+                "references.bib",
+                (
+                    b"@article{attention2024, "
+                    b"title={Attention Mechanisms in Deep Learning}, year={2024}}"
+                ),
+                "text/plain",
+            )
         },
     )
+    assert bib_response.status_code == 200
+
+    source = _persist_parsed_pdf(
+        storage_paths,
+        "source-bib-1",
+        "attention.pdf",
+        ParsedDocument(
+            paper_id="source-bib-1",
+            title="Attention Mechanisms in Deep Learning",
+            year=2024,
+            pages=1,
+            paragraphs=[
+                ParsedParagraph(
+                    text="Attention mechanisms connect information across positions.",
+                    page_start=1,
+                    page_end=1,
+                )
+            ],
+        ),
+    )
+    manuscript = _persist_parsed_pdf(
+        storage_paths,
+        "manuscript-bib-1",
+        "manuscript.pdf",
+        ParsedDocument(
+            paper_id="manuscript-bib-1",
+            pages=1,
+            paragraphs=[
+                ParsedParagraph(
+                    text=(
+                        r"Attention mechanisms connect information across positions "
+                        r"\cite{attention2024}."
+                    ),
+                    page_start=1,
+                    page_end=1,
+                )
+            ],
+        ),
+    )
+
+    response = client.get(f"/api/papers/{manuscript.paper_id}/claims")
 
     assert response.status_code == 200
-    body = response.json()
-    assert body["total_citations"] == 2
-    assert len(body["results"]) == 2
-    assert (
-        body["supported"]
-        + body["partial"]
-        + body["contradicted"]
-        + body["not_found"]
-        == body["total_citations"]
-    )
-
-
-def test_audit_rejects_empty_sources(client):
-    response = client.post(
-        "/api/audit",
-        json={"manuscript_id": "manuscript.pdf", "source_paper_ids": []},
-    )
-
-    assert response.status_code == 400
+    claim = response.json()["claims"][0]
+    assert claim["resolution_status"] == "identified"
+    assert claim["cited_source"]["source_paper_id"] == source.paper_id
+    assert claim["cited_source"]["citation_key"] == "attention2024"
+    assert claim["source_document"]["total_pages"] == 1

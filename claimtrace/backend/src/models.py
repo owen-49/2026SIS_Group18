@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class VerdictEnum(str, Enum):
@@ -40,10 +40,19 @@ class VerifyRequest(BaseModel):
 
 
 class AuditRequest(BaseModel):
-    manuscript_id: str = Field(..., description="ID of the uploaded manuscript")
-    source_paper_ids: list[str] = Field(
-        ..., description="IDs of all source papers cited in the manuscript"
-    )
+    """Audit one persisted bibliography or one manuscript reference list."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    bib_paper_id: str | None = Field(default=None, min_length=1)
+    manuscript_id: str | None = Field(default=None, min_length=1)
+    # Accepted for old clients, but never used as proof of publication existence.
+    source_paper_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def require_one_input(self):
+        if bool(self.bib_paper_id) == bool(self.manuscript_id):
+            raise ValueError("Provide exactly one of bib_paper_id or manuscript_id.")
+        return self
 
 
 class BibVerifyRequest(BaseModel):
@@ -136,6 +145,13 @@ class ParseResponse(BaseModel):
     title: str | None = None
 
 
+class BibParseResponse(ParseResponse):
+    """Detailed response containing the entries persisted from a BibTeX file."""
+
+    file_type: Literal["bib"] = "bib"
+    entries: list[BibEntryRecord] = Field(default_factory=list)
+
+
 class PaperListItem(BaseModel):
     """Public metadata returned when listing uploaded papers."""
 
@@ -175,22 +191,71 @@ class VerifyResponse(BaseModel):
     matches: list[MatchResult] = []
 
 
-class CitationAuditResult(BaseModel):
+class DocumentLocation(BaseModel):
+    """Location of a paragraph in a parsed document."""
+
+    page: int = Field(..., ge=1)
+    paragraph_index: int = Field(..., ge=0)
+
+
+class SourceDocumentPage(BaseModel):
+    """Page-level text used by the review clients."""
+
+    page: int = Field(..., ge=1)
+    heading: str | None = None
+    paragraphs: list[str] = Field(default_factory=list)
+
+
+class SourceDocument(BaseModel):
+    """A displayable view of a persisted parsed document."""
+
+    total_pages: int = Field(..., ge=1)
+    pages: list[SourceDocumentPage] = Field(default_factory=list)
+    matched_location: DocumentLocation | None = None
+
+
+class IdentifiedSource(BaseModel):
+    """Bibliographic metadata associated with a claim's source."""
+
+    source_paper_id: str | None = None
     citation_key: str
-    claim: str
-    verdict: VerdictEnum
-    confidence: float
-    risk_level: str  # "high", "medium", "low"
+    title: str
+    authors: list[str] = Field(default_factory=list)
+    venue: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    url: str | None = None
+    database: str | None = None
 
 
-class AuditResponse(BaseModel):
+class SimilarSource(IdentifiedSource):
+    """A source candidate returned when exact resolution is unavailable."""
+
+    similarity: float = Field(..., ge=0.0, le=1.0)
+
+
+class ExtractedClaim(BaseModel):
+    """A manuscript sentence linked to one citation marker."""
+
+    claim_id: str
+    text: str
+    page: int | None = Field(default=None, ge=1)
+    citation_marker: str
+    resolution_status: Literal["identified", "searching", "not_found"]
+    cited_source: IdentifiedSource | None = None
+    similar_sources: list[SimilarSource] = Field(default_factory=list)
+    source_document: SourceDocument | None = None
+    manuscript_location: DocumentLocation | None = None
+
+
+class PaperClaimsResponse(BaseModel):
+    """Claims extracted from one persisted manuscript."""
+
     manuscript_id: str
-    total_citations: int
-    supported: int = 0
-    partial: int = 0
-    contradicted: int = 0
-    not_found: int = 0
-    results: list[CitationAuditResult] = []
+    status: ParseStatus
+    claims: list[ExtractedClaim] = Field(default_factory=list)
+    error_message: str | None = None
+    manuscript_document: SourceDocument | None = None
 
 
 # ── Bib verification models ───────────────────────────────────

@@ -1,15 +1,18 @@
 """BibTeX parsing and cross-verification endpoints."""
 
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 
 from ..models import (
+    BibEntryRecord,
     BibEntryVerificationResult,
     BibFieldResult,
     BibFieldStatusEnum,
     BibParseRequest,
+    BibParseResponse,
     BibVerifyRequest,
     BibVerifyResponse,
-    ParseResponse,
 )
 from ..services.bib_service import (
     BibPaperNotFoundError,
@@ -24,34 +27,49 @@ from ..services.bib_verification_service import (
     InvalidBibVerificationError,
     verify_persisted_bib,
 )
+from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
 
 router = APIRouter()
 
 
-@router.post("/parse/bib", response_model=ParseResponse)
+@router.post("/parse/bib", response_model=BibParseResponse)
 async def parse_bib(request: BibParseRequest):
-    """Compatibility endpoint for reprocessing an uploaded .bib file.
+    """Reprocess an uploaded .bib file and return its persisted entries.
 
-    POST /api/parse already parses BibTeX uploads. This endpoint reuses the
-    same service for clients that still use the older two-step flow.
+    POST /api/parse already parses and persists BibTeX uploads. This endpoint
+    keeps the older two-step flow while exposing the structured entries that
+    were actually saved for later verification.
     """
     try:
         record = process_uploaded_bib(request.paper_id)
-        return ParseResponse(
-            paper_id=record.paper_id,
-            status=record.status,
-            file_type=record.file_type,
-            pages=record.pages,
-            paragraph_count=record.paragraph_count,
-            entry_count=record.entry_count,
-            title=record.title,
-        )
     except BibPaperNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except InvalidBibPaperError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except BibProcessingError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    if not record.parsed_result_path:
+        raise HTTPException(status_code=500, detail="Parsed BibTeX output is missing.")
+
+    try:
+        document = load_bib_document(Path(record.parsed_result_path))
+    except BibDocumentStoreError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to read parsed BibTeX entries.",
+        ) from exc
+
+    if document.paper_id != record.paper_id:
+        raise HTTPException(status_code=500, detail="Parsed BibTeX ID does not match the request.")
+
+    return BibParseResponse(
+        paper_id=record.paper_id,
+        status=record.status,
+        entry_count=len(document.entries),
+        title=record.title,
+        entries=[BibEntryRecord.model_validate(entry) for entry in document.entries],
+    )
 
 
 @router.post("/verify/bib", response_model=BibVerifyResponse)

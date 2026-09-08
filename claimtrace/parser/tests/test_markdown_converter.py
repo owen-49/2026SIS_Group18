@@ -5,8 +5,10 @@ from pathlib import Path
 import fitz  # PyMuPDF
 import pytest
 
+from parser import markdown_converter as md_module
 from parser.markdown_converter import (
     HybridBackendError,
+    _deduplicate_image_references,
     convert_pdf_to_markdown,
     is_backend_reachable,
 )
@@ -47,11 +49,61 @@ class TestValidation:
             convert_pdf_to_markdown(sample_pdf, hybrid_url="http://127.0.0.1:9")
 
 
+# ── Image reference deduplication ──────────────────────────────
+
+
+class TestImageDeduplication:
+    def test_duplicated_refs_keep_last_occurrence(self):
+        markdown = (
+            "![](<img/a.png>)\n\n"
+            "# Title\n\n"
+            "Body text.\n\n"
+            "![](<img/a.png>)\n\n"
+            "![](<img/b.png>)\n"
+        )
+        result = _deduplicate_image_references(markdown)
+        assert result.count("img/a.png") == 1
+        assert result.index("img/a.png") > result.index("# Title")
+        assert "img/b.png" in result
+
+    def test_single_occurrences_are_untouched(self):
+        markdown = "![](<img/a.png>)\n\nText.\n"
+        assert _deduplicate_image_references(markdown) == markdown
+
+    def test_text_without_images_is_unchanged(self):
+        markdown = "# Title\n\nParagraph one.\n\nParagraph two.\n"
+        assert _deduplicate_image_references(markdown) == markdown
+
+    def test_mixed_text_and_image_line_is_kept(self):
+        markdown = (
+            "![](<img/a.png>)\n\n"
+            "Figure 1: caption ![](<img/a.png>) text\n"
+        )
+        result = _deduplicate_image_references(markdown)
+        assert result.count("img/a.png") == 1
+        assert "Figure 1: caption" in result
+
+    def test_more_than_two_occurrences_collapse_to_last(self):
+        markdown = "![](<img/a.png>)\n\n![](<img/a.png>)\n\n![](<img/a.png>)\n"
+        result = _deduplicate_image_references(markdown)
+        assert result.count("img/a.png") == 1
+
+    def test_plain_parenthesis_syntax_is_handled(self):
+        markdown = "![](img/a.png)\n\nText.\n\n![](img/a.png)\n"
+        result = _deduplicate_image_references(markdown)
+        assert result.count("img/a.png") == 1
+
+
 # ── Conversion tests ───────────────────────────────────────────
 
 
 class TestLocalMode:
-    def test_converts_and_returns_text(self, sample_pdf: Path):
+    def test_converts_and_returns_text(
+        self, sample_pdf: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Redirect the default output dir so the test never clears the
+        # repository's generated_markdown sample output.
+        monkeypatch.setattr(md_module, "DEFAULT_OUTPUT_DIR", tmp_path / "generated")
         text = convert_pdf_to_markdown(sample_pdf, hybrid="off")
         assert "Introduction" in text
         assert "test paragraph" in text

@@ -31,3 +31,8 @@ export function saveWorkspacePaper(paper: WorkspacePaper) {
   const current = getWorkspacePapers().filter((entry) => entry.paperId !== DEMO_PAPER.paperId && entry.paperId !== paper.paperId);
   window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify([paper, ...current].slice(0, 20)));
 }
+
+export function getLatestUploadedPaper(fileType?: "pdf" | "bib") {
+  return getWorkspacePapers().find((paper) => paper.paperId !== DEMO_PAPER.paperId
+    && (!fileType || (paper.fileType || "pdf") === fileType));
+}

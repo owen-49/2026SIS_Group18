@@ -2,9 +2,8 @@ import { Link } from "react-router-dom";
 import { Icon, type IconName } from "../components/Icon";
 
 const workflows: { icon: IconName; title: string; text: string; to: string; action: string }[] = [
-  { icon: "upload", title: "Add your files", text: "Open Paper Library to upload PDF manuscripts or BibTeX bibliographies and track their backend parsing status.", to: "/library?upload=1", action: "Open Paper Library" },
-  { icon: "verify", title: "Review extracted claims", text: "Choose an uploaded manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Review claims" },
-  { icon: "audit", title: "Review a full paper", text: "Rank citations by risk and inspect unsupported, partial, or contradictory claims first.", to: "/audit", action: "Open batch audit" },
+  { icon: "audit", title: "Audit a bibliography", text: "Check whether cited publications exist and compare their metadata with source records.", to: "/audit", action: "Open batch audit" },
+  { icon: "verify", title: "Review extracted claims", text: "Choose a manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Review claims" },
 ];
 
 const verdicts = [
@@ -23,7 +22,7 @@ export function DocsPage() {
           <h1>Help & documentation</h1>
           <p>Learn the ClaimTrace workflow, understand the current demo, and connect the interface to the backend.</p>
         </div>
-        <Link className="button button-secondary" to="/"><span aria-hidden="true">←</span> Back to overview</Link>
+        <Link className="button button-secondary" to="/audit"><span aria-hidden="true">←</span> Back to batch audit</Link>
       </section>
 
       <section className="docs-callout" id="demo-workspace">
@@ -37,7 +36,7 @@ export function DocsPage() {
       </section>
 
       <section>
-        <div className="section-heading"><span className="eyebrow">Start here</span><h2>Three core workflows</h2></div>
+        <div className="section-heading"><span className="eyebrow">Start here</span><h2>Two core workflows</h2></div>
         <div className="docs-workflow-grid">
           {workflows.map((workflow, index) => (
             <article className="panel docs-workflow-card" key={workflow.title}>
@@ -62,7 +61,7 @@ export function DocsPage() {
         <article className="panel docs-section-card">
           <div className="docs-section-heading"><span className="docs-heading-icon"><Icon name="external" size={19} /></span><div><span className="eyebrow">Browser extension</span><h2>Use ClaimTrace in Overleaf</h2></div></div>
           <p className="docs-body-copy">Load the local extension into Chrome, select a <code>.bib</code> file in Overleaf, and open the ClaimTrace Side Panel to search the detected bibliography.</p>
-          <div className="extension-mini-flow"><span>Overleaf <code>.bib</code></span><Icon name="arrow" size={15} /><span>Paper library</span><Icon name="arrow" size={15} /><span>Evidence trace</span></div>
+          <div className="extension-mini-flow"><span>Overleaf <code>.bib</code></span><Icon name="arrow" size={15} /><span>ClaimTrace</span><Icon name="arrow" size={15} /><span>Evidence trace</span></div>
           <Link className="button button-primary full-button" to="/extension-setup">Open extension setup guide <Icon name="arrow" size={15} /></Link>
         </article>
       </section>

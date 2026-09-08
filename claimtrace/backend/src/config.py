@@ -19,7 +19,7 @@ class Settings:
     """Application settings loaded from environment variables."""
 
     # ── LLM Provider ──────────────────────────────────────
-    llm_provider: str = "openai"  # openai | gemini | anthropic | ollama
+    llm_provider: str = "openai"  # openai | deepseek | gemini | anthropic | ollama
 
     # ── OpenAI ────────────────────────────────────────────
     openai_api_key: str = ""
@@ -33,6 +33,11 @@ class Settings:
     # ── Anthropic Claude ──────────────────────────────────
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-5"
+
+    # ── DeepSeek ──────────────────────────────────────────
+    deepseek_api_key: str = ""
+    deepseek_model: str = "deepseek-chat"
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
 
     # ── Ollama (local) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434/v1"
@@ -61,15 +66,25 @@ class Settings:
     papers_file: Path = Path("uploads/papers.json")
     parsed_dir: Path = Path("uploads/parsed")
 
+    # ── Parser ───────────────────────────────────────────
+    # Yi Jiang's PDF-to-Markdown converter uses Java locally by default.
+    # Set PARSER_HYBRID to "docling-fast" or "hancom-ai" when the optional
+    # local hybrid service is running on PARSER_HYBRID_URL.
+    parser_hybrid: str = "off"
+    parser_hybrid_mode: str | None = None
+    parser_hybrid_url: str = "http://localhost:5002"
+    parser_use_struct_tree: bool = False
+
     @property
     def is_llm_configured(self) -> bool:
         """Check whether any LLM provider has a valid API key set.
 
         Returns False in CI / local-dev-without-keys — the verifier
-        will fall back to mock mode.
+        will use local deterministic evidence matching.
         """
         key_checks = {
             "openai": self.openai_api_key,
+            "deepseek": self.deepseek_api_key,
             "gemini": self.gemini_api_key,
             "anthropic": self.anthropic_api_key,
             "ollama": True,  # ollama is always "configured" since it's local
@@ -81,6 +96,7 @@ class Settings:
         """Return the model name for the active provider."""
         model_map = {
             "openai": self.openai_model,
+            "deepseek": self.deepseek_model,
             "gemini": self.gemini_model,
             "anthropic": self.anthropic_model,
             "ollama": self.ollama_model,
@@ -113,6 +129,10 @@ def _load_settings() -> Settings:
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         openai_model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
         openai_base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        # DeepSeek
+        deepseek_api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+        deepseek_model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+        deepseek_base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"),
         # Gemini
         gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
@@ -135,6 +155,10 @@ def _load_settings() -> Settings:
         upload_dir=upload_dir,
         papers_file=papers_file,
         parsed_dir=parsed_dir,
+        parser_hybrid=os.getenv("PARSER_HYBRID", "off"),
+        parser_hybrid_mode=os.getenv("PARSER_HYBRID_MODE") or None,
+        parser_hybrid_url=os.getenv("PARSER_HYBRID_URL", "http://localhost:5002"),
+        parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
     )
 
 
