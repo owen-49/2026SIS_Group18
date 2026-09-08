@@ -1,6 +1,6 @@
 """Endpoints for listing persisted paper metadata."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response, status
 
 from ..models import PaperClaimsResponse, PaperListItem, PaperListResponse
 from ..services.analysis_service import (
@@ -8,6 +8,11 @@ from ..services.analysis_service import (
     AnalysisServiceError,
     InvalidAnalysisPaperError,
     get_paper_claims,
+)
+from ..services.paper_deletion_service import (
+    PaperDeletionError,
+    PaperDeletionNotFoundError,
+    delete_uploaded_paper,
 )
 from ..storage.paper_store import PaperStoreError, list_papers
 
@@ -29,6 +34,21 @@ async def get_papers():
         for record in records
     ]
     return PaperListResponse(total=len(papers), papers=papers)
+
+
+@router.delete("/papers/{paper_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_paper(paper_id: str) -> Response:
+    """Delete one uploaded paper and all of its local artifacts."""
+    try:
+        delete_uploaded_paper(paper_id)
+    except PaperDeletionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except PaperDeletionError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to delete the paper and its local artifacts.",
+        ) from exc
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/papers/{paper_id}/claims", response_model=PaperClaimsResponse)

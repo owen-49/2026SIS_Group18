@@ -3,7 +3,9 @@
 import json
 from pathlib import Path
 
+from backend.src.services import paper_deletion_service
 from backend.src.storage.bib_document_store import load_bib_document
+from backend.src.storage.paper_store import PaperStoreError, get_paper
 from backend.tests.pdf_fixtures import make_test_pdf
 
 SAMPLE_BIB = b"""
@@ -166,6 +168,45 @@ def test_uploaded_bib_status_can_be_read(client):
 
     assert response.status_code == 200
     assert response.json() == uploaded
+
+
+def test_delete_bib_removes_raw_and_parsed_files(client, storage_paths):
+    uploaded = _upload_bib(client).json()
+    paper_id = uploaded["paper_id"]
+    raw_path = storage_paths["upload_dir"] / f"{paper_id}.bib"
+    parsed_path = storage_paths["bib_parsed_dir"] / f"{paper_id}.json"
+
+    response = client.delete(f"/api/papers/{paper_id}")
+
+    assert response.status_code == 204
+    assert not raw_path.exists()
+    assert not parsed_path.exists()
+    assert client.get(f"/api/parse/{paper_id}").status_code == 404
+    assert client.get("/api/papers").json() == {"total": 0, "papers": []}
+
+
+def test_delete_bib_restores_files_when_metadata_update_fails(
+    client, storage_paths, monkeypatch
+):
+    uploaded = _upload_bib(client).json()
+    paper_id = uploaded["paper_id"]
+    raw_path = storage_paths["upload_dir"] / f"{paper_id}.bib"
+    parsed_path = storage_paths["bib_parsed_dir"] / f"{paper_id}.json"
+
+    def fail_delete(_paper_id):
+        raise PaperStoreError("simulated metadata write failure")
+
+    monkeypatch.setattr(paper_deletion_service, "delete_paper", fail_delete)
+
+    response = client.delete(f"/api/papers/{paper_id}")
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "Unable to delete the paper and its local artifacts."
+    }
+    assert raw_path.exists()
+    assert parsed_path.exists()
+    assert get_paper(paper_id) is not None
 
 
 def test_upload_without_bib_entries_returns_422_and_records_failure(client, storage_paths):
