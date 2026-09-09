@@ -6,10 +6,12 @@ import { Icon } from "./Icon";
 
 interface Props {
   pdfOnly?: boolean;
+  disabled?: boolean;
+  onSettled?: () => void;
   onReady: (paper: ParsedPaper) => Promise<void>;
 }
 
-export function UploadFilesButton({ pdfOnly = false, onReady }: Props) {
+export function UploadFilesButton({ pdfOnly = false, disabled = false, onReady, onSettled }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const active = useRef(true);
   const busyRef = useRef(false);
@@ -52,13 +54,14 @@ export function UploadFilesButton({ pdfOnly = false, onReady }: Props) {
     } catch (cause) {
       if (active.current) { setMessage(""); setError(cause instanceof Error ? cause.message : "Upload failed. Please try again."); }
     } finally {
+      onSettled?.();
       busyRef.current = false;
       if (active.current) setBusy(false);
     }
   }
 
   return <>
-    <button className="button button-secondary upload-trigger" type="button" onClick={() => dialog.current?.showModal()}><Icon name="upload" size={17} /> Upload {pdfOnly ? "PDF" : "file"}</button>
+    <button className="button button-secondary upload-trigger" type="button" disabled={disabled} onClick={() => dialog.current?.showModal()}><Icon name="upload" size={17} /> Upload {pdfOnly ? "PDF" : "file"}</button>
     <dialog className="direct-upload-dialog" aria-labelledby="direct-upload-title" ref={dialog} onCancel={(event) => { if (busy) event.preventDefault(); }}>
       <header><div className="upload-heading"><span className="upload-heading-icon"><Icon name="upload" size={24} /></span><div><h2 id="direct-upload-title">Upload {pdfOnly ? "PDF" : "file"}</h2></div></div><button className="icon-button" type="button" aria-label="Close upload window" disabled={busy} onClick={() => dialog.current?.close()}><Icon name="x" /></button></header>
       <p className="upload-description">{pdfOnly ? "Add a manuscript or source paper to start reviewing its claims." : "Add a manuscript or bibliography to check your references."}</p>

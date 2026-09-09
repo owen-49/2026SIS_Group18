@@ -1,8 +1,10 @@
 """API contract tests use an explicit fake external adapter, never live queries."""
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
+from threading import Event
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -15,6 +17,7 @@ from backend.src.audit_models import (
 )
 from backend.src.main import app
 from backend.src.models import PaperRecord, ParsedDocument, ParseStatus
+from backend.src.routes import audit as audit_route
 from backend.src.services import pipeline_service, reference_input_service
 from backend.src.services.analysis_service import _find_bib_entry, _load_bibliography_entries
 from backend.src.storage.paper_store import create_paper
@@ -92,6 +95,42 @@ def test_no_lookup_returns_explicit_failure_without_source_pdf_and_persists(clie
     assert not {"claim", "verdict", "confidence", "source_passage"} & row.keys()
     assert not {"supported", "partial", "contradicted"} & body.keys()
     assert client.get(f"/api/audit/{body['audit_id']}").json() == body
+
+
+def test_delete_waits_for_audit_and_removes_its_late_artifacts(
+    client, storage_paths, monkeypatch
+):
+    paper_id = upload_bib(client)
+    audit_started = Event()
+    release_audit = Event()
+    original_run_audit = audit_route.run_bibliography_audit
+
+    def blocked_audit(request, lookup):
+        audit_started.set()
+        if not release_audit.wait(timeout=5):
+            raise TimeoutError("test did not release the audit")
+        return original_run_audit(request, lookup)
+
+    monkeypatch.setattr(audit_route, "run_bibliography_audit", blocked_audit)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        audit_future = pool.submit(
+            client.post,
+            "/api/audit",
+            json={"bib_paper_id": paper_id},
+        )
+        assert audit_started.wait(timeout=5)
+        delete_future = pool.submit(client.delete, f"/api/papers/{paper_id}")
+        release_audit.set()
+        audit_response = audit_future.result(timeout=10)
+        delete_response = delete_future.result(timeout=10)
+
+    assert audit_response.status_code == 200
+    assert delete_response.status_code == 204
+    audit_id = audit_response.json()["audit_id"]
+    audit_path = storage_paths["parsed_dir"] / "audits" / f"{audit_id}.json"
+    assert not audit_path.exists()
+    assert client.get(f"/api/audit/{audit_id}").status_code == 404
 
 
 @pytest.mark.parametrize(
