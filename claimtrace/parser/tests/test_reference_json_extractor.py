@@ -16,6 +16,7 @@ from parser.reference_json_extractor import (
     detect_reference_style,
     extract_references_from_document,
     find_reference_section,
+    parse_reference_metadata,
     reference_list_to_json,
     split_hanging_indent_lines,
     split_reference_entries,
@@ -124,6 +125,25 @@ class TestFindReferenceSection:
         )
 
         assert find_reference_section(document) is None
+
+    def test_recovers_uppercase_heading_merged_into_previous_column(self):
+        document = sample_document(
+            [
+                element(
+                    "The final paragraph ends here. REFERENCES",
+                    9,
+                    "paragraph",
+                ),
+                element("[1] First example reference.", 9, "list item"),
+                element("[2] Second example reference.", 9, "list item"),
+            ]
+        )
+
+        section = find_reference_section(document)
+
+        assert section is not None
+        assert section.heading == "REFERENCES"
+        assert section.body_prefix == "The final paragraph ends here."
 
     def test_prefers_real_heading_over_table_column(self):
         document = sample_document(
@@ -379,7 +399,141 @@ class TestDetectReferenceStyle:
         assert detect_reference_style(elements) == "author-year-inline"
 
 
+class TestReferenceMetadataParsing:
+    def test_parses_apa_7_metadata(self):
+        metadata = parse_reference_metadata(
+            "Smith, J. A., & Brown, T. B. (2022). Article title: A subtitle. "
+            "Journal of Tests, 10(2), 1-9. https://doi.org/10.1234/test.1"
+        )
+
+        assert metadata.authors == ["Smith, J. A.", "Brown, T. B."]
+        assert metadata.year == 2022
+        assert metadata.title == "Article title: A subtitle"
+        assert metadata.venue == "Journal of Tests"
+        assert metadata.doi == "10.1234/test.1"
+
+    def test_parses_apa_no_date_with_null_year(self):
+        metadata = parse_reference_metadata(
+            "World Health Organization. (n.d.). Health guidance. WHO Press."
+        )
+
+        assert metadata.authors == ["World Health Organization"]
+        assert metadata.year is None
+        assert metadata.title == "Health guidance"
+        assert metadata.venue == "WHO Press"
+        assert metadata.doi is None
+
+    def test_tolerates_lowercase_apa_initials_from_pdf_extraction(self):
+        metadata = parse_reference_metadata(
+            "Fu, T.-y., Lee, W.-C., & Lei, Z. (2017). Hin2vec methods. "
+            "Proceedings of Testing."
+        )
+
+        assert metadata.authors == ["Fu, T.-y.", "Lee, W.-C.", "Lei, Z."]
+        assert metadata.year == 2017
+        assert metadata.title == "Hin2vec methods"
+
+    def test_does_not_split_apa_title_at_an_acronym(self):
+        metadata = parse_reference_metadata(
+            "Smith, J. (2022). Use of U.S. health data in practice. Journal of Tests."
+        )
+
+        assert metadata.title == "Use of U.S. health data in practice"
+        assert metadata.venue == "Journal of Tests"
+
+    def test_parses_ieee_metadata(self):
+        metadata = parse_reference_metadata(
+            "[1] J. A. Smith and T. Brown, \u201cAn IEEE paper title,\u201d "
+            "IEEE Transactions on Testing, vol. 10, no. 2, pp. 1-9, 2021, "
+            "doi: 10.1109/TEST.2021.12345."
+        )
+
+        assert metadata.authors == ["J. A. Smith", "T. Brown"]
+        assert metadata.year == 2021
+        assert metadata.title == "An IEEE paper title"
+        assert metadata.venue == "IEEE Transactions on Testing"
+        assert metadata.doi == "10.1109/TEST.2021.12345"
+
+    def test_parses_ieee_metadata_with_pdf_extraction_quote_noise(self):
+        metadata = parse_reference_metadata(
+            "[1] J. Haberman and D. Whitney, ªSeeing the mean: Ensemble coding "
+            "for sets of faces,º Journal of Experimental Psychology, vol. 35, "
+            "no. 3, pp. 718-734, 2009. doi: 10.1037/a0013899."
+        )
+
+        assert metadata.authors == ["J. Haberman", "D. Whitney"]
+        assert metadata.year == 2009
+        assert metadata.title == "Seeing the mean: Ensemble coding for sets of faces"
+        assert metadata.venue == "Journal of Experimental Psychology"
+        assert metadata.doi == "10.1037/a0013899"
+
+    def test_leaves_vancouver_nlm_metadata_null(self):
+        metadata = parse_reference_metadata(
+            "2. Smith JA, Brown TB. A Vancouver article title. "
+            "J Test Med. 2020;10(2):1-9. doi:10.1000/test.2"
+        )
+
+        assert metadata.authors is None
+        assert metadata.year is None
+        assert metadata.title is None
+        assert metadata.venue is None
+        assert metadata.doi is None
+
+    def test_returns_null_metadata_for_an_unmatched_format(self):
+        metadata = parse_reference_metadata(
+            "[3] D.M. Chiorean, et al., New insights into genetics, "
+            "Diagn. 13 (2023)."
+        )
+
+        assert metadata.authors is None
+        assert metadata.year is None
+        assert metadata.title is None
+        assert metadata.venue is None
+        assert metadata.doi is None
+
+    def test_does_not_misclassify_springer_reference_as_apa(self):
+        metadata = parse_reference_metadata(
+            "1. Amiri, A.M., Naderi, K.: Evaluating traffic safety. "
+            "J. Transport Health 20, 101010 (2021). "
+            "https://doi.org/10.1016/j.jth.2021.101010"
+        )
+
+        assert metadata.authors is None
+        assert metadata.year is None
+        assert metadata.title is None
+        assert metadata.venue is None
+        assert metadata.doi is None
+
+
 class TestEndToEndExtraction:
+    def test_keeps_every_entry_and_serializes_supported_or_null_metadata(self):
+        document = sample_document(
+            [
+                element("References", 8, "heading"),
+                element(
+                    "[1] J. A. Smith, \u201cAn IEEE paper title,\u201d Journal of Tests, "
+                    "vol. 2, pp. 1-9, 2021.",
+                    8,
+                ),
+                element("[2] An irregular reference that does not match a parser.", 8),
+            ]
+        )
+
+        result = extract_references_from_document(document)
+        references = json.loads(reference_list_to_json(result))["references"]
+
+        assert len(references) == 2
+        assert references[0]["title"] == "An IEEE paper title"
+        assert references[0]["authors"] == ["J. A. Smith"]
+        assert references[1] == {
+            "raw_text": "[2] An irregular reference that does not match a parser.",
+            "authors": None,
+            "year": None,
+            "title": None,
+            "venue": None,
+            "doi": None,
+        }
+
     def test_recovers_later_column_references_ordered_before_heading(self):
         document = sample_document(
             [
@@ -597,6 +751,7 @@ class TestEndToEndExtraction:
         assert result.start_page is None
         assert result.warnings
         assert result.warnings[0] == ("Reference-list heading was not found.")
+        assert json.loads(reference_list_to_json(result))["warnings"] == result.warnings
 
     def test_result_is_valid_json(self):
         document = sample_document(
@@ -620,8 +775,24 @@ class TestEndToEndExtraction:
         assert parsed == {
             "source_file": "sample.pdf",
             "references": [
-                {"raw_text": ("[1] A. Author. Example title. 2021.")},
-                {"raw_text": ("[2] B. Author. Another title. 2022. https://example.org/paper")},
+                {
+                    "raw_text": "[1] A. Author. Example title. 2021.",
+                    "authors": None,
+                    "year": None,
+                    "title": None,
+                    "venue": None,
+                    "doi": None,
+                },
+                {
+                    "raw_text": (
+                        "[2] B. Author. Another title. 2022. https://example.org/paper"
+                    ),
+                    "authors": None,
+                    "year": None,
+                    "title": None,
+                    "venue": None,
+                    "doi": None,
+                },
             ],
         }
 

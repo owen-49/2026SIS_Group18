@@ -7,7 +7,8 @@ This module contains ClaimTrace-specific logic:
 2. Collect its document elements.
 3. Split those elements into individual reference entries.
 4. Preserve each entry as source text.
-5. Export a minimal JSON representation for the backend and frontend.
+5. Parse APA 7 and standard IEEE metadata when possible.
+6. Export every raw entry with nullable structured fields.
 """
 
 from __future__ import annotations
@@ -415,6 +416,27 @@ NUMBERED_REFERENCE_PATTERN = re.compile(
 
 INLINE_REFERENCE_START_PATTERN = re.compile(r"(?m)(?=^\s*(?:\[\d+\]|\d+[.)])\s+)")
 
+DOI_PATTERN = re.compile(
+    r"\b(?P<doi>10\.\d{4,9}/[-._;()/:A-Z0-9]+)",
+    flags=re.IGNORECASE,
+)
+APA_METADATA_PATTERN = re.compile(
+    r"^(?P<authors>.+?)\s*\("
+    r"(?P<year>(?:(?:18|19|20)\d{2})[a-z]?|n\.?d\.?)"
+    r"(?:,\s*[A-Za-z]+\s+\d{1,2})?"
+    r"\)\.\s*(?P<body>.+)$",
+    flags=re.IGNORECASE,
+)
+IEEE_METADATA_PATTERN = re.compile(
+    r"^(?P<authors>.+?),\s*[\"\u00aa\u201c]"
+    r"(?P<title>.+?),?[\"\u00ba\u201d]\s*,?\s*(?P<body>.+)$",
+    flags=re.IGNORECASE,
+)
+APA_PERSON_PATTERN = re.compile(
+    r"(?P<surname>[A-Z\u00c0-\u024f][A-Za-z\u00c0-\u024f'\u2019 -]+),\s*"
+    r"(?P<initials>(?:[A-Za-z]\.(?:[-\s]*[A-Za-z]\.)*))",
+)
+
 
 @dataclass
 class Reference:
@@ -425,6 +447,11 @@ class Reference:
     page_start: int | None = None
     page_end: int | None = None
     bounding_boxes: list[tuple[float, float, float, float]] = field(default_factory=list)
+    authors: list[str] | None = None
+    year: int | None = None
+    title: str | None = None
+    venue: str | None = None
+    doi: str | None = None
 
 
 @dataclass
@@ -449,6 +476,7 @@ class ReferenceSection:
     heading_index: int
     heading: str
     page: int
+    body_prefix: str | None = None
 
 
 @dataclass
@@ -460,6 +488,17 @@ class ReferenceCandidate:
     bounding_boxes: list[tuple[float, float, float, float]] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class ParsedReferenceMetadata:
+    """Structured fields recovered from one supported bibliography style."""
+
+    authors: list[str] | None = None
+    year: int | None = None
+    title: str | None = None
+    venue: str | None = None
+    doi: str | None = None
+
+
 def _normalise_heading(text: str) -> str:
     """Normalize a possible section heading."""
 
@@ -468,6 +507,34 @@ def _normalise_heading(text: str) -> str:
     value = re.sub(r"[:.\s]+$", "", value)
     value = re.sub(r"\s+", " ", value)
     return value
+
+
+def _reference_heading_parts(element: DocumentElement) -> tuple[str, str | None] | None:
+    """Return a reference heading and an optional paragraph prefix.
+
+    Two-column layout extraction can append a visually separate ``REFERENCES``
+    heading to the final paragraph in the preceding column. Embedded recovery is
+    deliberately limited to an uppercase heading at the end of an element so a
+    prose phrase such as ``see references`` cannot start a bibliography.
+    """
+
+    if _normalise_heading(element.content) in REFERENCE_HEADINGS:
+        return element.content.strip(), None
+
+    heading_choices = sorted(REFERENCE_HEADINGS, key=len, reverse=True)
+    match = re.search(
+        rf"(?P<prefix>.+?)\s+(?P<heading>{'|'.join(map(re.escape, heading_choices))})"
+        r"\s*[:.]?\s*$",
+        element.content,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if match is None or not match.group("heading").isupper():
+        return None
+
+    prefix = match.group("prefix").strip()
+    if not prefix or prefix[-1] not in ".!?":
+        return None
+    return match.group("heading").strip(), prefix
 
 
 def _is_reference_terminator(element: DocumentElement) -> bool:
@@ -563,7 +630,7 @@ def find_reference_section(
 
     A valid candidate must:
 
-    1. Exactly match a known reference-list heading.
+    1. Match a known heading, including a safely recoverable merged heading.
     2. Appear in the latter part of the paper.
     3. Be followed by at least two reference-like entries.
 
@@ -574,12 +641,13 @@ def find_reference_section(
         return None
 
     minimum_page = max(1, int(document.page_count * 0.4))
-    candidates: list[tuple[int, int, int, DocumentElement]] = []
+    candidates: list[
+        tuple[int, int, int, DocumentElement, tuple[str, str | None]]
+    ] = []
 
     for index, element in enumerate(document.elements):
-        heading = _normalise_heading(element.content)
-
-        if heading not in REFERENCE_HEADINGS:
+        heading_parts = _reference_heading_parts(element)
+        if heading_parts is None:
             continue
 
         if element.page < minimum_page:
@@ -604,6 +672,7 @@ def find_reference_section(
                 following_entry_count,
                 element.page,
                 element,
+                heading_parts,
             )
         )
 
@@ -622,12 +691,14 @@ def find_reference_section(
     )
 
     chosen_element = candidates[0][3]
+    chosen_heading, body_prefix = candidates[0][4]
     chosen_index = document.elements.index(chosen_element)
 
     return ReferenceSection(
         heading_index=chosen_index,
-        heading=chosen_element.content.strip(),
+        heading=chosen_heading,
         page=chosen_element.page,
+        body_prefix=body_prefix,
     )
 
 
@@ -839,6 +910,182 @@ def _extract_number(text: str) -> int | None:
     return int(raw_number)
 
 
+def _strip_reference_number(text: str) -> str:
+    """Remove a leading bracketed or plain reference-list number."""
+
+    return NUMBERED_REFERENCE_PATTERN.sub("", text, count=1).strip()
+
+
+def _extract_doi(text: str) -> str | None:
+    """Return a normalized DOI without URL or ``doi:`` decoration."""
+
+    match = DOI_PATTERN.search(text)
+    if match is None:
+        return None
+    doi = match.group("doi").rstrip(".,;")
+    while doi.endswith(")") and doi.count(")") > doi.count("("):
+        doi = doi[:-1]
+    return doi
+
+
+def _without_doi(text: str) -> str:
+    """Remove DOI text before extracting a venue."""
+
+    match = DOI_PATTERN.search(text)
+    if match is None:
+        return text.strip()
+
+    prefix = text[: match.start()]
+    prefix = re.sub(
+        r"(?:https?://(?:dx\.)?doi\.org/|doi\s*:\s*)$",
+        "",
+        prefix,
+        flags=re.IGNORECASE,
+    )
+    return prefix.rstrip(" ,.;")
+
+
+def _clean_field(value: str) -> str | None:
+    """Normalize whitespace and surrounding bibliography punctuation."""
+
+    cleaned = " ".join(value.split()).strip(" \t\n\r,.;\"\u201c\u201d")
+    return cleaned or None
+
+
+def _year_to_int(value: str) -> int | None:
+    """Return the four-digit part of a date, or ``None`` for no date."""
+
+    match = re.search(r"(?:18|19|20)\d{2}", value)
+    return int(match.group(0)) if match else None
+
+
+def _split_title_from_source(body: str) -> tuple[str | None, str | None]:
+    """Split a title sentence from the following source description."""
+
+    for index, character in enumerate(body):
+        if character not in ".!?" or index + 1 >= len(body):
+            continue
+        if not body[index + 1].isspace():
+            continue
+        if character == ".":
+            prefix = body[: index + 1]
+            if re.search(r"(?:\b[A-Z]\.){1,}$", prefix):
+                continue
+            if prefix.casefold().endswith(("e.g.", "i.e.", "et al.")):
+                continue
+
+        title = _clean_field(body[: index + 1])
+        source = _clean_field(body[index + 1 :])
+        if title and source:
+            return title, source
+    return None, None
+
+
+def _parse_apa_authors(authors_text: str) -> list[str] | None:
+    """Parse a complete APA author field without accepting trailing title text."""
+
+    matches = list(APA_PERSON_PATTERN.finditer(authors_text))
+    authors = [
+        f"{match.group('surname').strip()}, {match.group('initials').strip()}"
+        for match in matches
+    ]
+    if authors:
+        residue = APA_PERSON_PATTERN.sub("", authors_text)
+        residue = re.sub(r"\bet\s+al\.?", "", residue, flags=re.IGNORECASE)
+        residue = re.sub(r"\band\b", "", residue, flags=re.IGNORECASE)
+        if not re.sub(r"[\s,&.]+", "", residue):
+            return authors
+        return None
+
+    corporate = _clean_field(authors_text.rstrip("."))
+    if (
+        corporate
+        and "," not in corporate
+        and ":" not in corporate
+        and len(corporate.split()) <= 12
+    ):
+        return [corporate]
+    return None
+
+
+def _parse_apa_metadata(text: str) -> ParsedReferenceMetadata | None:
+    """Parse the stable author/date/title/source sequence used by APA 7."""
+
+    match = APA_METADATA_PATTERN.match(_strip_reference_number(text))
+    if match is None:
+        return None
+
+    title, source = _split_title_from_source(match.group("body"))
+    if title is None:
+        return None
+
+    authors = _parse_apa_authors(match.group("authors"))
+    if authors is None:
+        return None
+
+    source_without_doi = _without_doi(source or "")
+    venue = _clean_field(source_without_doi.split(",", 1)[0])
+    return ParsedReferenceMetadata(
+        authors=authors,
+        year=_year_to_int(match.group("year")),
+        title=title,
+        venue=venue,
+        doi=_extract_doi(text),
+    )
+
+
+def _parse_ieee_authors(authors_text: str) -> list[str] | None:
+    """Split IEEE display-order author names."""
+
+    normalized = re.sub(r",?\s+and\s+", ", ", authors_text, flags=re.IGNORECASE)
+    authors = [
+        cleaned
+        for part in normalized.split(",")
+        if (cleaned := _clean_field(part)) and cleaned.casefold() != "et al"
+    ]
+    return authors or None
+
+
+def _parse_ieee_metadata(text: str) -> ParsedReferenceMetadata | None:
+    """Parse IEEE entries whose article or paper title is quoted."""
+
+    match = IEEE_METADATA_PATTERN.match(_strip_reference_number(text))
+    if match is None:
+        return None
+
+    body_without_doi = _without_doi(match.group("body"))
+    year_matches = list(re.finditer(r"\b(?:18|19|20)\d{2}\b", body_without_doi))
+    if not year_matches:
+        return None
+
+    venue = re.split(
+        r",\s*(?=(?:vol\.|no\.|pp?\.|art\.\s*no\.|(?:18|19|20)\d{2}\b))",
+        body_without_doi,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    return ParsedReferenceMetadata(
+        authors=_parse_ieee_authors(match.group("authors")),
+        year=int(year_matches[-1].group(0)),
+        title=_clean_field(match.group("title")),
+        venue=_clean_field(venue),
+        doi=_extract_doi(text),
+    )
+
+
+def parse_reference_metadata(text: str) -> ParsedReferenceMetadata:
+    """Parse supported styles, or return an all-null metadata record."""
+
+    for parser in (
+        _parse_apa_metadata,
+        _parse_ieee_metadata,
+    ):
+        metadata = parser(text)
+        if metadata is not None:
+            return metadata
+    return ParsedReferenceMetadata()
+
+
 def parse_reference_candidate(
     candidate: ReferenceCandidate,
 ) -> Reference:
@@ -846,9 +1093,15 @@ def parse_reference_candidate(
 
     raw_text = " ".join(candidate.text.split()).strip()
     pages = sorted(set(candidate.pages))
+    metadata = parse_reference_metadata(raw_text)
 
     return Reference(
         raw_text=raw_text,
+        authors=metadata.authors,
+        year=metadata.year,
+        title=metadata.title,
+        venue=metadata.venue,
+        doi=metadata.doi,
         number=_extract_number(raw_text),
         page_start=pages[0] if pages else None,
         page_end=pages[-1] if pages else None,
@@ -1023,17 +1276,25 @@ def _layout_candidates_are_better(
 
 
 def reference_list_to_dict(reference_list: ReferenceList) -> dict:
-    """Convert a reference list into the minimal public JSON format.
+    """Convert references to a stable raw-text-plus-metadata JSON schema."""
 
-    Parsing metadata remains available on ``ReferenceList`` for internal
-    diagnostics, but generated JSON deliberately contains only the source
-    filename and the original text of each reference.
-    """
-
-    return {
+    output = {
         "source_file": reference_list.source_file,
-        "references": [{"raw_text": reference.raw_text} for reference in reference_list.references],
+        "references": [
+            {
+                "raw_text": reference.raw_text,
+                "authors": reference.authors,
+                "year": reference.year,
+                "title": reference.title,
+                "venue": reference.venue,
+                "doi": reference.doi,
+            }
+            for reference in reference_list.references
+        ],
     }
+    if reference_list.warnings:
+        output["warnings"] = reference_list.warnings
+    return output
 
 
 def reference_list_to_json(

@@ -191,6 +191,29 @@ def test_excludes_reference_list_and_non_prose_elements():
     assert all(not sentence.text.startswith("[1]") for sentence in result.sentences)
 
 
+def test_keeps_body_text_when_reference_heading_is_merged_into_it():
+    document = ConvertedDocument(
+        file_name="merged-heading.pdf",
+        title="Merged heading",
+        author="Author",
+        page_count=2,
+        elements=[
+            element(
+                "The final body claim is supported [1]. REFERENCES",
+                page=2,
+                element_id="merged-heading",
+            ),
+            element("[1] First reference.", 2, "list item", "ref-1"),
+            element("[2] Second reference.", 2, "list item", "ref-2"),
+        ],
+    )
+
+    result = extract_citation_sentences_from_document(document)
+
+    assert len(result.sentences) == 1
+    assert result.sentences[0].text == "The final body claim is supported [1]."
+
+
 def test_repairs_line_wrap_hyphenation():
     document = document_with_body(
         [element("The model improves represen-\ntation quality [1].")]
@@ -272,6 +295,8 @@ def test_json_contains_one_record_per_reference_link():
     assert len({citation["sentence_id"] for citation in payload["citations"]}) == 1
     assert payload["citations"][0]["sentence"] == payload["citations"][1]["sentence"]
     assert payload["citations"][0]["locations"] == []
+    assert payload["citations"][0]["link_status"] == "resolved"
+    assert payload["citations"][0]["candidate_reference_ids"] == [3]
     assert "page_start" not in payload["citations"][0]
     assert "page_end" not in payload["citations"][0]
     assert "marker_start" not in payload["citations"][0]
@@ -289,6 +314,61 @@ def test_extracts_apa_parenthetical_citation():
     assert result.sentences[0].text.endswith("(Smith, 2020).")
     assert result.sentences[0].markers[0].text == "(Smith, 2020)"
     assert result.sentences[0].citation_ids == [1]
+
+
+def test_reports_same_surname_same_year_apa_match_as_ambiguous():
+    reference_texts = [
+        "Smith, J. (2020). First paper. Example Journal.",
+        "Smith, R. (2020). Second paper. Another Journal.",
+    ]
+    document = ConvertedDocument(
+        file_name="ambiguous-apa.pdf",
+        title="Ambiguous APA",
+        author="Author",
+        page_count=8,
+        elements=[
+            element("The result was previously reported (Smith, 2020)."),
+            element("References", 8, "heading", "references-heading"),
+            *[
+                element(text, 8, element_id=f"apa-ref-{index}")
+                for index, text in enumerate(reference_texts, start=1)
+            ],
+        ],
+    )
+    references = ReferenceList(
+        source_file="ambiguous-apa.pdf",
+        references=[Reference(raw_text=text) for text in reference_texts],
+        style="author-year-parenthesized",
+    )
+
+    result = extract_citation_sentences_from_document(document, references)
+    payload = json.loads(citation_sentence_list_to_json(result))
+
+    assert len(payload["citations"]) == 1
+    assert payload["citations"][0]["citation_id"] is None
+    assert payload["citations"][0]["link_status"] == "ambiguous"
+    assert payload["citations"][0]["candidate_reference_ids"] == [1, 2]
+
+
+def test_apa_single_author_does_not_match_multi_author_first_author():
+    reference_texts = [
+        "Smith, J. (2020). Single-author paper. Example Journal.",
+        "Smith, R., Jones, T., & Lee, P. (2020). Multi-author paper. Another Journal.",
+    ]
+    document, _ = apa_document_with_body(
+        [element("Two different sources were used (Smith, 2020; Smith et al., 2020).")]
+    )
+    references = ReferenceList(
+        source_file="apa-disambiguation.pdf",
+        references=[Reference(raw_text=text) for text in reference_texts],
+        style="author-year-parenthesized",
+    )
+
+    result = extract_citation_sentences_from_document(document, references)
+    payload = json.loads(citation_sentence_list_to_json(result))
+
+    assert [citation["citation_id"] for citation in payload["citations"]] == [1, 2]
+    assert all(citation["link_status"] == "resolved" for citation in payload["citations"])
 
 
 def test_extracts_apa_narrative_two_author_and_et_al_citations():

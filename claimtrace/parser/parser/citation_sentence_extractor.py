@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import pymupdf
@@ -88,14 +88,41 @@ _PERIOD_ABBREVIATIONS = (
 )
 
 
+@dataclass(frozen=True)
+class CitationReferenceMatch:
+    """One resolved link or one genuinely ambiguous group of candidates."""
+
+    candidate_ids: tuple[int, ...]
+
+    @property
+    def link_status(self) -> str:
+        return "resolved" if len(self.candidate_ids) == 1 else "ambiguous"
+
+    @property
+    def citation_id(self) -> int | None:
+        return self.candidate_ids[0] if len(self.candidate_ids) == 1 else None
+
+
 @dataclass
 class CitationMarker:
-    """One citation marker and its position inside a normalized sentence."""
+    """One citation marker and its candidate reference matches."""
 
     text: str
-    reference_ids: tuple[int, ...]
     start: int
     end: int
+    reference_matches: list[CitationReferenceMatch] = field(default_factory=list)
+
+    @property
+    def reference_ids(self) -> tuple[int, ...]:
+        """Return all candidate IDs for internal compatibility and diagnostics."""
+
+        return tuple(
+            dict.fromkeys(
+                reference_id
+                for match in self.reference_matches
+                for reference_id in match.candidate_ids
+            )
+        )
 
 
 @dataclass(frozen=True)
@@ -284,9 +311,12 @@ def _valid_markers(
         markers.append(
             CitationMarker(
                 text=match.group(0),
-                reference_ids=reference_ids,
                 start=match.start(),
                 end=match.end(),
+                reference_matches=[
+                    CitationReferenceMatch(candidate_ids=(reference_id,))
+                    for reference_id in reference_ids
+                ],
             )
         )
     return markers
@@ -364,7 +394,10 @@ def _citation_author_matches(
 
     if re.search(r"\bet\s+al\.?,?\s*$", author_text, flags=re.IGNORECASE):
         first_author = re.split(r"\bet\s+al\.", author_text, flags=re.IGNORECASE)[0]
-        return _normalise_author(first_author) == normalized_surnames[0]
+        return (
+            len(normalized_surnames) >= 3
+            and _normalise_author(first_author) == normalized_surnames[0]
+        )
 
     cited_authors = re.split(r"\s+(?:&|and)\s+", author_text, flags=re.IGNORECASE)
     normalized_cited = tuple(_normalise_author(author) for author in cited_authors)
@@ -372,8 +405,9 @@ def _citation_author_matches(
         return normalized_cited == normalized_surnames[: len(normalized_cited)]
 
     cited_author = normalized_cited[0]
-    return cited_author == normalized_surnames[0] or cited_author.endswith(
-        normalized_surnames[0]
+    return len(normalized_surnames) == 1 and (
+        cited_author == normalized_surnames[0]
+        or cited_author.endswith(normalized_surnames[0])
     )
 
 
@@ -415,26 +449,39 @@ def _valid_apa_markers(
     markers_by_span: dict[tuple[int, int], CitationMarker] = {}
 
     for match in _PARENTHETICAL_AUTHOR_YEAR_PATTERN.finditer(sentence):
-        reference_ids: list[int] = []
+        reference_matches: list[CitationReferenceMatch] = []
         for citation_part in match.group("content").split(";"):
             year_matches = list(_CITATION_YEAR_PATTERN.finditer(citation_part))
             if not year_matches:
                 continue
             author_text = citation_part[: year_matches[0].start()].rstrip(" ,")
-            years = [year_match.group(1) for year_match in year_matches]
-            reference_ids.extend(
-                _reference_ids_for_author_year(author_text, years, references)
-            )
+            for year_match in year_matches:
+                candidate_ids = _reference_ids_for_author_year(
+                    author_text,
+                    [year_match.group(1)],
+                    references,
+                )
+                if candidate_ids:
+                    reference_matches.append(
+                        CitationReferenceMatch(candidate_ids=candidate_ids)
+                    )
 
-        ordered_ids = tuple(dict.fromkeys(reference_ids))
-        if ordered_ids:
+        unique_matches = list(
+            {
+                reference_match.candidate_ids: reference_match
+                for reference_match in reference_matches
+            }.values()
+        )
+        if unique_matches:
             markers_by_span[(match.start(), match.end())] = CitationMarker(
                 text=match.group(0),
-                reference_ids=ordered_ids,
                 start=match.start(),
                 end=match.end(),
+                reference_matches=unique_matches,
             )
 
+    narrative_candidates: dict[tuple[int, int], set[int]] = {}
+    narrative_text: dict[tuple[int, int], str] = {}
     for reference in references:
         for label in _narrative_labels(reference):
             pattern = re.compile(
@@ -448,16 +495,24 @@ def _valid_apa_markers(
                 ) != reference.year:
                     continue
                 span = (match.start(), match.end())
-                existing = markers_by_span.get(span)
-                if existing is None:
-                    markers_by_span[span] = CitationMarker(
-                        text=match.group(0),
-                        reference_ids=(reference.reference_id,),
-                        start=match.start(),
-                        end=match.end(),
-                    )
-                elif reference.reference_id not in existing.reference_ids:
-                    existing.reference_ids += (reference.reference_id,)
+                narrative_candidates.setdefault(span, set()).add(reference.reference_id)
+                narrative_text[span] = match.group(0)
+
+    for span, candidate_ids in narrative_candidates.items():
+        reference_match = CitationReferenceMatch(candidate_ids=tuple(sorted(candidate_ids)))
+        existing = markers_by_span.get(span)
+        if existing is not None:
+            if reference_match.candidate_ids not in {
+                match.candidate_ids for match in existing.reference_matches
+            }:
+                existing.reference_matches.append(reference_match)
+            continue
+        markers_by_span[span] = CitationMarker(
+            text=narrative_text[span],
+            start=span[0],
+            end=span[1],
+            reference_matches=[reference_match],
+        )
 
     return sorted(markers_by_span.values(), key=lambda marker: (marker.start, marker.end))
 
@@ -484,6 +539,9 @@ def _body_elements(document: ConvertedDocument) -> list[DocumentElement]:
         for element in document.elements[: section.heading_index]
         if id(element) not in reference_element_ids
     ]
+    if section.body_prefix:
+        heading_element = document.elements[section.heading_index]
+        elements.append(replace(heading_element, content=section.body_prefix))
     return order_reference_elements(elements)
 
 
@@ -948,10 +1006,12 @@ def citation_sentence_list_to_dict(result: CitationSentenceList) -> dict:
     citations: list[dict] = []
     for sentence in result.sentences:
         for marker in sentence.markers:
-            for reference_id in marker.reference_ids:
+            for reference_match in marker.reference_matches:
                 citations.append(
                     {
-                        "citation_id": reference_id,
+                        "citation_id": reference_match.citation_id,
+                        "link_status": reference_match.link_status,
+                        "candidate_reference_ids": list(reference_match.candidate_ids),
                         "marker": marker.text,
                         "sentence_id": sentence.sentence_id,
                         "sentence": sentence.text,
