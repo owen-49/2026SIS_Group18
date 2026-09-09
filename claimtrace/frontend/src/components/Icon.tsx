@@ -1,6 +1,9 @@
 import type { ReactNode, SVGProps } from "react";
 
 export type IconName =
+  | "folder"
+  | "trash"
+  | "refresh"
   | "arrow"
   | "audit"
   | "check"
@@ -23,6 +26,9 @@ interface IconProps extends SVGProps<SVGSVGElement> {
 
 export function Icon({ name, size = 20, ...props }: IconProps) {
   const paths: Record<IconName, ReactNode> = {
+    folder: <path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />,
+    trash: <><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" /></>,
+    refresh: <><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1" /></>,
     arrow: <path d="m9 18 6-6-6-6" />,
     audit: <><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>,
     check: <path d="m5 12 4 4L19 6" />,

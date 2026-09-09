@@ -21,7 +21,7 @@ export function getWorkspacePapers(): WorkspacePaper[] {
   try {
     const stored = window.sessionStorage.getItem(STORAGE_KEY);
     const papers = stored ? JSON.parse(stored) as WorkspacePaper[] : [];
-    return papers.length ? papers : [DEMO_PAPER];
+    return stored && Array.isArray(papers) ? papers : [DEMO_PAPER];
   } catch {
     return [DEMO_PAPER];
   }
@@ -35,4 +35,8 @@ export function saveWorkspacePaper(paper: WorkspacePaper) {
 export function getLatestUploadedPaper(fileType?: "pdf" | "bib") {
   return getWorkspacePapers().find((paper) => paper.paperId !== DEMO_PAPER.paperId
     && (!fileType || (paper.fileType || "pdf") === fileType));
+}
+
+export function removeWorkspacePaper(paperId: string) {
+  window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(getWorkspacePapers().filter((paper) => paper.paperId !== paperId)));
 }

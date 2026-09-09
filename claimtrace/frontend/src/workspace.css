@@ -199,3 +199,128 @@
   .audit-heading-actions > .button { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+
+/* Uploaded paper management within Batch audit. */
+.paper-manager { padding: 24px; min-width: 0; border-color: #e2e8df; border-radius: 14px; box-shadow: 0 3px 14px #20342b04; }
+.paper-manager-heading, .paper-manager-actions, .paper-manager-toolbar, .paper-row-actions { display: flex; align-items: center; gap: 12px; }
+.paper-manager-heading { justify-content: space-between; flex-wrap: wrap; }
+.paper-manager-heading h2 { margin: 0 0 5px; font-size: 18px; letter-spacing: -.02em; }
+.paper-manager-heading h2 > span { margin-left: 7px; color: #7a8677; font-size: 12px; font-weight: 500; }
+.paper-manager-heading p, .paper-delete-dialog p { color: #69766d; font-size: 12px; line-height: 1.7; }
+.paper-manager-actions .upload-trigger { min-height: 36px; padding: 8px 13px; font-size: 12px; background: #24583f; border-color: #24583f; color: #fff; }
+.paper-manager-actions .upload-trigger:hover { background: #19442f; }
+.paper-refresh { color: #74816f; }
+.paper-manager-toolbar { margin: 20px 0 8px; gap: 10px; }
+.paper-manager-toolbar .search-field { flex: 1; min-width: 0; margin: 0; background: #f8faf6; border-color: #e8ece5; border-radius: 8px; }
+.paper-type-filter select { padding: 10px 12px; background: #fff; border: 1px solid #e8ece5; border-radius: 8px; color: #63715e; font-size: 12px; }
+.paper-manager-list { list-style: none; margin: 0; padding: 0;  }
+.paper-manager-list > li { display: flex; align-items: center; gap: 13px; padding: 16px 10px; border-bottom: 1px solid #edf0e9; border-radius: 8px; }
+.paper-manager-list > li:last-child { border-bottom-color: transparent; }
+.paper-manager-list > li.is-selected { background: #f5f8f1; }
+.paper-document-icon { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 42px; border: 1px solid #e3e9de; border-radius: 8px; background: #fafbf8; color: #6a8260; }
+.paper-manager-name { flex: 1; min-width: 0; }
+.paper-manager-name strong { display: block; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; line-height: 1.6; }
+.paper-manager-name small { display: block; margin-top: 5px; font-size: 11px; overflow-wrap: anywhere; line-height: 1.5; }
+.paper-manager-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 3px; color: #7b8676; font-size: 11px; }
+.paper-manager-meta > span + span::before { content: "·"; margin-right: 8px; color: #a2ac9b; }
+.paper-parse-status { color: #876523; }.paper-parse-completed { color: #52784e; }.paper-parse-failed { color: #a15c50; }
+.paper-row-actions { gap: 10px; flex-shrink: 0; }
+.paper-select-button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 34px; padding: 6px 12px; border: 1px solid #b7d1e7; border-radius: 7px; color: #245b86; background: #edf5fc; font-size: 12px; font-weight: 600; cursor: pointer; }
+.paper-select-button:hover:not(:disabled) { background: #dcecf9; border-color: #8cb4d4; }
+.paper-select-button:disabled { opacity: .45; cursor: default; }.is-selected .paper-select-button:disabled { opacity: 1; }
+.paper-delete-button { color: #a15148; width: 34px; height: 34px; background: #fcf2f0; border: 1px solid #eed5d0; border-radius: 7px; }
+.paper-delete-button:hover:not(:disabled) { color: #a13e36; background: #fcf0ee; }
+.paper-manager :is(button, select):focus-visible { outline: 2px solid #76986c; outline-offset: 3px; }
+.paper-manager-message { padding: 12px 14px; background: #f3f6ee; border-radius: 7px; font-size: 12px; line-height: 1.6; }
+.paper-manager .paper-manager-error, .paper-delete-dialog .paper-manager-error { color: #9e4141; }
+.paper-delete-confirm { color: #fff; background: #a13e36; }.paper-delete-confirm:hover { background: #88332d; }
+.paper-delete-filename { font-weight: 600; overflow-wrap: anywhere; }
+@media (max-width: 620px) {
+  .paper-manager { padding: 18px 14px; }
+  .paper-manager-heading { align-items: flex-start; gap: 14px; }
+  .paper-manager-heading > div:first-child { flex: 1 1 150px; }
+  .paper-manager-heading p { max-width: 200px; }
+  .paper-manager-list > li { flex-wrap: wrap; gap: 10px; padding: 14px 8px; }
+  .paper-manager-name { flex-basis: calc(100% - 50px); }
+  .paper-row-actions { margin-left: 48px; width: calc(100% - 48px); justify-content: space-between; }
+}
+
+.selection-manuscript [data-selectable-paragraph] { cursor: text; user-select: text; }
+.selection-manuscript [data-selectable-paragraph]::selection { background: #cfe3bf; color: #20342b; }
+.selected-citation-text { margin: 20px 0; padding: 16px 18px; border: 1px solid #e0e8d9; border-radius: 9px; background: #f7f9f3; }
+.selected-citation-text blockquote { margin: 0; font-size: 14px; line-height: 1.85; color: #344632; white-space: pre-wrap; overflow-wrap: anywhere; }
+.selected-citation-text p, .claim-picker-field > small { font-size: 12px; color: #74816f; line-height: 1.7; }
+
+/* One place to select papers; one clear action to run the audit. */
+.audit-review-page > .page-heading { grid-template-columns: 1fr auto; border-bottom: 0; padding-bottom: 0; }
+.audit-input-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 30px; border: 1px solid #dfe6da; border-radius: 16px; background: #fff; box-shadow: 0 4px 24px #20342b04; }
+.audit-input-document { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.audit-input-document > div { min-width: 0; }
+.audit-input-document .eyebrow { font-size: 9px; letter-spacing: .12em; color: #75866c; }
+.audit-input-document h2 { margin: 7px 0 6px; font-size: 21px; letter-spacing: -.025em; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.audit-input-document p { color: #7b8576; font-size: 12px; line-height: 1.6; }
+.audit-input-icon { display: grid; place-items: center; flex-shrink: 0; width: 56px; height: 62px; border: 1px solid #e2e8dc; border-radius: 12px; background: #f7f9f3; color: #7d9271; }
+.has-paper .audit-input-icon { background: #edf4e7; color: #537645; border-color: #dbe6d2; }
+.audit-run-button { flex-shrink: 0; min-height: 44px; padding: 12px 20px; font-size: 12px; }
+.audit-review-page .paper-manager { border-radius: 16px; padding: 26px 30px; box-shadow: none; }
+.audit-review-page .paper-manager-heading h2 { font-size: 17px; }
+.audit-review-page .paper-manager-toolbar { justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #e9ede4; margin-bottom: 0; }
+.audit-review-page .paper-manager-toolbar .search-field { max-width: 340px; }
+.paper-type-tabs { display: flex; gap: 3px; padding: 3px; background: #f1f4ed; border: 1px solid #e8ece2; border-radius: 8px; }
+.paper-type-tabs button { border: 1px solid transparent; padding: 7px 12px; border-radius: 5px; background: transparent; color: #7a8571; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.paper-type-tabs button[aria-pressed="true"] { border-color: #dce5d3; color: #43603b; background: #fff; box-shadow: 0 1px 3px #24392308; }
+.audit-review-page .paper-manager-list > li { margin-top: 6px; padding: 17px 12px; }
+.audit-review-page .paper-manager-list > li.is-selected { background: #f3f7ee; box-shadow: inset 3px 0 #8faa79; }
+@media (max-width: 620px) {
+  .audit-review-page > .page-heading { grid-template-columns: 1fr; gap: 14px; }
+  .audit-input-card { flex-direction: column; align-items: stretch; padding: 22px 18px; gap: 20px; }
+  .audit-input-document { gap: 12px; }.audit-input-document h2 { font-size: 18px; }
+  .audit-input-icon { width: 44px; height: 52px; }
+  .audit-review-page .paper-manager { padding: 20px 16px; }
+  .audit-review-page .paper-manager-toolbar { flex-wrap: wrap; }
+  .audit-review-page .paper-manager-toolbar .search-field { flex-basis: 100%; max-width: none; }
+}
+
+.paper-manager-dialog { width: min(760px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 64px); padding: 0; margin: auto; border: 1px solid #dce5d5; border-radius: 18px; background: #fff; color: var(--ink); box-shadow: 0 24px 90px #14251b30; overflow-y: auto; }
+.paper-manager-dialog::backdrop { background: #182c244d; backdrop-filter: blur(3px); }
+.audit-review-page .paper-manager-dialog .paper-manager { border: 0; padding: 24px; border-radius: 0; }
+.paper-manager-dialog .paper-manager-heading { align-items: center; }
+.paper-manager-dialog .paper-manager-actions { gap: 8px; }
+.paper-manager-close { margin-left: 4px; color: #74816f; }
+.review-example-guide { display: flex; align-items: center; gap: 24px; padding: 22px 24px; border-color: #dbe5d2; background: #f8faf5; }
+.review-example-guide > div { flex: 1; }.review-example-guide h2 { font-size: 17px; margin: 6px 0 8px; }
+.review-example-guide p { font-size: 13px; line-height: 1.8; color: #54694c; }
+.review-example-guide small { display: block; margin-top: 8px; font-size: 11px; line-height: 1.6; color: #798573; }
+.review-example-guide .button { flex-shrink: 0; font-size: 12px; }
+@media (max-width: 620px) {
+  .paper-manager-dialog { max-height: calc(100dvh - 32px); }
+  .audit-review-page .paper-manager-dialog .paper-manager { padding: 18px 16px; }
+  .review-example-guide { flex-direction: column; align-items: stretch; padding: 20px; }
+}
+.selection-source-unlinked { margin: 18px 0; padding: 14px 16px; background: #f7f9f3; border-radius: 8px; }
+.selection-source-unlinked p, .selection-source-unlinked small { color: #6b7b61; font-size: 12px; line-height: 1.7; }
+.selection-source-unlinked small { display: block; margin-top: 6px; }
+.selection-source-unlinked summary { margin-top: 12px; font-size: 12px; color: #456841; cursor: pointer; }
+.verify-action-hint { margin-top: 10px; color: #6b7b61; font-size: 12px; line-height: 1.7; }
+
+/* A quiet management action above the selected document. */
+.audit-library-toolbar { display: flex; justify-content: flex-start; margin-bottom: -8px; }
+.manage-papers-entry { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; border: 1px solid #dce5d5; border-radius: 8px; padding: 9px 13px; color: #45603d; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s; }
+.manage-papers-entry:hover { background: #edf3e7; border-color: #b6cba7; }
+.manage-papers-entry:focus-visible { outline: 2px solid #779366; outline-offset: 3px; }
+.audit-review-page .audit-input-document { gap: 14px; }
+.audit-review-page .audit-input-document h2 { font-size: 19px; }
+.audit-review-page .audit-input-icon { width: 42px; height: 48px; border-radius: 9px; }
+.paper-manager-dialog { border-color: #e3e9de; border-radius: 20px; box-shadow: 0 30px 110px #15261e38; }
+.audit-review-page .paper-manager-dialog .paper-manager { padding: 28px; }
+.paper-manager-title-group { display: flex; align-items: center; gap: 13px; }
+.paper-manager-title-icon { display: grid; place-items: center; flex-shrink: 0; width: 46px; height: 46px; background: #f0f5e9; color: #678252; border: 1px solid #e0e8d7; border-radius: 12px; }
+.audit-review-page .paper-manager-dialog .paper-manager-heading h2 { font-size: 19px; }
+.paper-manager-dialog .paper-manager-heading h2 > span { padding: 2px 6px; background: #f2f5ed; border-radius: 5px; font-size: 10px; }
+.paper-manager-dialog .paper-manager-heading p { font-size: 11px; }
+.paper-manager-dialog .paper-manager-close { border: 1px solid #e7ebe2; border-radius: 50%; width: 30px; height: 30px; }
+.paper-manager-dialog .paper-manager-toolbar { margin-top: 26px; }
+@media (max-width: 620px) {
+  .audit-review-page .paper-manager-dialog .paper-manager { padding: 20px 16px; }
+  .paper-manager-title-group { gap: 10px; }.paper-manager-title-icon { width: 38px; height: 38px; }
+}
