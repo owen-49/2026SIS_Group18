@@ -1,5 +1,5 @@
 import { demoAudit, demoPaperClaims, demoVerification } from "../data/mockData";
-import { getWorkspacePapers } from "../data/workspacePapers";
+import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
 import type { AuditResponse, BibVerifyResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
@@ -83,6 +83,21 @@ export async function listPapers(signal?: AbortSignal): Promise<PaperListRespons
   const result = await readResponse<PaperListResponse>(response);
   if (!Array.isArray(result.papers)) throw new Error("The paper library response is invalid.");
   return result;
+}
+
+export async function deletePaper(paperId: string): Promise<void> {
+  if (usingMockApi) {
+    await wait(350);
+    if (!getWorkspacePapers().some((paper) => paper.paperId === paperId)) throw new Error("Paper not found.");
+  } else {
+    const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}`), { method: "DELETE" });
+    if (response.status !== 204) {
+      if (!response.ok) await readResponse<unknown>(response);
+      throw new Error("Unable to confirm paper deletion.");
+    }
+  }
+  // The server is authoritative; unavailable browser storage must not mask success.
+  try { removeWorkspacePaper(paperId); } catch { /* Best-effort local cache cleanup. */ }
 }
 
 export async function getParseStatus(paperId: string, signal?: AbortSignal): Promise<ParsedPaper> {
