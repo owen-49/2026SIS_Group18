@@ -1,6 +1,7 @@
 """Adapt Engine Scholar candidates to traceable bibliography audit records."""
 
 import hashlib
+import re
 from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
@@ -17,6 +18,16 @@ def _normalize(value: str) -> str:
     return " ".join(value.casefold().split())
 
 
+def _search_authors(authors: list[str]) -> list[str]:
+    """Adapt standard IEEE initials to the Engine's surname-first query format."""
+    if not authors or "," in authors[0]:
+        return authors
+    match = re.fullmatch(r"((?:[A-Z]\.\s*)+)(.+)", authors[0])
+    if match:
+        return [f"{match.group(2).strip()}, {match.group(1).strip()}", *authors[1:]]
+    return authors
+
+
 class GoogleScholarLookup:
     def lookup(self, entry: ReferenceEntry) -> LookupResult:
         # Lazy import allows API startup without loading the network client.
@@ -24,7 +35,7 @@ class GoogleScholarLookup:
 
         outcome = search_scholar(
             title=entry.metadata.title,
-            authors=entry.metadata.authors,
+            authors=_search_authors(entry.metadata.authors),
             year=entry.metadata.year,
         )
         records = []

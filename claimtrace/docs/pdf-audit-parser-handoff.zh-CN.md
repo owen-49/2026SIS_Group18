@@ -1,5 +1,7 @@
 # PDF Audit：给 Zheng Fu 的 Parser 交接
 
+> 进度更新：PR23 的 `b65f8e3` 已提供下面的元数据字段。PR20 分支已整合该提交并补上后端保存、读取和 Scholar 输入映射；本文件下面的字段需求保留作接口说明，不再是待开发任务。PR23 尚未合并 main，已知的两个 Parser 问题本次不处理。实际支持范围以 PR23 为准：APA 7 和标准 IEEE 元数据，其他格式保留原文、字段可为 null。
+
 本周目标：上传论文 PDF → 提取文末 Reference List → Google Scholar 搜索 → 网页显示 Audit 结果。不调用 LLM，也不需要上传引用原论文。正文 claims 的工作独立进行，不是这条 Audit 链路的前置条件。
 
 ## 请 Parser 补充的内容
