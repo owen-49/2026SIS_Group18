@@ -68,18 +68,63 @@ function readField(entry, field) {
 
 function parseBibliography(source) {
   return extractEntries(source).map((entry) => {
-    const citationKey = entry.match(/^@\w+\s*\{\s*([^,]+)/i)?.[1]?.trim() || "unknown";
+    const citationKey =
+      entry.match(/^@\w+\s*\{\s*([^,]+)/i)?.[1]?.trim() || "unknown";
+
     const authorValue = readField(entry, "author");
-    const firstAuthor = authorValue.split(/\s+and\s+/i)[0]?.split(",")[0]?.trim();
-    const venue = readField(entry, "journal") || readField(entry, "booktitle") || "Source";
+
+    // New：Save the complete list of authors for backend to match the papers later.
+    const authorList = authorValue
+      .split(/\s+and\s+/i)
+      .map((author) => author.trim())
+      .filter(Boolean);
+
+    const firstAuthor =
+      authorList[0]?.split(",")[0]?.trim();
+
+    const venue =
+      readField(entry, "journal") ||
+      readField(entry, "booktitle") ||
+      "Source";
+
+    // The doi has been read and now it is returned
     const doi = readField(entry, "doi");
+
+    // new：read the common arXiv eprint in bibTex
+    const arxivId = readField(entry, "eprint");
+
     return {
       citationKey,
-      title: readField(entry, "title").replace(/[{}]/g, "") || citationKey,
-      authors: firstAuthor ? `${firstAuthor} et al.` : "Unknown authors",
+
+      title:
+        readField(entry, "title").replace(/[{}]/g, "") ||
+        citationKey,
+
+      // maintain original authors，prevent impact on side panel
+      authors:
+        firstAuthor
+          ? `${firstAuthor} et al.`
+          : "Unknown authors",
+
+      // new
+      authorList,
+
       venue,
-      year: readField(entry, "year") || "—",
-      url: readField(entry, "url") || (doi ? `https://doi.org/${doi}` : ""),
+
+      year:
+        readField(entry, "year") ||
+        "—",
+
+      // new
+      doi,
+
+      // new
+      arxivId,
+
+      url:
+        readField(entry, "url") ||
+        (doi ? `https://doi.org/${doi}` : ""),
+
       status: "linked",
     };
   });
@@ -134,63 +179,28 @@ function cleanClaim(value) {
 function sentenceAroundCitation(lineText, start, end) {
   const before = lineText.slice(0, start);
   const after = lineText.slice(end);
-  const previousStops = [before.lastIndexOf(". "), before.lastIndexOf("? "), before.lastIndexOf("! ")];
-  const sentenceStart = Math.max(...previousStops) + (Math.max(...previousStops) >= 0 ? 2 : 0);
-  const nextStop = after.search(/[.!?](?:\s|$)/);
-  const sentenceEnd = nextStop >= 0 ? end + nextStop + 1 : lineText.length;
-  return cleanClaim(lineText.slice(sentenceStart, sentenceEnd));
-}
 
-function claimAroundCitation(lines, lineIndex, start, end) {
-  const currentText = lines[lineIndex]?.textContent || "";
+  const previousStops = [
+    before.lastIndexOf(". "),
+    before.lastIndexOf("? "),
+    before.lastIndexOf("! ")
+  ];
 
-  // First try the current editor line.
-  let claim = sentenceAroundCitation(currentText, start, end);
+  const previousStop = Math.max(...previousStops);
 
-  // If we got a meaningful claim, use it.
-  const meaningful = claim
-    .replace(/\[[^\]]+\]/g, "")
-    .replace(/[^\p{L}\p{N}]/gu, "")
-    .trim();
+  const sentenceStart =
+    previousStop >= 0 ? previousStop + 2 : 0;
 
-  if (meaningful.length >= 10) {
-    return claim;
-  }
+  const nextStop =
+    after.search(/[.!?](?:\s|$)/);
 
-  // Otherwise gather nearby editor lines.
-  const from = Math.max(0, lineIndex - 2);
-  const to = Math.min(lines.length - 1, lineIndex + 1);
+  const sentenceEnd =
+    nextStop >= 0
+      ? end + nextStop + 1
+      : lineText.length;
 
-  const pieces = [];
-
-  for (let i = from; i <= to; i += 1) {
-    pieces.push(lines[i]?.textContent || "");
-  }
-
-  const context = pieces
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const citationText = currentText.slice(start, end);
-
-  // Locate this citation inside the larger context.
-  let citationIndex = context.lastIndexOf(citationText);
-
-  if (citationIndex < 0) {
-    citationIndex = context.indexOf("\\cite");
-  }
-
-  if (citationIndex < 0) {
-    return claim;
-  }
-
-  const citationEnd = citationIndex + citationText.length;
-
-  return sentenceAroundCitation(
-    context,
-    citationIndex,
-    citationEnd,
+  return cleanClaim(
+    lineText.slice(sentenceStart, sentenceEnd)
   );
 }
 
@@ -311,12 +321,12 @@ function annotateCitationLines() {
     CITE_PATTERN.lastIndex = 0;
     let match;
     while ((match = CITE_PATTERN.exec(text))) {
-     const claim = claimAroundCitation(
-  lines,
-  lineIndex,
-  match.index,
-  CITE_PATTERN.lastIndex,
-);
+      const claim = sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
+      console.log("[ClaimTrace] line text:", text);
+      console.log("[ClaimTrace] citation:", match[0]);
+      console.log("[ClaimTrace] match index:", match.index);
+      console.log("[ClaimTrace] extracted claim:", claim);
+      const range = rangeForOffsets(line, match.index, CITE_PATTERN.lastIndex);
       const keys = match[1].split(",").map((key) => key.trim()).filter(Boolean);
       keys.forEach((citationKey, keyIndex) => {
         const locationId = `${lineIndex + 1}-${match.index}-${keyIndex}-${citationKey}`;
