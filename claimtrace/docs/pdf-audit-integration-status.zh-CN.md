@@ -35,10 +35,19 @@ Windows 进程输入输出使用临时文件，避免超时清理等待管道；
 新增 5 项测试覆盖工作进程协议、实际终止、异常处理与结果传递；已有 Audit/adapter 相关 40 项测试通过。
 单引用合成样例未被 Parser 识别，页面正确显示空列表警告；没有修改 Parser 行为。
 
-## 下周跟进
+## Worker 启动路径修复
 
-需要 Sichen 提供已验证可用的运行环境或网络配置，再完成真实文献候选返回、字段比对和网页展示的成功路径验收。
-当前不能将模拟搜索测试或真实失败报告当成联网成功。未更换检索来源，也未接入 LLM。
+复核发现，文档规定的 `cd claimtrace/backend; uvicorn src.main:app` 会让旧 worker 命令
+`python -m backend.src.services.scholar_worker` 在搜索前直接失败。现在 worker 使用
+`src.services.scholar_worker`，并从 `bounded_scholar_lookup.py` 的实际位置计算 package root，
+不再依赖 API 进程的当前工作目录；Docker 的 `/app` 布局也使用同一逻辑。
+
+从 `claimtrace/backend` 启动后端并上传 BibTeX 实测通过：Scholar worker 返回了两个真实候选，
+Audit 正确生成 `NEEDS_REVIEW`（多候选），没有返回 `SCHOLAR_WORKER_FAILED`。报告也已保存。
+此前遇到的 HTTP 429 仍可能在其他网络环境出现，但现在会进入真实查询的超时/失败处理，不会与本地启动错误混淆。
+
+新增 backend 工作目录回归测试；本轮完整相关回归为 158 项通过，Ruff 和 diff 检查通过。
+未更换检索来源，也未接入 LLM。PR20 可继续按 Ready for review 审阅，合并仍需考虑 PR23 依赖。
 
 本周按代码交付范围收尾，提交 Ready for review；上述真实联网成功路径及 Parser 已知问题留待下周处理，不作为本周转入审核的前置条件。Ready for review 表示可以审阅，不表示真实 Scholar 成功路径已通过验收；合并仍需考虑 PR23 依赖。
 

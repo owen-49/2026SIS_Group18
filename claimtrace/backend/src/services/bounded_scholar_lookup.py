@@ -3,6 +3,7 @@
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 from ..audit_models import LookupAttempt, LookupResult, ReferenceEntry
 
@@ -18,13 +19,20 @@ class BoundedScholarLookup:
             with tempfile.TemporaryFile() as source, tempfile.TemporaryFile() as output:
                 source.write(entry.model_dump_json().encode("utf-8"))
                 source.seek(0)
+                # The documented local command runs from ``backend`` and loads
+                # the application as ``src.main``.  Derive the same package
+                # root from this file instead of inheriting the API process's
+                # current working directory (which may be the repository root,
+                # backend/, or /app in Docker).
+                package_root = Path(__file__).resolve().parents[2]
                 subprocess.run(
-                    [sys.executable, "-m", "backend.src.services.scholar_worker"],
+                    [sys.executable, "-m", "src.services.scholar_worker"],
                     stdin=source,
                     stdout=output,
                     stderr=subprocess.DEVNULL,
                     timeout=self.timeout_seconds,
                     check=True,
+                    cwd=package_root,
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                 )
                 output.seek(0)

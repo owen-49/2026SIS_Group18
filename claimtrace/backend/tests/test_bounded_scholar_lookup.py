@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 from backend.src.audit_models import LookupAttempt, LookupResult, ReferenceEntry
@@ -12,6 +13,14 @@ def entry(title="Example"):
 
 
 def test_worker_roundtrip_without_network():
+    result = BoundedScholarLookup().lookup(entry(""))
+    assert result.outcome == "failed"
+    assert result.attempts[0].error_code == "SCHOLAR_SEARCH_FAILED"
+
+
+def test_worker_starts_from_documented_backend_directory(monkeypatch):
+    """The real child process must work with ``cd backend; uvicorn src.main``."""
+    monkeypatch.chdir(Path(__file__).resolve().parents[1])
     result = BoundedScholarLookup().lookup(entry(""))
     assert result.outcome == "failed"
     assert result.attempts[0].error_code == "SCHOLAR_SEARCH_FAILED"
