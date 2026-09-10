@@ -3,10 +3,11 @@
 import json
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 
 from backend.src.models import PaperRecord, ParsedDocument, ParsedParagraph, ParseStatus
 from backend.src.routes import parse as parse_route
-from backend.src.storage.paper_store import create_paper, update_paper
+from backend.src.storage.paper_store import create_paper, get_paper, update_paper
 from backend.src.storage.parsed_document_store import save_parsed_document
 
 
@@ -258,6 +259,83 @@ def test_unknown_paper_id_returns_404(client):
     response = client.get("/api/parse/does-not-exist")
 
     assert response.status_code == 404
+
+
+def test_delete_unknown_paper_returns_404(client):
+    response = client.delete("/api/papers/does-not-exist")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Paper not found."
+
+
+def test_delete_pdf_removes_library_record_and_local_artifacts(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    document = ParsedDocument(
+        paper_id=paper_id,
+        title="Delete Me",
+        pages=1,
+        paragraphs=[ParsedParagraph(text="A paragraph.", page_start=1, page_end=1)],
+    )
+    record = _persist_parsed_pdf(storage_paths, paper_id, "delete-me.pdf", document)
+
+    markdown_dir = storage_paths["parsed_dir"] / "markdown"
+    markdown_dir.mkdir()
+    markdown_path = markdown_dir / f"{paper_id}.md"
+    markdown_path.write_text("# Delete Me\n", encoding="utf-8")
+    image_dir = markdown_dir / f"{paper_id}_images"
+    image_dir.mkdir()
+    (image_dir / "figure.png").write_bytes(b"image")
+    reference_path = storage_paths["parsed_dir"] / f"{paper_id}.references.json"
+    reference_path.write_text("{}", encoding="utf-8")
+    audit_dir = storage_paths["parsed_dir"] / "audits"
+    audit_dir.mkdir()
+    audit_path = audit_dir / f"{uuid.uuid4()}.json"
+    audit_path.write_text(json.dumps({"input_paper_id": paper_id}), encoding="utf-8")
+    unrelated_audit_path = audit_dir / f"{uuid.uuid4()}.json"
+    unrelated_audit_path.write_text(
+        json.dumps({"input_paper_id": str(uuid.uuid4())}),
+        encoding="utf-8",
+    )
+
+    response = client.delete(f"/api/papers/{paper_id}")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert get_paper(paper_id) is None
+    assert not Path(record.file_path).exists()
+    assert not Path(record.parsed_result_path).exists()
+    assert not markdown_path.exists()
+    assert not image_dir.exists()
+    assert not reference_path.exists()
+    assert not audit_path.exists()
+    assert unrelated_audit_path.exists()
+    assert client.get(f"/api/parse/{paper_id}").status_code == 404
+    assert client.get("/api/papers").json() == {"total": 0, "papers": []}
+
+
+def test_delete_refuses_file_outside_upload_storage(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    outside_path = storage_paths["upload_dir"].parent / "outside.pdf"
+    outside_path.write_bytes(b"must not be deleted")
+    timestamp = datetime.now(UTC)
+    create_paper(
+        PaperRecord(
+            paper_id=paper_id,
+            original_filename="outside.pdf",
+            stored_filename=f"{paper_id}.pdf",
+            file_path=str(outside_path),
+            file_type="pdf",
+            file_size=outside_path.stat().st_size,
+            created_at=timestamp,
+            updated_at=timestamp,
+        )
+    )
+
+    response = client.delete(f"/api/papers/{paper_id}")
+
+    assert response.status_code == 500
+    assert outside_path.read_bytes() == b"must not be deleted"
+    assert get_paper(paper_id) is not None
 
 
 def test_verify_returns_frontend_contract(client, sample_pdf_bytes):

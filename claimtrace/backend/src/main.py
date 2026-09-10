@@ -46,6 +46,15 @@ async def startup():
     from .services.google_scholar_lookup import GoogleScholarLookup
 
     app.state.bibliography_lookup = GoogleScholarLookup()
+    # Finish or roll back file cleanup interrupted by an earlier deletion.
+    from .services.paper_deletion_service import recover_pending_deletions
+
+    pending_deletions = recover_pending_deletions()
+    if pending_deletions:
+        print(
+            f"[ClaimTrace] {pending_deletions} pending paper deletion(s) "
+            "could not be recovered."
+        )
 
     # Build LLM client from configured provider
     from engine.llm_client import build_llm_client

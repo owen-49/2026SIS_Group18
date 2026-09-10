@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { listPapers, runAudit, usingMockApi as configuredMockApi } from "../api/client";
 import { Icon } from "../components/Icon";
-import { UploadFilesButton } from "../components/UploadFilesButton";
+import { PaperManager } from "../components/PaperManager";
 import { demoAudit, demoManuscript } from "../data/mockData";
 import { titleOverlap } from "../data/referenceSimilarity";
 import { getLatestUploadedPaper, getWorkspacePapers } from "../data/workspacePapers";
@@ -55,21 +55,30 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
   const [papersError, setPapersError] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
 
+  const [papersVersion, setPapersVersion] = useState(0);
+  const [papersOpen, setPapersOpen] = useState(false);
+  const papersDialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    if (usingMockApi) return;
+    if (papersOpen) papersDialog.current?.showModal();
+    else papersDialog.current?.close();
+  }, [papersOpen]);
+  useEffect(() => {
+    if (example) return;
+    setPapersLoading(true); setPapersError(null);
     const controller = new AbortController();
     listPapers(controller.signal).then((response) => {
       if (controller.signal.aborted) return;
       const completed = response.papers.filter((paper) => paper.status === "completed");
-      setPapers(completed);
-      setPaperId((current) => completed.some((paper) => paper.paper_id === current) ? current : completed[0]?.paper_id || "");
+      setPapers(response.papers);
+      setPaperId((current) => completed.some((paper) => paper.paper_id === current) ? current : "");
     }).catch((error: unknown) => {
       if (!controller.signal.aborted) setPapersError(error instanceof Error ? error.message : "Unable to load uploaded files.");
     }).finally(() => { if (!controller.signal.aborted) setPapersLoading(false); });
     return () => controller.abort();
-  }, [usingMockApi]);
+  }, [usingMockApi, example, papersVersion]);
 
-  const currentPaper = papers.find((paper) => paper.paper_id === paperId);
+  const completedPapers = papers.filter((paper) => paper.status === "completed");
+  const currentPaper = completedPapers.find((paper) => paper.paper_id === paperId);
   useEffect(() => {
     if (usingMockApi) return;
     setAudit(null); setSelectedId(""); setAuditError(null);
@@ -100,23 +109,32 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
       <div className="workspace-intro">
         <div className="workspace-intro-copy"><h1>Batch audit</h1><p>Check references and metadata.</p></div>
       </div>
-      <div className="audit-heading-actions">
-        <UploadFilesButton onReady={async (paper) => {
-          const response = await listPapers();
-          setPapers(response.papers.filter((entry) => entry.status === "completed"));
-          setPapersError(null);
-          setPaperId(paper.paper_id);
-          setAudit(null);
-          setExample(false);
-        }} />
-        <label className="manuscript-picker"><span>Audit input</span><select value={paperId} disabled={papersLoading || papers.length === 0} onChange={(event) => setPaperId(event.target.value)}>{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.original_filename}</option>)}</select></label>
-        <button className="button button-primary" type="button" disabled={loading || !currentPaper} onClick={() => void refreshAudit()}>{loading ? <><span className="spinner" /> Auditing…</> : <><Icon name="audit" size={17} /> Run audit</>}</button>
-      </div>
     </section>
 
-    {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded files</h2><p>Reading completed PDF and BibTeX records from the backend.</p></section>}
-    {!papersLoading && papersError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Couldn’t load uploaded files</h2><p>{papersError}</p></section>}
-    {!papersLoading && !papersError && papers.length === 0 && <section className="library-state panel"><span className="library-state-icon"><Icon name="document" /></span><h2>No completed file available</h2><p>No completed PDF manuscript or BibTeX bibliography is available from the backend.</p></section>}
+    <div className="audit-library-toolbar">
+      <button className="manage-papers-entry" type="button" aria-haspopup="dialog" aria-expanded={papersOpen} aria-controls="audit-paper-manager" onClick={() => setPapersOpen(true)}><Icon name="folder" size={17} /> Manage papers</button>
+    </div>
+
+    <section className={`audit-input-card${currentPaper ? " has-paper" : ""}`} aria-label="Current audit paper">
+      <div className="audit-input-document"><span className="audit-input-icon"><Icon name="document" size={24} /></span><div><span className="eyebrow">{currentPaper ? "Selected for audit" : "Start an audit"}</span><h2>{papersLoading ? "Loading your papers…" : currentPaper?.original_filename || "Choose a paper to begin"}</h2><p>{currentPaper ? `${currentPaper.file_type === "bib" ? "BibTeX bibliography" : "PDF manuscript"} · Ready to check references` : "Select a PDF or bibliography in Manage papers."}</p></div></div>
+      <button className="button button-primary audit-run-button" type="button" disabled={loading || papersLoading || !currentPaper} onClick={() => void refreshAudit()}>{loading ? <><span className="spinner" /> Auditing…</> : <><Icon name="audit" size={17} /> Run audit</>}</button>
+    </section>
+    {!papersOpen && papersError && <p className="paper-manager-message paper-manager-error" role="alert">{papersError} Open Manage papers to retry.</p>}
+
+    <dialog id="audit-paper-manager" className="paper-manager-dialog" ref={papersDialog} aria-labelledby="paper-manager-title" onClose={(event) => { if (event.target === event.currentTarget) setPapersOpen(false); }}>
+    <PaperManager onClose={() => setPapersOpen(false)} papers={papers} selectedId={paperId} loading={papersLoading} busy={loading}
+      error={papersError} demo={usingMockApi} onRefresh={() => { setExample(false); setPapersVersion((value) => value + 1); }}
+      onSelect={(id) => { setPaperId(id); setAudit(null); setSelectedId(""); setAuditError(null); setPapersOpen(false); }}
+      onDeleted={(id) => {
+        setPapers((current) => current.filter((paper) => paper.paper_id !== id));
+        if (id === paperId) { setPaperId(""); setAudit(null); setSelectedId(""); setAuditError(null); }
+      }}
+      onReady={async (paper) => {
+        const response = await listPapers();
+        setPapers(response.papers); setPapersError(null); setPaperId(paper.paper_id);
+        setAudit(null); setSelectedId(""); setExample(false);
+      }} />
+    </dialog>
     {auditError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Audit could not be completed</h2><p>{auditError}</p></section>}
 
     {audit && <>
