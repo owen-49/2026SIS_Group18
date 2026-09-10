@@ -42,3 +42,11 @@ def test_missing_url_is_not_replaced_with_homepage():
 def test_network_failure_is_not_not_found():
     assert lookup("failed", []).outcome == "failed"
     assert lookup("not_found", []).outcome == "not_found"
+
+
+def test_rate_limited_is_failed_with_distinct_code():
+    result = lookup("rate_limited", [])
+    assert result.outcome == "failed"
+    assert result.attempts[0].error_code == "SCHOLAR_RATE_LIMITED"
+    assert not result.records
+    assert "Retry later" in result.reason

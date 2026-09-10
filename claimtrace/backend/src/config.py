@@ -75,6 +75,13 @@ class Settings:
     parser_hybrid_url: str = "http://localhost:5002"
     parser_use_struct_tree: bool = False
 
+    # ── Scholar lookup ───────────────────────────────────
+    # Google Scholar scraping is rate-limited (HTTP 429). Bound each lookup's
+    # wall-clock time and space consecutive lookups apart so a bibliography
+    # audit does not trip the limit.
+    scholar_lookup_timeout_seconds: float = 30.0
+    scholar_lookup_delay_seconds: float = 2.0
+
     @property
     def is_llm_configured(self) -> bool:
         """Check whether any LLM provider has a valid API key set.
@@ -159,6 +166,12 @@ def _load_settings() -> Settings:
         parser_hybrid_mode=os.getenv("PARSER_HYBRID_MODE") or None,
         parser_hybrid_url=os.getenv("PARSER_HYBRID_URL", "http://localhost:5002"),
         parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
+        scholar_lookup_timeout_seconds=float(
+            os.getenv("SCHOLAR_LOOKUP_TIMEOUT_SECONDS", "30")
+        ),
+        scholar_lookup_delay_seconds=float(
+            os.getenv("SCHOLAR_LOOKUP_DELAY_SECONDS", "2")
+        ),
     )
 
 

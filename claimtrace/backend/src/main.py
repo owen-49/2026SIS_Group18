@@ -45,7 +45,10 @@ async def startup():
 
     from .services.bounded_scholar_lookup import BoundedScholarLookup
 
-    app.state.bibliography_lookup = BoundedScholarLookup()
+    app.state.bibliography_lookup = BoundedScholarLookup(
+        timeout_seconds=settings.scholar_lookup_timeout_seconds,
+        min_interval_seconds=settings.scholar_lookup_delay_seconds,
+    )
     # Finish or roll back file cleanup interrupted by an earlier deletion.
     from .services.paper_deletion_service import recover_pending_deletions
 

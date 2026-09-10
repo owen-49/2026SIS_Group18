@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -63,3 +64,21 @@ def test_valid_worker_result_is_preserved(monkeypatch):
 
     monkeypatch.setattr(subprocess, "run", run)
     assert BoundedScholarLookup().lookup(entry()) == result
+
+
+def test_throttle_spaces_out_consecutive_lookups(monkeypatch):
+    clock = [0.0]
+    sleeps = []
+    monkeypatch.setattr(time, "monotonic", lambda: clock[0])
+
+    def fake_sleep(seconds):
+        sleeps.append(seconds)
+        clock[0] += seconds
+
+    monkeypatch.setattr(time, "sleep", fake_sleep)
+
+    lookup = BoundedScholarLookup(min_interval_seconds=2.0)
+    lookup._throttle()
+    assert sleeps == []  # first lookup is not delayed
+    lookup._throttle()
+    assert sleeps == [2.0]  # second is spaced a full interval apart

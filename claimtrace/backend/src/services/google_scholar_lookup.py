@@ -60,6 +60,24 @@ class GoogleScholarLookup:
                 )
             )
         status = outcome.status
+        if status == "rate_limited":
+            detail = outcome.error or "Google Scholar rate-limited the search."
+            return LookupResult(
+                outcome="failed",
+                records=[],
+                attempts=[
+                    LookupAttempt(
+                        provider="google_scholar",
+                        outcome="failed",
+                        error_code="SCHOLAR_RATE_LIMITED",
+                        detail=detail,
+                    )
+                ],
+                reason=(
+                    f"{detail} Retry later or reduce the number of lookups per audit; "
+                    "publication existence remains unchecked."
+                ),
+            )
         reason = (
             outcome.error
             or {

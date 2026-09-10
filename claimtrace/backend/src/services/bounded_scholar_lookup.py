@@ -3,16 +3,40 @@
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 
 from ..audit_models import LookupAttempt, LookupResult, ReferenceEntry
 
 
 class BoundedScholarLookup:
-    def __init__(self, timeout_seconds: float = 30):
+    def __init__(self, timeout_seconds: float = 30, min_interval_seconds: float = 0.0):
         self.timeout_seconds = timeout_seconds
+        self.min_interval_seconds = min_interval_seconds
+        self._last_requested_at: float | None = None
+        self._throttle_lock = threading.Lock()
+
+    def _throttle(self) -> None:
+        """Space consecutive lookups at least ``min_interval_seconds`` apart.
+
+        Google Scholar rate-limits bursts of queries with HTTP 429; a small gap
+        between lookups keeps a multi-reference audit from tripping it. A
+        non-positive interval disables the delay entirely.
+        """
+        if self.min_interval_seconds <= 0:
+            return
+        with self._throttle_lock:
+            now = time.monotonic()
+            if self._last_requested_at is not None:
+                remaining = self.min_interval_seconds - (now - self._last_requested_at)
+                if remaining > 0:
+                    time.sleep(remaining)
+                    now = time.monotonic()
+            self._last_requested_at = now
 
     def lookup(self, entry: ReferenceEntry) -> LookupResult:
+        self._throttle()
         try:
             # Files avoid waiting for inherited pipe handles after a timeout
             # on Windows (third-party browser helpers may retain them).
