@@ -43,9 +43,9 @@ async def startup():
     # Store settings in app.state so routes can access them
     app.state.settings = settings
 
-    from .services.google_scholar_lookup import GoogleScholarLookup
+    from .services.bounded_scholar_lookup import BoundedScholarLookup
 
-    app.state.bibliography_lookup = GoogleScholarLookup()
+    app.state.bibliography_lookup = BoundedScholarLookup()
     # Finish or roll back file cleanup interrupted by an earlier deletion.
     from .services.paper_deletion_service import recover_pending_deletions
 
