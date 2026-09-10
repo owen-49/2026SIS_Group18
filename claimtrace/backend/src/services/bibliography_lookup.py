@@ -1,8 +1,8 @@
-"""External lookup integration boundary; no registry implementation exists yet.
+"""External lookup integration boundary.
 
-The existing Engine compares metadata supplied to it; it does not query DOI
-registries. A real adapter must search by DOI or bibliography/raw reference,
-return traceable records, and handle its own bounded network retries/timeouts.
+GoogleScholarLookup adapts the Engine search module to this contract.
+Implementations must return traceable publication records and distinguish
+query failures from completed searches without candidates.
 """
 
 from typing import Protocol

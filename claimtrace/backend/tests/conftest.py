@@ -57,9 +57,10 @@ def sample_pdf_bytes():
 
 
 @pytest.fixture()
-def client(storage_paths):
+def client(storage_paths, monkeypatch):
     """Return an API client using isolated local persistence."""
     del storage_paths
 
     with TestClient(app) as test_client:
+        monkeypatch.delattr(app.state, "bibliography_lookup", raising=False)
         yield test_client

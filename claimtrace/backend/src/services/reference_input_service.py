@@ -64,6 +64,26 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                 if saved.source_sha256 and path.is_file():
                     if saved.source_sha256 != source_digest(path):
                         raise ReferenceStoreError("Reference artifact is stale; reprocess the PDF.")
+                if saved.metadata_version < 2:
+                    # Enrich legacy raw-text artifacts with the Parser's metadata
+                    # parser without rerunning PDF conversion or changing IDs.
+                    for reference in saved.references:
+                        names = ("title", "authors", "year", "venue", "doi")
+                        missing = set(names) - reference.model_fields_set
+                        if not missing:
+                            continue
+                        try:
+                            from parser.reference_json_extractor import parse_reference_metadata
+                        except ImportError as exc:
+                            raise AuditInputError(
+                                503, "REFERENCE_PARSER_UNAVAILABLE",
+                                "The reference Parser is required to enrich legacy references.",
+                            ) from exc
+                        metadata = parse_reference_metadata(reference.raw_text)
+                        for name in missing:
+                            setattr(reference, name, getattr(metadata, name))
+                    saved.metadata_version = 2
+                    save_references(record.paper_id, saved)
                 return saved
             if not path.is_file():
                 raise AuditInputError(
@@ -72,12 +92,18 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
             digest = source_digest(path)
             extracted = extract_pdf_references(path)
             saved = StoredReferenceList(
+                metadata_version=2,
                 source_file=path.name,
                 paper_id=record.paper_id,
                 source_sha256=digest,
                 references=[
                     StoredReference(
                         raw_text=reference.raw_text,
+                        title=getattr(reference, "title", None),
+                        authors=getattr(reference, "authors", None),
+                        year=getattr(reference, "year", None),
+                        venue=getattr(reference, "venue", None),
+                        doi=getattr(reference, "doi", None),
                         number=reference.number,
                         page_start=reference.page_start,
                         page_end=reference.page_end,
@@ -137,11 +163,6 @@ def load_audit_references(
     else:
         references = persisted_pdf_references(record)
         warnings.extend(references.warnings)
-        warnings.append(
-            "The existing PDF reference extractor returns raw text and locations, not structured "
-            "title/authors/year/venue/DOI. External raw-reference lookup and field extraction "
-            "must be supplied by the responsible modules before full metadata verification."
-        )
         entries = [
             ReferenceEntry(
                 entry_id=_entry_id(paper_id, index, reference.raw_text),
@@ -151,6 +172,11 @@ def load_audit_references(
                     else f"ref-{index + 1}",
                     entry_type="misc",
                     raw_text=reference.raw_text,
+                    title=reference.title or "",
+                    authors=reference.authors or [],
+                    year=reference.year,
+                    venue=reference.venue or "",
+                    doi=reference.doi or "",
                 ),
                 number=reference.number,
                 page_start=reference.page_start,

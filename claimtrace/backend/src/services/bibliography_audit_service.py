@@ -99,6 +99,13 @@ def compare_external_metadata(
 def audit_reference(
     entry: ReferenceEntry, lookup: BibliographyLookup | None
 ) -> ReferenceAuditResult:
+    if not entry.metadata.title.strip():
+        return ReferenceAuditResult(
+            entry=entry,
+            status=AuditStatus.NEEDS_REVIEW,
+            reason="No searchable title was extracted. Review the original reference; "
+            "publication existence has not been checked.",
+        )
     if lookup is None:
         return ReferenceAuditResult(
             entry=entry,
