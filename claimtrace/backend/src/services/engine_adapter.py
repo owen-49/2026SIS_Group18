@@ -69,6 +69,25 @@ def _get_llm_client():
     return build_llm_client(provider=provider, **config)
 
 
+@lru_cache(maxsize=1)
+def _get_embedder():
+    """Build (and cache) the sentence-transformers embedder.
+
+    Constructing an ``Embedder`` loads the sentence-transformers model from
+    disk — measured at ~4.4s here — while indexing a few hundred passages costs
+    ~0.4s. The model is stateless and thread-safe once loaded, so it is cached
+    process-wide; the ``Retriever`` built on top of it is *not* (it holds the
+    per-document index) and must be constructed per request.
+
+    The import is deferred: ``sentence_transformers`` pulls in torch, and this
+    module is imported at application start-up for the unrelated ``/api/verify``
+    route.
+    """
+    from engine.embedder import Embedder
+
+    return Embedder()
+
+
 def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
     """Verify a claim against a parsed document.
 

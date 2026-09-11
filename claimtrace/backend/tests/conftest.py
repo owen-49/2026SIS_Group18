@@ -1,12 +1,67 @@
 """Shared backend API test fixtures."""
 
+import os
+
 import fitz
 import pytest
-from backend.src.main import app
-from backend.src.routes import parse as parse_route
-from backend.src.services import paper_deletion_service
-from backend.src.storage import bib_document_store, paper_store, parsed_document_store
-from fastapi.testclient import TestClient
+
+# Opt out of the repository .env *before* importing the application: main.py
+# builds its CORS middleware from settings at import time, so a developer's
+# CORS_ORIGINS would otherwise be baked into the app under test. This must run
+# at collection time, not in a fixture.
+os.environ["CLAIMTRACE_ENV_FILE"] = os.devnull
+
+from backend.src.config import get_settings  # noqa: E402
+from backend.src.main import app  # noqa: E402
+from backend.src.routes import parse as parse_route  # noqa: E402
+from backend.src.services import engine_adapter, paper_deletion_service  # noqa: E402
+from backend.src.storage import (  # noqa: E402
+    bib_document_store,
+    paper_store,
+    parsed_document_store,
+)
+from fastapi.testclient import TestClient  # noqa: E402
+
+
+def _clear_settings_caches() -> None:
+    """Drop the cached settings, LLM client and embedder.
+
+    These may have been replaced by a test with a plain callable (which has no
+    ``cache_clear``), and monkeypatch only restores them after this fixture tears
+    down, so the attribute must be probed defensively. Dropping the embedder also
+    keeps the ~90MB sentence-transformers model out of a suite that never needs
+    a real one.
+    """
+    get_settings.cache_clear()
+    for cached in (engine_adapter._get_llm_client, engine_adapter._get_embedder):
+        cache_clear = getattr(cached, "cache_clear", None)
+        if cache_clear is not None:
+            cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def _isolated_environment(monkeypatch):
+    """Keep the suite hermetic and offline.
+
+    ``config._load_settings`` loads the repository ``.env``, so without this a
+    developer machine would hand tests real CORS origins, upload paths and API
+    keys — changing assertions and risking calls to a paid provider. The module
+    level above already opts out of ``.env`` for the import-time CORS middleware;
+    here the provider is neutralised so the LLM fallback paths stay the ones
+    under test, and the caches are dropped so each test re-reads the environment.
+    """
+    for name in (
+        "OPENAI_API_KEY",
+        "DEEPSEEK_API_KEY",
+        "GEMINI_API_KEY",
+        "ANTHROPIC_API_KEY",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("CLAIMTRACE_LLM_PROVIDER", "openai")
+
+    _clear_settings_caches()
+    yield
+    _clear_settings_caches()
 
 
 @pytest.fixture()

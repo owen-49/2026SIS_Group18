@@ -289,3 +289,89 @@ class BibVerifyResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     error_code: str | None = None
+
+
+# ── Claim × cited-paper comparison models ─────────────────────
+
+
+class ComparisonStatus(str, Enum):
+    """Why a comparison did or did not produce a judgement.
+
+    ``COMPARED`` is the only status carrying a verdict. Every other value means
+    *the claim was not judged* — never that the claim is unsupported. The
+    distinction matters because ``NOT_FOUND`` is itself a verdict (the source
+    exists and does not state the claim), so collapsing a lookup failure into
+    ``judgement.verdict = NOT_FOUND`` would report a fabricated finding. This
+    mirrors the Audit contract in ``docs/backend-audit-handoff.md``.
+    """
+
+    COMPARED = "COMPARED"
+    NO_BIBLIOGRAPHY = "NO_BIBLIOGRAPHY"
+    MARKER_UNSUPPORTED = "MARKER_UNSUPPORTED"
+    REFERENCE_NOT_FOUND = "REFERENCE_NOT_FOUND"
+    REFERENCE_AMBIGUOUS = "REFERENCE_AMBIGUOUS"
+    SOURCE_NOT_AVAILABLE = "SOURCE_NOT_AVAILABLE"
+    SOURCE_EMPTY = "SOURCE_EMPTY"
+    LLM_FAILED = "LLM_FAILED"
+
+
+class CitationComparisonRequest(BaseModel):
+    """Compare one manuscript claim against the paper it cites."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    claim: str = Field(..., min_length=1, description="The claim sentence to check")
+    citation_marker: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "The citation marker exactly as extracted, e.g. '\\cite{wei2022emergent}', "
+            "'(Wei, 2022)' or '[1]'. Raw markers are accepted rather than bare BibTeX "
+            "keys because numeric and author-year markers have no clean key form."
+        ),
+    )
+    manuscript_id: str | None = Field(
+        default=None,
+        min_length=1,
+        description="Optional manuscript to exclude from the source catalog",
+    )
+    claim_id: str | None = Field(default=None, description="Optional echo for batch callers")
+    k: int = Field(default=5, ge=1, le=10, description="Passages to retrieve")
+
+
+class ComparisonEvidence(BaseModel):
+    """One retrieved passage from the cited paper, with its provenance."""
+
+    passage_text: str
+    page: int = Field(..., ge=1)
+    similarity: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Cosine similarity, clamped at 0 — the raw score can be negative.",
+    )
+    rank: int = Field(..., ge=0)
+    location: DocumentLocation | None = None
+
+
+class ComparisonJudgement(BaseModel):
+    """The LLM's verdict. Present only when ``status == COMPARED``."""
+
+    verdict: VerdictEnum
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    rationale: str
+
+
+class CitationComparisonResponse(BaseModel):
+    """Result of comparing one claim against its cited paper."""
+
+    claim: str
+    citation_marker: str
+    citation_key: str | None = None
+    status: ComparisonStatus
+    message: str
+    claim_id: str | None = None
+    cited_source: IdentifiedSource | None = None
+    source_paper_id: str | None = None
+    source_document: SourceDocument | None = None
+    evidence: list[ComparisonEvidence] = Field(default_factory=list)
+    judgement: ComparisonJudgement | None = None

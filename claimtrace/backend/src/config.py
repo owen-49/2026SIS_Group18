@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import find_dotenv, load_dotenv
+
 
 @dataclass
 class Settings:
@@ -112,10 +114,21 @@ class Settings:
 
 
 def _load_settings() -> Settings:
-    """Load settings from environment variables.
+    """Load settings from environment variables, then from the repository .env.
 
-    Reads .env file if present (via the caller's environment).
+    ``find_dotenv()`` walks up from this file (backend/src -> backend ->
+    claimtrace), so the repo-root ``.env`` is found regardless of the working
+    directory. This is what makes a bare ``uvicorn src.main:app`` run from
+    ``backend/`` see the same configuration Docker already receives through
+    ``env_file``. ``override=False`` keeps real environment variables in
+    precedence over the file.
+
+    Set ``CLAIMTRACE_ENV_FILE`` to read a specific file instead of the
+    discovered one; pointing it at an empty file opts out of file loading
+    entirely, which keeps the test suite independent of a developer's ``.env``.
     """
+    load_dotenv(os.getenv("CLAIMTRACE_ENV_FILE") or find_dotenv(), override=False)
+
     origins_raw = os.getenv("CORS_ORIGINS", "")
     origins = [o.strip() for o in origins_raw.split(",") if o.strip()] if origins_raw else [
         "http://localhost:3000",

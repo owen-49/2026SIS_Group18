@@ -11,6 +11,7 @@ dependencies = [
     "fastapi>=0.112.0",
     "uvicorn[standard]>=0.30.0",
     "python-multipart>=0.0.9",
+    "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
     "PyMuPDF>=1.24.0",
     "claimtrace-parser",
