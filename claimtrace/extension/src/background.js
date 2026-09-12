@@ -35,12 +35,7 @@ async function apiJson(path, options = {}) {
   return payload;
 }
 
-function normaliseTitle(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
+
 
 async function setBackendStatus(status) {
   await chrome.storage.local.set({
@@ -66,16 +61,156 @@ async function hashText(value) {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+function normaliseTitle(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\.pdf$/i, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractArxivId(value) {
+  const text = String(value || "");
+
+  // Examples:
+  // https://arxiv.org/abs/1706.03762
+  // https://arxiv.org/pdf/1706.03762
+  // 1706.03762.pdf
+  // 1706.03762v5.pdf
+  const match = text.match(/(\d{4}\.\d{4,5})(?:v\d+)?/i);
+
+  return match?.[1] || "";
+}
+
+function titleSimilarity(a, b) {
+  const left = normaliseTitle(a);
+  const right = normaliseTitle(b);
+
+  if (!left || !right) return 0;
+
+  if (left === right) return 1;
+
+  const leftWords = new Set(left.split(" ").filter(Boolean));
+  const rightWords = new Set(right.split(" ").filter(Boolean));
+
+  if (!leftWords.size || !rightWords.size) return 0;
+
+  let common = 0;
+
+  for (const word of leftWords) {
+    if (rightWords.has(word)) common += 1;
+  }
+
+  // Dice coefficient
+  return (2 * common) / (leftWords.size + rightWords.size);
+}
+
 function sourcePaperFor(citationKey, localPapers, sourcePapers) {
-  const localPaper = localPapers.find((paper) => paper.citationKey === citationKey);
-  if (!localPaper) return undefined;
+  const localPaper = localPapers.find(
+    (paper) => paper.citationKey === citationKey,
+  );
+
+  if (!localPaper) {
+    console.warn(
+      `[ClaimTrace] No bibliography entry found for ${citationKey}`,
+    );
+    return undefined;
+  }
+
   const expectedTitle = normaliseTitle(localPaper.title);
-  return sourcePapers.find((paper) => {
-    const backendTitles = [paper.title, paper.original_filename?.replace(/\.pdf$/i, "")]
+  const expectedArxivId = extractArxivId(
+    `${localPaper.url || ""} ${localPaper.title || ""}`,
+  );
+
+  // 1. Exact title / filename match
+  for (const paper of sourcePapers) {
+    const candidates = [
+      paper.title,
+      paper.original_filename,
+    ]
       .map(normaliseTitle)
       .filter(Boolean);
-    return backendTitles.some((title) => title === expectedTitle);
-  });
+
+    if (candidates.some((candidate) => candidate === expectedTitle)) {
+      console.info(
+        `[ClaimTrace] Matched ${citationKey} by exact title`,
+        paper,
+      );
+
+      return paper;
+    }
+  }
+
+  // 2. arXiv ID match
+  if (expectedArxivId) {
+    for (const paper of sourcePapers) {
+      const backendArxivId = extractArxivId(
+        `${paper.title || ""} ${paper.original_filename || ""}`,
+      );
+
+      if (
+        backendArxivId &&
+        backendArxivId === expectedArxivId
+      ) {
+        console.info(
+          `[ClaimTrace] Matched ${citationKey} by arXiv ID ${expectedArxivId}`,
+          paper,
+        );
+
+        return paper;
+      }
+    }
+  }
+
+  // 3. Fuzzy title match
+  let bestPaper;
+  let bestScore = 0;
+
+  for (const paper of sourcePapers) {
+    const candidates = [
+      paper.title,
+      paper.original_filename,
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
+      const score = titleSimilarity(
+        localPaper.title,
+        candidate,
+      );
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestPaper = paper;
+      }
+    }
+  }
+
+  // Avoid weak accidental matches.
+  if (bestPaper && bestScore >= 0.72) {
+    console.info(
+      `[ClaimTrace] Matched ${citationKey} by fuzzy title (${bestScore.toFixed(2)})`,
+      bestPaper,
+    );
+
+    return bestPaper;
+  }
+
+  console.warn(
+    `[ClaimTrace] No PDF matched ${citationKey}`,
+    {
+      citationKey,
+      expectedTitle,
+      expectedArxivId,
+      bestScore,
+      availablePapers: sourcePapers.map((paper) => ({
+        title: paper.title,
+        filename: paper.original_filename,
+      })),
+    },
+  );
+
+  return undefined;
 }
 
 function previewFinding(finding, reason) {
@@ -164,9 +299,50 @@ async function syncBibliography(bibSource, requestId) {
 async function syncClaims(findings, localPapers, knownSourcePapers, requestId) {
   try {
     if (requestId !== latestClaimsRequest) return;
-    const stored = await chrome.storage.local.get(["claimtraceBibVerification", "claimtraceSourcePapers"]);
-    if (requestId !== latestClaimsRequest) return;
-    const sourcePapers = completedPdfPapers(knownSourcePapers || stored.claimtraceSourcePapers || []);
+   const stored = await chrome.storage.local.get([
+  "claimtraceBibVerification",
+  "claimtraceSourcePapers"
+]);
+
+if (requestId !== latestClaimsRequest) return;
+
+let sourcePapers = [];
+
+try {
+  // Always ask backend for the latest uploaded papers.
+  const backendPapers = await loadBackendPapers();
+
+  sourcePapers = completedPdfPapers(backendPapers);
+
+  // Refresh the cache as well.
+  await chrome.storage.local.set({
+    claimtraceSourcePapers: sourcePapers,
+  });
+
+  console.log(
+    "[ClaimTrace] Fresh backend source papers:",
+    sourcePapers.map((paper) => ({
+      paperId: paper.paper_id,
+      title: paper.title,
+      filename: paper.original_filename,
+      status: paper.status,
+    }))
+  );
+} catch (error) {
+  console.warn(
+    "[ClaimTrace] Could not refresh backend papers, using cached papers",
+    error
+  );
+
+  const fallbackPapers =
+    Array.isArray(knownSourcePapers) && knownSourcePapers.length
+      ? knownSourcePapers
+      : Array.isArray(stored.claimtraceSourcePapers)
+        ? stored.claimtraceSourcePapers
+        : [];
+
+  sourcePapers = completedPdfPapers(fallbackPapers);
+}
     const verificationByKey = new Map(
       (stored.claimtraceBibVerification?.results || []).map((result) => [result.citation_key, result]),
     );
