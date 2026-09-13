@@ -19,7 +19,7 @@ flowchart TB
         direction LR
         subgraph ROUTES["Routes"]
             R_PARSE["/api/parse"]
-            R_PAPERS["/api/papers"]
+            R_PAPERS["/api/papers<br/>/claims"]
             R_VERIFY["/api/verify"]
             R_AUDIT["/api/audit"]
             R_BIB["/api/verify/bib"]
@@ -106,6 +106,7 @@ sequenceDiagram
     FE->>API: POST /api/parse (file_type=bib)
     API->>E: parse_bib_file()
     E-->>API: list[BibEntry]
+    API->>API: persist ParsedBibDocument(entries)
     API-->>FE: bib_paper_id + entry_count
 
     U->>FE: 上传源论文 PDF (若干)
@@ -120,6 +121,20 @@ sequenceDiagram
     FE-->>U: 展示每个 bib 条目的字段比对结果
 ```
 
+### 2.3 Single Verify claims / bibliography Audit
+
+Single Verify reads persisted Parser paragraphs through
+`GET /api/papers/{paper_id}/claims`. Claim text and page locations remain available.
+Local source association is not external publication verification.
+
+Bibliography Audit reads persisted Bib entries or calls the existing PDF reference
+extractor, then delegates publication lookup to an external-record adapter and
+compares metadata through the existing Engine comparator. It never ranks source
+passages or classifies claim support. The external lookup implementation is still
+missing; unconfigured lookups return `EXTERNAL_LOOKUP_NOT_CONFIGURED`.
+See [backend Audit contract and handoff](backend-audit-handoff.md) for boundaries,
+team dependencies, and the frontend migration still required.
+
 ---
 
 ## 3. API 契约
@@ -130,8 +145,10 @@ sequenceDiagram
 |------|------|------|
 | `/health` | GET | 健康检查 |
 | `/api/parse` | POST | 上传 PDF / .bib，返回 `paper_id` |
+| `/api/parse/bib` | POST | 重新解析并返回已保存的 BibTeX 条目 |
 | `/api/parse/{id}` | GET | 查询解析状态 |
 | `/api/papers` | GET | 列出论文库 |
+| `/api/papers/{id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
 | `/api/verify` | POST | 验证单条 claim |
 | `/api/audit` | POST | 批量审计 |
 | `/api/verify/bib` | POST | 交叉校验 bib 元数据 |
@@ -142,6 +159,20 @@ sequenceDiagram
 Request:  multipart/form-data { file: PDF | .bib }
 Response: { paper_id, status, file_type, pages, paragraph_count, entry_count, title? }
 ```
+
+### POST /api/parse/bib
+
+```
+Request:  { paper_id: str }
+Response: {
+  paper_id, status, file_type: "bib", entry_count,
+  entries: [{ key, entry_type, title, authors, year, venue, ... }]
+}
+```
+
+The endpoint re-runs the real Engine parser for the uploaded `.bib` file and
+returns the entries read back from the persisted `ParsedBibDocument`. It does
+not return placeholder or hardcoded bibliography data.
 
 ### POST /api/verify
 
@@ -155,14 +186,38 @@ Response: {
 
 ### POST /api/audit
 
-```
-Request:  { manuscript_id: str, source_paper_ids: [str] }
+```text
+Request: { bib_paper_id: str } OR { manuscript_id: str }
 Response: {
-  manuscript_id, total_citations, supported, partial,
-  contradicted, not_found,
-  results: [{ citation_key, claim, verdict, confidence, risk_level }]
+  contract_version: 2, audit_id, input_paper_id, input_type, checked_at,
+  status, total_entries, counts, warnings,
+  results: [{ entry, status, reason, field_checks,
+              matched_record, candidates, lookup_attempts }]
 }
 ```
+
+Source PDFs are not required. Results distinguish `VERIFIED`,
+`METADATA_MISMATCH`, `NEEDS_REVIEW`, `NOT_FOUND`, and `LOOKUP_FAILED`.
+`NOT_FOUND` does not prove fabrication. `GET /api/audit/{audit_id}` reads stored
+results. See `backend/src/audit_models.py` and the handoff for the full v2 schema.
+The existing Audit frontend has not yet migrated to this breaking contract.
+
+### GET /api/papers/{id}/claims
+
+```text
+Response: {
+  manuscript_id, status, error_message?, manuscript_document?,
+  claims: [{ claim_id, text, page, citation_marker,
+    resolution_status, cited_source?, similar_sources?,
+    source_document?, manuscript_location? }]
+}
+```
+
+The endpoint reads the JSON produced by the PDF Parser pipeline. It extracts
+LaTeX, numeric, and author-year citation markers from manuscript sentences,
+skips the references section, and assigns stable page/paragraph locations.
+When a persisted BibTeX record and a matching uploaded source PDF are
+available, the response also includes the resolved local source metadata.
 
 ### POST /api/verify/bib
 
@@ -207,13 +262,13 @@ Response: {
 `papers.json` + 文件存储替代 Postgres/MySQL。理由：数据量小（几篇到几十篇论文）、无多用户并发、无复杂查询。省下的时间投入 PDF 解析和检索准确率。若后续需要查询/多用户，SQLite 是零成本升级路径。
 
 ### 2. 多 Provider LLM 抽象
-`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。未配置 key 时自动降级为 **mock mode**（返回 NOT_FOUND），保证 CI 和本地开发能跑。
+`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。语义分类仅属于单条 Verify。文献 Audit 不使用 LLM 支持度分类，其外部记录查询适配器仍待接入。
 
 ### 3. 两阶段检索（Paragraph → Sentence）
 段落级 embedding 保证召回，句子级重排保证精度。避免纯句子切分（噪声大）和纯段落切分（精度低）各自的缺陷。
 
 ### 4. 展示证据而非只给结论
-核心信任设计：每条判定都**附带匹配到的原文段落**，用户能自己判断 AI 对不对。LLM 只做「给定原文 + claim 的支撑关系分类」，不凭记忆生成引用——这正是防御「LLM 幻觉」的关键（见 pitch Q&A）。
+单条 Verify 的信任设计：每条语义判定都**附带匹配到的原文段落**，用户能自己判断 AI 对不对。LLM 只做「给定原文 + claim 的支撑关系分类」，不凭记忆生成引用——这正是防御「LLM 幻觉」的关键（见 pitch Q&A）。
 
 ### 5. 目录级所有权（Monorepo）
 `frontend/`、`backend/`、`engine/`、`parser/` 各自独立成包，跨模块通过类型化 API 契约交互，而非共享代码。每队只改自己的目录，从源头消除 Git 冲突。
@@ -226,4 +281,7 @@ Response: {
 |------|------|------|
 | `ParsedPaper` 首页元数据未填充 | bib 验证暂时只能返回 `PDF_MISSING` | Parser 队 |
 | 前端默认 mock（`VITE_USE_MOCK_API=true`） | 端到端未完全串真实后端 | Frontend |
+| Audit 外部记录查询未实现 | 返回查询未配置，不能完成真实性核实 | Backend / 待确定查询模块负责人 |
+| Audit 前端仍使用旧语义契约 | 需要保留布局并迁移到元数据字段差异及五类状态 | Frontend |
+| PDF 参考文献抽取仅返回原始文本 | 完整字段比对需要结构化条目 | Parser / Engine |
 | markdown converter 测试产物误提交 | git 卫生问题（暂不处理） | 全员 |

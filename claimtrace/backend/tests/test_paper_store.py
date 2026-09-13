@@ -6,6 +6,7 @@ import pytest
 from backend.src.models import PaperRecord, ParseStatus
 from backend.src.storage.paper_store import (
     create_paper,
+    delete_paper,
     get_paper,
     list_papers,
     update_paper,
@@ -98,3 +99,19 @@ def test_update_rejects_immutable_fields(tmp_path):
             {"paper_id": "different"},
             papers_file=papers_file,
         )
+
+
+def test_delete_paper_removes_and_returns_record(tmp_path):
+    papers_file = tmp_path / "papers.json"
+    record = _paper_record()
+    create_paper(record, papers_file=papers_file)
+
+    deleted = delete_paper(record.paper_id, papers_file=papers_file)
+
+    assert deleted == record
+    assert get_paper(record.paper_id, papers_file=papers_file) is None
+    assert list_papers(papers_file=papers_file) == []
+
+
+def test_delete_unknown_paper_returns_none(tmp_path):
+    assert delete_paper("missing", papers_file=tmp_path / "papers.json") is None

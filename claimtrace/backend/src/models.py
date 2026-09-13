@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class VerdictEnum(str, Enum):
@@ -40,10 +40,19 @@ class VerifyRequest(BaseModel):
 
 
 class AuditRequest(BaseModel):
-    manuscript_id: str = Field(..., description="ID of the uploaded manuscript")
-    source_paper_ids: list[str] = Field(
-        ..., description="IDs of all source papers cited in the manuscript"
-    )
+    """Audit one persisted bibliography or one manuscript reference list."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    bib_paper_id: str | None = Field(default=None, min_length=1)
+    manuscript_id: str | None = Field(default=None, min_length=1)
+    # Accepted for old clients, but never used as proof of publication existence.
+    source_paper_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def require_one_input(self):
+        if bool(self.bib_paper_id) == bool(self.manuscript_id):
+            raise ValueError("Provide exactly one of bib_paper_id or manuscript_id.")
+        return self
 
 
 class BibVerifyRequest(BaseModel):
@@ -136,6 +145,13 @@ class ParseResponse(BaseModel):
     title: str | None = None
 
 
+class BibParseResponse(ParseResponse):
+    """Detailed response containing the entries persisted from a BibTeX file."""
+
+    file_type: Literal["bib"] = "bib"
+    entries: list[BibEntryRecord] = Field(default_factory=list)
+
+
 class PaperListItem(BaseModel):
     """Public metadata returned when listing uploaded papers."""
 
@@ -175,22 +191,71 @@ class VerifyResponse(BaseModel):
     matches: list[MatchResult] = []
 
 
-class CitationAuditResult(BaseModel):
+class DocumentLocation(BaseModel):
+    """Location of a paragraph in a parsed document."""
+
+    page: int = Field(..., ge=1)
+    paragraph_index: int = Field(..., ge=0)
+
+
+class SourceDocumentPage(BaseModel):
+    """Page-level text used by the review clients."""
+
+    page: int = Field(..., ge=1)
+    heading: str | None = None
+    paragraphs: list[str] = Field(default_factory=list)
+
+
+class SourceDocument(BaseModel):
+    """A displayable view of a persisted parsed document."""
+
+    total_pages: int = Field(..., ge=1)
+    pages: list[SourceDocumentPage] = Field(default_factory=list)
+    matched_location: DocumentLocation | None = None
+
+
+class IdentifiedSource(BaseModel):
+    """Bibliographic metadata associated with a claim's source."""
+
+    source_paper_id: str | None = None
     citation_key: str
-    claim: str
-    verdict: VerdictEnum
-    confidence: float
-    risk_level: str  # "high", "medium", "low"
+    title: str
+    authors: list[str] = Field(default_factory=list)
+    venue: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    url: str | None = None
+    database: str | None = None
 
 
-class AuditResponse(BaseModel):
+class SimilarSource(IdentifiedSource):
+    """A source candidate returned when exact resolution is unavailable."""
+
+    similarity: float = Field(..., ge=0.0, le=1.0)
+
+
+class ExtractedClaim(BaseModel):
+    """A manuscript sentence linked to one citation marker."""
+
+    claim_id: str
+    text: str
+    page: int | None = Field(default=None, ge=1)
+    citation_marker: str
+    resolution_status: Literal["identified", "searching", "not_found"]
+    cited_source: IdentifiedSource | None = None
+    similar_sources: list[SimilarSource] = Field(default_factory=list)
+    source_document: SourceDocument | None = None
+    manuscript_location: DocumentLocation | None = None
+
+
+class PaperClaimsResponse(BaseModel):
+    """Claims extracted from one persisted manuscript."""
+
     manuscript_id: str
-    total_citations: int
-    supported: int = 0
-    partial: int = 0
-    contradicted: int = 0
-    not_found: int = 0
-    results: list[CitationAuditResult] = []
+    status: ParseStatus
+    claims: list[ExtractedClaim] = Field(default_factory=list)
+    error_message: str | None = None
+    manuscript_document: SourceDocument | None = None
 
 
 # ── Bib verification models ───────────────────────────────────
@@ -224,3 +289,89 @@ class BibVerifyResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     error_code: str | None = None
+
+
+# ── Claim × cited-paper comparison models ─────────────────────
+
+
+class ComparisonStatus(str, Enum):
+    """Why a comparison did or did not produce a judgement.
+
+    ``COMPARED`` is the only status carrying a verdict. Every other value means
+    *the claim was not judged* — never that the claim is unsupported. The
+    distinction matters because ``NOT_FOUND`` is itself a verdict (the source
+    exists and does not state the claim), so collapsing a lookup failure into
+    ``judgement.verdict = NOT_FOUND`` would report a fabricated finding. This
+    mirrors the Audit contract in ``docs/backend-audit-handoff.md``.
+    """
+
+    COMPARED = "COMPARED"
+    NO_BIBLIOGRAPHY = "NO_BIBLIOGRAPHY"
+    MARKER_UNSUPPORTED = "MARKER_UNSUPPORTED"
+    REFERENCE_NOT_FOUND = "REFERENCE_NOT_FOUND"
+    REFERENCE_AMBIGUOUS = "REFERENCE_AMBIGUOUS"
+    SOURCE_NOT_AVAILABLE = "SOURCE_NOT_AVAILABLE"
+    SOURCE_EMPTY = "SOURCE_EMPTY"
+    LLM_FAILED = "LLM_FAILED"
+
+
+class CitationComparisonRequest(BaseModel):
+    """Compare one manuscript claim against the paper it cites."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    claim: str = Field(..., min_length=1, description="The claim sentence to check")
+    citation_marker: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "The citation marker exactly as extracted, e.g. '\\cite{wei2022emergent}', "
+            "'(Wei, 2022)' or '[1]'. Raw markers are accepted rather than bare BibTeX "
+            "keys because numeric and author-year markers have no clean key form."
+        ),
+    )
+    manuscript_id: str | None = Field(
+        default=None,
+        min_length=1,
+        description="Optional manuscript to exclude from the source catalog",
+    )
+    claim_id: str | None = Field(default=None, description="Optional echo for batch callers")
+    k: int = Field(default=5, ge=1, le=10, description="Passages to retrieve")
+
+
+class ComparisonEvidence(BaseModel):
+    """One retrieved passage from the cited paper, with its provenance."""
+
+    passage_text: str
+    page: int = Field(..., ge=1)
+    similarity: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Cosine similarity, clamped at 0 — the raw score can be negative.",
+    )
+    rank: int = Field(..., ge=0)
+    location: DocumentLocation | None = None
+
+
+class ComparisonJudgement(BaseModel):
+    """The LLM's verdict. Present only when ``status == COMPARED``."""
+
+    verdict: VerdictEnum
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    rationale: str
+
+
+class CitationComparisonResponse(BaseModel):
+    """Result of comparing one claim against its cited paper."""
+
+    claim: str
+    citation_marker: str
+    citation_key: str | None = None
+    status: ComparisonStatus
+    message: str
+    claim_id: str | None = None
+    cited_source: IdentifiedSource | None = None
+    source_paper_id: str | None = None
+    source_document: SourceDocument | None = None
+    evidence: list[ComparisonEvidence] = Field(default_factory=list)
+    judgement: ComparisonJudgement | None = None

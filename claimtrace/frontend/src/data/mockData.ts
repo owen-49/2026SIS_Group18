@@ -199,9 +199,9 @@ const demoReviewManuscriptDocument: SourceDocument = {
   pages: [
     { page: 1, heading: "AI in Scientific Discovery", paragraphs: ["A citation-aware review of language models, retrieval systems, and evidence validation.", "Abstract — Artificial intelligence increasingly supports literature discovery, hypothesis generation, and scientific writing. This paper reviews recent systems and examines how accurately their claims remain connected to published evidence.", "Keywords: scientific discovery, language models, citation verification, retrieval-augmented generation."] },
     { page: 2, heading: "1. Introduction", paragraphs: ["Scientific knowledge is growing faster than any individual researcher can read. Machine-assisted discovery tools help organise this literature and surface connections between distant fields.", "Reliable citation practice remains essential. A fluent sentence may overstate, misread, or cite a source that does not contain the claimed evidence.", "We study a workflow that connects every cited claim to its source passage and presents questionable citations for human review."] },
-    { page: 3, heading: "2. Attention-based Models", paragraphs: ["Sequence modelling has traditionally relied on recurrent or convolutional architectures to represent dependencies between tokens.", "Self-attention enables the model to relate information from different positions in a sequence without recurrence.", "This architecture makes it possible to model long-range relationships while allowing substantially more parallel computation."] },
+    { page: 3, heading: "2. Attention-based Models", paragraphs: ["Sequence modelling has traditionally relied on recurrent or convolutional architectures to represent dependencies between tokens.", "Self-attention enables the model to relate information from different positions in a sequence without recurrence. [1]", "This architecture makes it possible to model long-range relationships while allowing substantially more parallel computation."] },
     { page: 4, heading: "3. Retrieval-Augmented Models", paragraphs: ["Retrieval-augmented generation combines parametric and non-parametric memory and allows a model to consult external documents during generation.", "Retrieved passages are combined with the model state before each response, allowing external evidence to contribute facts without permanently changing model parameters.", "Evidence provenance remains necessary because retrieval alone does not guarantee that a generated statement accurately reflects its source."] },
-    { page: 5, heading: "4. Contextual Representation", paragraphs: ["Pre-trained language models differ in how much surrounding context is available when a token representation is constructed.", "Bidirectional pre-training allows language models to use both left and right context when representing each token.", "The resulting representations can then be fine-tuned for a wide range of downstream language understanding tasks."] },
+    { page: 5, heading: "4. Contextual Representation", paragraphs: ["Pre-trained language models differ in how much surrounding context is available when a token representation is constructed.", "Bidirectional pre-training allows language models to use both left and right context when representing each token. [2]", "The resulting representations can then be fine-tuned for a wide range of downstream language understanding tasks."] },
     { page: 6, heading: "5. Methodology", paragraphs: ["The review pipeline separates manuscript parsing, citation extraction, source retrieval, and evidence comparison into independent stages.", "Each manuscript sentence is associated with its citation marker and page location. Candidate evidence passages are retrieved from the identified source document.", "The final interface preserves manuscript context so researchers can inspect a result without losing their place in the paper."] },
     { page: 7, heading: "6. Experimental Setup", paragraphs: ["We evaluate the workflow on a small collection of academic manuscripts containing supported, partially supported, contradictory, and missing-source examples.", "Reviewers label each claim using the cited paper and record whether the system identifies the correct manuscript location.", "Interface measurements include time to locate a citation, correction accuracy, and agreement between reviewers."] },
     { page: 8, heading: "7. Results", paragraphs: ["Context-preserving review reduced the time required to locate flagged claims. Reviewers moved directly from a finding to the corresponding sentence.", "Supported claims were typically resolved quickly, while partially supported claims required closer inspection of scope and qualifications.", "Missing documents remained the most common reason that a citation could not be fully assessed."] },
@@ -220,7 +220,7 @@ demoPaperClaims.claims[1].manuscript_location = { page: 5, paragraph_index: 1 };
 demoPaperClaims.claims[2].source_document = null;
 demoPaperClaims.claims[2].manuscript_location = { page: 9, paragraph_index: 1 };
 
-export const demoAudit: AuditResponse = {
+export const demoClaimAudit = {
   manuscript_id: "transformer-survey.pdf",
   total_citations: 12,
   supported: 8,
@@ -362,3 +362,60 @@ export const demoAudit: AuditResponse = {
     },
   ],
 };
+
+export const demoAudit: AuditResponse = {
+  contract_version: 2,
+  audit_id: "demo-audit",
+  input_paper_id: "transformer-survey.pdf",
+  input_type: "pdf",
+  checked_at: "2026-08-16T04:30:00Z",
+  status: "needs_review",
+  total_entries: 4,
+  counts: { VERIFIED: 1, METADATA_MISMATCH: 1, NEEDS_REVIEW: 1, NOT_FOUND: 1, LOOKUP_FAILED: 0 },
+  warnings: [],
+  results: [
+    {
+      entry: { entry_id: "vaswani2017attention", number: 1, page_start: 12, page_end: 12, metadata: { key: "vaswani2017attention", title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
+      status: "VERIFIED", reason: "A matching publication record was found and its metadata agrees.",
+      field_checks: [{ field_name: "title", input_value: "Attention Is All You Need", source_value: "Attention Is All You Need", status: "MATCH", detail: "Exact normalized title match." }],
+      matched_record: { provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
+      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
+    },
+    {
+      entry: { entry_id: "devlin2019bert", number: 2, page_start: 12, page_end: 12, metadata: { key: "devlin2019bert", title: "BERT Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2018, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
+      status: "METADATA_MISMATCH", reason: "The publication was found, but the input year differs from the source record.",
+      field_checks: [{ field_name: "year", input_value: "2018", source_value: "2019", status: "MISMATCH", detail: "Publication year differs." }],
+      matched_record: { provider: "Demo Scholar", record_id: "N19-1423", url: "https://aclanthology.org/N19-1423", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2019, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
+      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
+    },
+    {
+      entry: { entry_id: "smith2024survey", number: 3, page_start: 12, page_end: 12, metadata: { key: "smith2024survey", title: "Citation Errors in Scientific Manuscripts", authors: ["Alex Smith"], year: 2024, venue: "", doi: "" } },
+      status: "NOT_FOUND", reason: "No acceptable publication record was found after all configured lookup paths completed.",
+      field_checks: [], matched_record: null, candidates: [],
+      lookup_attempts: [{ provider: "Demo Scholar", outcome: "not_found", error_code: null, detail: "No matching record." }],
+    },
+    {
+      entry: { entry_id: "attention-incomplete", number: 4, page_start: 12, page_end: 12, metadata: { key: "attention-incomplete", title: "Attention Is All You Need for Translation", authors: [], year: null, venue: "", doi: "" } },
+      status: "NEEDS_REVIEW",
+      reason: "Example: the exact citation is unconfirmed. A similar title was found, but missing author and year details require review.",
+      field_checks: [], matched_record: null,
+      candidates: [{ provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } }],
+      lookup_attempts: [{ provider: "Demo Scholar", outcome: "ambiguous", error_code: null, detail: "Sample candidate only; the original citation has not been identified." }],
+    },
+  ],
+};
+
+
+export function demoSelectionVerification(claimId: string, selectedText: string): VerifyResponse {
+  if (claimId === "claim-attention") return { ...demoVerification, claim: selectedText };
+  if (claimId === "claim-bert") return {
+    claim: selectedText, verdict: "SUPPORT", confidence: 0.92,
+    rationale: "Example result: the prepared BERT source passage describes learning token representations from both left and right context, supporting this claim. This score is illustrative.",
+    matches: [{ passage_text: "In this example, bidirectional pre-training learns token representations using context on both sides.", similarity: 0.92, entailment_label: "SUPPORT", confidence: 0.92 }],
+  };
+  return {
+    claim: selectedText, verdict: "NOT_FOUND", confidence: 0,
+    rationale: "Example result: the selected candidate does not provide confirmed evidence for this claim. The original citation remains unverified; this is a prepared demonstration, not a live analysis.",
+    matches: [],
+  };
+}

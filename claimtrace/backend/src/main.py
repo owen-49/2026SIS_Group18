@@ -43,6 +43,22 @@ async def startup():
     # Store settings in app.state so routes can access them
     app.state.settings = settings
 
+    from .services.bounded_scholar_lookup import BoundedScholarLookup
+
+    app.state.bibliography_lookup = BoundedScholarLookup(
+        timeout_seconds=settings.scholar_lookup_timeout_seconds,
+        min_interval_seconds=settings.scholar_lookup_delay_seconds,
+    )
+    # Finish or roll back file cleanup interrupted by an earlier deletion.
+    from .services.paper_deletion_service import recover_pending_deletions
+
+    pending_deletions = recover_pending_deletions()
+    if pending_deletions:
+        print(
+            f"[ClaimTrace] {pending_deletions} pending paper deletion(s) "
+            "could not be recovered."
+        )
+
     # Build LLM client from configured provider
     from engine.llm_client import build_llm_client
 
@@ -60,6 +76,10 @@ async def startup():
             "api_key": settings.anthropic_api_key,
             "base_url": None,
         },
+        "deepseek": {
+            "api_key": settings.deepseek_api_key,
+            "base_url": settings.deepseek_base_url,
+        },
         "ollama": {
             "api_key": "",
             "base_url": settings.ollama_base_url,
@@ -73,5 +93,8 @@ async def startup():
     if app.state.llm_client:
         print(f"[ClaimTrace] LLM ready: {provider}/{settings.llm_model_name}")
     else:
-        print(f"[ClaimTrace] LLM NOT configured ({provider}). "
-              f"Set API key in .env. Verifier will run in mock mode.")
+        print(
+            f"[ClaimTrace] LLM NOT configured ({provider}). "
+            "Set API key in .env. Single Verify uses a lexical baseline; "
+            "Bibliography Audit uses Google Scholar without an LLM."
+        )

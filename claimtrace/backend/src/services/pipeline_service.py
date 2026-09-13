@@ -3,11 +3,13 @@
 from pathlib import Path
 
 from ..models import PaperRecord, ParseStatus
+from ..storage import parsed_document_store
 from ..storage.paper_store import PaperStoreError, get_paper, update_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
     save_parsed_document,
 )
+from ..storage.reference_store import invalidate_references
 from .parser_adapter import ParserAdapterError, parse_document
 
 
@@ -35,10 +37,12 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
         if processing is None:
             raise PipelineError("Uploaded paper record was not found.")
 
+        invalidate_references(paper_id)
         parsed = parse_document(
             paper_id,
             Path(processing.file_path),
             title=processing.title,
+            output_dir=parsed_document_store.PARSED_DIR / "markdown",
         )
         parsed_path = save_parsed_document(parsed)
         completed = update_paper(

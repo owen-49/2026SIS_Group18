@@ -3,10 +3,8 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { Icon, type IconName } from "./Icon";
 
 const navigation: { to: string; label: string; icon: IconName; end?: boolean }[] = [
-  { to: "/", label: "Overview", icon: "spark", end: true },
-  { to: "/library", label: "Paper library", icon: "library" },
-  { to: "/verify", label: "Review claims", icon: "verify" },
   { to: "/audit", label: "Batch audit", icon: "audit" },
+  { to: "/verify", label: "Review claims", icon: "verify" },
 ];
 
 export function AppShell() {
@@ -37,17 +35,11 @@ export function AppShell() {
         </nav>
 
         <div className="sidebar-card">
-          <span className="eyebrow">Browser extension</span>
-          <strong>Audit while you write</strong>
-          <p>Link your Overleaf bibliography and inspect every citation in context.</p>
-          <Link className="text-button" to="/extension-setup">Setup guide <Icon name="arrow" size={15} /></Link>
+          <strong>ClaimTrace for Overleaf</strong>
+          <p>Review references as you write.</p>
+          <Link className="text-button" to="/extension-setup">Set up extension <Icon name="arrow" size={15} /></Link>
         </div>
 
-        <div className="profile-row">
-          <span className="avatar">LL</span>
-          <span><strong>Research workspace</strong><small>Local project</small></span>
-          <Icon name="chevron" size={16} />
-        </div>
       </aside>
 
       {menuOpen && <button className="sidebar-scrim" aria-label="Close menu" onClick={() => setMenuOpen(false)} />}
@@ -57,7 +49,7 @@ export function AppShell() {
           <button className="icon-button mobile-menu" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <Icon name="menu" />
           </button>
-          <Link className="help-button" to="/docs">Help & docs</Link>
+          <Link className="help-button" to="/docs">Help <Icon name="external" size={13} /></Link>
         </header>
         <main className="content"><Outlet /></main>
       </section>

@@ -1,5 +1,5 @@
 import { demoAudit, demoPaperClaims, demoVerification } from "../data/mockData";
-import { getWorkspacePapers } from "../data/workspacePapers";
+import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
 import type { AuditResponse, BibVerifyResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
@@ -14,8 +14,11 @@ async function readResponse<T>(response: Response): Promise<T> {
 
   let message = `Request failed (${response.status})`;
   try {
-    const body = (await response.json()) as { detail?: string | Array<{ msg?: string }> };
+    const body = (await response.json()) as { detail?: string | Array<{ msg?: string }> | { message?: string; code?: string } };
     if (typeof body.detail === "string") message = body.detail;
+    if (body.detail && !Array.isArray(body.detail) && typeof body.detail === "object" && body.detail.message) {
+      message = body.detail.message;
+    }
     if (Array.isArray(body.detail)) {
       const details = body.detail.map((item) => item.msg).filter(Boolean).join("; ");
       if (details) message = details;
@@ -80,6 +83,21 @@ export async function listPapers(signal?: AbortSignal): Promise<PaperListRespons
   const result = await readResponse<PaperListResponse>(response);
   if (!Array.isArray(result.papers)) throw new Error("The paper library response is invalid.");
   return result;
+}
+
+export async function deletePaper(paperId: string): Promise<void> {
+  if (usingMockApi) {
+    await wait(350);
+    if (!getWorkspacePapers().some((paper) => paper.paperId === paperId)) throw new Error("Paper not found.");
+  } else {
+    const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}`), { method: "DELETE" });
+    if (response.status !== 204) {
+      if (!response.ok) await readResponse<unknown>(response);
+      throw new Error("Unable to confirm paper deletion.");
+    }
+  }
+  // The server is authoritative; unavailable browser storage must not mask success.
+  try { removeWorkspacePaper(paperId); } catch { /* Best-effort local cache cleanup. */ }
 }
 
 export async function getParseStatus(paperId: string, signal?: AbortSignal): Promise<ParsedPaper> {
@@ -168,18 +186,22 @@ export async function verifyClaim(claim: string, sourcePaperId: string): Promise
 }
 
 export async function runAudit(
-  manuscriptId: string,
-  sourcePaperIds: string[],
+  inputPaperId: string,
+  inputType: "pdf" | "bib",
 ): Promise<AuditResponse> {
   if (usingMockApi) {
     await wait(1100);
-    return { ...demoAudit, manuscript_id: manuscriptId };
+    return { ...demoAudit, input_paper_id: inputPaperId, input_type: inputType };
   }
 
   const response = await fetch(apiUrl("/api/audit"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ manuscript_id: manuscriptId, source_paper_ids: sourcePaperIds }),
+    body: JSON.stringify(inputType === "bib" ? { bib_paper_id: inputPaperId } : { manuscript_id: inputPaperId }),
   });
-  return readResponse<AuditResponse>(response);
+  const result = await readResponse<AuditResponse>(response);
+  if (result.contract_version !== 2 || !Array.isArray(result.results)) {
+    throw new Error("The bibliography audit response is incompatible with this frontend.");
+  }
+  return result;
 }
