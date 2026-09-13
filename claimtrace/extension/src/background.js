@@ -65,7 +65,8 @@ function normaliseTitle(value) {
   return String(value || "")
     .toLowerCase()
     .replace(/\.pdf$/i, "")
-    .replace(/[^a-z0-9]+/g, " ")
+    .normalize("NFKC")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -78,9 +79,9 @@ function extractArxivId(value) {
   // https://arxiv.org/pdf/1706.03762
   // 1706.03762.pdf
   // 1706.03762v5.pdf
-  const match = text.match(/(\d{4}\.\d{4,5})(?:v\d+)?/i);
+  const match = text.match(/(?:^|[^a-z0-9])((?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[a-z]{2})?\/\d{7}))(?:v\d+)?(?=$|[^a-z0-9])/i);
 
-  return match?.[1] || "";
+  return match?.[1]?.toLowerCase() || "";
 }
 
 function titleSimilarity(a, b) {
@@ -106,116 +107,50 @@ function titleSimilarity(a, b) {
   return (2 * common) / (leftWords.size + rightWords.size);
 }
 
+function sourceResolution(citationKey, localPapers, sourcePapers) {
+  const entries = localPapers.filter((paper) => paper.citationKey === citationKey);
+  if (entries.length !== 1) return { candidates: [], reason: "Missing or duplicate bibliography key" };
+  const local = entries[0];
+  const idsFor = (values) => [...new Set(values.map(extractArxivId).filter(Boolean))];
+  const expectedIds = idsFor([local.arxivId, local.url, local.title]);
+  if (expectedIds.length > 1) return { candidates: [], reason: "Conflicting bibliography arXiv IDs" };
+  const expectedId = expectedIds[0];
+  const papers = [...new Map(sourcePapers.filter((p) => p.paper_id).map((p) => [p.paper_id, p])).values()];
+  const candidates = papers.map((paper) => {
+    const ids = idsFor([paper.arxivId, paper.url, paper.title, paper.original_filename]);
+    const score = Math.max(titleSimilarity(local.title, paper.title), titleSimilarity(local.title, paper.original_filename));
+    const exact = Boolean(normaliseTitle(local.title)) && normaliseTitle(local.title) === normaliseTitle(paper.title || paper.original_filename);
+    const idMatch = ids.length === 1 && ids[0] === expectedId;
+    const conflict = ids.length > 1 || Boolean(expectedId && ids.length && !idMatch);
+    return { paper, paperId: paper.paper_id, title: paper.title || "", filename: paper.original_filename || "",
+      score, exact, idMatch, conflict, arxivId: ids.join(", "),
+      reason: conflict ? "Conflicting arXiv ID" : idMatch ? "Same arXiv ID" : exact ? "Exact title" : "Similar title" };
+  }).filter((candidate) => candidate.idMatch || candidate.score >= 0.72)
+    .sort((a, b) => Number(b.idMatch) - Number(a.idMatch) || b.score - a.score || a.paperId.localeCompare(b.paperId));
+  const idMatches = candidates.filter((candidate) => candidate.idMatch && !candidate.conflict);
+  let automatic;
+  if (expectedId && idMatches.length === 1) automatic = idMatches[0].paper;
+  if (!expectedId && candidates.length === 1 && candidates[0].exact && !candidates[0].conflict) automatic = candidates[0].paper;
+  return { automatic, candidates, reason: candidates.length
+    ? "Source needs review — choose a candidate PDF in the Citations panel"
+    : "No uploaded PDF could be confirmed" };
+}
+
 function sourcePaperFor(citationKey, localPapers, sourcePapers) {
-  const localPaper = localPapers.find(
-    (paper) => paper.citationKey === citationKey,
-  );
-
-  if (!localPaper) {
-    console.warn(
-      `[ClaimTrace] No bibliography entry found for ${citationKey}`,
-    );
-    return undefined;
-  }
-
-  const expectedTitle = normaliseTitle(localPaper.title);
-  const expectedArxivId = extractArxivId(
-    `${localPaper.url || ""} ${localPaper.title || ""}`,
-  );
-
-  // 1. Exact title / filename match
-  for (const paper of sourcePapers) {
-    const candidates = [
-      paper.title,
-      paper.original_filename,
-    ]
-      .map(normaliseTitle)
-      .filter(Boolean);
-
-    if (candidates.some((candidate) => candidate === expectedTitle)) {
-      console.info(
-        `[ClaimTrace] Matched ${citationKey} by exact title`,
-        paper,
-      );
-
-      return paper;
-    }
-  }
-
-  // 2. arXiv ID match
-  if (expectedArxivId) {
-    for (const paper of sourcePapers) {
-      const backendArxivId = extractArxivId(
-        `${paper.title || ""} ${paper.original_filename || ""}`,
-      );
-
-      if (
-        backendArxivId &&
-        backendArxivId === expectedArxivId
-      ) {
-        console.info(
-          `[ClaimTrace] Matched ${citationKey} by arXiv ID ${expectedArxivId}`,
-          paper,
-        );
-
-        return paper;
-      }
-    }
-  }
-
-  // 3. Fuzzy title match
-  let bestPaper;
-  let bestScore = 0;
-
-  for (const paper of sourcePapers) {
-    const candidates = [
-      paper.title,
-      paper.original_filename,
-    ].filter(Boolean);
-
-    for (const candidate of candidates) {
-      const score = titleSimilarity(
-        localPaper.title,
-        candidate,
-      );
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestPaper = paper;
-      }
-    }
-  }
-
-  // Avoid weak accidental matches.
-  if (bestPaper && bestScore >= 0.72) {
-    console.info(
-      `[ClaimTrace] Matched ${citationKey} by fuzzy title (${bestScore.toFixed(2)})`,
-      bestPaper,
-    );
-
-    return bestPaper;
-  }
-
-  console.warn(
-    `[ClaimTrace] No PDF matched ${citationKey}`,
-    {
-      citationKey,
-      expectedTitle,
-      expectedArxivId,
-      bestScore,
-      availablePapers: sourcePapers.map((paper) => ({
-        title: paper.title,
-        filename: paper.original_filename,
-      })),
-    },
-  );
-
-  return undefined;
+  return sourceResolution(citationKey, localPapers, sourcePapers).automatic;
 }
 
 function previewFinding(finding, reason) {
   return {
     ...finding,
+    verdict: "PENDING",
+    label: "Pending verification",
+    confidence: null,
+    annotation: reason,
+    rationale: reason,
+    matches: [],
+    sourcePaperId: undefined,
+    bibVerification: null,
     preview: true,
     backendReason: reason,
   };
@@ -296,7 +231,7 @@ async function syncBibliography(bibSource, requestId) {
   }
 }
 
-async function syncClaims(findings, localPapers, knownSourcePapers, requestId) {
+async function syncClaims(findings, localPapers, knownSourcePapers, requestId, review) {
   try {
     if (requestId !== latestClaimsRequest) return;
    const stored = await chrome.storage.local.get([
@@ -329,6 +264,7 @@ try {
     }))
   );
 } catch (error) {
+  if (review) throw new Error("Unable to refresh uploaded PDFs; retry manual review when the backend is available");
   console.warn(
     "[ClaimTrace] Could not refresh backend papers, using cached papers",
     error
@@ -347,9 +283,15 @@ try {
       (stored.claimtraceBibVerification?.results || []).map((result) => [result.citation_key, result]),
     );
     const syncedFindings = await Promise.all(findings.map(async (finding) => {
-      const sourcePaper = sourcePaperFor(finding.citationKey, localPapers, sourcePapers);
+      const resolution = sourceResolution(finding.citationKey, localPapers, sourcePapers);
+      const reviewedCandidate = review?.findingId === finding.id && review.claim === finding.claim
+        ? resolution.candidates.find((candidate) => candidate.paperId === review.paperId && !candidate.conflict)
+        : undefined;
+      const sourcePaper = reviewedCandidate?.paper || resolution.automatic;
+      finding = { ...finding, sourceCandidates: resolution.candidates.map(({ paper, ...candidate }) => candidate),
+        manuallyReviewed: Boolean(reviewedCandidate) };
       if (!sourcePaper) {
-        return previewFinding(finding, "No uploaded PDF matched this bibliography entry");
+        return previewFinding(finding, resolution.reason);
       }
 
       try {
@@ -368,7 +310,7 @@ try {
           verdict: result.verdict,
           label: VERDICT_LABELS[result.verdict] || result.verdict,
           confidence: result.confidence,
-          annotation: `Backend verification · ${matchCount} matching passage(s)`,
+          annotation: `${reviewedCandidate ? "Manually selected PDF" : "Backend verification"} · ${matchCount} matching passage(s)`,
           rationale: result.rationale,
           matches: result.matches || [],
           sourcePaperId: sourcePaper.paper_id,
@@ -417,7 +359,21 @@ chrome.runtime.onInstalled.addListener(async () => {
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "review_source_candidate" && sender.url === chrome.runtime.getURL("src/sidepanel.html")) {
+    const requestId = ++latestClaimsRequest;
+    void (async () => {
+      const stored = await chrome.storage.local.get(["claimtraceFindings", "claimtracePapers"]);
+      const findings = stored.claimtraceFindings || [];
+      const finding = findings.find((item) => item.id === message.findingId && item.claim === message.claim);
+      if (!finding?.sourceCandidates?.some((candidate) => candidate.paperId === message.paperId && !candidate.conflict)) {
+        throw new Error("Candidate changed; refresh the citation and review again");
+      }
+      await syncClaims(findings, stored.claimtracePapers || [], [], requestId, message);
+      sendResponse({ ok: true });
+    })().catch((error) => sendResponse({ error: error.message }));
+    return true;
+  }
   if (message.type === "bibliography_detected") {
     void chrome.storage.local.set({
       claimtracePapers: Array.isArray(message.papers) ? message.papers : [],

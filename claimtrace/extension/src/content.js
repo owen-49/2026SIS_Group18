@@ -1,6 +1,6 @@
 const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 const CITE_PATTERN = /\\cite(?:t|p|alp|author|year|yearpar|text|num)?\*?(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]+)\}/gi;
-const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1 };
+const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1, PENDING: 0 };
 const DEMO_VERDICTS = {
   devlin2019bert: { verdict: "CONTRADICT", label: "Contradicted", confidence: 0.89, annotation: "Claim contradicts the cited source", rationale: "BERT used both masked-language modelling and next-sentence prediction during pre-training, so the word ‘exclusively’ is not supported." },
   brown2020language: { verdict: "PARTIAL", label: "Partial", confidence: 0.82, annotation: "Claim is broader than the evidence", rationale: "The cited results show gains at several scales, but do not establish that larger models always improve every few-shot task." },
@@ -204,21 +204,27 @@ function sentenceAroundCitation(lineText, start, end) {
   );
 }
 
-function demoVerdict(findingId, citationKey) {
+function verdictForClaim(findingId, citationKey, claim) {
   const backendFinding = backendFindings.get(findingId);
-  if (backendFinding) return backendFinding;
-  return DEMO_VERDICTS[citationKey] || {
-    verdict: "SUPPORT",
-    label: "Supported",
-    confidence: 0.86,
-    annotation: "Local preview only",
-    rationale: "This is a deterministic interface preview. Open the cited paper to verify the claim against the original evidence.",
+  if (backendFinding?.claim === claim && backendFinding.citationKey === citationKey) return backendFinding;
+  return {
+    verdict: "PENDING",
+    label: "Pending verification",
+    confidence: null,
+    annotation: "Awaiting verification of this claim",
+    rationale: "This claim has not been verified. A matching uploaded source PDF and an available backend are required.",
+    preview: true,
   };
+}
+
+function verdictTone(verdict) {
+  if (verdict === "PENDING") return "pending";
+  return verdict === "SUPPORT" ? "support" : verdict === "PARTIAL" ? "partial" : "danger";
 }
 
 function clearEditorAnnotations() {
   document.querySelectorAll(".claimtrace-citation-line").forEach((line) => {
-    line.classList.remove("claimtrace-citation-line", "claimtrace-tone-support", "claimtrace-tone-partial", "claimtrace-tone-danger", "claimtrace-focus-line", "claimtrace-hover-line");
+    line.classList.remove("claimtrace-citation-line", "claimtrace-tone-support", "claimtrace-tone-partial", "claimtrace-tone-danger", "claimtrace-tone-pending", "claimtrace-focus-line", "claimtrace-hover-line");
     delete line.dataset.claimtraceLabel;
     delete line.dataset.claimtraceLocation;
   });
@@ -229,6 +235,7 @@ function clearEditorAnnotations() {
     CSS.highlights.delete("claimtrace-citations-support");
     CSS.highlights.delete("claimtrace-citations-partial");
     CSS.highlights.delete("claimtrace-citations-danger");
+    CSS.highlights.delete("claimtrace-citations-pending");
     CSS.highlights.delete("claimtrace-citation-active");
   }
 }
@@ -254,12 +261,12 @@ function showCitationHover(target) {
   window.clearTimeout(hoverHideTimer);
   if (!target) return;
   const { finding, line, range } = target;
-  const tone = finding.verdict === "SUPPORT" ? "support" : finding.verdict === "PARTIAL" ? "partial" : "danger";
+  const tone = verdictTone(finding.verdict);
   const source = paperLibrary.get(finding.citationKey);
   const card = getHoverCard();
   card.className = `claimtrace-hover-visible claimtrace-hover-${tone}`;
   card.querySelector(".claimtrace-hover-verdict").textContent = finding.label;
-  card.querySelector(".claimtrace-hover-confidence").textContent = `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
+  card.querySelector(".claimtrace-hover-confidence").textContent = finding.verdict === "PENDING" ? "Pending verification" : `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
   card.querySelector(".claimtrace-hover-claim").textContent = finding.claim;
   card.querySelector(".claimtrace-hover-title").textContent = source?.title || "Source details unavailable";
   card.querySelector(".claimtrace-hover-meta").textContent = source
@@ -269,7 +276,7 @@ function showCitationHover(target) {
   card.querySelector(".claimtrace-hover-detail").textContent = finding.rationale;
   card.querySelector(".claimtrace-hover-annotation").textContent = finding.annotation;
   card.querySelector(".claimtrace-hover-status").textContent = finding.preview
-    ? "Local preview · no matching backend source PDF"
+    ? (finding.backendReason || "Awaiting backend verification")
     : "Backend verified against an uploaded source PDF";
 
   if (activeCitationTarget && activeCitationTarget !== target) {
@@ -304,7 +311,7 @@ function hideCitationHover(delay = 80) {
 
 function installCitationHighlights() {
   if (typeof CSS === "undefined" || !CSS.highlights || typeof Highlight === "undefined") return;
-  ["support", "partial", "danger"].forEach((tone) => {
+  ["support", "partial", "danger", "pending"].forEach((tone) => {
     const ranges = citationTargets.filter((target) => target.tone === tone).map((target) => target.range);
     if (ranges.length) CSS.highlights.set(`claimtrace-citations-${tone}`, new Highlight(...ranges));
   });
@@ -330,7 +337,7 @@ function annotateCitationLines() {
       const keys = match[1].split(",").map((key) => key.trim()).filter(Boolean);
       keys.forEach((citationKey, keyIndex) => {
         const locationId = `${lineIndex + 1}-${match.index}-${keyIndex}-${citationKey}`;
-        const preview = demoVerdict(locationId, citationKey);
+        const preview = verdictForClaim(locationId, citationKey, claim || `Citation ${citationKey}`);
         const finding = {
           id: locationId,
           citationKey,
@@ -348,7 +355,7 @@ function annotateCitationLines() {
         };
         findings.push(finding);
         lineFindings.push(finding);
-        const tone = finding.verdict === "SUPPORT" ? "support" : finding.verdict === "PARTIAL" ? "partial" : "danger";
+        const tone = verdictTone(finding.verdict);
         const target = { finding, line, range, tone };
         citationLocations.set(locationId, target);
         if (range) citationTargets.push(target);
@@ -359,7 +366,7 @@ function annotateCitationLines() {
     const strongest = lineFindings.reduce((current, finding) =>
       VERDICT_PRIORITY[finding.verdict] > VERDICT_PRIORITY[current.verdict] ? finding : current,
     );
-    const tone = strongest.verdict === "SUPPORT" ? "support" : strongest.verdict === "PARTIAL" ? "partial" : "danger";
+    const tone = verdictTone(strongest.verdict);
     line.classList.add("claimtrace-citation-line", `claimtrace-tone-${tone}`);
     line.dataset.claimtraceLabel = `ClaimTrace · ${strongest.preview ? "local preview" : "backend verification"} · ${strongest.label}`;
     line.dataset.claimtraceLocation = strongest.id;
