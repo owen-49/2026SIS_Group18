@@ -12,7 +12,7 @@ import re
 from functools import lru_cache
 
 from engine.llm_client import build_llm_client
-from engine.verifier import Verifier
+from engine.verifier import VerificationStatus, Verifier
 
 from ..config import get_settings
 from ..models import MatchResult, ParsedDocument, VerdictEnum, VerifyResponse
@@ -121,10 +121,21 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
         verifier = Verifier(model=settings.llm_model_name)
         try:
             result = verifier.verify(clean_claim, best_passage, client=client)
-            verdict = VerdictEnum(result.verdict.value)
-            confidence = result.confidence
-            rationale = result.rationale
-        except Exception as exc:  # LLM call failure → degrade to mock
+            if result.status is VerificationStatus.JUDGED:
+                verdict = VerdictEnum(result.verdict.value)
+                confidence = result.confidence
+                rationale = result.rationale
+            else:
+                # The Engine declined to judge — it had no usable evidence, the
+                # call failed, or the reply was unusable. This endpoint's response
+                # contract has no way to express "not judged" without changing the
+                # frontend, so it degrades to the same documented lexical fallback
+                # and discloses the reason in the rationale. Branching explicitly
+                # matters: a None verdict must not be discovered by AttributeError.
+                verdict = VerdictEnum.SUPPORT if best_score >= 0.2 else VerdictEnum.NOT_FOUND
+                confidence = 0.2
+                rationale = f"LLM verification failed ({result.rationale}); mock fallback used."
+        except Exception as exc:  # safety net: unexpected faults only
             verdict = VerdictEnum.SUPPORT if best_score >= 0.2 else VerdictEnum.NOT_FOUND
             confidence = 0.2
             rationale = f"LLM verification failed ({exc}); mock fallback used."

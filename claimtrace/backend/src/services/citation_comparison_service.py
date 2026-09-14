@@ -5,17 +5,14 @@ The pipeline is: resolve the claim's citation marker to a parsed source paper
 relevant to the claim (Engine ``Retriever``), then ask the LLM whether those
 passages actually support the claim (Engine ``Verifier``).
 
-Two Engine behaviours are absorbed here rather than fixed, because the Engine is
-frozen and its existing callers depend on the current behaviour:
+The Engine distinguishes a judgement from a failure to judge:
+``VerificationResult.verdict`` is set only when ``status is JUDGED``, and every
+other status says why no judgement was reached. This module maps those statuses
+onto ``ComparisonStatus`` instead of letting a missing verdict read as one.
 
-1. ``Verifier.verify`` builds ``Verdict(label)`` *outside* the ``try`` that
-   guards JSON decoding (``engine/verifier.py:132``), so a model answering
-   ``"SUPPORTS"`` raises ``ValueError`` straight through. Any exception from the
-   verifier is therefore mapped to ``LLM_FAILED``.
-2. ``Verifier.verify_with_retrieval`` returns ``NOT_FOUND`` without calling the
-   LLM at all when it is given no passages (``engine/verifier.py:159-165``).
-   That is a fabricated verdict, so this module refuses to call it with empty
-   retrieval and reports ``SOURCE_EMPTY`` instead.
+The empty-retrieval guard below is now defence in depth — the Engine reports
+``NO_EVIDENCE`` for itself — but refusing the work outright is both cheaper and
+independent of Engine behaviour.
 """
 
 from __future__ import annotations
@@ -143,8 +140,9 @@ def compare_claim_to_cited_paper(
             not be read.
         ComparisonLLMNotConfiguredError: No LLM API key is configured. This is a
             deployment fault and is reported as such rather than silently
-            degraded — without a client the Engine returns a fabricated
-            ``NOT_FOUND`` verdict, which must never reach a user.
+            degraded — without a client the Engine cannot judge anything, and a
+            comparison reporting "not judged" as though it were a verdict would
+            be worse than no comparison at all.
     """
     clean_claim = claim.strip()
     if not clean_claim:
@@ -193,8 +191,9 @@ def compare_claim_to_cited_paper(
             **base,
         )
     if not resolved.retrieval:
-        # Never hand an empty retrieval to the verifier: it answers NOT_FOUND
-        # without consulting the model, which would be reported as a real finding.
+        # Defence in depth. The Engine now reports NO_EVIDENCE rather than a
+        # verdict for this case, but there is no reason to pay for an embedding
+        # round trip to learn what we already know.
         return CitationComparisonResponse(
             status=ComparisonStatus.SOURCE_EMPTY,
             message="The cited paper parsed without any passage to compare against.",
@@ -212,22 +211,38 @@ def compare_claim_to_cited_paper(
             f"The LLM client for provider '{settings.llm_provider}' could not be built."
         )
 
-    from engine.verifier import Verifier
+    from engine.verifier import VerificationStatus, Verifier
 
     verifier = Verifier(model=settings.llm_model_name)
     try:
         result = verifier.verify_with_retrieval(
             clean_claim, resolved.retrieval, client=client, top_n=3
         )
+        if result.status is not VerificationStatus.JUDGED:
+            # The Engine says it did not judge the claim. Reporting that as a
+            # verdict would fabricate a finding, so it becomes a status of its
+            # own. ``message`` carries the Engine's rationale so the reason is
+            # visible to the caller rather than collapsed into a code.
+            return CitationComparisonResponse(
+                status=(
+                    ComparisonStatus.SOURCE_EMPTY
+                    if result.status is VerificationStatus.NO_EVIDENCE
+                    else ComparisonStatus.LLM_FAILED
+                ),
+                message=result.rationale,
+                source_document=source_document,
+                evidence=evidence,
+                **base,
+            )
         judgement = ComparisonJudgement(
             verdict=VerdictEnum(result.verdict.value),
             confidence=_clamp_similarity(result.confidence),
             rationale=result.rationale,
         )
     except Exception as exc:
-        # Deliberately broad: an out-of-enum label raises ValueError from the
-        # Engine's own Verdict(label) call, and provider SDKs raise their own
-        # exception types. Neither is this service's contract to leak.
+        # Safety net only. The Engine now reports its own failures as statuses
+        # instead of raising, so anything arriving here is genuinely unexpected
+        # — a provider SDK failing mid-flight, or a bug in this service.
         return CitationComparisonResponse(
             status=ComparisonStatus.LLM_FAILED,
             message=f"The language model did not return a usable verdict ({exc}).",
