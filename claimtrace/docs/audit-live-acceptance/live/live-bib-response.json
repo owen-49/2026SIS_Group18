@@ -1,0 +1,57 @@
+{
+  "contract_version": 2,
+  "audit_id": "01f2900a-7cf3-4810-8674-1b036955b558",
+  "input_paper_id": "f69cefaa-921f-4a47-8f9a-50006b14d0d2",
+  "input_type": "bib",
+  "checked_at": "2026-09-14T05:51:21.576196Z",
+  "status": "completed_with_errors",
+  "total_entries": 1,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 0,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 1
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "8f449bb1-46e6-599e-8872-df54ac6eccdd",
+        "metadata": {
+          "key": "correct",
+          "entry_type": "inproceedings",
+          "title": "Attention Is All You Need",
+          "authors": [
+            "Vaswani, A."
+          ],
+          "year": 2017,
+          "venue": "NeurIPS",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{correct,\n title={Attention Is All You Need},\n author={A. Vaswani},\n year={2017},\n booktitle={NeurIPS}\n}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "failed",
+          "error_code": "SCHOLAR_TIMEOUT",
+          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}
