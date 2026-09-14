@@ -181,7 +181,9 @@ def _compare_titles(bib_title: str, pdf_title: str) -> FieldResult:
     # A single char typo in a long title can score >0.96 on SequenceMatcher
     # but still be a real error. Levenshtein catches these.
 
-    levenshtein_ratio = 1 - _levenshtein_distance(bib_norm, pdf_norm) / max(len(bib_norm), len(pdf_norm), 1)
+    levenshtein_ratio = 1 - _levenshtein_distance(bib_norm, pdf_norm) / max(
+        len(bib_norm), len(pdf_norm), 1
+    )
 
     if similarity >= 0.95 and levenshtein_ratio >= 0.98:
         return FieldResult("title", bib_title, pdf_title, FieldStatus.MATCH)
@@ -215,10 +217,15 @@ def _compare_years(bib_year: int | None, pdf_year: int | None) -> FieldResult:
         return FieldResult("year", bib_str, pdf_str, FieldStatus.MATCH)
 
     diff = bib_year - pdf_year
+    year_note = (
+        "Bib year is later — possibly a preprint vs published version issue."
+        if diff > 0
+        else "Bib year is earlier — check if this is the correct edition."
+    )
     detail = (
         f"Bib says {bib_year} but PDF says {pdf_year} "
         f"(difference: {abs(diff)} year{'s' if abs(diff) > 1 else ''}). "
-        f"{'Bib year is later — possibly a preprint vs published version issue.' if diff > 0 else 'Bib year is earlier — check if this is the correct edition.'}"
+        f"{year_note}"
     )
     return FieldResult("year", bib_str, pdf_str, FieldStatus.MISMATCH, detail)
 
@@ -272,7 +279,8 @@ def _compare_authors(
     return FieldResult(
         "authors", bib_str, pdf_str, FieldStatus.MISMATCH,
         f"Author lists differ. Bib: {len(bib_last)} authors, "
-        f"PDF: {len(pdf_last)} authors. Overlap: {len(overlap)}/{min(len(bib_last), len(pdf_last))}."
+        f"PDF: {len(pdf_last)} authors. "
+        f"Overlap: {len(overlap)}/{min(len(bib_last), len(pdf_last))}."
     )
 
 

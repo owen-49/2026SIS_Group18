@@ -2,9 +2,8 @@
 
 import pytest
 
-from engine.bib_parser import BibEntry, parse_bib_text
+from engine.bib_parser import BibEntry
 from engine.bib_verifier import (
-    BibVerificationResult,
     FieldStatus,
     PdfMetadata,
     verify_all_entries,
