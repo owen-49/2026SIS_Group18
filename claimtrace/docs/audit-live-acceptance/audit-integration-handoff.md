@@ -1,4 +1,8 @@
-# Audit live integration acceptance
+# Audit ↔ Engine/Scholar integration handoff
+
+Owner: Siyuan (Audit integration)  
+To: Sichen (Engine/Scholar owner) and the backend team  
+Purpose: hand off the live Scholar lookup blocker and confirm the Audit integration contract.
 
 Baseline: current `origin/main` fetched on 2026-09-14, `ed5925c5`.
 Branch and Draft PR: `backend/audit-live-acceptance`.
@@ -10,6 +14,18 @@ statuses and field differences -> disk persistence -> retrieval. Only production
 change: startup now creates missing parents of UPLOAD_DIR. Before the fix, a fresh
 `new-parent/uploads` configuration raised FileNotFoundError during FastAPI startup;
 after it, startup and upload succeed. No search provider or matching algorithm added.
+
+## Current handoff status
+
+The Audit side is ready for integration. Parser completion, Audit status mapping,
+metadata comparison, persistence, retrieval, timeout handling, and failure-state
+mapping have been verified. The remaining handoff item is the live Scholar query:
+the real BibTeX and PDF runs reached the worker deadline and returned
+`LOOKUP_FAILED / SCHOLAR_TIMEOUT`.
+
+Sichen should confirm whether this is expected Scholar/network blocking or whether
+the Engine/Scholar worker needs a fix. This document records the evidence needed for
+that decision; it does not request a new search provider.
 
 ## Results
 
