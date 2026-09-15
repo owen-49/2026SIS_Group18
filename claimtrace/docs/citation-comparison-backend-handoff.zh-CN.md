@@ -33,7 +33,10 @@
   不该由后端凭 confidence 硬编码。前端可以用 `confidence` 自行分档。
 - **不改 Audit 的任何行为** —— Audit 管"参考文献是否存在"，Verify 管"主张是否被支持"，
   两条线继续互不干扰（见 `docs/backend-audit-handoff.md`）。
-- **不修引擎** —— 引擎已冻结，本次只做"吸收"（见 §5）。
+- **不修引擎** —— 本次只做"吸收"（见 §5）。
+  > **更新（2026-09-14）**：引擎侧的失败路径**已经修了**（见 §5 与
+  > [engine-verify-contract.zh-CN.md](engine-verify-contract.zh-CN.md)）。
+  > 本次"吸收"代码中的显式状态分支正是那次加固的直接结果。
 - **不做解析回退** —— 规格 §6.3 提到找不到解析结果时可以现场 `parse_document`。没做，理由：
   未解析的 PDF 本来就不会进 catalog；opendataloader 需要 Java 11+ 且单篇要跑几分钟，
   放在 HTTP 请求里不可接受。直接返回 `SOURCE_NOT_AVAILABLE` 并提示先解析。
@@ -48,8 +51,13 @@
 | 页码溯源 | 无 | 有（`evidence[].page` / `location`） |
 | 无 LLM 时 | 降级为词法判定 | **503 拒绝** |
 
-> 旧端点的词法降级逻辑**保留不动**（`engine_adapter.verify_claim`）。它服务的是旧端点，
+> 旧端点的词法降级逻辑**保留不动**（`engine_adapter.verify_claim`）——它服务的是旧端点，
 > 不影响新端点。
+>
+> **更新（2026-09-14）**：`verify_claim` 加了一个**显式状态分支**（原来是靠 `AttributeError`
+> 被安全网 `except` 吞掉才"碰巧"降级的）。响应形状、状态码、`VerdictEnum` 取值**都不变**，
+> 只有两处取值按设计改变（坏 JSON 回复 / 空白原文改走词重叠降级）。
+> 详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
 
 ---
 
@@ -234,63 +242,48 @@ if (body.status === "COMPARED") {
 
 ---
 
-## 5. ⚠️ 四个引擎层的坑（必读）
+## 5. ⚠️ 引擎层的坑：已修三个，遗留两个（必读）
 
-引擎已冻结，本次全部在 backend 侧"吸收"。**如果你要改这条链路，先读完本节。**
+**更新（2026-09-14）**：坑 1/2/3 已在**引擎侧**修复，不再是"后端吸收"的对象。
+坑 4/5 仍属后端关切。**如果你要改这条链路，先读完本节，并读
+[engine-verify-contract.zh-CN.md](engine-verify-contract.zh-CN.md)（引擎的输入/输出契约）。**
 
-### 坑 1：`Verdict(label)` 在 try 块外面 —— 会抛 `ValueError`
+### 坑 1–3：引擎侧已修复 → 见 [engine-verify-contract.zh-CN.md](engine-verify-contract.zh-CN.md)
 
-[engine/verifier.py:133](engine/engine/verifier.py#L133)
+历史状况（三条都是**把"我没能判断"呈现成"我判断了"**）：
 
-```python
-try:
-    parsed = json.loads(raw)
-    label = parsed.get("label", "NOT_FOUND").upper()
-    ...
-except (json.JSONDecodeError, AttributeError):
-    label = "NOT_FOUND"
-    ...
+| 坑 | 原状 | 现在 |
+|---|---|---|
+| 1 | `Verdict(label)` 在 try 块**外面**，模型答 `"SUPPORTS"` 时 `ValueError` 直接穿透 | `INVALID_LABEL`，不抛 |
+| 2 | 空检索**根本不调 LLM**，却返回一个货真价实的 `NOT_FOUND` | `NO_EVIDENCE`，`verdict is None` |
+| 3 | JSON 解析失败被 `except` 改写成 `label = "NOT_FOUND"` | `INVALID_RESPONSE`，`verdict is None` |
 
-return VerificationResult(verdict=Verdict(label), ...)   # ← 在 try 外面！
-```
+**为什么这不是"降级"而是"伪造发现"**：`NOT_FOUND` 本身是一个**判定**
+（"源论文存在，但没谈到这件事"）。把它当作"我不知道"的载体，等于告诉用户
+"我们查过了，源论文没提这件事"——而事实是"我们没查成"。这与仓库既有禁令同源：
 
-模型如果答 `"SUPPORTS"`（复数）而不是 `"SUPPORT"`，`Verdict("SUPPORTS")` 会抛
-`ValueError` 直接穿透上来。
+> A failed query must not be converted to `NOT_FOUND`.
+> —— [docs/backend-audit-handoff.md:90](backend-audit-handoff.md#L90)
 
-**吸收方式**：`citation_comparison_service` 用 `except Exception` 包住整个 verifier 调用，
-映射为 `LLM_FAILED`（200）。捕获范围**故意宽**——provider SDK 也各有各的异常类型，
-这些都不是本服务该泄漏的契约。
+**现在后端怎么接**：不再靠宽 `except Exception` 兜底，而是**显式状态分支**
+（[citation_comparison_service.py:214-252](backend/src/services/citation_comparison_service.py#L214-L252)）：
 
-**建议的引擎修法**（留待引擎 owner，本次没做）：把 `Verdict(label)` 移进 try，
-并在 except 里补一个 `ValueError`。
+| Engine 状态 | `ComparisonStatus` |
+|---|---|
+| `JUDGED` | `COMPARED` + `judgement` |
+| `NO_EVIDENCE` | `SOURCE_EMPTY` |
+| 其余四个 | `LLM_FAILED` |
 
-### 坑 2：空检索会伪造 `NOT_FOUND` —— 不调用 LLM
+宽 `except` 保留为**纯安全网**（provider SDK 各自的异常类型仍不该泄漏成本服务的契约）。
 
-[engine/verifier.py:159-165](engine/engine/verifier.py#L159-L165)
+`message=result.rationale` 是**承重的**：它让引擎的具体原因（例如非法标签的字面值）
+可见，而不是被折叠成一个 code。测试 `test_out_of_enum_label_is_llm_failed_not_a_500`
+的 `assert "SUPPORTS" in body["message"]` 就依赖这一点。
 
-```python
-if not retrieval_results:
-    return VerificationResult(verdict=Verdict.NOT_FOUND, confidence=0.0,
-                              rationale="No passages retrieved from the source paper.")
-```
-
-**根本没调 LLM**，却返回了一个货真价实的 `NOT_FOUND`。
-
-**吸收方式**：调用前断言 `resolved.retrieval` 非空，否则返回 `SOURCE_EMPTY`。
-`citation_comparison_service.py` 的模块 docstring 和测试
-`test_empty_retrieval_is_never_sent_to_the_llm` 都钉住了这一点
-（该测试断言 `llm.calls == []`）。
-
-### 坑 3：JSON 解析失败也变成 `NOT_FOUND`
-
-同一段代码的 `except` 分支把 `label` 设成 `"NOT_FOUND"`，只在 `rationale` 里写
-`"Failed to parse LLM response: ..."`。所以模型返回烂 JSON 时，用户会看到一个
-`NOT_FOUND` 判定。
-
-**本次不修**：探测它只能靠字符串匹配引擎自己的错误文案，太脆。`rationale` 是**原样**返回给
-前端的，用户能看见真实原因，所以不算欺骗。测试
-`test_unparseable_json_reply_becomes_a_not_found_verdict` 钉住了现状，**行为变了会是显式失败**。
-建议引擎 owner 一起修：解析失败应该抛错或返回明确的失败标记。
+> ⚠️ **`/api/verify`（旧端点）仍是"失败伪装成正常判定"。**
+> 它的响应契约里没有表达"未判定"的位置，去掉它需要前端可见的失败表示——超出本次范围。
+> 详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
+> **不要靠给 `Verdict` 加成员来"修"它**——那会同时打破前端与后端的三处消费者。
 
 ### 坑 4：负余弦 —— 不做夹紧会直接 500
 
@@ -404,7 +397,7 @@ python -m pytest backend/tests
 > `cd claimtrace/backend && python -m pytest tests/ -v`。那份文档这一行是错的
 > （本次没有改动那份文档，仅在此标注）。
 
-当前结果：**137 passed**（原来 93 项 + 本次新增 44 项），全程离线、无网络。
+当前结果：**150 passed**（original 93 项 + claim 对照 44 项 + 引擎加固新增 13 项），全程离线、无网络。
 
 ### 7.2 新增测试
 
@@ -414,12 +407,22 @@ python -m pytest backend/tests
 `NO_BIBLIOGRAPHY` / 有文献无 PDF ⇒ `SOURCE_NOT_AVAILABLE` / **一份损坏的 parsed JSON
 不影响其他论文** / 1:1 不变量 / 前向依赖的私有 helper 仍然存在。
 
-**`backend/tests/test_citation_comparison_api.py`**（21 项，`client` fixture + `FakeRetriever`
+**`backend/tests/test_citation_comparison_api.py`**（30 项，`client` fixture + `FakeRetriever`
 + `SimpleNamespace` 假 LLM）：happy path / 页码正确 / 假 retriever 收到的段落文本正确 /
 claim 与原文真的进了 prompt / 无 key ⇒ **503 且 retriever 从未被构造** / LLM 抛错 ⇒
 200 `LLM_FAILED` 且 `evidence` 仍在 / 枚举外标签 `"SUPPORTS"` ⇒ `LLM_FAILED` 不 500 /
 **负数相似度 ⇒ 夹到 0.0 不 500** / 空检索 ⇒ `SOURCE_EMPTY` 且 LLM 未被调用 /
 claim 空 ⇒ 422 / `extra="forbid"` 生效 / 旧 `/api/verify` 仍在 OpenAPI 里。
+
+**引擎加固后新增/改写**（详见 [engine-verify-contract.zh-CN.md §8.1](engine-verify-contract.zh-CN.md)）：
+
+- **改写** `test_unparseable_json_reply_becomes_a_not_found_verdict`
+  → `test_unparseable_json_reply_is_llm_failed_not_a_verdict`：烂 JSON **不再**是判定
+- **新增** 缺 label / `None` content（不 500）/ 空白检索段落 ⇒ `SOURCE_EMPTY`
+- **新增参数化** `test_unusable_model_replies_are_never_reported_as_compared`（6 例）：
+  任何不可用的模型回复都不得看起来像 `COMPARED`
+- **新增 `test_engine_adapter.py` 4 项**：非法标签 / 模型错误走词重叠降级、
+  **空白原文永不抵达模型**（`calls == []`）、低重叠 + 非法标签不得产出 `SUPPORT`
 
 > 测试用 `SimpleNamespace` 冒充 `RetrievalResult`，是为了**避免 import torch**。
 > 谁把它换成真的 `RetrievalResult`，整个 backend 测试会慢好几秒。
@@ -443,6 +446,10 @@ python backend/scripts/acceptance_citation_comparison.py
 | 方法减少 40% 碳排放 | NOT_FOUND | ✅ NOT_FOUND (0.3) | 0.088 |
 
 三例全中，且 rationale 引用了原文的具体句子（不是套话），说明判定确实基于检索到的原文。
+
+**2026-09-14 引擎加固后复测：仍然三例全中，相似度逐位相同（0.856 / 0.696 / 0.088）。**
+加固未改变任何成功路径的行为——它只改了失败路径。（相似度不变也验证了
+`ENTAILMENT_PROMPT` 的重排是逐字节等价的：prompt 变了，嵌入与判定都会漂。）
 
 ### 7.4 端到端手工验收（含真实 PDF 解析）
 
@@ -555,3 +562,9 @@ interface CitationComparisonResponse {
 - `backend/tests/conftest.py` —— ⚠️ **改了这个文件**：模块级关掉 `.env` 加载 +
   autouse fixture 清空 provider key。**这是安全前置**：没有它，`load_dotenv()` 会让
   现有测试发起**真实 API 调用**（联网、不确定、会计费）。
+
+> 📌 以上是**本文档对应那次工作**（claim 对照端点）的清单。
+> 之后的**引擎 Verify 加固**改动的文件见
+> [engine-verify-contract.zh-CN.md §9](engine-verify-contract.zh-CN.md)：
+> 它动了 `engine/verifier.py`、两份 workspace 的调用方与测试、`scripts/llm_smoke_test.py`，
+> 并新建了两份文档。**前端与插件两次都没动。**

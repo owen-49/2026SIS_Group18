@@ -279,7 +279,11 @@ def test_llm_error_is_reported_as_llm_failed_but_keeps_the_evidence(client, seed
 
 
 def test_out_of_enum_label_is_llm_failed_not_a_500(client, seeded, wired):
-    """The Engine builds Verdict(label) outside its try/except (verifier.py:132)."""
+    """The Engine reports an unrecognised label as INVALID_LABEL, not an exception.
+
+    Until the Engine's own hardening this arrived as a ``ValueError`` escaping
+    ``Verdict(label)``; it is now an explicit status branch in the service.
+    """
     wired.llm.reply = '{"label": "SUPPORTS", "rationale": "..."}'
 
     response = post(client)
@@ -291,27 +295,101 @@ def test_out_of_enum_label_is_llm_failed_not_a_500(client, seeded, wired):
     assert "SUPPORTS" in body["message"]
 
 
-def test_unparseable_json_reply_becomes_a_not_found_verdict(client, seeded, wired):
-    """Engine trap #3, pinned so a change of behaviour is deliberate.
+def test_unparseable_json_reply_is_llm_failed_not_a_verdict(client, seeded, wired):
+    """A malformed reply must not be reported as a real NOT_FOUND verdict.
 
-    The Engine's JSONDecodeError handler substitutes the label ``NOT_FOUND`` and
-    only mentions the parse failure in the rationale, so a malformed model reply
-    is reported as a real verdict rather than a failure. The rationale is
-    surfaced to the user verbatim, which is why this is tolerated rather than
-    patched over — remapping it would mean string-matching the Engine's own
-    error text. Flagged for the Engine owners in the handoff document.
+    The Engine used to substitute the label ``NOT_FOUND`` in its
+    ``JSONDecodeError`` handler, which rendered a parse failure as a finding.
+    It now reports ``INVALID_RESPONSE`` and this service maps that to
+    ``LLM_FAILED``, so the claim is shown as unjudged.
     """
     wired.llm.reply = "not json at all"
 
     body = post(client).json()
 
-    assert body["status"] == "COMPARED"
-    assert body["judgement"]["verdict"] == "NOT_FOUND"
-    assert body["judgement"]["rationale"].startswith("Failed to parse LLM response")
+    assert body["status"] == "LLM_FAILED"
+    assert body["status"] != "COMPARED"
+    assert body["judgement"] is None
+    assert "Failed to parse LLM response" in body["message"]
+
+
+def test_reply_without_a_label_is_llm_failed(client, seeded, wired):
+    """The Engine used to default a missing label to NOT_FOUND."""
+    wired.llm.reply = '{"rationale": "sounds fine to me"}'
+
+    body = post(client).json()
+
+    assert body["status"] == "LLM_FAILED"
+    assert body["judgement"] is None
+
+
+def test_none_reply_content_is_llm_failed_not_a_500(client, seeded, wired):
+    """A refusal or tool-call-only reply has no content to parse."""
+    wired.llm.reply = None
+
+    response = post(client)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "LLM_FAILED"
+    assert body["judgement"] is None
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "not json at all",
+        '{"rationale": "no label"}',
+        '{"label": "SUPPORTS"}',
+        '{"label": "   "}',
+        '["SUPPORT"]',
+        None,
+    ],
+    ids=["unparseable", "missing-label", "bad-label", "blank-label", "non-object", "null"],
+)
+def test_unusable_model_replies_are_never_reported_as_compared(
+    client, seeded, wired, reply
+):
+    """The sweep that matters: no unusable reply may look like a judgement."""
+    wired.llm.reply = reply
+
+    body = post(client).json()
+
+    assert body["status"] != "COMPARED"
+    assert body["judgement"] is None
+
+
+def test_blank_retrieved_passages_map_to_source_empty(client, seeded, monkeypatch, llm_configured):
+    """A passage with no text is not evidence, so nothing is sent to the model.
+
+    Before the Engine's hardening this reached the LLM as a bare
+    ``[Passage 1, similarity=0.900]`` header and came back as a NOT_FOUND
+    verdict, i.e. a finding about a paper nobody had actually read.
+    """
+    llm = FakeLLM()
+    monkeypatch.setattr(engine_adapter, "_get_llm_client", lambda: llm)
+    monkeypatch.setattr(
+        citation_comparison_service,
+        "_new_retriever",
+        lambda: FakeRetriever(
+            results=[SimpleNamespace(passage="   ", score=0.9, rank=1, passage_index=0)]
+        ),
+    )
+
+    body = post(client).json()
+
+    assert body["status"] == "SOURCE_EMPTY"
+    assert body["judgement"] is None
+    assert llm.calls == [], "a blank passage is not evidence"
 
 
 def test_empty_retrieval_is_never_sent_to_the_llm(client, seeded, monkeypatch, llm_configured):
-    """Verifier.verify_with_retrieval fabricates NOT_FOUND on empty input."""
+    """Defence in depth: this service refuses before the Engine is consulted.
+
+    The Engine now reports ``NO_EVIDENCE`` for empty retrieval rather than a
+    fabricated NOT_FOUND, so this guard is belt-and-braces — it also avoids
+    paying for an embedding round trip that cannot lead anywhere.
+    """
     llm = FakeLLM()
     monkeypatch.setattr(engine_adapter, "_get_llm_client", lambda: llm)
     monkeypatch.setattr(

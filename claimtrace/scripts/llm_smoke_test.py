@@ -23,7 +23,7 @@ if ENV_PATH.exists():
 
 # ── Build client ─────────────────────────────────────────
 from engine.llm_client import build_llm_client
-from engine.verifier import Verifier
+from engine.verifier import VerificationStatus, Verifier
 
 provider = os.getenv("CLAIMTRACE_LLM_PROVIDER", "deepseek")
 api_key = os.getenv("DEEPSEEK_API_KEY", "")
@@ -59,10 +59,29 @@ cases = [
 ]
 
 print("\n" + "=" * 60)
+unjudged: list[str] = []
 for c in cases:
     result = verifier.verify(c["claim"], c["passage"], client=client)
     print(f"\n[{c['name']}]")
     print(f"  claim:    {c['claim']}")
-    print(f"  verdict:  {result.verdict.value}  (confidence={result.confidence})")
+    # The status is printed first, and a verdict only when there is one: a
+    # non-JUDGED status means no judgement was reached, which is not the same
+    # as a NOT_FOUND verdict.
+    print(f"  status:   {result.status.value}")
+    if result.status is VerificationStatus.JUDGED:
+        print(f"  verdict:  {result.verdict.value}  (confidence={result.confidence})")
+    else:
+        unjudged.append(c["name"])
     print(f"  rationale: {result.rationale}")
+    # The exact text the model was shown. Printing it is the human-visible form
+    # of "the source passage really did reach the model"; an empty value here
+    # means the model was asked to judge nothing.
+    print(f"  source_text_used: {result.source_text_used[:200]!r}")
+
 print("\n" + "=" * 60)
+if unjudged:
+    print(f"FAILED: {len(unjudged)} of {len(cases)} case(s) reached no judgement:")
+    for name in unjudged:
+        print(f"  - {name}")
+    sys.exit(1)
+print(f"OK: all {len(cases)} cases judged.")

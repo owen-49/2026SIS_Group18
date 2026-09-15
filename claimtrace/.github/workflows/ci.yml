@@ -41,9 +41,12 @@ jobs:
       - name: Install
         run: pip install -e ".[dev]"
       - name: Lint
-        run: ruff check src/ tests/
+        # The engine package is flat: code lives in engine/engine/, not src/.
+        run: ruff check engine/ tests/
       - name: Test
-        run: pytest --cov=src --cov-report=term
+        # PYTHONPATH=.. makes the repository root importable, which
+        # tests/test_google_scholar_lookup.py needs for `backend.src.audit_models`.
+        run: PYTHONPATH=.. pytest --cov=engine --cov-report=term
 
   backend:
     name: Backend Tests

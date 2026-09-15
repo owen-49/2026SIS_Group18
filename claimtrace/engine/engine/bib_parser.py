@@ -362,7 +362,6 @@ def _extract_concat_value(
         if ch in ('"', "{"):
             # Delimited value
             delim = ch
-            close_delim = "}" if delim == "{" else '"'
             i += 1  # skip opening delimiter
 
             value_start = i
