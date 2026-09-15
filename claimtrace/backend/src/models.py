@@ -242,6 +242,7 @@ class ExtractedClaim(BaseModel):
     page: int | None = Field(default=None, ge=1)
     citation_marker: str
     resolution_status: Literal["identified", "searching", "not_found"]
+    resolution_message: str | None = None
     cited_source: IdentifiedSource | None = None
     similar_sources: list[SimilarSource] = Field(default_factory=list)
     source_document: SourceDocument | None = None
@@ -332,7 +333,10 @@ class CitationComparisonRequest(BaseModel):
     manuscript_id: str | None = Field(
         default=None,
         min_length=1,
-        description="Optional manuscript to exclude from the source catalog",
+        description="Manuscript owning numeric references; excluded from source candidates",
+    )
+    bib_paper_id: str | None = Field(
+        default=None, min_length=1, description="Explicit bibliography for key/author-year lookup"
     )
     claim_id: str | None = Field(default=None, description="Optional echo for batch callers")
     k: int = Field(default=5, ge=1, le=10, description="Passages to retrieve")

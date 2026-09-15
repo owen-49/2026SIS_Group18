@@ -59,10 +59,10 @@ def delete_paper(paper_id: str) -> Response:
 
 
 @router.get("/papers/{paper_id}/claims", response_model=PaperClaimsResponse)
-async def get_claims(paper_id: str):
+def get_claims(paper_id: str, bib_paper_id: str | None = None):
     """Extract citation-bearing claims from a persisted manuscript."""
     try:
-        return get_paper_claims(paper_id)
+        return get_paper_claims(paper_id, bib_paper_id=bib_paper_id)
     except AnalysisPaperNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except InvalidAnalysisPaperError as exc:

@@ -24,7 +24,7 @@ from ..models import (
     SourceDocumentPage,
 )
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
-from ..storage.paper_store import PaperStoreError, get_paper, list_papers
+from ..storage.paper_store import PaperStoreError, get_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
     load_parsed_document,
@@ -350,20 +350,26 @@ def _source_from_bib(entry: Any, citation_key: str, source_id: str | None) -> Id
 
 def _match_pdf_to_bib_entry(entry: Any, pdfs: list[_LoadedPdf]) -> _LoadedPdf | None:
     """Find a local PDF whose persisted metadata matches a BibTeX entry."""
-    best: tuple[float, _LoadedPdf | None] = (0.0, None)
     entry_doi = (entry.doi or "").casefold().strip()
+    exact = [source for source in pdfs if entry_doi and source.parsed.doi
+             and source.parsed.doi.casefold().strip() == entry_doi]
+    if exact:
+        return exact[0] if len(exact) == 1 else None
+    ranked = []
     for source in pdfs:
-        if entry_doi and source.parsed.doi and entry_doi == source.parsed.doi.casefold().strip():
-            return source
+        if entry_doi and source.parsed.doi:
+            # A title match must never override conflicting explicit identifiers.
+            continue
         score = _title_similarity(entry.title, source.parsed.title or source.record.title or "")
         if entry.year is not None and source.parsed.year == entry.year:
             score += 0.1
-        score = min(score, 1.0)
-        if score > best[0]:
-            best = (score, source)
-    return best[1] if best[0] >= 0.65 else None
-
-
+        ranked.append((min(score, 1.0), source))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    if not ranked or ranked[0][0] < 0.65:
+        return None
+    if len(ranked) > 1 and ranked[0][0] - ranked[1][0] < 0.1:
+        return None
+    return ranked[0][1]
 def _resolve_bib_source(
     marker: str,
     entries: list[Any],
@@ -451,7 +457,7 @@ def extract_claims(
     return claims, view
 
 
-def get_paper_claims(paper_id: str) -> PaperClaimsResponse:
+def get_paper_claims(paper_id: str, bib_paper_id: str | None = None) -> PaperClaimsResponse:
     """Return real claims and manuscript text from persisted Parser output."""
     try:
         record = get_paper(paper_id)
@@ -478,18 +484,44 @@ def get_paper_claims(paper_id: str) -> PaperClaimsResponse:
         )
 
     parsed = _load_completed_pdf(record)
-    try:
-        records = list_papers()
-    except PaperStoreError as exc:
-        raise AnalysisServiceError("Unable to read paper metadata.") from exc
-    entries = _load_bibliography_entries(records)
-    source_pdfs = _load_completed_pdf_catalog(records, exclude_paper_id=paper_id)
-    claims, view = extract_claims(
-        parsed.parsed,
-        manuscript_id=paper_id,
-        bibliography_entries=entries,
-        source_pdfs=source_pdfs,
+    claims, view = extract_claims(parsed.parsed, manuscript_id=paper_id)
+    # Build the paper/reference/PDF inputs once. A real manuscript usually has
+    # many unique markers; resolving each one from storage independently would
+    # repeatedly hash the same reference artifact and reload every source PDF.
+    from .source_locator import (
+        SourceLocatorError,
+        build_citation_lookup_context,
+        look_up_citation,
     )
+
+    lookups = {}
+    if claims:
+        try:
+            context = build_citation_lookup_context(
+                [claim.citation_marker for claim in claims],
+                exclude_paper_id=paper_id,
+                bib_paper_id=bib_paper_id,
+            )
+        except SourceLocatorError as exc:
+            raise AnalysisServiceError("Unable to read citation sources.") from exc
+    else:
+        context = None
+    for claim in claims:
+        if claim.citation_marker not in lookups:
+            try:
+                lookups[claim.citation_marker] = look_up_citation(
+                    claim.citation_marker,
+                    exclude_paper_id=paper_id,
+                    bib_paper_id=bib_paper_id,
+                    context=context,
+                )
+            except SourceLocatorError as exc:
+                raise AnalysisServiceError("Unable to read citation sources.") from exc
+        lookup = lookups[claim.citation_marker]
+        claim.cited_source = lookup.cited_source
+        claim.source_document = lookup.source.view.document if lookup.source else None
+        claim.resolution_status = "identified" if lookup.cited_source else "not_found"
+        claim.resolution_message = lookup.message
     return PaperClaimsResponse(
         manuscript_id=paper_id,
         status=ParseStatus.COMPLETED,
