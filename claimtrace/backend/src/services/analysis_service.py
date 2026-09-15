@@ -370,9 +370,6 @@ def _match_pdf_to_bib_entry(entry: Any, pdfs: list[_LoadedPdf]) -> _LoadedPdf | 
     if len(ranked) > 1 and ranked[0][0] - ranked[1][0] < 0.1:
         return None
     return ranked[0][1]
-
-
-
 def _resolve_bib_source(
     marker: str,
     entries: list[Any],
@@ -488,15 +485,35 @@ def get_paper_claims(paper_id: str, bib_paper_id: str | None = None) -> PaperCla
 
     parsed = _load_completed_pdf(record)
     claims, view = extract_claims(parsed.parsed, manuscript_id=paper_id)
-    # Import here: the locator reuses the pure document helpers above.
-    from .source_locator import SourceLocatorError, look_up_citation
+    # Build the paper/reference/PDF inputs once. A real manuscript usually has
+    # many unique markers; resolving each one from storage independently would
+    # repeatedly hash the same reference artifact and reload every source PDF.
+    from .source_locator import (
+        SourceLocatorError,
+        build_citation_lookup_context,
+        look_up_citation,
+    )
 
     lookups = {}
+    if claims:
+        try:
+            context = build_citation_lookup_context(
+                [claim.citation_marker for claim in claims],
+                exclude_paper_id=paper_id,
+                bib_paper_id=bib_paper_id,
+            )
+        except SourceLocatorError as exc:
+            raise AnalysisServiceError("Unable to read citation sources.") from exc
+    else:
+        context = None
     for claim in claims:
         if claim.citation_marker not in lookups:
             try:
                 lookups[claim.citation_marker] = look_up_citation(
-                    claim.citation_marker, exclude_paper_id=paper_id, bib_paper_id=bib_paper_id
+                    claim.citation_marker,
+                    exclude_paper_id=paper_id,
+                    bib_paper_id=bib_paper_id,
+                    context=context,
                 )
             except SourceLocatorError as exc:
                 raise AnalysisServiceError("Unable to read citation sources.") from exc

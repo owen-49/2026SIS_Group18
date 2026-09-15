@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 from backend.src.config import get_settings
 from backend.src.models import ComparisonStatus
-from backend.src.services import citation_comparison_service, engine_adapter
+from backend.src.services import citation_comparison_service, engine_adapter, source_locator
 from backend.src.services.source_locator import look_up_citation
 from backend.src.storage.reference_store import (
     StoredReference,
@@ -117,6 +117,68 @@ def test_claims_explicit_bibliography_query(client):
     response = client.get(f"/api/papers/{mid}/claims", params={"bib_paper_id": "bib-b"})
     assert response.status_code == 200
     assert response.json()["claims"][0]["cited_source"]["source_paper_id"] == "source"
+
+
+def test_claims_reuse_reference_and_source_context_once_per_request(client, monkeypatch):
+    mid = manuscript(
+        text=(
+            "A retrieval method improves citation checking [7]. "
+            "A second experiment evaluates source linking [8]."
+        )
+    )
+    save_references(
+        mid,
+        StoredReferenceList(
+            metadata_version=2,
+            paper_id=mid,
+            source_file=f"{mid}.pdf",
+            references=[
+                StoredReference(
+                    raw_text="[7] Smith. Retrieval with citations.",
+                    number=7,
+                    title="Retrieval with citations",
+                    authors=["Smith, Jane"],
+                    year=2024,
+                ),
+                StoredReference(
+                    raw_text="[8] Jones. Source linking.",
+                    number=8,
+                    title="Source linking",
+                    authors=["Jones, Alex"],
+                    year=2023,
+                ),
+            ],
+        ),
+    )
+    _add_source_pdf("source-7", title="Retrieval with citations")
+    _add_source_pdf("source-8", title="Source linking")
+
+    calls = {"papers": 0, "references": 0, "catalog": 0}
+    original_list_papers = source_locator.list_papers
+    original_load_references = source_locator.load_audit_references
+    original_load_catalog = source_locator._load_source_catalog
+
+    def counted_list_papers():
+        calls["papers"] += 1
+        return original_list_papers()
+
+    def counted_load_references(request):
+        calls["references"] += 1
+        return original_load_references(request)
+
+    def counted_load_catalog(records, *, exclude_paper_id):
+        calls["catalog"] += 1
+        return original_load_catalog(records, exclude_paper_id=exclude_paper_id)
+
+    monkeypatch.setattr(source_locator, "list_papers", counted_list_papers)
+    monkeypatch.setattr(source_locator, "load_audit_references", counted_load_references)
+    monkeypatch.setattr(source_locator, "_load_source_catalog", counted_load_catalog)
+
+    response = client.get(f"/api/papers/{mid}/claims")
+
+    assert response.status_code == 200
+    assert [claim["citation_marker"] for claim in response.json()["claims"]] == ["[7]", "[8]"]
+    assert calls == {"papers": 1, "references": 1, "catalog": 1}
 
 
 def test_missing_reference_input_is_not_a_verdict(client, monkeypatch):

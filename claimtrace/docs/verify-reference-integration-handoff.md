@@ -7,6 +7,9 @@ This branch connects existing persisted reference metadata to single-claim Verif
 - `POST /api/verify/citation`: adds optional `bib_paper_id`.
 - `GET /api/papers/{manuscript_id}/claims`: adds optional `bib_paper_id` query parameter and additive `claims[].resolution_message`.
 - Both routes use the same source locator. Claims discovery does not run the LLM.
+- `/claims` builds one request-scoped lookup context (paper records, reference input,
+  and source-PDF catalog) and reuses it for every marker. It does not reload or hash
+  the same reference artifact once per citation.
 - `[7]` resolves by the Parser's stored `number == 7` in that manuscript, never by list position or an unrelated `.bib` key. A missing artifact uses the existing Audit reference extractor/cache; an invalid artifact is not silently replaced.
 - `(Smith, 2024)` with a manuscript and no explicit `.bib` uses the manuscript reference metadata. Explicit `.bib` selection takes precedence for author-year/key markers; numeric markers always use the manuscript.
 - Key markers with no explicit bibliography retain the legacy single-bibliography fallback. Multiple uploaded bibliographies require an explicit selection.

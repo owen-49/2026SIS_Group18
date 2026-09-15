@@ -25,7 +25,7 @@ Two deliberate design notes:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover - annotations only
@@ -78,6 +78,129 @@ class CitationLookup:
         return self.source is not None
 
 
+@dataclass
+class CitationLookupContext:
+    """Inputs shared by all citation lookups in one manuscript request.
+
+    A manuscript commonly contains many distinct citation markers. Loading the
+    same reference artifact and parsed-PDF catalog for every marker makes
+    ``GET /papers/{id}/claims`` scale with the number of citations instead of
+    with the number of uploaded papers. The context is deliberately request
+    scoped: paper uploads/deletions remain visible on the next request and no
+    mutable process-wide cache is introduced.
+    """
+
+    records: list[PaperRecord]
+    exclude_paper_id: str | None
+    bib_paper_id: str | None
+    manuscript_references: list[Any] | None = None
+    manuscript_error: tuple[str, str] | None = None
+    bibliography_references: list[Any] | None = None
+    bibliography_entries: list[Any] | None = None
+    bibliography_error: tuple[str, str] | None = None
+    source_catalog: list[_LoadedPdf] = field(default_factory=list)
+    skipped_source_count: int = 0
+
+
+def _is_single_numeric_marker(marker: str) -> bool:
+    return bool(re.fullmatch(r"[\[【]\s*\d+\s*[\]】]", marker))
+
+
+def _uses_manuscript_references(
+    marker: str,
+    *,
+    exclude_paper_id: str | None,
+    bib_paper_id: str | None,
+) -> bool:
+    """Whether a marker needs the manuscript's persisted reference list."""
+    if _NUMERIC_CITATION_RE.fullmatch(marker):
+        return True
+    return bool(
+        exclude_paper_id and not bib_paper_id and marker.startswith("(") and _YEAR_RE.search(marker)
+    )
+
+
+def _load_reference_input(
+    request: AuditRequest,
+    *,
+    lock_id: str,
+) -> tuple[list[Any] | None, tuple[str, str] | None]:
+    """Load one reference input and retain an API-safe error for its callers."""
+    try:
+        with paper_lifecycle_lock(lock_id):
+            _, _, references, _ = load_audit_references(request)
+    except AuditInputError as exc:
+        return None, (exc.code, str(exc))
+    return references, None
+
+
+def build_citation_lookup_context(
+    markers: list[str],
+    *,
+    exclude_paper_id: str | None,
+    bib_paper_id: str | None = None,
+) -> CitationLookupContext:
+    """Prepare all shared lookup inputs once for a claims response."""
+    try:
+        records = list_papers()
+    except PaperStoreError as exc:
+        raise SourceLocatorError("Unable to read paper metadata.") from exc
+
+    manuscript_needed = any(
+        _uses_manuscript_references(
+            marker,
+            exclude_paper_id=exclude_paper_id,
+            bib_paper_id=bib_paper_id,
+        )
+        for marker in markers
+    )
+    manuscript_references = None
+    manuscript_error = None
+    if manuscript_needed and exclude_paper_id:
+        manuscript_references, manuscript_error = _load_reference_input(
+            AuditRequest(manuscript_id=exclude_paper_id),
+            lock_id=exclude_paper_id,
+        )
+
+    bibliography_needed = bool(bib_paper_id) or any(
+        not _uses_manuscript_references(
+            marker,
+            exclude_paper_id=exclude_paper_id,
+            bib_paper_id=bib_paper_id,
+        )
+        and not _NUMERIC_CITATION_RE.fullmatch(marker)
+        for marker in markers
+    )
+    bibliography_references = None
+    bibliography_entries = None
+    bibliography_error = None
+    if bibliography_needed:
+        if bib_paper_id:
+            bibliography_references, bibliography_error = _load_reference_input(
+                AuditRequest(bib_paper_id=bib_paper_id),
+                lock_id=bib_paper_id,
+            )
+        else:
+            bibliography_entries = _load_bibliography_entries(records)
+
+    source_catalog, skipped_source_count = _load_source_catalog(
+        records,
+        exclude_paper_id=exclude_paper_id,
+    )
+    return CitationLookupContext(
+        records=records,
+        exclude_paper_id=exclude_paper_id,
+        bib_paper_id=bib_paper_id,
+        manuscript_references=manuscript_references,
+        manuscript_error=manuscript_error,
+        bibliography_references=bibliography_references,
+        bibliography_entries=bibliography_entries,
+        bibliography_error=bibliography_error,
+        source_catalog=source_catalog,
+        skipped_source_count=skipped_source_count,
+    )
+
+
 def source_passages(loaded: _LoadedPdf) -> list[str]:
     """Return the source paper's passages, one per parsed paragraph.
 
@@ -114,11 +237,7 @@ def locate_source(
         return None
 
     loaded = lookup.source
-    title = (
-        loaded.parsed.title
-        or loaded.record.title
-        or loaded.record.original_filename
-    )
+    title = loaded.parsed.title or loaded.record.title or loaded.record.original_filename
     return SourcePaper(
         source_id=loaded.record.paper_id,
         title=title,
@@ -217,6 +336,7 @@ def look_up_citation(
     *,
     exclude_paper_id: str | None = None,
     bib_paper_id: str | None = None,
+    context: CitationLookupContext | None = None,
 ) -> CitationLookup:
     """Map a citation marker to a parsed source paper in the local library.
 
@@ -230,6 +350,10 @@ def look_up_citation(
             also excluded from the source catalog.
         bib_paper_id: Explicit bibliography for key/author-year markers. Numeric
             references always use their manuscript, never BibTeX entry order.
+        context: Optional request-scoped inputs prepared by
+            :func:`build_citation_lookup_context`. Supplying it avoids reloading
+            the paper store, reference artifact and source catalog for each
+            citation in a manuscript.
 
     Raises:
         SourceLocatorError: The paper library could not be listed.
@@ -242,53 +366,96 @@ def look_up_citation(
             message="No citation marker was supplied.",
         )
 
-    try:
-        records = list_papers()
-    except PaperStoreError as exc:
-        raise SourceLocatorError("Unable to read paper metadata.") from exc
+    if context is not None:
+        if exclude_paper_id is None:
+            exclude_paper_id = context.exclude_paper_id
+        if bib_paper_id is None:
+            bib_paper_id = context.bib_paper_id
+        records = context.records
+    else:
+        try:
+            records = list_papers()
+        except PaperStoreError as exc:
+            raise SourceLocatorError("Unable to read paper metadata.") from exc
 
     numeric = bool(_NUMERIC_CITATION_RE.fullmatch(clean_marker))
     lookup_marker = clean_marker
     reference_database = "Uploaded BibTeX"
     if numeric and not exclude_paper_id:
         return CitationLookup(
-            marker=clean_marker, outcome=ComparisonStatus.MARKER_UNSUPPORTED,
+            marker=clean_marker,
+            outcome=ComparisonStatus.MARKER_UNSUPPORTED,
             message="Numeric citations require their manuscript_id, not a BibTeX position.",
         )
-    if numeric and not re.fullmatch(r"[\[【]\s*\d+\s*[\]】]", clean_marker):
+    if numeric and not _is_single_numeric_marker(clean_marker):
         return CitationLookup(
-            marker=clean_marker, outcome=ComparisonStatus.REFERENCE_AMBIGUOUS,
+            marker=clean_marker,
+            outcome=ComparisonStatus.REFERENCE_AMBIGUOUS,
             message="Select one reference from this multi-reference marker before comparison.",
         )
-    manuscript_references = numeric or bool(
-        exclude_paper_id and not bib_paper_id and clean_marker.startswith("(")
-        and _YEAR_RE.search(clean_marker)
+    manuscript_references = _uses_manuscript_references(
+        clean_marker,
+        exclude_paper_id=exclude_paper_id,
+        bib_paper_id=bib_paper_id,
     )
     if manuscript_references or bib_paper_id:
-        try:
-            request = (AuditRequest(manuscript_id=exclude_paper_id) if manuscript_references
-                       else AuditRequest(bib_paper_id=bib_paper_id))
-            with paper_lifecycle_lock(exclude_paper_id if manuscript_references else bib_paper_id):
-                _, _, references, _ = load_audit_references(request)
-        except AuditInputError as exc:
-            return CitationLookup(
-                marker=clean_marker, outcome=ComparisonStatus.SOURCE_NOT_AVAILABLE,
-                message=f"Reference input unavailable ({exc.code}): {exc}",
+        if context is not None:
+            if manuscript_references:
+                references = context.manuscript_references
+            elif bib_paper_id:
+                references = context.bibliography_references
+            else:
+                references = context.bibliography_entries
+            error = (
+                context.manuscript_error if manuscript_references else context.bibliography_error
             )
+            if error is not None:
+                code, detail = error
+                return CitationLookup(
+                    marker=clean_marker,
+                    outcome=ComparisonStatus.SOURCE_NOT_AVAILABLE,
+                    message=f"Reference input unavailable ({code}): {detail}",
+                )
+        else:
+            request = (
+                AuditRequest(manuscript_id=exclude_paper_id)
+                if manuscript_references
+                else AuditRequest(bib_paper_id=bib_paper_id)
+            )
+            references, error = _load_reference_input(
+                request,
+                lock_id=exclude_paper_id if manuscript_references else bib_paper_id,
+            )
+            if error is not None:
+                code, detail = error
+                return CitationLookup(
+                    marker=clean_marker,
+                    outcome=ComparisonStatus.SOURCE_NOT_AVAILABLE,
+                    message=f"Reference input unavailable ({code}): {detail}",
+                )
+        if manuscript_references or bib_paper_id:
+            entries = [reference.metadata for reference in references or []]
+        else:
+            entries = references or []
         if manuscript_references:
             reference_database = "Manuscript reference list"
         if numeric:
             number = int(re.search(r"\d+", clean_marker).group())
-            entries = [ref.metadata for ref in references if ref.number == number]
+            entries = [
+                reference.metadata for reference in references or [] if reference.number == number
+            ]
             lookup_marker = str(number)
             reference_database = "Manuscript reference list"
             if not entries:
                 return CitationLookup(
-                    marker=clean_marker, outcome=ComparisonStatus.REFERENCE_NOT_FOUND,
+                    marker=clean_marker,
+                    outcome=ComparisonStatus.REFERENCE_NOT_FOUND,
                     message=f"Reference {number} is absent from this manuscript's reference list.",
                 )
         else:
-            entries = [ref.metadata for ref in references]
+            entries = [reference.metadata for reference in references or []]
+    elif context is not None:
+        entries = context.bibliography_entries or []
     else:
         entries = _load_bibliography_entries(records)
     if not entries:
@@ -319,7 +486,11 @@ def look_up_citation(
             message=f"No bibliography entry matches '{clean_marker}'.",
         )
 
-    catalog, skipped = _load_source_catalog(records, exclude_paper_id=exclude_paper_id)
+    if context is not None:
+        catalog = context.source_catalog
+        skipped = context.skipped_source_count
+    else:
+        catalog, skipped = _load_source_catalog(records, exclude_paper_id=exclude_paper_id)
     citation_key = entry.key or _fallback_key(clean_marker)
     source_pdf = _match_pdf_to_bib_entry(entry, catalog)
     cited_source = _source_from_bib(
