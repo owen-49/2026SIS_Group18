@@ -16,7 +16,27 @@ The extension starts with four demo sources. When it can read BibTeX from the ac
 
 When the backend is unavailable, or when no uploaded PDF matches a bibliography entry, the extension keeps the citation visibly labelled as a local preview. PDF uploads remain part of the web audit workspace; the extension itself only reads `.tex` and `.bib` content from Overleaf.
 
-## Files
+## Review ambiguous source PDFs
+
+In the Citations tab, unresolved citations retain candidate PDFs under
+**Review candidate PDFs**. Compare filenames, upload IDs, arXiv IDs, and title
+similarity, then click **Choose this PDF and verify**. Title similarity is a
+candidate ranking, not proof of identity. Explicitly conflicting arXiv IDs
+cannot be selected. The selected upload ID is checked against the latest
+backend list before verification.
+
+Only a unique arXiv match or a sole exact-title candidate can be selected
+automatically. Fuzzy-only matches require review, even with one candidate.
+Manual selection applies to the current verification; re-detecting citations
+requires review again if the source remains ambiguous.
+
+Run regression tests with:
+
+```sh
+node --test claimtrace/extension/arxiv-matching.test.cjs
+```
+
+## Extension files
 
 - `manifest.json` — Side Panel and Overleaf permissions
 - `src/background.js` — panel behaviour and shared storage
