@@ -125,6 +125,7 @@ def compare_claim_to_cited_paper(
     claim: str,
     citation_marker: str,
     manuscript_id: str | None = None,
+    bib_paper_id: str | None = None,
     claim_id: str | None = None,
     k: int = 5,
 ) -> CitationComparisonResponse:
@@ -155,7 +156,9 @@ def compare_claim_to_cited_paper(
         )
 
     try:
-        lookup = look_up_citation(citation_marker, exclude_paper_id=manuscript_id)
+        lookup = look_up_citation(
+            citation_marker, exclude_paper_id=manuscript_id, bib_paper_id=bib_paper_id
+        )
     except SourceLocatorError as exc:
         raise CitationComparisonError("Unable to read the paper library.") from exc
 

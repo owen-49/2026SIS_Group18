@@ -24,13 +24,14 @@ Two deliberate design notes:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover - annotations only
     from engine.source_resolver import SourcePaper
 
-from ..models import ComparisonStatus, IdentifiedSource, PaperRecord, ParseStatus
+from ..models import AuditRequest, ComparisonStatus, IdentifiedSource, PaperRecord, ParseStatus
 from ..storage.paper_store import PaperStoreError, list_papers
 from .analysis_service import (
     _NUMERIC_CITATION_RE,
@@ -48,6 +49,8 @@ from .analysis_service import (
     _source_from_bib,
     _tokens,
 )
+from .paper_lifecycle import paper_lifecycle_lock
+from .reference_input_service import AuditInputError, load_audit_references
 
 
 class SourceLocatorError(RuntimeError):
@@ -213,6 +216,7 @@ def look_up_citation(
     marker: str,
     *,
     exclude_paper_id: str | None = None,
+    bib_paper_id: str | None = None,
 ) -> CitationLookup:
     """Map a citation marker to a parsed source paper in the local library.
 
@@ -222,8 +226,10 @@ def look_up_citation(
 
     Args:
         marker: The citation marker exactly as extracted from the manuscript.
-        exclude_paper_id: A manuscript to leave out of the source catalog, so a
-            paper cannot be used as the source for its own claim.
+        exclude_paper_id: The manuscript owning numeric/author-year references;
+            also excluded from the source catalog.
+        bib_paper_id: Explicit bibliography for key/author-year markers. Numeric
+            references always use their manuscript, never BibTeX entry order.
 
     Raises:
         SourceLocatorError: The paper library could not be listed.
@@ -241,21 +247,50 @@ def look_up_citation(
     except PaperStoreError as exc:
         raise SourceLocatorError("Unable to read paper metadata.") from exc
 
-    # A numeric label is a position in the manuscript's own reference list, not a
-    # BibTeX key and not an index into the uploaded bibliography, so it can never
-    # be resolved locally. Checked before the bibliography so the answer does not
-    # depend on what happens to be uploaded.
-    if _NUMERIC_CITATION_RE.fullmatch(clean_marker):
+    numeric = bool(_NUMERIC_CITATION_RE.fullmatch(clean_marker))
+    lookup_marker = clean_marker
+    reference_database = "Uploaded BibTeX"
+    if numeric and not exclude_paper_id:
         return CitationLookup(
-            marker=clean_marker,
-            outcome=ComparisonStatus.MARKER_UNSUPPORTED,
-            message=(
-                f"The numeric marker '{clean_marker}' does not identify a bibliography "
-                "entry. Supply the reference's BibTeX key instead."
-            ),
+            marker=clean_marker, outcome=ComparisonStatus.MARKER_UNSUPPORTED,
+            message="Numeric citations require their manuscript_id, not a BibTeX position.",
         )
-
-    entries = _load_bibliography_entries(records)
+    if numeric and not re.fullmatch(r"[\[【]\s*\d+\s*[\]】]", clean_marker):
+        return CitationLookup(
+            marker=clean_marker, outcome=ComparisonStatus.REFERENCE_AMBIGUOUS,
+            message="Select one reference from this multi-reference marker before comparison.",
+        )
+    manuscript_references = numeric or bool(
+        exclude_paper_id and not bib_paper_id and clean_marker.startswith("(")
+        and _YEAR_RE.search(clean_marker)
+    )
+    if manuscript_references or bib_paper_id:
+        try:
+            request = (AuditRequest(manuscript_id=exclude_paper_id) if manuscript_references
+                       else AuditRequest(bib_paper_id=bib_paper_id))
+            with paper_lifecycle_lock(exclude_paper_id if manuscript_references else bib_paper_id):
+                _, _, references, _ = load_audit_references(request)
+        except AuditInputError as exc:
+            return CitationLookup(
+                marker=clean_marker, outcome=ComparisonStatus.SOURCE_NOT_AVAILABLE,
+                message=f"Reference input unavailable ({exc.code}): {exc}",
+            )
+        if manuscript_references:
+            reference_database = "Manuscript reference list"
+        if numeric:
+            number = int(re.search(r"\d+", clean_marker).group())
+            entries = [ref.metadata for ref in references if ref.number == number]
+            lookup_marker = str(number)
+            reference_database = "Manuscript reference list"
+            if not entries:
+                return CitationLookup(
+                    marker=clean_marker, outcome=ComparisonStatus.REFERENCE_NOT_FOUND,
+                    message=f"Reference {number} is absent from this manuscript's reference list.",
+                )
+        else:
+            entries = [ref.metadata for ref in references]
+    else:
+        entries = _load_bibliography_entries(records)
     if not entries:
         return CitationLookup(
             marker=clean_marker,
@@ -266,9 +301,9 @@ def look_up_citation(
             ),
         )
 
-    entry = _find_bib_entry(clean_marker, entries)
+    entry = _find_bib_entry(lookup_marker, entries)
     if entry is None:
-        count = _candidate_count(clean_marker, entries)
+        count = _candidate_count(lookup_marker, entries)
         if count > 1:
             return CitationLookup(
                 marker=clean_marker,
@@ -293,8 +328,10 @@ def look_up_citation(
         source_pdf.record.paper_id if source_pdf else None,
     )
 
+    cited_source.database = reference_database
+
     if source_pdf is None:
-        reason = f"No parsed PDF in the library matches '{citation_key}'."
+        reason = f"No unique, compatible parsed PDF in the library matches '{citation_key}'."
         if skipped:
             reason += f" ({skipped} paper(s) were skipped as unreadable.)"
         return CitationLookup(

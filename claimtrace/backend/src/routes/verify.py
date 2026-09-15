@@ -76,6 +76,7 @@ def verify_citation_comparison(request: CitationComparisonRequest):
             claim=request.claim,
             citation_marker=request.citation_marker,
             manuscript_id=request.manuscript_id,
+            bib_paper_id=request.bib_paper_id,
             claim_id=request.claim_id,
             k=request.k,
         )
