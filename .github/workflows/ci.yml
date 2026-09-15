@@ -69,7 +69,8 @@ jobs:
       - name: Lint
         run: ruff check src/ tests/
       - name: Test
-        run: pytest --cov=src --cov-report=term
+        # Tests import `backend.src`, so the ClaimTrace application root must be importable.
+        run: PYTHONPATH=.. pytest --cov=src --cov-report=term
 
   frontend:
     name: Frontend Lint & Build
