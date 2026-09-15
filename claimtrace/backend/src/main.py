@@ -38,7 +38,7 @@ app.include_router(bib.router, prefix="/api", tags=["bib"])
 async def startup():
     """Initialize services on startup."""
     # Create upload directory
-    settings.upload_dir.mkdir(exist_ok=True)
+    settings.upload_dir.mkdir(parents=True, exist_ok=True)
 
     # Store settings in app.state so routes can access them
     app.state.settings = settings
