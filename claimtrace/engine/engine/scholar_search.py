@@ -136,8 +136,14 @@ def search_scholar(
         kwargs["year_low"] = year
         kwargs["year_high"] = year
 
-    # Bound scholarly's own retry loop so a rate-limited (HTTP 429) or captcha
-    # block fails fast instead of hanging the worker until the parent timeout.
+    # These bound some of scholarly's retry loop, not all of it. A 404, a 302 or
+    # any other response code (HTTP 429 included) advances its retry counter, so
+    # ``set_retries`` caps those. In scholarly 1.7.11 the 403, captcha and
+    # DOSException branches sleep 60-120 seconds and retry *without* advancing it,
+    # so nothing here limits them. What bounds a blocked search is the deadline
+    # the worker enforces on itself
+    # (``backend/src/services/bounded_scholar_lookup.py``); these remain the
+    # cheaper limit for the cases they do cover.
     scholarly.set_timeout(request_timeout_seconds)
     scholarly.set_retries(max_tries)
 
