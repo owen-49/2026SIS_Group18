@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getPaperClaims, listPapers, usingMockApi as configuredMockApi, verifyClaim } from "../api/client";
+import { getPaperClaims, listPapers, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
 import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
-import { VerdictBadge } from "../components/VerdictBadge";
-import { demoManuscript, demoPaperClaims, demoSelectionVerification } from "../data/mockData";
-import { matchSelectionClaims } from "../data/selectionClaims";
+import { CitationComparisonResult } from "../components/CitationComparisonResult";
+import { demoManuscript, demoPaperClaims, demoCitationComparison } from "../data/mockData";
+import { matchSelectionClaims, singleReferenceMarkers } from "../data/selectionClaims";
 import { getLatestUploadedPaper } from "../data/workspacePapers";
-import type { IdentifiedSource, PaperClaimsResponse, PaperRecord, VerifyResponse } from "../types/api";
+import type { IdentifiedSource, PaperClaimsResponse, PaperRecord, CitationComparisonResponse } from "../types/api";
 
 const demoClaimContext: Record<string, { heading: string; before: string; after: string }> = {
   "claim-attention": {
@@ -47,15 +47,17 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [matchedClaimIds, setMatchedClaimIds] = useState<string[]>([]);
   const [selectedText, setSelectedText] = useState("");
   const [selectionError, setSelectionError] = useState("");
-  const [manualSourceId, setManualSourceId] = useState("");
+  const [bibPaperId, setBibPaperId] = useState("");
+  const [bibliographies, setBibliographies] = useState<PaperRecord[]>([]);
+  const [singleMarker, setSingleMarker] = useState("");
+  const verifyController = useRef<AbortController | null>(null);
   const verifyVersion = useRef(0);
   const verifyBusy = useRef(false);
-  const [selectedCandidateId, setSelectedCandidateId] = useState("");
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [analysisPreviewReason, setAnalysisPreviewReason] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
-  const [result, setResult] = useState<VerifyResponse | null>(null);
+  const [result, setResult] = useState<CitationComparisonResponse | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [readerView, setReaderView] = useState<"manuscript" | "source">("manuscript");
   const manuscriptDocumentRef = useRef<HTMLDivElement>(null);
@@ -76,6 +78,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       if (signal?.aborted) return;
       const candidates = response.papers.filter((paper) => paper.file_type === "pdf");
       setPapers(candidates);
+      setBibliographies(response.papers.filter((paper) => paper.file_type === "bib"));
       setSelectedPaperId((current) => {
         if (current && candidates.some((paper) => paper.paper_id === current)) return current;
         if (requestedPaperId && candidates.some((paper) => paper.paper_id === requestedPaperId)) return requestedPaperId;
@@ -91,6 +94,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   }, [requestedPaperId, example]);
 
   const loadAnalysis = useCallback(async (paper: PaperRecord, signal?: AbortSignal) => {
+    verifyVersion.current += 1; verifyController.current?.abort();
+    setSelectedText(""); setMatchedClaimIds([]); setSingleMarker(""); setVerifyError(null);
     if (example) {
       setAnalysis(demoPaperClaims);
       setSelectedClaimId("");
@@ -102,11 +107,11 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setAnalysisPreviewReason(null);
     setAnalysis(null);
     setSelectedClaimId("");
-    setSelectedCandidateId("");
+    setSingleMarker("");
     setResult(null);
     setVerifyError(null);
     try {
-      const response = await getPaperClaims(paper.paper_id, signal);
+      const response = await getPaperClaims(paper.paper_id, signal, bibPaperId || undefined);
       if (signal?.aborted) return;
       setAnalysis(response);
       setSelectedClaimId("");
@@ -117,7 +122,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     } finally {
       if (!signal?.aborted) setAnalysisLoading(false);
     }
-  }, [example]);
+  }, [example, bibPaperId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -129,11 +134,11 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
 
   useEffect(() => {
     verifyVersion.current += 1;
-    setSelectedText(""); setSelectionError(""); setManualSourceId(""); setMatchedClaimIds([]);
+    setSelectedText(""); setSelectionError(""); setSingleMarker(""); setMatchedClaimIds([]);
     setAnalysis(null);
     setReaderView("manuscript");
     setSelectedClaimId("");
-    setSelectedCandidateId("");
+    setSingleMarker("");
     setAnalysisError(null);
     setAnalysisPreviewReason(null);
     setAnalysisLoading(false);
@@ -145,7 +150,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     }
     const controller = new AbortController();
     void loadAnalysis(selectedPaper, controller.signal);
-    return () => controller.abort();
+    return () => { controller.abort(); verifyVersion.current += 1; verifyController.current?.abort(); };
   }, [loadAnalysis, selectedPaper]);
 
   const selectedClaim = useMemo(
@@ -153,30 +158,26 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     [analysis, selectedClaimId],
   );
   const matchedClaims = analysis?.claims.filter((claim) => matchedClaimIds.includes(claim.claim_id)) || [];
-  const firstMatchedSourceId = matchedClaims[0]?.cited_source?.source_paper_id;
-  const multipleSources = matchedClaims.length > 1 && !(firstMatchedSourceId
-    && matchedClaims.every((claim) => claim.cited_source?.source_paper_id === firstMatchedSourceId));
+  const multipleSources = matchedClaims.length > 1;
   const needsCitationChoice = multipleSources && !selectedClaim;
-  const selectedCandidate = selectedClaim?.similar_sources?.find((source) => source.source_paper_id === selectedCandidateId) || null;
-  const comparisonSource = selectedClaim?.cited_source || selectedCandidate;
-  const hasReturnedSource = Boolean(selectedClaim?.cited_source || selectedClaim?.source_document);
-  const hasCandidates = Boolean(selectedClaim?.similar_sources?.length);
+  const markerOptions = selectedClaim ? singleReferenceMarkers(selectedClaim.citation_marker) : [];
+  const citationMarker = markerOptions.length > 1 ? singleMarker : selectedClaim?.citation_marker || "";
+  const displayedSource = result ? result.cited_source : selectedClaim?.cited_source;
+  const displayedDocument = result ? result.source_document : selectedClaim?.source_document;
   const previewReason = [paperPreviewReason, analysisPreviewReason].filter(Boolean).join(" ");
-  const sourceId = comparisonSource?.source_paper_id || manualSourceId;
-  const verifyDisabledReason = !selectedText ? "Highlight a cited sentence in the manuscript first."
-    : needsCitationChoice ? "Choose which cited source to analyze."
+  const verifyDisabledReason = analysisLoading ? "Loading citation information…"
+    : !selectedText ? "Highlight a cited sentence in the manuscript first."
+    : needsCitationChoice ? "Choose which citation to analyze."
+    : !selectedClaim ? "Select a sentence with a citation returned for this manuscript."
+    : !citationMarker ? "Choose one reference from this citation marker."
     : previewReason ? "Live verification is unavailable in this preview."
-    : selectedClaim?.resolution_status === "searching" ? "Waiting for the cited source lookup to finish."
-    : !sourceId ? hasReturnedSource ? "The source was found, but is not ready for verification yet."
-      : hasCandidates ? "Choose a source candidate before analyzing."
-      : "Highlight a sentence linked to a source, or choose an uploaded source manually."
     : "";
   const canVerify = !verifyDisabledReason;
   const manuscriptContext = usingMockApi && selectedClaim ? demoClaimContext[selectedClaim.claim_id] : null;
   const reviewStatus = analysis?.status || selectedPaper?.status;
   const isProcessing = reviewStatus === "pending" || reviewStatus === "processing";
   const isFailed = reviewStatus === "failed";
-  const isSearching = selectedClaim?.resolution_status === "searching";
+  const isSearching = !result && selectedClaim?.resolution_status === "searching";
 
   const scrollToManuscriptMatch = useCallback(() => {
     const container = manuscriptDocumentRef.current;
@@ -222,7 +223,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     const end = elementFor(range.endContainer)?.closest<HTMLElement>("[data-selectable-paragraph]");
     if (!start || !manuscriptDocumentRef.current?.contains(start)) return;
     verifyVersion.current += 1;
-    setResult(null); setVerifyError(null); setSelectedClaimId(""); setSelectedCandidateId(""); setManualSourceId(""); setMatchedClaimIds([]);
+    setResult(null); setVerifyError(null); setSelectedClaimId(""); setSingleMarker(""); setMatchedClaimIds([]);
     const text = selection.toString().trim();
     if (start !== end || text.length > 4000) {
       setSelectedText(""); setSelectionError("Select one cited sentence within a paragraph (up to 4,000 characters).");
@@ -231,19 +232,22 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setSelectionError(""); setSelectedText(text);
     const matches = matchSelectionClaims(analysis?.claims || [], text, Number(start.dataset.page), Number(start.dataset.paragraph));
     setMatchedClaimIds(matches.map((claim) => claim.claim_id));
-    const firstSource = matches[0]?.cited_source?.source_paper_id;
-    if (matches.length === 1 || (firstSource && matches.every((claim) => claim.cited_source?.source_paper_id === firstSource))) {
+    if (matches.length === 1) {
       setSelectedClaimId(matches[0].claim_id);
     }
   }
 
   async function handleVerify() {
-    if (!canVerify || verifyBusy.current) return;
+    if (!canVerify || !selectedClaim || verifyBusy.current) return;
     verifyBusy.current = true;
     const version = ++verifyVersion.current;
+    const controller = new AbortController();
+    verifyController.current = controller;
     setVerifying(true); setVerifyError(null); setResult(null);
     try {
-      const response = example ? demoSelectionVerification(selectedClaimId, selectedText) : await verifyClaim(selectedText, sourceId);
+      const request = { claim: selectedText, citation_marker: citationMarker, manuscript_id: selectedPaperId,
+        claim_id: selectedClaim.claim_id, ...(bibPaperId ? { bib_paper_id: bibPaperId } : {}) };
+      const response = example ? demoCitationComparison(request) : await verifyCitation(request, controller.signal);
       if (version === verifyVersion.current) setResult(response);
     } catch (error) {
       if (version === verifyVersion.current) setVerifyError(error instanceof Error ? error.message : "Verification failed.");
@@ -263,13 +267,25 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
           <UploadFilesButton pdfOnly disabled={verifying} onReady={async (paper) => {
             const response = await listPapers();
             setPapers(response.papers.filter((entry) => entry.file_type === "pdf"));
+            setBibliographies(response.papers.filter((entry) => entry.file_type === "bib"));
             setPapersError(null);
             setPaperPreviewReason(null);
             setSelectedPaperId(paper.paper_id);
             setExample(false);
           }} />
-          <label className="manuscript-picker"><span>Uploaded manuscript</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label>
+
         </div>
+      </section>
+
+
+      <section className="review-document-controls" aria-label="Review documents">
+        <div className="review-document-choice"><span className="review-document-icon"><Icon name="document" size={20} /></span><label className="manuscript-picker"><span>Manuscript PDF</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.length === 0 && <option value="">{papersLoading ? "Loading manuscripts…" : "Upload a PDF to get started"}</option>}{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label></div>
+        <details className="review-reference-settings">
+          <summary><span>Reference settings</span><small>{bibPaperId ? "Custom bibliography" : "Automatic"}</small></summary>
+          <div className="review-reference-content"><label className="manuscript-picker"><span>Reference file · optional</span><select aria-label="Bibliography" value={bibPaperId} disabled={verifying || papersLoading || bibliographies.length === 0} onChange={(event) => { verifyVersion.current += 1; setResult(null); setSelectedText(""); setSelectedClaimId(""); setSingleMarker(""); setBibPaperId(event.target.value); }}><option value="">Manuscript references / automatic</option>{bibliographies.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename}</option>)}</select></label>
+            <p>{bibliographies.length ? "Leave on automatic to use the manuscript’s references, or choose an uploaded BibTeX file." : "No BibTeX file uploaded. The manuscript’s references will be used automatically."}</p>
+          </div>
+        </details>
       </section>
 
       {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading completed papers from the backend.</p></section>}
@@ -319,21 +335,21 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
         {selectedClaim && !isSearching && (
           <section className="panel review-citation-source" id="review-cited-article" hidden={readerView !== "source"}>
             <header className="manuscript-toolbar citation-source-toolbar">
-              <div><h2>Cited article — original text</h2><p>{selectedClaim.cited_source?.title || "Citation article not identified"}</p></div>
+              <div><h2>Cited article — original text</h2><p>{displayedSource?.title || "Citation article not identified"}</p></div>
               <div>
-                <span>{selectedClaim.source_document ? usingMockApi || previewReason ? "Demo cited document" : `${selectedClaim.source_document.total_pages} pages` : selectedClaim.cited_source ? "Original text unavailable" : "Source not found"}</span>
-                {selectedClaim.source_document?.matched_location && <button className="button button-secondary" type="button" onClick={scrollToCitedMatch}><Icon name="search" size={14} /> Jump to matched passage</button>}
+                <span>{displayedDocument ? usingMockApi || previewReason ? "Demo cited document" : `${displayedDocument.total_pages} pages` : displayedSource ? "Original text unavailable" : "Source not found"}</span>
+                {displayedDocument?.matched_location && <button className="button button-secondary" type="button" onClick={scrollToCitedMatch}><Icon name="search" size={14} /> Jump to matched passage</button>}
               </div>
             </header>
-            {selectedClaim.source_document ? (
+            {displayedDocument ? (
               <div className="manuscript-scroll citation-source-scroll" ref={citedDocumentRef}>
-                {selectedClaim.source_document.pages.map((page) => (
+                {displayedDocument.pages.map((page) => (
                   <section className="manuscript-sheet citation-source-sheet" key={page.page}>
-                    <small>{page.page} / {selectedClaim.source_document?.total_pages}</small>
+                    <small>{page.page} / {displayedDocument?.total_pages}</small>
                     {page.heading && <h2>{page.heading}</h2>}
                     {page.paragraphs.map((paragraph, paragraphIndex) => {
-                      const matched = selectedClaim.source_document?.matched_location?.page === page.page
-                        && selectedClaim.source_document.matched_location.paragraph_index === paragraphIndex;
+                      const matched = displayedDocument?.matched_location?.page === page.page
+                        && displayedDocument.matched_location.paragraph_index === paragraphIndex;
                       return <p className={matched ? "matched-source-paragraph" : ""} data-review-source-match={matched ? "true" : undefined} key={`${page.page}-${paragraphIndex}`}>{paragraph}{matched && <mark>ClaimTrace matched passage · Page {page.page}, paragraph {paragraphIndex + 1}</mark>}</p>;
                     })}
                   </section>
@@ -341,8 +357,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
               </div>
             ) : (
               <div className="review-source-unavailable">
-                <span><Icon name={selectedClaim.cited_source ? "document" : "search"} size={22} /></span>
-                <div><strong>{selectedClaim.cited_source ? "Cited article text was not returned" : "Cited article not confirmed"}</strong><p>{selectedClaim.cited_source ? "The bibliographic record is available, but its original text has not been returned." : "No exact record has been confirmed, so there is no confirmed source text to display."}</p></div>
+                <span><Icon name={displayedSource ? "document" : "search"} size={22} /></span>
+                <div><strong>{displayedSource ? "Cited article text was not returned" : "Cited article not confirmed"}</strong><p>{displayedSource ? "The bibliographic record is available, but its original text has not been returned." : "No exact record has been confirmed, so there is no confirmed source text to display."}</p></div>
               </div>
             )}
           </section>
@@ -353,35 +369,21 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             <div className="citation-resolution-heading"><div><h2>Selected citation</h2><p>Drag over a cited sentence in the manuscript, then click Analyze selection.</p></div></div>
             <div className="selected-citation-text" role="status">{selectedText ? <blockquote>{selectedText}</blockquote> : <p>No text selected yet. Include the citation marker when highlighting a sentence.</p>}</div>
             {selectionError && <p className="inline-error" role="alert">{selectionError}</p>}
-            {selectedText && multipleSources && <label className="field claim-picker-field"><span>Cited source</span><select aria-label="Cited source" value={selectedClaimId} disabled={verifying} onChange={(event) => { setSelectedClaimId(event.target.value); setSelectedCandidateId(""); setManualSourceId(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose which citation to analyze…</option>{matchedClaims.map((claim) => <option value={claim.claim_id} key={claim.claim_id}>{claim.citation_marker} · {claim.cited_source?.title || "Source not identified"}</option>)}</select><small>This selection contains multiple citations. Choose one to analyze.</small></label>}
-            {selectedText && hasReturnedSource && !comparisonSource?.source_paper_id && <p className="paper-manager-message" role="status">Source information is available, but this source is not ready for verification yet. You can review its details below.</p>}
-            {selectedText && !needsCitationChoice && !isSearching && !hasReturnedSource && !hasCandidates && !comparisonSource?.source_paper_id && <section className="selection-source-unlinked">
-              <p role="status">This selection has not been linked to a cited source. Highlight the cited sentence, including its citation marker.</p>
-              {example ? <small>The example already includes its source. Use Find example sentence above, then highlight that sentence.</small> : <details><summary>Choose an uploaded source manually</summary><label className="field claim-picker-field"><span>Source PDF to compare</span><select value={manualSourceId} disabled={verifying} onChange={(event) => { setManualSourceId(event.target.value); setResult(null); setVerifyError(null); }}><option value="">Choose the cited source PDF…</option>{papers.filter((paper) => paper.paper_id !== selectedPaperId && paper.status === "completed").map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.original_filename}</option>)}</select><small>This choice does not confirm the citation.</small></label></details>}
-            </section>}
-
-            {selectedClaim && (
-              <>
-                <section className={`citation-existence ${isSearching ? "searching" : selectedClaim.cited_source ? "exists" : "missing"}`} role="status"><span>{isSearching ? <span className="spinner" /> : <Icon name={selectedClaim.cited_source ? "check" : "x"} size={18} />}</span><div><strong>{isSearching ? "Searching for the cited article" : selectedClaim.cited_source ? "Cited article found" : "Cited article not confirmed"}</strong><p>{isSearching ? "Lookup is still in progress. A missing result does not mean the article does not exist." : selectedClaim.cited_source ? `Source returned by ${selectedClaim.cited_source.database || "the backend"}.` : "No exact bibliographic record has been confirmed."}</p>{isSearching && <button className="text-button" type="button" onClick={() => void loadAnalysis(selectedPaper)}>Refresh lookup</button>}</div></section>
-
-                {selectedClaim.cited_source && <section className="database-source-card interactive-source-card" role="button" tabIndex={0} title="Open this article's original text" onClick={revealCitedArticle} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); revealCitedArticle(); } }}><div className="automatic-field-label"><span>Cited source</span><small>Click to open original text</small></div><strong>{selectedClaim.cited_source.title}</strong><p>{sourceMeta(selectedClaim.cited_source)}</p><footer><code>{selectedClaim.cited_source.citation_key}</code>{selectedClaim.cited_source.url && <a href={selectedClaim.cited_source.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Open record <Icon name="external" size={14} /></a>}</footer></section>}
-
-                {!isSearching && !selectedClaim.cited_source && (
-                  <section className="similar-source-section">
-                    <div><h3>Similar articles</h3><p>Select an optional candidate to compare with the claim. This does not replace or confirm the missing citation.</p></div>
-                    {selectedClaim.similar_sources?.length ? <div className="similar-source-list">{[...selectedClaim.similar_sources].sort((a, b) => b.similarity - a.similarity).map((source) => <div className="similar-source-entry" key={source.source_paper_id || source.citation_key}><label className={selectedCandidateId === source.source_paper_id ? "similar-source-option selected" : "similar-source-option"}><input type="radio" name="similar-source" disabled={verifying || !source.source_paper_id} checked={Boolean(source.source_paper_id) && selectedCandidateId === source.source_paper_id} onChange={() => { setSelectedCandidateId(source.source_paper_id || ""); setResult(null); }} /><span><strong>{source.title}</strong><small>{sourceMeta(source)}</small><em>{Math.round(source.similarity * 100)}% title/metadata similarity{example ? " · sample score" : ""}</em></span></label>{source.url && <a className="inline-link" href={source.url} target="_blank" rel="noreferrer">Open candidate record <Icon name="external" size={14} /></a>}</div>)}</div> : <div className="no-similar-sources">No similar database records were returned.</div>}
-                  </section>
-                )}
-
-              </>
-            )}
+            {selectedText && multipleSources && <label className="field claim-picker-field"><span>Cited source</span><select aria-label="Cited source" value={selectedClaimId} disabled={verifying} onChange={(event) => { setSelectedClaimId(event.target.value); setSingleMarker(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose which citation to analyze…</option>{matchedClaims.map((claim) => <option value={claim.claim_id} key={claim.claim_id}>{claim.citation_marker} · {claim.cited_source?.title || "Source not identified"}</option>)}</select><small>This selection contains multiple citations. Choose one to analyze.</small></label>}
+            {selectedClaim && markerOptions.length > 1 && <label className="field claim-picker-field"><span>Reference in citation</span><select aria-label="Reference in citation" value={singleMarker} disabled={verifying} onChange={(event) => { setSingleMarker(event.target.value); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose one reference…</option>{markerOptions.map((marker) => <option key={marker} value={marker}>{marker}</option>)}</select></label>}
+            {selectedText && !selectedClaim && !needsCitationChoice && <p className="selection-source-unlinked" role="status">This selection is not linked to an extracted citation. Highlight the cited sentence and its marker.</p>}
+            {selectedClaim && !result && <>
+              <section className={`citation-existence ${isSearching ? "searching" : displayedSource ? "exists" : "missing"}`} role="status"><span><Icon name={displayedSource ? "document" : "search"} size={18} /></span><div><strong>{displayedSource ? "Associated reference" : "Source resolution pending"}</strong><p>{selectedClaim.resolution_message || "Analyze this citation to resolve its source and attempt a comparison. No judgement has been made yet."}</p></div></section>
+              {displayedSource && <section className="database-source-card interactive-source-card" role="button" tabIndex={0} title="Open this article's original text" onClick={revealCitedArticle} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); revealCitedArticle(); } }}><div className="automatic-field-label"><span>Cited source</span><small>Click to open original text</small></div><strong>{displayedSource.title}</strong><p>{sourceMeta(displayedSource)}</p><footer><code>{displayedSource.citation_key}</code>{displayedSource.url && <a href={displayedSource.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Open record <Icon name="external" size={14} /></a>}</footer></section>}
+              {Boolean(selectedClaim.similar_sources?.length) && <section className="similar-source-section"><h3>Possible sources</h3><p>These candidates are unconfirmed. Citation analysis resolves the source; manual source overrides are not supported.</p>{selectedClaim.similar_sources?.map((source) => <div className="database-source-card" key={source.citation_key}><strong>{source.title}</strong><p>{sourceMeta(source)}</p>{source.url && <a href={source.url} target="_blank" rel="noreferrer">Open candidate record</a>}</div>)}</section>}
+            </>}
 
             {verifyError && <div className="inline-error" role="alert">{verifyError}</div>}
             <button className="button button-primary full-button" type="button" disabled={!canVerify || verifying} aria-describedby={verifyDisabledReason ? "verify-disabled-reason" : undefined} onClick={() => void handleVerify()}>{verifying ? <><span className="spinner" /> Analyzing…</> : <><Icon name="verify" size={17} /> Analyze selection</>}</button>
 
             {verifyDisabledReason && <p className="verify-action-hint" id="verify-disabled-reason" role="status">{verifyDisabledReason}</p>}
 
-            {result && <section className="claim-comparison-result"><div className="comparison-result-heading"><span><small>{example ? "Example comparison · sample result" : "AI comparison"}</small><VerdictBadge verdict={result.verdict} /></span><strong>{Math.round(result.confidence * 100)}%</strong></div><p>{result.rationale}</p>{result.matches.map((match, index) => <blockquote key={index}>“{match.passage_text}”<footer>{Math.round(match.similarity * 100)}% semantic match</footer></blockquote>)}{!selectedClaim?.cited_source && <small className="candidate-warning">Candidate comparison only — the manuscript’s cited article remains unverified.</small>}</section>}
+            {result && <CitationComparisonResult result={result} demo={usingMockApi} />}
           </aside>
         </section>
 

@@ -98,6 +98,7 @@ export interface ExtractedClaim {
   page: number | null;
   citation_marker: string;
   resolution_status: CitationResolutionStatus;
+  resolution_message?: string | null;
   cited_source: IdentifiedSource | null;
   similar_sources?: SimilarSource[];
   source_document?: SourceDocument | null;
@@ -198,4 +199,32 @@ export interface AuditResult {
   matched_record: AuditExternalRecord | null;
   candidates: AuditExternalRecord[];
   lookup_attempts: Array<{ provider: string; outcome: "found" | "ambiguous" | "not_found" | "failed"; error_code: string | null; detail: string }>;
+}
+
+export interface CitationComparisonRequest {
+  claim: string;
+  citation_marker: string;
+  manuscript_id: string;
+  claim_id: string;
+  bib_paper_id?: string;
+}
+
+export interface CitationComparisonResponse {
+  claim: string;
+  citation_marker: string;
+  claim_id: string | null;
+  citation_key: string | null;
+  status: string;
+  message: string;
+  cited_source: IdentifiedSource | null;
+  source_paper_id: string | null;
+  source_document: SourceDocument | null;
+  evidence: Array<{
+    passage_text: string;
+    page: number;
+    similarity: number;
+    rank: number;
+    location?: { page: number; paragraph_index: number } | null;
+  }>;
+  judgement: { verdict: Verdict; confidence: number; rationale: string } | null;
 }
