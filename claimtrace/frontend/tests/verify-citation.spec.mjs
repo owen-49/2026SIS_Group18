@@ -29,6 +29,7 @@ async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), c
 
 async function highlight(page) {
   const paragraph = page.locator('[data-selectable-paragraph]').first();
+  await paragraph.scrollIntoViewIfNeeded();
   const box = await paragraph.evaluate(el => {
     const range = window.document.createRange(); range.selectNodeContents(el);
     const rect = range.getBoundingClientRect();
@@ -73,6 +74,7 @@ for (const verdict of ['SUPPORT', 'PARTIAL', 'CONTRADICT', 'NOT_FOUND']) {
 
 test('bibliography is passed to discovery and Verify; changing it clears the old judgement', async ({ page }) => {
   const { requests, discoveries } = await setup(page);
+  await page.getByText('Reference settings', { exact: true }).click();
   await page.getByLabel('Bibliography', { exact: true }).selectOption('bib-b');
   await expect.poll(() => discoveries.at(-1)).toContain('bib_paper_id=bib-b');
   await highlight(page); await analyze(page).click();

@@ -273,9 +273,19 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             setSelectedPaperId(paper.paper_id);
             setExample(false);
           }} />
-          {bibliographies.length > 0 && <label className="manuscript-picker"><span>Bibliography</span><select aria-label="Bibliography" value={bibPaperId} disabled={verifying || papersLoading} onChange={(event) => { verifyVersion.current += 1; setResult(null); setSelectedText(""); setSelectedClaimId(""); setSingleMarker(""); setBibPaperId(event.target.value); }}><option value="">Manuscript references / automatic</option>{bibliographies.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename}</option>)}</select></label>}
-          <label className="manuscript-picker"><span>Uploaded manuscript</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label>
+
         </div>
+      </section>
+
+
+      <section className="review-document-controls" aria-label="Review documents">
+        <div className="review-document-choice"><span className="review-document-icon"><Icon name="document" size={20} /></span><label className="manuscript-picker"><span>Manuscript PDF</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.length === 0 && <option value="">{papersLoading ? "Loading manuscripts…" : "Upload a PDF to get started"}</option>}{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label></div>
+        <details className="review-reference-settings">
+          <summary><span>Reference settings</span><small>{bibPaperId ? "Custom bibliography" : "Automatic"}</small></summary>
+          <div className="review-reference-content"><label className="manuscript-picker"><span>Reference file · optional</span><select aria-label="Bibliography" value={bibPaperId} disabled={verifying || papersLoading || bibliographies.length === 0} onChange={(event) => { verifyVersion.current += 1; setResult(null); setSelectedText(""); setSelectedClaimId(""); setSingleMarker(""); setBibPaperId(event.target.value); }}><option value="">Manuscript references / automatic</option>{bibliographies.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename}</option>)}</select></label>
+            <p>{bibliographies.length ? "Leave on automatic to use the manuscript’s references, or choose an uploaded BibTeX file." : "No BibTeX file uploaded. The manuscript’s references will be used automatically."}</p>
+          </div>
+        </details>
       </section>
 
       {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading completed papers from the backend.</p></section>}
