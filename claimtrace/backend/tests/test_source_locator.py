@@ -19,6 +19,7 @@ from backend.src.models import (
     ParseStatus,
 )
 from backend.src.services import source_locator
+from backend.src.services.analysis_service import _title_similarity
 from backend.src.services.source_locator import (
     SourceLocatorError,
     locate_source,
@@ -54,13 +55,21 @@ def _record(paper_id: str, file_type: str, *, parsed_path: Path | None = None) -
     )
 
 
-def _add_source_pdf(paper_id: str, *, title: str, doi: str | None = None, text=None) -> str:
+def _add_source_pdf(
+    paper_id: str,
+    *,
+    title: str,
+    doi: str | None = None,
+    text=None,
+    authors=("Smith, Jane",),
+    year: int | None = 2024,
+) -> str:
     """Persist one completed parsed source PDF and return its paper ID."""
     document = ParsedDocument(
         paper_id=paper_id,
         title=title,
-        authors=["Smith, Jane"],
-        year=2024,
+        authors=list(authors),
+        year=year,
         venue="Journal of Retrieval",
         doi=doi,
         pages=1,
@@ -212,6 +221,62 @@ def test_reference_without_a_matching_local_pdf_is_source_not_available(storage_
     assert lookup.citation_key == "smith2024"
     assert lookup.cited_source.title == "Retrieval with citations"
     assert lookup.source is None
+
+
+def test_partial_title_matches_when_author_and_year_confirm_identity(storage_paths):
+    del storage_paths
+    _add_source_pdf(
+        "pdf-1",
+        title="K-sparse autoencoders for deep learning",
+        authors=("Jane Smith",),
+        year=2024,
+    )
+    _add_bibliography(
+        [
+            _entry(
+                "smith2024",
+                title="K-sparse autoencoders",
+                authors=("Smith, Jane",),
+                year=2024,
+            )
+        ]
+    )
+
+    lookup = look_up_citation("\\cite{smith2024}")
+
+    assert lookup.outcome is ComparisonStatus.COMPARED
+    assert lookup.source.record.paper_id == "pdf-1"
+
+
+def test_title_similarity_normalises_case_dashes_and_pdf_line_wraps():
+    assert _title_similarity(
+        "K-sparse autoencoders",
+        "K‑SPARSE auto- encoders",
+    ) == 1.0
+
+
+def test_partial_title_does_not_match_without_independent_metadata(storage_paths):
+    del storage_paths
+    _add_source_pdf(
+        "pdf-1",
+        title="K-sparse autoencoders for deep learning",
+        authors=("Jones, Alex",),
+        year=2023,
+    )
+    _add_bibliography(
+        [
+            _entry(
+                "smith2024",
+                title="K-sparse autoencoders",
+                authors=("Smith, Jane",),
+                year=2024,
+            )
+        ]
+    )
+
+    lookup = look_up_citation("\\cite{smith2024}")
+
+    assert lookup.outcome is ComparisonStatus.SOURCE_NOT_AVAILABLE
 
 
 def test_a_paper_is_never_the_source_for_its_own_claim(library):
