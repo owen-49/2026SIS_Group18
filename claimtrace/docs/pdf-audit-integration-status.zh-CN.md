@@ -26,7 +26,14 @@ PR20 分支已整合 PR23 的 b65f8e3 作为依赖，PR23 本身没有合并到 
 
 ## 2026-09-10 查询联调更新
 
-当前机器直连 Scholar 返回 HTTP 429（限流）。scholarly 内部重试导致请求长时间不返回。
+当前机器直连 Scholar 返回错误状态码。scholarly 内部重试导致请求长时间不返回。
+
+> ⚠️ **2026-09-16 更正**：本节当时把观测到的 `SCHOLAR_TIMEOUT` 归因于 **HTTP 429**，这与代码路径矛盾。
+> 裸 429 走 scholarly `_navigator.py:154-156` 的 `else` 分支，**会**自增重试计数并被正确约束，
+> 应表现为 `SCHOLAR_RATE_LIMITED`，**而不是** 30 秒超时。真正会让请求永不返回的是
+> **403 / captcha / DOS** 三条分支（`_navigator.py:134-164`）：它们每次 sleep 60–120 秒后 `continue`，
+> 从不让重试计数前进。仓库内当时没有任何 artifact 记录过真实 HTTP 状态码——这正是后来补上
+> stderr 捕获的原因。详见 [engine-scholar-timeout-diagnosis.zh-CN.md](engine-scholar-timeout-diagnosis.zh-CN.md)。
 后端启动时改用 BoundedScholarLookup：每条查询在独立进程中执行，30 秒超时后终止并返回 SCHOLAR_TIMEOUT / LOOKUP_FAILED。
 Windows 进程输入输出使用临时文件，避免超时清理等待管道；原有 GoogleScholarLookup 继续负责 Engine 结果转换。
 该限制针对每条查询，不是整份文档：N 条引用最坏仍需约 N × 30 秒，另加 PDF 转换和进程开销。

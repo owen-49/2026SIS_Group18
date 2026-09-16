@@ -142,7 +142,10 @@ def run(mode, output):
         original_run = subprocess.run
 
         def worker_run(command, **kwargs):
-            if mode == "controlled" and command[1:] == ["-m", "src.services.scholar_worker"]:
+            # Match the module invocation, not the whole command: the adapter
+            # appends its own flags (--deadline-seconds), and comparing the full
+            # argv would silently stop replacing fixtures and hit the network.
+            if mode == "controlled" and command[1:3] == ["-m", "src.services.scholar_worker"]:
                 # Real child process, deadline, serialization and adapter; only
                 # public Scholar responses are replaced by repeatable fixtures.
                 source = kwargs["stdin"]

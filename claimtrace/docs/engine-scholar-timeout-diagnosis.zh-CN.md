@@ -7,10 +7,82 @@
 > **结论**：**两者都是，但不对称——外部封锁是触发器，代码缺陷是放大器。**
 > 后者把一个"可诊断、有界"的封锁，变成了"永久、且被贴错标签"的 30 秒超时。
 >
-> **本次只诊断，未改任何代码。** 第 7 节是建议的修法，留给决策。
+> **本诊断写于改动之前**，正文（§1–§5、§7）保留原样，作为当时的推理记录。
+> §6 的两条 **P0 已于 2026-09-16 实施**，见下方"实施状态"。
 >
 > ⚠️ **本诊断是纯静态分析（阅读 scholarly 1.7.11 源码）+ 对已有 artifact 的推理，
-> 没有做任何联网复现。** 第 8 节列出了一个能一次性定性的一行实验。
+> 没有做任何联网复现。** §7 列出了一个能一次性定性的一行实验。
+
+---
+
+## ✅ 实施状态（2026-09-16 更新）
+
+§6 的两条 **P0 均已实施**：
+
+| 条目 | 实现位置 | 关键机制 |
+|---|---|---|
+| worker 内硬 deadline | [scholar_worker.py](../backend/src/services/scholar_worker.py) | `run_with_deadline()`：搜索跑在 daemon 线程上，到点仍未返回则打印 `SCHOLAR_WORKER_TIMEOUT` 并 `os._exit(0)` |
+| 捕获 worker stderr | [bounded_scholar_lookup.py](../backend/src/services/bounded_scholar_lookup.py) | 第三个临时文件 + `_worker_log_tail()`，失败时把 stderr 尾部追加进 `detail`，同时 `logger.warning` 落服务端日志 |
+
+deadline 由父进程**从现有配置推导**并作为 `--deadline-seconds` 传给子进程：
+`max(SCHOLAR_LOOKUP_TIMEOUT_SECONDS − 5, 一半)`（默认 30 → **25 s**）。
+5 s 余量对应实测的 worker 启动开销 0.37–0.54 s，约 10× 余量。
+
+### ⚠️ 实施中推翻的两条原建议
+
+1. **"捕获 stderr 一行即可"不成立。** scholarly 在 **INFO** 级别打印判据，而它的 logger
+   继承 root 的 **WARNING** 级别 —— 只改 `stderr=` 会得到一个**空字符串**。
+   必须在 worker 里显式提级别并挂 handler，见 §4 修订说明。
+   这与 §7 那张"完全无输出 ⇒ 网络黑洞"的判读表直接冲突：**空输出不再唯一指向黑洞**。
+2. **改用线程而非 `signal.alarm`，改用临时文件而非 `subprocess.PIPE`**，理由见 §5、§6 修订说明。
+
+### ⚠️ 实施后的 live 实测：**30 秒超时当前不复现**（2026-09-16）
+
+在未改任何配置的前提下重跑 live acceptance，**没有一条查询超时**：
+
+| case | 条目数 | 结果 | 单输入耗时 |
+|---|---|---|---|
+| `references.bib` | 1 | `METADATA_MISMATCH`（`found`，并检出 2020 vs 2017 的年份差） | 2.4 s |
+| `manuscript.pdf` | 2 | `METADATA_MISMATCH`（`found`）+ `LOOKUP_FAILED / SCHOLAR_SEARCH_FAILED` | 5.7 s |
+
+两次重跑结果一致（合计 14.7 s / 12.9 s），`SCHOLAR_TIMEOUT` 与 `SCHOLAR_WORKER_TIMEOUT` **均未出现**。
+
+> ⚠️ **这不是本次改动带来的。** deadline 一次都没有触发——查询本身在 2–3 秒内就返回了。
+> 本机对 Scholar 的封锁是**可变的**（403 / captcha 通常在数分钟到数小时内解除），
+> 2026-09-14 观测到的"每条都烧满 30 s"**今天无法复现**。
+> **封锁会不会回来，本文回答不了**——这正是 deadline + stderr 捕获仍然必要的原因：
+> 它们不解除封锁，但让下一次封锁**有界、可诊断**，而不是又一次沉默的 30 秒。
+
+同时，**deadline 机制在真实网络上单独验证过**（把 deadline 压到 0.5 s）：
+
+| 观测 | 值 |
+|---|---|
+| 进程退出码 | `0` |
+| 墙钟耗时 | **0.63 s**（deadline 0.5 s）—— 卡在网络调用里的线程**没能拖住进程** |
+| stdout | 合法 JSON，`error_code=SCHOLAR_WORKER_TIMEOUT` |
+| stderr | `INFO scholarly: Getting https://scholar.google.com/scholar?hl=en&q=%22Attention...` |
+
+经完整父进程路径（`BoundedScholarLookup(timeout_seconds=1.0)`，推导 deadline 0.5 s）复核，
+`attempts[0].detail` 同时含 deadline 说明与 `Worker log: ...`，并在服务端日志里留了一条 `WARNING`。
+**即：封锁真的回来时，证据会直接出现在报告的 `detail` 里，不需要再加任何代码。**
+
+---
+
+## `SCHOLAR_*` error_code 现状
+
+| code | 触发者 | 含义 | 用户该做什么 |
+|---|---|---|---|
+| `SCHOLAR_WORKER_TIMEOUT` | **worker 自己**（新增） | 搜索超出自己的内部 deadline，已主动放弃 | 重试；`detail` 里带 scholarly 原话 |
+| `SCHOLAR_TIMEOUT` | 父进程 `TimeoutExpired` | **worker 连自己的 deadline 都没守住 ⇒ 这是 bug**，不再是"Scholar 慢" | 报 bug，附 `detail` |
+| `SCHOLAR_WORKER_FAILED` | 父进程 `CalledProcessError` / `OSError` | worker 没起来或崩了；`detail` 里现在带 traceback | 查后端依赖与日志 |
+| `SCHOLAR_SEARCH_FAILED` | worker 内 `google_scholar_lookup` | 搜索本身失败（如标题为空） | 修输入 |
+| `SCHOLAR_RATE_LIMITED` | worker 内捕获 `DOSException` | **仍是死代码**（§3 缺陷二未修） | — |
+
+> `SCHOLAR_TIMEOUT` 的语义**变了**：实施前它是"必然结果"，实施后它表示 deadline 本身失灵。
+> 因此组员重跑 live acceptance 时：
+> **出现 `SCHOLAR_WORKER_TIMEOUT` 是预期结果（封锁回来了，但已被有界处理），不是新故障；
+> 不出现则说明当次网络通畅**（见上方实测，2026-09-16 即如此）。
+> 两种情况都请看 `detail` 里的 `Worker log:`。
 
 ---
 
@@ -114,6 +186,41 @@ else:
 
 `:71-75` 的 `except` 又把崩溃折叠成一句泛化文案。**这是本 blocker 无法从仓库内定位的根本原因。**
 
+### 修订说明（2026-09-16，实施时实测）
+
+上面这张表是**必要条件，不是充分条件**。scholarly 通过
+`self.logger = logging.getLogger('scholarly')` 取日志器，而它发出的全部是 `.info(...)`。
+在裸 worker 进程里实测：
+
+| 量 | 值 |
+|---|---|
+| `scholarly` logger 自身级别 | `0`（NOTSET） |
+| 有效级别 | `30`（WARNING，继承自 root） |
+| handler 数 | `0` |
+| `isEnabledFor(INFO)` | **`False`** |
+
+⇒ **日志记录根本没被构造出来**，`stderr=` 改成什么都是空的（`stderr=subprocess.DEVNULL`
+没有销毁任何东西）。修复必须在**跑搜索的那个进程**里同时做两件事：
+
+```python
+logger.setLevel(logging.INFO)                                  # 级别
+logger.addHandler(logging.StreamHandler(sys.stderr))            # handler
+```
+
+实测前/后：
+
+```
+修复前 stderr: ''
+修复后 stderr: 'INFO scholarly: Got an access denied error (403).\n'
+                'INFO scholarly: Will retry after 74.31 seconds (with another session).\n'
+                'INFO scholarly: Response code 429. Retrying...\n'
+```
+
+（**必须写 stderr，不能写 stdout** —— stdout 是 worker 的结果协议。）
+
+**这条同时推翻了 §7 的判读表**：该表把"完全无输出"解释为网络黑洞。实施后，
+"有结果但 `detail` 里没有 Worker log"才指向黑洞或未触发 scholarly 的路径。
+
 ---
 
 ## 5. 回答组员
@@ -123,8 +230,14 @@ else:
 
 1. **让子进程内部预算在*所有*路径下严格小于父进程 30 s。**
    **不要**依赖 `scholarly.set_retries`（它在 403 / captcha / DOS 三条路径上无效）。
-   可靠做法：在 worker 内设一个硬 deadline（`signal.alarm`，或把 `set_retries` 降到 1
-   并把 `request_timeout_seconds` 压到使其上界 `≪ 30 s`），到点即自杀并回一个明确的 error_code。
+   可靠做法：在 worker 内设一个硬 deadline，到点即自杀并回一个明确的 error_code。
+   **※ 2026-09-16 修订**：具体机制改为 **daemon 线程 + `join(deadline)` + `os._exit(0)`**。
+   不用 `signal.alarm`：它在 Windows 上不存在，而本模块本来就带 Windows 适配
+   （`creationflags=CREATE_NO_WINDOW`、ASCII-only stdout JSON）。
+   机制已实测：`join(1.0)` 在 1.004 s 返回（线程仍 alive），随后打印 JSON、flush、
+   `os._exit(0)` → 进程**立刻**以 0 退出；被 scholarly 的 60–120 s sleep 卡住的线程拖不住进程。
+   另一条备选（把 `set_retries` 降到 1 并压低 `request_timeout_seconds`）**无效**——
+   `set_retries` 约束不住 403 / captcha / DOS 三条路径（§2）。
 2. **捕获 worker stderr 放进 `LookupResult` detail。**
    这一条几乎零成本，且是唯一能把"被封成什么码"变成事实的手段。
 
@@ -139,12 +252,14 @@ else:
 
 ---
 
-## 6. 建议的修法（按性价比排序，本次均未实施）
+## 6. 建议的修法（按性价比排序）
+
+> **※ 2026-09-16：两条 P0 已实施**，见文首"实施状态"。下表保留原始排序，附实施后的修正。
 
 | 优先级 | 改动 | 效果 |
 |---|---|---|
-| **P0** | `bounded_scholar_lookup.py:56`：`stderr=subprocess.DEVNULL` → `subprocess.PIPE`，并在 `TimeoutExpired` 时把 stderr 尾部写进 `detail` / 日志 | 把"30 秒超时"从不可诊断变成可诊断。**一行。** |
-| **P0** | worker 内硬 deadline，使其上界在所有路径 `≪ 30 s` | `SCHOLAR_TIMEOUT` 从"必然"变成"异常" |
+| **P0** ✅ | `bounded_scholar_lookup.py:56`：`stderr=subprocess.DEVNULL` → **第三个临时文件**，并把 stderr 尾部写进 `detail` / 日志 | 把"30 秒超时"从不可诊断变成可诊断。~~一行~~ → 实测**不止一行**：还需在 worker 内提级别 + 挂 handler（§4 修订说明），否则捕获到的是空串。**另：刻意不用原建议的 `subprocess.PIPE`** —— 该类里 `:41-42` 已注明继承的管道句柄在 Windows 上超时后可能挂住，且 64 KB 管道缓冲写满会把卡住的线程彻底锁死；临时文件与既有 `source`/`stdout` 保持一致。 |
+| **P0** ✅ | worker 内硬 deadline，使其上界在所有路径 `≪ 30 s` | `SCHOLAR_TIMEOUT` 从"必然"变成"异常"（新增 `SCHOLAR_WORKER_TIMEOUT` 承担常态） |
 | **P1** | `scholar_search.py:147` 的 `DOSException` 分类：要么删掉（死代码），要么改成从 stderr 文本判定 | 消除误导性的分类 |
 | **P2** | 修 `pdf-audit-integration-status.zh-CN.md:29` 的 "HTTP 429" 断言 | 文档与代码路径一致 |
 | **P3** | 换文献源（见第 9 节） | 从根上绕开 Scholar 的封锁问题 |
@@ -158,15 +273,18 @@ else:
 
 ### 一行实验
 
-把 `bounded_scholar_lookup.py:56` 的 `stderr=subprocess.DEVNULL` 改成 `subprocess.PIPE`，
-在 `TimeoutExpired` 分支打印它，然后跑一次 live lookup。四种结果对应四种结论：
+> **※ 2026-09-16：本实验已实施**（用临时文件而非 `PIPE`，理由见 §6），
+> 因此现在**不需要**改任何代码：跑一次 live acceptance，看失败条目
+> `lookup_attempts[0].detail` 里的 `Worker log:` 即可。
+
+四种输出对应四种结论：
 
 | stderr 内容 | 结论 |
 |---|---|
 | `Got an access denied error (403).` + `Will retry after 6x.xx seconds` | **403 封锁**，确认第 2 节缺陷一 |
 | `Response code 429. Retrying...` | 配额限流（那 `SCHOLAR_RATE_LIMITED` 的映射本身也有问题） |
 | `Got a captcha request.` | captcha 拦截 |
-| **完全无输出** | 网络被黑洞（DNS / 连接层静默丢包），与 scholarly 无关 |
+| **完全无输出** | ⚠️ 见 §4 修订说明：只有在**已确认级别/handler 生效**的前提下，空输出才指向网络黑洞（DNS / 连接层静默丢包）。 |
 
 ---
 
@@ -267,8 +385,10 @@ GoogleScholarLookup.lookup(entry: ReferenceEntry) -> LookupResult
 
 ### 8.5 建议的顺序
 
-1. **先做 §6 的 P0**（两行：捕获 stderr + 收敛 deadline）。这让当前链路**可诊断且不再必然超时**，
-   不动任何用户可见行为。
+1. ✅ **已完成（2026-09-16）**：§6 的两条 P0 —— 捕获 stderr + 收敛 deadline。
+   这让当前链路**可诊断且不再必然超时**，不动任何用户可见行为。
+   唯一新增的用户可见取值是 `SCHOLAR_WORKER_TIMEOUT`（`error_code` 本就是自由字符串，
+   前端 `AuditPage.tsx` 按自由文本渲染，无枚举映射）。
 2. **再单开一个 PR 换源**（Crossref + OpenAlex 双源，或先 OpenAlex），
    把 §8.4 的行为变化单独评审。
 3. 缓存作为**独立优化**，在换源之后做——那时才有稳定的查询语义可以缓存。
