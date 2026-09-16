@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -100,6 +101,23 @@ _STOP_WORDS = {
     "which",
     "with",
 }
+_TITLE_STOP_WORDS = _STOP_WORDS | {
+    "a",
+    "an",
+    "at",
+    "by",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "the",
+    "to",
+    "via",
+    "without",
+}
+_TITLE_LINEBREAK_HYPHEN_RE = re.compile(r"(?<=\w)[-‐‑‒–—]\s+(?=\w)")
+_TITLE_DASH_RE = re.compile(r"[-‐‑‒–—]")
 
 
 @dataclass(frozen=True)
@@ -214,7 +232,13 @@ def _citation_keys(marker: str) -> list[str]:
 def _first_author_surname(authors: Iterable[str]) -> str:
     """Extract a conservative surname token from BibTeX author text."""
     first = next(iter(authors), "")
-    surname = first.split(",", 1)[0] if "," in first else first.split()[0] if first else ""
+    if "," in first:
+        surname = first.split(",", 1)[0]
+    else:
+        # BibTeX normally stores ``Last, First`` while Parser metadata commonly
+        # uses display order (``First Last``).  Taking the last token supports
+        # both forms and keeps author-year resolution stable for Parser output.
+        surname = first.split()[-1] if first.split() else ""
     return re.sub(r"[^\w'-]", "", surname).casefold()
 
 
@@ -272,15 +296,40 @@ def _load_bibliography_entries(records: list[PaperRecord]) -> list[Any]:
 
 
 def _title_similarity(left: str, right: str) -> float:
-    """Score two titles using token coverage, with exact titles scoring one."""
-    left_tokens = _tokens(left)
-    right_tokens = _tokens(right)
+    """Score two titles after normalising PDF punctuation and line wraps.
+
+    Title metadata is often copied from a PDF text layer, where case, Unicode
+    dashes, and line-break hyphens vary from the BibTeX entry. The score stays
+    conservative (overlap over the larger token set); author/year evidence is
+    added separately by ``_match_pdf_to_bib_entry``.
+    """
+    left_tokens = _title_tokens(left)
+    right_tokens = _title_tokens(right)
     if not left_tokens or not right_tokens:
         return 0.0
-    if left.casefold() == right.casefold():
+    if _normalise_title(left) == _normalise_title(right):
         return 1.0
     overlap = len(left_tokens & right_tokens)
     return overlap / max(len(left_tokens), len(right_tokens))
+
+
+def _normalise_title(value: str) -> str:
+    """Return a comparison form for titles extracted from PDF/BibTeX text."""
+    value = unicodedata.normalize("NFKC", value).casefold().strip()
+    # A hyphen followed by whitespace is usually a word split at a PDF line
+    # break (``auto- encoders``), while ordinary hyphens separate title words.
+    value = _TITLE_LINEBREAK_HYPHEN_RE.sub("", value)
+    return _TITLE_DASH_RE.sub(" ", value)
+
+
+def _title_tokens(value: str) -> set[str]:
+    """Return informative, punctuation-independent title tokens."""
+    normalised = _normalise_title(value)
+    return {
+        token
+        for token in re.findall(r"[\w]+", normalised, flags=re.UNICODE)
+        if len(token) > 2 and token not in _TITLE_STOP_WORDS
+    }
 
 
 def _load_completed_pdf(record: PaperRecord) -> _LoadedPdf:
@@ -356,13 +405,26 @@ def _match_pdf_to_bib_entry(entry: Any, pdfs: list[_LoadedPdf]) -> _LoadedPdf | 
     if exact:
         return exact[0] if len(exact) == 1 else None
     ranked = []
+    entry_author = _first_author_surname(entry.authors)
     for source in pdfs:
         if entry_doi and source.parsed.doi:
             # A title match must never override conflicting explicit identifiers.
             continue
-        score = _title_similarity(entry.title, source.parsed.title or source.record.title or "")
-        if entry.year is not None and source.parsed.year == entry.year:
-            score += 0.1
+        source_title = source.parsed.title or source.record.title or ""
+        title_score = _title_similarity(entry.title, source_title)
+        source_author = _first_author_surname(source.parsed.authors)
+        author_match = bool(entry_author and source_author and entry_author == source_author)
+        year_match = entry.year is not None and source.parsed.year == entry.year
+
+        # A partial title is acceptable only with independent identity evidence.
+        # This recovers subtitles lost by a PDF parser while refusing to select a
+        # same-topic paper on title overlap alone. The 0.15/0.10 weights keep
+        # the existing 0.65 acceptance floor for an exact or near-exact title.
+        score = title_score
+        if author_match:
+            score += 0.15
+        if year_match:
+            score += 0.10
         ranked.append((min(score, 1.0), source))
     ranked.sort(key=lambda item: item[0], reverse=True)
     if not ranked or ranked[0][0] < 0.65:
