@@ -1,10 +1,12 @@
 """Tests for the PDF Parser-to-backend adapter."""
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import fitz
 from backend.src.services import parser_adapter
 from backend.tests.pdf_fixtures import make_test_pdf
+from parser import pdf_parser
 
 
 def _make_two_page_pdf(path: Path) -> None:
@@ -113,3 +115,121 @@ def test_parse_document_preserves_single_last_first_author(tmp_path):
     )
 
     assert document.authors == ["Smith, John"]
+
+
+def test_parse_document_skips_arxiv_header_for_title_and_year(monkeypatch, tmp_path):
+    pdf_path = tmp_path / "paper.pdf"
+    pdf_path.write_bytes(
+        make_test_pdf(
+            "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+            "Patrick Lewis and Ethan Perez",
+            "",
+            "2021",
+        )
+    )
+
+    parsed_paper = SimpleNamespace(
+        title="arXiv:2005.11401v4 [cs.CL] 12 Apr 2021",
+        authors=[],
+        year=2005,
+        venue=None,
+        doi=None,
+        raw_blocks=[
+            SimpleNamespace(
+                text="arXiv:2005.11401v4 [cs.CL] 12 Apr 2021",
+                bbox=(72, 50, 540, 65),
+                page=1,
+            ),
+            SimpleNamespace(
+                text="Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+                bbox=(72, 90, 540, 110),
+                page=1,
+            ),
+            SimpleNamespace(
+                text="Patrick Lewis and Ethan Perez",
+                bbox=(72, 130, 540, 145),
+                page=1,
+            ),
+        ],
+    )
+    monkeypatch.setattr(pdf_parser, "parse_pdf", lambda _path: parsed_paper)
+
+    markdown = (
+        "# arXiv:2005.11401v4 [cs.CL] 12 Apr 2021\n\n"
+        "## Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n\n"
+        "Patrick Lewis and Ethan Perez\n"
+    )
+
+    def fake_convert(_pdf_path, output_dir=None, **_kwargs):
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return markdown
+
+    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", fake_convert)
+
+    document = parser_adapter.parse_document(
+        "paper-id",
+        pdf_path,
+        output_dir=tmp_path / "markdown",
+    )
+
+    assert document.title == "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"
+    assert document.authors == ["Patrick Lewis", "Ethan Perez"]
+    assert document.year == 2021
+
+
+def test_extract_metadata_discards_title_fragments_as_authors():
+    parsed_paper = SimpleNamespace(
+        title=None,
+        authors=["Acyclic Graphs", "Multi-View Feature Alignment"],
+        year=None,
+        venue=None,
+        doi=None,
+        raw_blocks=[],
+    )
+
+    metadata = parser_adapter._extract_metadata(
+        parsed_paper,
+        "paper.pdf",
+        title_hint="Acyclic Graphs for Multi-View Feature Alignment",
+    )
+
+    assert metadata.authors == []
+
+
+def test_extract_metadata_skips_wrapped_title_before_author_block():
+    parsed_paper = SimpleNamespace(
+        title=None,
+        authors=[],
+        year=None,
+        venue=None,
+        doi=None,
+        raw_blocks=[
+            SimpleNamespace(
+                text="EXPLAINING AND HARNESSING\nADVERSARIAL EXAMPLES",
+                bbox=(72, 80, 540, 110),
+                page=1,
+            ),
+            SimpleNamespace(
+                text="Ian J. Goodfellow, Jonathon Shlens & Christian Szegedy",
+                bbox=(72, 130, 540, 145),
+                page=1,
+            ),
+            SimpleNamespace(
+                text="Google Inc., Mountain View, CA",
+                bbox=(72, 160, 540, 175),
+                page=1,
+            ),
+        ],
+    )
+
+    metadata = parser_adapter._extract_metadata(
+        parsed_paper,
+        "paper.pdf",
+        title_hint="EXPLAINING AND HARNESSING ADVERSARIAL EXAMPLES",
+    )
+
+    assert metadata.authors == [
+        "Ian J. Goodfellow",
+        "Jonathon Shlens",
+        "Christian Szegedy",
+    ]
