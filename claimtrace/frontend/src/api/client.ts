@@ -1,6 +1,6 @@
-import { demoAudit, demoPaperClaims, demoVerification } from "../data/mockData";
+import { demoAudit, demoPaperClaims, demoVerification, demoCitationComparison } from "../data/mockData";
 import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
-import type { AuditResponse, BibVerifyResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
+import type { AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
@@ -159,13 +159,14 @@ export async function verifyBib(
   return readResponse<BibVerifyResponse>(response);
 }
 
-export async function getPaperClaims(paperId: string, signal?: AbortSignal): Promise<PaperClaimsResponse> {
+export async function getPaperClaims(paperId: string, signal?: AbortSignal, bibPaperId?: string): Promise<PaperClaimsResponse> {
   if (usingMockApi) {
     await wait(600);
     return { ...demoPaperClaims, manuscript_id: paperId };
   }
 
-  const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}/claims`), { signal });
+  const query = bibPaperId ? `?${new URLSearchParams({ bib_paper_id: bibPaperId })}` : "";
+  const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}/claims${query}`), { signal });
   const result = await readResponse<PaperClaimsResponse>(response);
   if (!Array.isArray(result.claims)) throw new Error("The extracted claims response is invalid.");
   return result;
@@ -202,6 +203,30 @@ export async function runAudit(
   const result = await readResponse<AuditResponse>(response);
   if (result.contract_version !== 2 || !Array.isArray(result.results)) {
     throw new Error("The bibliography audit response is incompatible with this frontend.");
+  }
+  return result;
+}
+
+
+export async function verifyCitation(request: CitationComparisonRequest, signal?: AbortSignal): Promise<CitationComparisonResponse> {
+  if (usingMockApi) {
+    await wait(600);
+    return demoCitationComparison(request);
+  }
+  const response = await fetch(apiUrl("/api/verify/citation"), {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request), signal,
+  });
+  const result = await readResponse<CitationComparisonResponse>(response);
+  if (typeof result.status !== "string" || typeof result.message !== "string" || !Array.isArray(result.evidence)) {
+    throw new Error("The citation comparison response is invalid. No judgement is available.");
+  }
+  if (result.status !== "COMPARED") return { ...result, judgement: null };
+  const judgement = result.judgement;
+  if (!judgement || !["SUPPORT", "PARTIAL", "CONTRADICT", "NOT_FOUND"].includes(judgement.verdict)
+    || typeof judgement.rationale !== "string" || !Number.isFinite(judgement.confidence)
+    || judgement.confidence < 0 || judgement.confidence > 1) {
+    throw new Error("The comparison returned no valid judgement. Please try again.");
   }
   return result;
 }

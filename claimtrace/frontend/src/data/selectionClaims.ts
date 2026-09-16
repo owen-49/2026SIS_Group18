@@ -19,3 +19,16 @@ export function matchSelectionClaims(claims: ExtractedClaim[], text: string, pag
   const marked = matches.filter((claim) => claim.citation_marker && selected.includes(normalise(claim.citation_marker)));
   return marked.length ? marked : matches;
 }
+
+/** Split the numeric groups explicitly covered by the handoff; do not guess other formats. */
+export function singleReferenceMarkers(marker: string): string[] {
+  if (!/^\[\s*\d+(?:\s*[,–—-]\s*\d+)*\s*\]$/.test(marker)) return [marker];
+  const values: number[] = [];
+  for (const part of marker.slice(1, -1).split(",")) {
+    const range = part.trim().split(/[–—-]/).map(Number);
+    const [start, end = start] = range;
+    if (range.length > 2 || !range.every(Number.isSafeInteger) || end < start || end - start > 100) return [marker];
+    for (let value = start; value <= end; value++) values.push(value);
+  }
+  return [...new Set(values)].map((value) => `[${value}]`);
+}
