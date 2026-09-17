@@ -15,9 +15,17 @@ const citationsTab = document.getElementById("citationsTab");
 const papersTab = document.getElementById("papersTab");
 const citationsView = document.getElementById("citationsView");
 const papersView = document.getElementById("papersView");
+const pdfAuditControls = document.getElementById("pdfAuditControls");
+const pdfSelect = document.getElementById("pdfSelect");
+const auditPdfButton = document.getElementById("auditPdfButton");
+const auditStatus = document.getElementById("auditStatus");
+const auditList = document.getElementById("auditList");
 
 let papers = [];
 let findings = [];
+let backendPapers = [];
+let audit = null;
+let auditState = {};
 let activeView = "citations";
 let viewChosen = false;
 
@@ -105,6 +113,36 @@ function renderFindings() {
   </button>${renderCandidates(finding)}`).join("");
 }
 
+const auditLabels = {
+  VERIFIED: "Verified",
+  METADATA_MISMATCH: "Metadata mismatch",
+  NEEDS_REVIEW: "Needs review",
+  NOT_FOUND: "Not found",
+  LOOKUP_FAILED: "Lookup failed",
+};
+
+function auditTone(status) {
+  if (status === "VERIFIED") return "support";
+  if (status === "METADATA_MISMATCH" || status === "NEEDS_REVIEW") return "partial";
+  return "danger";
+}
+
+function renderAudit() {
+  auditStatus.textContent = auditState.message || "No Audit has been run yet.";
+  auditStatus.classList.toggle("running", Boolean(auditState.running));
+  auditList.hidden = !audit?.results?.length;
+  auditList.innerHTML = (audit?.results || []).map((result) => {
+    const metadata = result.entry?.metadata || {};
+    const title = metadata.title || metadata.key || result.entry?.entry_id || "Untitled reference";
+    const differences = (result.field_checks || []).filter((field) => field.status !== "MATCH" && field.status !== "NOT_CHECKED");
+    return `<article class="audit-card tone-${auditTone(result.status)}">
+      <div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(auditLabels[result.status] || result.status)}</span></div>
+      <small>${escapeHtml(result.reason || "")}</small>
+      ${differences.length ? `<details><summary>${differences.length} field difference${differences.length === 1 ? "" : "s"}</summary>${differences.map((field) => `<p><b>${escapeHtml(field.field_name)}</b>: ${escapeHtml(field.input_value || "Missing")} → ${escapeHtml(field.source_value || "Missing")}</p>`).join("")}</details>` : ""}
+    </article>`;
+  }).join("");
+}
+
 function setView(view, chosen = true) {
   activeView = view;
   if (chosen) viewChosen = true;
@@ -119,6 +157,7 @@ function setView(view, chosen = true) {
   searchInput.value = "";
   renderPapers();
   renderFindings();
+  renderAudit();
 }
 
 async function loadWorkspace() {
@@ -128,9 +167,14 @@ async function loadWorkspace() {
     "claimtraceFindings",
     "claimtraceCitationSource",
     "claimtraceBackendStatus",
+    "claimtraceAuditStatus",
+    "claimtraceAudit",
+    "claimtraceAuditInput",
   ]);
   papers = Array.isArray(stored.claimtracePapers) ? stored.claimtracePapers : [];
   findings = Array.isArray(stored.claimtraceFindings) ? stored.claimtraceFindings : [];
+  audit = stored.claimtraceAudit || null;
+  auditState = stored.claimtraceAuditStatus || {};
   const backendStatus = stored.claimtraceBackendStatus || {};
   const hasOverleafContent = stored.claimtraceSource === "overleaf" || stored.claimtraceCitationSource === "overleaf";
   sourceTitle.textContent = hasOverleafContent ? "Overleaf project" : "Extension preview";
@@ -140,6 +184,14 @@ async function loadWorkspace() {
   footerDetail.textContent = backendStatus.message || (findings.length
     ? "Unmatched citations are shown as local previews"
     : "No backend verification is running");
+  const selectedId = pdfSelect.value || (stored.claimtraceAuditInput?.inputType === "pdf" ? stored.claimtraceAuditInput.paperId : "");
+  const completedPdfs = backendPapers.filter((paper) => paper.file_type === "pdf" && paper.status === "completed");
+  pdfSelect.innerHTML = `<option value="">Select an uploaded manuscript PDF</option>${completedPdfs.map((paper) =>
+    `<option value="${escapeHtml(paper.paper_id)}">${escapeHtml(paper.original_filename || paper.title || paper.paper_id)}</option>`,
+  ).join("")}`;
+  if (completedPdfs.some((paper) => paper.paper_id === selectedId)) pdfSelect.value = selectedId;
+  pdfAuditControls.hidden = false;
+  auditPdfButton.disabled = !pdfSelect.value || Boolean(auditState.running);
   if (!viewChosen) activeView = findings.length ? "citations" : "papers";
   setView(activeView, false);
 }
@@ -159,13 +211,25 @@ async function locateFinding(locationId, citationKey, card) {
   }
 }
 
+async function refreshAuditPapers() {
+  const response = await chrome.runtime.sendMessage({ type: "refresh_audit_papers" });
+  if (response?.error) throw new Error(response.error);
+  backendPapers = Array.isArray(response?.papers) ? response.papers : [];
+}
+
 searchInput.addEventListener("input", () => activeView === "citations" ? renderFindings() : renderPapers());
 citationsTab.addEventListener("click", () => setView("citations"));
 papersTab.addEventListener("click", () => setView("papers"));
 syncButton.addEventListener("click", async () => {
   syncButton.classList.add("syncing");
-  await loadWorkspace();
-  window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
+  try {
+    await refreshAuditPapers();
+    await loadWorkspace();
+  } catch (error) {
+    syncText.textContent = error.message || "Unable to refresh uploaded papers";
+  } finally {
+    window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
+  }
 });
 citationList.addEventListener("click", async (event) => {
   const reviewButton = event.target.closest("[data-review-paper]");
@@ -190,9 +254,26 @@ citationList.addEventListener("click", async (event) => {
   const card = event.target.closest(".citation-card");
   if (card) void locateFinding(card.dataset.locationId, card.dataset.citationKey, card);
 });
+pdfSelect.addEventListener("change", () => { auditPdfButton.disabled = !pdfSelect.value; });
+auditPdfButton.addEventListener("click", async () => {
+  if (!pdfSelect.value) return;
+  auditPdfButton.disabled = true;
+  try {
+    const response = await chrome.runtime.sendMessage({ type: "run_pdf_audit", manuscriptId: pdfSelect.value });
+    if (response?.error) throw new Error(response.error);
+    await loadWorkspace();
+    setView("papers");
+  } catch (error) {
+    auditStatus.textContent = error.message || "Unable to audit the manuscript";
+  } finally {
+    auditPdfButton.disabled = !pdfSelect.value;
+  }
+});
 document.getElementById("openDashboard").addEventListener("click", () => chrome.tabs.create({ url: "http://localhost:3000/audit" }));
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus)) void loadWorkspace();
+  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus || changes.claimtraceAuditStatus || changes.claimtraceAudit)) void loadWorkspace();
 });
 
-void loadWorkspace();
+void refreshAuditPapers()
+  .catch(() => undefined)
+  .finally(loadWorkspace);

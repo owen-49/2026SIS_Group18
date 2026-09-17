@@ -16,6 +16,7 @@ const VERDICT_LABELS = {
 
 let latestBibliographyRequest = 0;
 let latestClaimsRequest = 0;
+let latestAuditRequest = 0;
 let activeBibPaperId;
 let activeBibSourceHash;
 let bibliographySyncChain = Promise.resolve();
@@ -46,6 +47,15 @@ async function setBackendStatus(status) {
   });
 }
 
+async function setAuditStatus(status) {
+  await chrome.storage.local.set({
+    claimtraceAuditStatus: {
+      ...status,
+      updatedAt: Date.now(),
+    },
+  });
+}
+
 async function loadBackendPapers() {
   const response = await apiJson("/api/papers");
   return Array.isArray(response.papers) ? response.papers : [];
@@ -59,6 +69,48 @@ async function hashText(value) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function auditRequestBody(inputPaperId, inputType) {
+  if (!inputPaperId) throw new Error("Select an audit input first");
+  if (inputType === "bib") return { bib_paper_id: inputPaperId };
+  if (inputType === "pdf") return { manuscript_id: inputPaperId };
+  throw new Error("Unsupported audit input type");
+}
+
+async function runAudit(inputPaperId, inputType) {
+  const requestId = ++latestAuditRequest;
+  await chrome.storage.local.set({
+    claimtraceAudit: null,
+    claimtraceAuditInput: { paperId: inputPaperId, inputType },
+  });
+  await setAuditStatus({ running: true, message: `Running ${inputType.toUpperCase()} bibliography audit…` });
+
+  try {
+    const audit = await apiJson("/api/audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(auditRequestBody(inputPaperId, inputType)),
+    });
+    if (requestId !== latestAuditRequest) return null;
+    if (audit.contract_version !== 2 || !Array.isArray(audit.results)) {
+      throw new Error("The backend returned an incompatible audit response");
+    }
+    await chrome.storage.local.set({ claimtraceAudit: audit, claimtraceAuditUpdatedAt: Date.now() });
+    await setAuditStatus({
+      running: false,
+      message: `Audit complete · ${audit.total_entries} reference${audit.total_entries === 1 ? "" : "s"}`,
+    });
+    return audit;
+  } catch (error) {
+    if (requestId !== latestAuditRequest) return null;
+    await chrome.storage.local.set({ claimtraceAudit: null });
+    await setAuditStatus({
+      running: false,
+      message: error instanceof Error ? error.message : "Bibliography audit is unavailable",
+    });
+    throw error;
+  }
 }
 
 function normaliseTitle(value) {
@@ -185,6 +237,10 @@ async function syncBibliography(bibSource, requestId) {
     activeBibPaperId = parsed.paper_id;
     activeBibSourceHash = bibSourceHash;
     if (requestId !== latestBibliographyRequest) return;
+
+    // Audit is independent of the existing Verify flow. Run it from the
+    // persisted BibTeX ID without changing PR #26's source-PDF matching path.
+    void runAudit(parsed.paper_id, "bib").catch(() => undefined);
 
     const backendPapers = await loadBackendPapers();
     const sourcePapers = completedPdfPapers(backendPapers);
@@ -403,6 +459,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         stored.claimtraceSourcePapers || [],
         requestId,
       ));
+  }
+
+  if (message.type === "refresh_audit_papers") {
+    void loadBackendPapers()
+      .then((papers) => sendResponse({ ok: true, papers }))
+      .catch((error) => sendResponse({ error: error.message || "Unable to load uploaded papers" }));
+    return true;
+  }
+
+  if (message.type === "run_pdf_audit") {
+    void (async () => {
+      const papers = await loadBackendPapers();
+      const selected = papers.find((paper) => paper.paper_id === message.manuscriptId);
+      if (!selected || selected.file_type !== "pdf" || selected.status !== "completed") {
+        throw new Error("The selected manuscript PDF is no longer available");
+      }
+      const audit = await runAudit(selected.paper_id, "pdf");
+      sendResponse({ ok: true, audit });
+    })().catch((error) => sendResponse({ error: error.message || "Unable to audit the manuscript" }));
+    return true;
   }
 
   if (message.type === "open_side_panel" && sender.tab?.id) {
