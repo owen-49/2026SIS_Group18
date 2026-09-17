@@ -419,3 +419,20 @@ export function demoSelectionVerification(claimId: string, selectedText: string)
     matches: [],
   };
 }
+
+
+export function demoCitationComparison(request: import("../types/api").CitationComparisonRequest): import("../types/api").CitationComparisonResponse {
+  const claim = demoPaperClaims.claims.find((entry) => entry.claim_id === request.claim_id);
+  const judged = Boolean(claim?.cited_source?.source_paper_id);
+  const sample = demoSelectionVerification(request.claim_id, request.claim);
+  return {
+    claim: request.claim, claim_id: request.claim_id, citation_marker: request.citation_marker,
+    citation_key: claim?.cited_source?.citation_key || null,
+    status: judged ? "COMPARED" : "SOURCE_NOT_AVAILABLE",
+    message: judged ? "Prepared example comparison; no backend analysis was performed." : "Example: no source PDF is associated with this citation. The claim was not judged.",
+    cited_source: claim?.cited_source || null, source_paper_id: claim?.cited_source?.source_paper_id || null,
+    source_document: claim?.source_document || null,
+    judgement: judged ? { verdict: sample.verdict, confidence: sample.confidence, rationale: sample.rationale } : null,
+    evidence: judged ? sample.matches.map((match, rank) => ({ passage_text: match.passage_text, similarity: match.similarity, rank, page: claim?.source_document?.matched_location?.page || 1 })) : [],
+  };
+}

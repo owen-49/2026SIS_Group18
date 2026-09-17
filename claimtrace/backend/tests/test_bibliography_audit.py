@@ -247,7 +247,8 @@ def test_manuscript_reference_parser_preserves_raw_text_and_location(
     entry = body["results"][0]["entry"]
     assert (entry["number"], entry["page_start"], entry["page_end"]) == (7, 4, 5)
     assert entry["metadata"]["title"] == ""
-    assert lookup.seen[0].metadata.raw_text.startswith("[7]")
+    assert entry["metadata"]["raw_text"].startswith("[7]")
+    assert lookup.seen == []
     assert body["results"][0]["status"] == "NEEDS_REVIEW"
     assert "Parser sample warning" in body["warnings"]
 
@@ -262,6 +263,104 @@ def test_empty_reference_list_is_not_a_successful_audit(client, storage_paths, m
     body = client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
     assert body["status"] == "needs_review"
     assert body["total_entries"] == 0
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_pdf_metadata_reaches_scholar_and_survives_reload(
+    client, storage_paths, monkeypatch, legacy
+):
+    from backend.src.services.google_scholar_lookup import GoogleScholarLookup
+    from engine.scholar_search import scholarly
+    from parser.reference_json_extractor import parse_reference_metadata
+
+    record = persist_manuscript(storage_paths)
+    raw = '[1] J. Smith, "Retrieval with citations," Journal of Retrieval, 2024.'
+    metadata = parse_reference_metadata(raw)
+    if legacy:
+        artifact = reference_path(record.paper_id)
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text(json.dumps({
+            "source_file": record.stored_filename,
+            "references": [{"raw_text": raw, "number": 1, "page_start": 2}],
+        }), encoding="utf-8")
+
+    calls = []
+
+    def extract(path):
+        calls.append(path)
+        return SimpleNamespace(references=[SimpleNamespace(
+            raw_text=raw, number=1, page_start=2, page_end=2,
+            title=metadata.title, authors=metadata.authors, year=metadata.year,
+            venue=metadata.venue, doi=metadata.doi,
+        )], warnings=[])
+
+    queries = []
+
+    def search(query, **kwargs):
+        queries.append((query, kwargs))
+        return iter([{
+            "bib": {"title": metadata.title, "author": metadata.authors,
+                    "pub_year": "2024", "venue": metadata.venue},
+            "pub_url": "https://example.org/publication",
+        }])
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+    monkeypatch.setattr(scholarly, "search_pubs", search)
+    monkeypatch.setattr(app.state, "bibliography_lookup", GoogleScholarLookup(), raising=False)
+    bodies = [client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
+              for _ in range(2)]
+    assert len(calls) == (0 if legacy else 1)
+    assert queries == [('"Retrieval with citations" Smith',
+                        {"year_low": 2024, "year_high": 2024})] * 2
+    row = bodies[0]["results"][0]
+    assert row["entry"]["metadata"]["authors"] == ["J. Smith"]
+    assert row["entry"] == bodies[1]["results"][0]["entry"]
+    assert row["status"] == "VERIFIED"
+    assert row["matched_record"]["url"] == "https://example.org/publication"
+    assert client.get(f"/api/audit/{bodies[0]['audit_id']}").json() == bodies[0]
+    saved = json.loads(reference_path(record.paper_id).read_text(encoding="utf-8"))
+    assert saved["references"][0]["title"] == "Retrieval with citations"
+    assert saved["metadata_version"] == 2
+
+
+def test_real_pdf_upload_to_audit(client, monkeypatch):
+    """Exercise PDF conversion too; only the external network is substituted."""
+    import pymupdf
+    from backend.src.services.google_scholar_lookup import GoogleScholarLookup
+    from engine.scholar_search import scholarly
+
+    document = pymupdf.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "Audit integration fixture", fontsize=20)
+    page.insert_text((72, 110), "This synthetic document cites two publications [1], [2].")
+    page = document.new_page()
+    page.insert_text((72, 72), "References", fontsize=20)
+    page.insert_text(
+        (72, 115), '[1] J. Smith, "Retrieval with citations," Journal of Retrieval, 2024.'
+    )
+    page.insert_text((72, 155), '[2] A. Jones, "Citation checking," Journal of Testing, 2023.')
+    content = document.tobytes()
+    document.close()
+    queries = []
+
+    def search(query, **kwargs):
+        queries.append(query)
+        return iter([])
+
+    monkeypatch.setattr(scholarly, "search_pubs", search)
+    monkeypatch.setattr(app.state, "bibliography_lookup", GoogleScholarLookup(), raising=False)
+    upload = client.post("/api/parse", files={"file": (
+        "audit-fixture.pdf", content, "application/pdf"
+    )})
+    assert upload.status_code == 200, upload.text
+    assert upload.json()["status"] == "completed", upload.text
+    response = client.post("/api/audit", json={"manuscript_id": upload.json()["paper_id"]})
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["total_entries"] == 2, body
+    assert queries == ['"Retrieval with citations" Smith', '"Citation checking" Jones']
+    assert all(row["status"] == "NOT_FOUND" for row in body["results"])
+    assert client.get(f"/api/audit/{body['audit_id']}").json() == body
 
 
 def test_parser_dependency_error_is_explained(client, storage_paths, monkeypatch):
@@ -297,8 +396,7 @@ def test_reads_parser_public_reference_json_without_reextracting(
         ),
         encoding="utf-8",
     )
-    original = artifact.read_bytes()
-    # A persisted result remains usable without the original PDF or Parser runtime.
+    # Legacy metadata enrichment needs no original PDF or Java conversion.
     Path(record.file_path).unlink()
 
     def unexpected_extract(path):
@@ -308,7 +406,7 @@ def test_reads_parser_public_reference_json_without_reextracting(
     response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
     assert response.status_code == 200
     assert response.json()["total_entries"] == len(raw_entries)
-    assert artifact.read_bytes() == original
+    assert json.loads(artifact.read_text(encoding="utf-8"))["metadata_version"] == 2
     if raw_entries:
         entry = response.json()["results"][0]["entry"]
         assert entry["metadata"]["raw_text"] == raw_entries[0]["raw_text"]

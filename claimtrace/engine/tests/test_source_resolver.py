@@ -3,7 +3,7 @@
 from unittest.mock import Mock
 
 from engine.retriever import RetrievalResult
-from engine.source_resolver import ResolvedSource, SourcePaper, SourceResolver
+from engine.source_resolver import SourcePaper, SourceResolver
 
 
 def _locate(key: str) -> SourcePaper | None:

@@ -5,15 +5,12 @@ from pathlib import Path
 import pytest
 
 from parser.pdf_parser import (
-    Paragraph,
     ParsedPaper,
-    extract_blocks,
     parse_pdf,
     recover_paragraphs,
-    repair_hyphenation,
     reorder_two_column,
+    repair_hyphenation,
 )
-
 
 # ── Unit tests (no PDF required) ──────────────────────────────
 
@@ -38,8 +35,6 @@ class TestRepairHyphenation:
 
 class TestReorderTwoColumn:
     def test_empty_blocks(self):
-        from parser.pdf_parser import TextBlock
-
         assert reorder_two_column([], 612) == []
 
     def test_single_column(self):

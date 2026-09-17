@@ -14,6 +14,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "openai>=1.50.0",
     "scholarly>=1.7.0",
+    # scholarly imports the v1 BibDatabase API, removed by bibtexparser 2.
+    "bibtexparser>=1.4.0,<2",
 ]
 
 [project.optional-dependencies]

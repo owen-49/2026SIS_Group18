@@ -17,12 +17,18 @@ class ReferenceStoreError(RuntimeError):
 
 class StoredReference(BaseModel):
     raw_text: str = Field(min_length=1)
+    title: str | None = None
+    authors: list[str] | None = None
+    year: int | None = None
+    venue: str | None = None
+    doi: str | None = None
     number: int | None = None
     page_start: int | None = Field(default=None, ge=1)
     page_end: int | None = Field(default=None, ge=1)
 
 
 class StoredReferenceList(BaseModel):
+    metadata_version: int = 1
     # source_file + references[].raw_text is the current Parser public schema.
     source_file: str = Field(min_length=1)
     references: list[StoredReference]

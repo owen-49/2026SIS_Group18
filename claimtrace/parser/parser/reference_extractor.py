@@ -41,13 +41,13 @@ def find_reference_section(text_blocks: list) -> int | None:
     Returns:
         Page number where references start, or None if not found.
     """
-    REFERENCE_HEADINGS = {"references", "bibliography", "literature cited", "works cited"}
+    reference_headings = {"references", "bibliography", "literature cited", "works cited"}
 
     # Search from the end: references are always at the back
     for block in reversed(text_blocks):
         heading = block.text.strip().lower().rstrip(".")
-        if heading in REFERENCE_HEADINGS or any(
-            h in heading for h in REFERENCE_HEADINGS
+        if heading in reference_headings or any(
+            h in heading for h in reference_headings
         ):
             return block.page
 

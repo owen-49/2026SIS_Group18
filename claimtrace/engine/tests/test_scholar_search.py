@@ -2,10 +2,7 @@
 
 from unittest.mock import patch
 
-from engine.scholar_search import (
-    ScholarSearchOutcome,
-    search_scholar,
-)
+from engine.scholar_search import search_scholar
 
 
 class _FakePub:
@@ -64,6 +61,28 @@ def test_search_failed_on_exception():
 
     assert outcome.status == "failed"
     assert "blocked" in outcome.error
+
+
+def test_search_rate_limited_on_max_tries_exceeded():
+    from scholarly import MaxTriesExceededException
+
+    def _raise(query, **kwargs):
+        raise MaxTriesExceededException("Cannot Fetch from Google Scholar.")
+
+    with patch("engine.scholar_search.scholarly.search_pubs", side_effect=_raise):
+        outcome = search_scholar("Any Title", ["Smith, A"], None)
+
+    assert outcome.status == "rate_limited"
+    assert "rate-limited" in outcome.error
+
+
+def test_search_rate_limited_on_dos_exception():
+    from scholarly import DOSException
+
+    with patch("engine.scholar_search.scholarly.search_pubs", side_effect=DOSException("blocked")):
+        outcome = search_scholar("Any Title", ["Smith, A"], None)
+
+    assert outcome.status == "rate_limited"
 
 
 def test_search_failed_when_title_empty():

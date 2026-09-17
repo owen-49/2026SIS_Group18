@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -24,7 +25,7 @@ from ..models import (
     SourceDocumentPage,
 )
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
-from ..storage.paper_store import PaperStoreError, get_paper, list_papers
+from ..storage.paper_store import PaperStoreError, get_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
     load_parsed_document,
@@ -100,6 +101,23 @@ _STOP_WORDS = {
     "which",
     "with",
 }
+_TITLE_STOP_WORDS = _STOP_WORDS | {
+    "a",
+    "an",
+    "at",
+    "by",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "the",
+    "to",
+    "via",
+    "without",
+}
+_TITLE_LINEBREAK_HYPHEN_RE = re.compile(r"(?<=\w)[-‐‑‒–—]\s+(?=\w)")
+_TITLE_DASH_RE = re.compile(r"[-‐‑‒–—]")
 
 
 @dataclass(frozen=True)
@@ -214,7 +232,13 @@ def _citation_keys(marker: str) -> list[str]:
 def _first_author_surname(authors: Iterable[str]) -> str:
     """Extract a conservative surname token from BibTeX author text."""
     first = next(iter(authors), "")
-    surname = first.split(",", 1)[0] if "," in first else first.split()[0] if first else ""
+    if "," in first:
+        surname = first.split(",", 1)[0]
+    else:
+        # BibTeX normally stores ``Last, First`` while Parser metadata commonly
+        # uses display order (``First Last``).  Taking the last token supports
+        # both forms and keeps author-year resolution stable for Parser output.
+        surname = first.split()[-1] if first.split() else ""
     return re.sub(r"[^\w'-]", "", surname).casefold()
 
 
@@ -272,15 +296,40 @@ def _load_bibliography_entries(records: list[PaperRecord]) -> list[Any]:
 
 
 def _title_similarity(left: str, right: str) -> float:
-    """Score two titles using token coverage, with exact titles scoring one."""
-    left_tokens = _tokens(left)
-    right_tokens = _tokens(right)
+    """Score two titles after normalising PDF punctuation and line wraps.
+
+    Title metadata is often copied from a PDF text layer, where case, Unicode
+    dashes, and line-break hyphens vary from the BibTeX entry. The score stays
+    conservative (overlap over the larger token set); author/year evidence is
+    added separately by ``_match_pdf_to_bib_entry``.
+    """
+    left_tokens = _title_tokens(left)
+    right_tokens = _title_tokens(right)
     if not left_tokens or not right_tokens:
         return 0.0
-    if left.casefold() == right.casefold():
+    if _normalise_title(left) == _normalise_title(right):
         return 1.0
     overlap = len(left_tokens & right_tokens)
     return overlap / max(len(left_tokens), len(right_tokens))
+
+
+def _normalise_title(value: str) -> str:
+    """Return a comparison form for titles extracted from PDF/BibTeX text."""
+    value = unicodedata.normalize("NFKC", value).casefold().strip()
+    # A hyphen followed by whitespace is usually a word split at a PDF line
+    # break (``auto- encoders``), while ordinary hyphens separate title words.
+    value = _TITLE_LINEBREAK_HYPHEN_RE.sub("", value)
+    return _TITLE_DASH_RE.sub(" ", value)
+
+
+def _title_tokens(value: str) -> set[str]:
+    """Return informative, punctuation-independent title tokens."""
+    normalised = _normalise_title(value)
+    return {
+        token
+        for token in re.findall(r"[\w]+", normalised, flags=re.UNICODE)
+        if len(token) > 2 and token not in _TITLE_STOP_WORDS
+    }
 
 
 def _load_completed_pdf(record: PaperRecord) -> _LoadedPdf:
@@ -350,20 +399,39 @@ def _source_from_bib(entry: Any, citation_key: str, source_id: str | None) -> Id
 
 def _match_pdf_to_bib_entry(entry: Any, pdfs: list[_LoadedPdf]) -> _LoadedPdf | None:
     """Find a local PDF whose persisted metadata matches a BibTeX entry."""
-    best: tuple[float, _LoadedPdf | None] = (0.0, None)
     entry_doi = (entry.doi or "").casefold().strip()
+    exact = [source for source in pdfs if entry_doi and source.parsed.doi
+             and source.parsed.doi.casefold().strip() == entry_doi]
+    if exact:
+        return exact[0] if len(exact) == 1 else None
+    ranked = []
+    entry_author = _first_author_surname(entry.authors)
     for source in pdfs:
-        if entry_doi and source.parsed.doi and entry_doi == source.parsed.doi.casefold().strip():
-            return source
-        score = _title_similarity(entry.title, source.parsed.title or source.record.title or "")
-        if entry.year is not None and source.parsed.year == entry.year:
-            score += 0.1
-        score = min(score, 1.0)
-        if score > best[0]:
-            best = (score, source)
-    return best[1] if best[0] >= 0.65 else None
+        if entry_doi and source.parsed.doi:
+            # A title match must never override conflicting explicit identifiers.
+            continue
+        source_title = source.parsed.title or source.record.title or ""
+        title_score = _title_similarity(entry.title, source_title)
+        source_author = _first_author_surname(source.parsed.authors)
+        author_match = bool(entry_author and source_author and entry_author == source_author)
+        year_match = entry.year is not None and source.parsed.year == entry.year
 
-
+        # A partial title is acceptable only with independent identity evidence.
+        # This recovers subtitles lost by a PDF parser while refusing to select a
+        # same-topic paper on title overlap alone. The 0.15/0.10 weights keep
+        # the existing 0.65 acceptance floor for an exact or near-exact title.
+        score = title_score
+        if author_match:
+            score += 0.15
+        if year_match:
+            score += 0.10
+        ranked.append((min(score, 1.0), source))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    if not ranked or ranked[0][0] < 0.65:
+        return None
+    if len(ranked) > 1 and ranked[0][0] - ranked[1][0] < 0.1:
+        return None
+    return ranked[0][1]
 def _resolve_bib_source(
     marker: str,
     entries: list[Any],
@@ -451,7 +519,7 @@ def extract_claims(
     return claims, view
 
 
-def get_paper_claims(paper_id: str) -> PaperClaimsResponse:
+def get_paper_claims(paper_id: str, bib_paper_id: str | None = None) -> PaperClaimsResponse:
     """Return real claims and manuscript text from persisted Parser output."""
     try:
         record = get_paper(paper_id)
@@ -478,18 +546,44 @@ def get_paper_claims(paper_id: str) -> PaperClaimsResponse:
         )
 
     parsed = _load_completed_pdf(record)
-    try:
-        records = list_papers()
-    except PaperStoreError as exc:
-        raise AnalysisServiceError("Unable to read paper metadata.") from exc
-    entries = _load_bibliography_entries(records)
-    source_pdfs = _load_completed_pdf_catalog(records, exclude_paper_id=paper_id)
-    claims, view = extract_claims(
-        parsed.parsed,
-        manuscript_id=paper_id,
-        bibliography_entries=entries,
-        source_pdfs=source_pdfs,
+    claims, view = extract_claims(parsed.parsed, manuscript_id=paper_id)
+    # Build the paper/reference/PDF inputs once. A real manuscript usually has
+    # many unique markers; resolving each one from storage independently would
+    # repeatedly hash the same reference artifact and reload every source PDF.
+    from .source_locator import (
+        SourceLocatorError,
+        build_citation_lookup_context,
+        look_up_citation,
     )
+
+    lookups = {}
+    if claims:
+        try:
+            context = build_citation_lookup_context(
+                [claim.citation_marker for claim in claims],
+                exclude_paper_id=paper_id,
+                bib_paper_id=bib_paper_id,
+            )
+        except SourceLocatorError as exc:
+            raise AnalysisServiceError("Unable to read citation sources.") from exc
+    else:
+        context = None
+    for claim in claims:
+        if claim.citation_marker not in lookups:
+            try:
+                lookups[claim.citation_marker] = look_up_citation(
+                    claim.citation_marker,
+                    exclude_paper_id=paper_id,
+                    bib_paper_id=bib_paper_id,
+                    context=context,
+                )
+            except SourceLocatorError as exc:
+                raise AnalysisServiceError("Unable to read citation sources.") from exc
+        lookup = lookups[claim.citation_marker]
+        claim.cited_source = lookup.cited_source
+        claim.source_document = lookup.source.view.document if lookup.source else None
+        claim.resolution_status = "identified" if lookup.cited_source else "not_found"
+        claim.resolution_message = lookup.message
     return PaperClaimsResponse(
         manuscript_id=paper_id,
         status=ParseStatus.COMPLETED,

@@ -12,7 +12,7 @@ import re
 from functools import lru_cache
 
 from engine.llm_client import build_llm_client
-from engine.verifier import Verifier
+from engine.verifier import VerificationStatus, Verifier
 
 from ..config import get_settings
 from ..models import MatchResult, ParsedDocument, VerdictEnum, VerifyResponse
@@ -69,6 +69,25 @@ def _get_llm_client():
     return build_llm_client(provider=provider, **config)
 
 
+@lru_cache(maxsize=1)
+def _get_embedder():
+    """Build (and cache) the sentence-transformers embedder.
+
+    Constructing an ``Embedder`` loads the sentence-transformers model from
+    disk — measured at ~4.4s here — while indexing a few hundred passages costs
+    ~0.4s. The model is stateless and thread-safe once loaded, so it is cached
+    process-wide; the ``Retriever`` built on top of it is *not* (it holds the
+    per-document index) and must be constructed per request.
+
+    The import is deferred: ``sentence_transformers`` pulls in torch, and this
+    module is imported at application start-up for the unrelated ``/api/verify``
+    route.
+    """
+    from engine.embedder import Embedder
+
+    return Embedder()
+
+
 def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
     """Verify a claim against a parsed document.
 
@@ -102,10 +121,21 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
         verifier = Verifier(model=settings.llm_model_name)
         try:
             result = verifier.verify(clean_claim, best_passage, client=client)
-            verdict = VerdictEnum(result.verdict.value)
-            confidence = result.confidence
-            rationale = result.rationale
-        except Exception as exc:  # LLM call failure → degrade to mock
+            if result.status is VerificationStatus.JUDGED:
+                verdict = VerdictEnum(result.verdict.value)
+                confidence = result.confidence
+                rationale = result.rationale
+            else:
+                # The Engine declined to judge — it had no usable evidence, the
+                # call failed, or the reply was unusable. This endpoint's response
+                # contract has no way to express "not judged" without changing the
+                # frontend, so it degrades to the same documented lexical fallback
+                # and discloses the reason in the rationale. Branching explicitly
+                # matters: a None verdict must not be discovered by AttributeError.
+                verdict = VerdictEnum.SUPPORT if best_score >= 0.2 else VerdictEnum.NOT_FOUND
+                confidence = 0.2
+                rationale = f"LLM verification failed ({result.rationale}); mock fallback used."
+        except Exception as exc:  # safety net: unexpected faults only
             verdict = VerdictEnum.SUPPORT if best_score >= 0.2 else VerdictEnum.NOT_FOUND
             confidence = 0.2
             rationale = f"LLM verification failed ({exc}); mock fallback used."

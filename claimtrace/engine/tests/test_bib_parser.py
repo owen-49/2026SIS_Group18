@@ -1,11 +1,9 @@
 """Tests for bib_parser.py."""
 
-from pathlib import Path
 
 import pytest
 
 from engine.bib_parser import (
-    BibEntry,
     _clean_title,
     _extract_last_name,
     _normalize_author_name,
@@ -17,20 +15,22 @@ from engine.bib_parser import (
     parse_bib_text,
 )
 
-
 # ── Sample BibTeX ──────────────────────────────────────────
 
 SAMPLE_BIB = r"""
 @article{wei2022emergent,
   title={Emergent Abilities of Large Language Models},
-  author={Wei, Jason and Tay, Yi and Bommasani, Rishi and Raffel, Colin and Zoph, Barret and Borgeaud, Sebastian and Yogatama, Dani and Bosma, Maarten and Zhou, Denny and Metzler, Donald and others},
+  author={Wei, Jason and Tay, Yi and Bommasani, Rishi and Raffel, Colin and Zoph, Barret
+    and Borgeaud, Sebastian and Yogatama, Dani and Bosma, Maarten and Zhou, Denny
+    and Metzler, Donald and others},
   year={2022},
   journal={Transactions on Machine Learning Research}
 }
 
 @inproceedings{vaswani2017attention,
   title={Attention is All You Need},
-  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, Lukasz and Polosukhin, Illia},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob
+    and Jones, Llion and Gomez, Aidan N and Kaiser, Lukasz and Polosukhin, Illia},
   booktitle={Advances in Neural Information Processing Systems},
   year={2017},
   pages={5998--6008},
@@ -39,7 +39,8 @@ SAMPLE_BIB = r"""
 
 @misc{brown2020language,
   title={Language Models are Few-Shot Learners},
-  author={Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and others},
+  author={Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie
+    and Kaplan, Jared and Dhariwal, Prafulla and others},
   year={2020},
   howpublished={arXiv preprint arXiv:2005.14165},
   url={https://arxiv.org/abs/2005.14165}
@@ -74,7 +75,8 @@ class TestParseBibText:
 
     def test_title_cleans_latex_commands(self):
         entries = parse_bib_text(
-            r'@article{test, title={\textit{Important} \textbf{Result}: A Study}, author={}, year={2024}}'
+            r'@article{test, title={\textit{Important} \textbf{Result}: A Study}, '
+            r'author={}, year={2024}}'
         )
         assert len(entries) == 1
         assert "Important Result: A Study" in entries[0].title
@@ -420,7 +422,9 @@ class TestEdgeCases:
         assert entries[0].key == "justakey"
 
     def test_entry_with_minimal_fields(self):
-        entries = parse_bib_text(r"@article{minimal, title={Only Title}, author={One, Author}, year={2024}}")
+        entries = parse_bib_text(
+            r"@article{minimal, title={Only Title}, author={One, Author}, year={2024}}"
+        )
         assert len(entries) == 1
         assert entries[0].title == "Only Title"
 

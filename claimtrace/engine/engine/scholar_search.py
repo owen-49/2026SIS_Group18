@@ -17,7 +17,13 @@ from dataclasses import dataclass, field
 from itertools import islice
 from typing import Any
 
-from scholarly import scholarly
+from scholarly import DOSException, MaxTriesExceededException, scholarly
+
+# scholarly retries a blocked request on its own (with 1-2s sleeps and, on 403,
+# 60-120s sleeps). Bound that loop so a rate-limited Scholar fails fast instead
+# of hanging a worker until the parent's hard timeout.
+DEFAULT_REQUEST_TIMEOUT_SECONDS = 10
+DEFAULT_MAX_TRIES = 2
 
 
 @dataclass
@@ -35,7 +41,7 @@ class ScholarResult:
 class ScholarSearchOutcome:
     """Result of searching Google Scholar for one reference."""
 
-    status: str  # "found" | "ambiguous" | "not_found" | "failed"
+    status: str  # "found" | "ambiguous" | "not_found" | "failed" | "rate_limited"
     results: list[ScholarResult] = field(default_factory=list)
     error: str = ""
 
@@ -102,6 +108,8 @@ def search_scholar(
     year: int | None = None,
     *,
     max_results: int = 3,
+    request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT_SECONDS,
+    max_tries: int = DEFAULT_MAX_TRIES,
 ) -> ScholarSearchOutcome:
     """Search Google Scholar for a reference by title / authors / year.
 
@@ -110,11 +118,13 @@ def search_scholar(
         authors: Optional author name strings (first author is used to refine).
         year: Optional publication year to bound the search.
         max_results: Maximum hits to collect before deciding the outcome.
+        request_timeout_seconds: Per-request timeout passed to scholarly.
+        max_tries: Bounds scholarly's internal retry loop before giving up.
 
     Returns:
         ``ScholarSearchOutcome`` with status ``found`` (one candidate),
-        ``ambiguous`` (several), ``not_found`` (no hits), or ``failed``
-        (search error / rate-limit / block).
+        ``ambiguous`` (several), ``not_found`` (no hits), ``failed``
+        (search error), or ``rate_limited`` (blocked / HTTP 429).
     """
     if not title or not title.strip():
         return ScholarSearchOutcome(status="failed", error="Reference title is required.")
@@ -126,10 +136,26 @@ def search_scholar(
         kwargs["year_low"] = year
         kwargs["year_high"] = year
 
+    # These bound some of scholarly's retry loop, not all of it. A 404, a 302 or
+    # any other response code (HTTP 429 included) advances its retry counter, so
+    # ``set_retries`` caps those. In scholarly 1.7.11 the 403, captcha and
+    # DOSException branches sleep 60-120 seconds and retry *without* advancing it,
+    # so nothing here limits them. What bounds a blocked search is the deadline
+    # the worker enforces on itself
+    # (``backend/src/services/bounded_scholar_lookup.py``); these remain the
+    # cheaper limit for the cases they do cover.
+    scholarly.set_timeout(request_timeout_seconds)
+    scholarly.set_retries(max_tries)
+
     try:
         search = scholarly.search_pubs(query, **kwargs)
         hits = list(islice(search, max_results))
-    except Exception as exc:  # rate-limit, block, network — degrade, don't raise
+    except (MaxTriesExceededException, DOSException) as exc:
+        return ScholarSearchOutcome(
+            status="rate_limited",
+            error=f"Google Scholar rate-limited the search: {exc}",
+        )
+    except Exception as exc:  # network / other — degrade, don't raise
         return ScholarSearchOutcome(
             status="failed",
             error=f"Google Scholar search failed: {exc}",

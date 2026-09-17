@@ -41,6 +41,7 @@ function safeUrl(value) {
 }
 
 function verdictClass(verdict) {
+  if (verdict === "PENDING") return "pending";
   if (verdict === "SUPPORT") return "support";
   if (verdict === "PARTIAL") return "partial";
   return "danger";
@@ -68,6 +69,23 @@ function renderPapers() {
   }).join("");
 }
 
+function renderCandidates(finding) {
+  if (!finding.sourceCandidates?.length) return "";
+  return `<details class="source-review" ${finding.preview ? "open" : ""}>
+    <summary>Review candidate PDFs (${finding.sourceCandidates.length})</summary>
+    <p>Title similarity is not identity confirmation. Check the original PDF before choosing.</p>
+    ${finding.sourceCandidates.map((candidate) => `<div class="source-candidate">
+      <strong>${escapeHtml(candidate.title)}</strong>
+      <span>${escapeHtml(candidate.filename)}</span>
+      <small>Upload ID: ${escapeHtml(candidate.paperId)}</small>
+      <small>${escapeHtml(candidate.reason)} · ${Math.round(candidate.score * 100)}% title similarity</small>
+      <small>arXiv: ${escapeHtml(candidate.arxivId || "Unavailable")}</small>
+      <button type="button" data-review-finding="${escapeHtml(finding.id)}" data-review-paper="${escapeHtml(candidate.paperId)}"
+        ${candidate.conflict ? "disabled" : ""}>Choose this PDF and verify</button>
+    </div>`).join("")}
+  </details>`;
+}
+
 function renderFindings() {
   const query = searchInput.value.trim().toLowerCase();
   const visible = findings.filter((finding) =>
@@ -84,7 +102,7 @@ function renderFindings() {
     <strong>${escapeHtml(finding.claim)}</strong>
     <span class="citation-card-meta"><code>\\cite{${escapeHtml(finding.citationKey)}}</code><span>Locate in editor →</span></span>
     <small>${escapeHtml(finding.annotation)} · ${finding.preview ? "local preview" : "backend verified"}</small>
-  </button>`).join("");
+  </button>${renderCandidates(finding)}`).join("");
 }
 
 function setView(view, chosen = true) {
@@ -149,7 +167,26 @@ syncButton.addEventListener("click", async () => {
   await loadWorkspace();
   window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
 });
-citationList.addEventListener("click", (event) => {
+citationList.addEventListener("click", async (event) => {
+  const reviewButton = event.target.closest("[data-review-paper]");
+  if (reviewButton) {
+    const finding = findings.find((item) => item.id === reviewButton.dataset.reviewFinding);
+    if (!finding) return;
+    reviewButton.disabled = true;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: "review_source_candidate", findingId: finding.id, claim: finding.claim,
+        paperId: reviewButton.dataset.reviewPaper,
+      });
+      if (response?.error) throw new Error(response.error);
+      await loadWorkspace();
+    } catch (error) {
+      syncText.textContent = error.message || "Unable to review this source";
+    } finally {
+      reviewButton.disabled = false;
+    }
+    return;
+  }
   const card = event.target.closest(".citation-card");
   if (card) void locateFinding(card.dataset.locationId, card.dataset.citationKey, card);
 });

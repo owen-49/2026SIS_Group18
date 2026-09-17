@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import find_dotenv, load_dotenv
+
 
 @dataclass
 class Settings:
@@ -75,6 +77,13 @@ class Settings:
     parser_hybrid_url: str = "http://localhost:5002"
     parser_use_struct_tree: bool = False
 
+    # ── Scholar lookup ───────────────────────────────────
+    # Google Scholar scraping is rate-limited (HTTP 429). Bound each lookup's
+    # wall-clock time and space consecutive lookups apart so a bibliography
+    # audit does not trip the limit.
+    scholar_lookup_timeout_seconds: float = 30.0
+    scholar_lookup_delay_seconds: float = 2.0
+
     @property
     def is_llm_configured(self) -> bool:
         """Check whether any LLM provider has a valid API key set.
@@ -105,10 +114,21 @@ class Settings:
 
 
 def _load_settings() -> Settings:
-    """Load settings from environment variables.
+    """Load settings from environment variables, then from the repository .env.
 
-    Reads .env file if present (via the caller's environment).
+    ``find_dotenv()`` walks up from this file (backend/src -> backend ->
+    claimtrace), so the repo-root ``.env`` is found regardless of the working
+    directory. This is what makes a bare ``uvicorn src.main:app`` run from
+    ``backend/`` see the same configuration Docker already receives through
+    ``env_file``. ``override=False`` keeps real environment variables in
+    precedence over the file.
+
+    Set ``CLAIMTRACE_ENV_FILE`` to read a specific file instead of the
+    discovered one; pointing it at an empty file opts out of file loading
+    entirely, which keeps the test suite independent of a developer's ``.env``.
     """
+    load_dotenv(os.getenv("CLAIMTRACE_ENV_FILE") or find_dotenv(), override=False)
+
     origins_raw = os.getenv("CORS_ORIGINS", "")
     origins = [o.strip() for o in origins_raw.split(",") if o.strip()] if origins_raw else [
         "http://localhost:3000",
@@ -159,6 +179,12 @@ def _load_settings() -> Settings:
         parser_hybrid_mode=os.getenv("PARSER_HYBRID_MODE") or None,
         parser_hybrid_url=os.getenv("PARSER_HYBRID_URL", "http://localhost:5002"),
         parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
+        scholar_lookup_timeout_seconds=float(
+            os.getenv("SCHOLAR_LOOKUP_TIMEOUT_SECONDS", "30")
+        ),
+        scholar_lookup_delay_seconds=float(
+            os.getenv("SCHOLAR_LOOKUP_DELAY_SECONDS", "2")
+        ),
     )
 
 

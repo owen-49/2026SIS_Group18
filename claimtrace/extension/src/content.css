@@ -9,6 +9,10 @@
   transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 .claimtrace-citation-line.claimtrace-hover-line { cursor: text; }
+.claimtrace-citation-line.claimtrace-tone-pending.claimtrace-hover-line { background: #edf0f3 !important; box-shadow: inset 3px 0 #778590; }
+::highlight(claimtrace-citations-pending) { color: #596773; background: #edf0f3; }
+#claimtrace-citation-hover.claimtrace-hover-pending .claimtrace-hover-verdict { color: #596773; background: #edf0f3; }
+#claimtrace-citation-hover.claimtrace-hover-pending .claimtrace-hover-annotation { color: #596773; }
 .claimtrace-citation-line.claimtrace-tone-support.claimtrace-hover-line { background: rgba(33, 166, 126, .15) !important; box-shadow: inset 3px 0 #159477; }
 .claimtrace-citation-line.claimtrace-tone-partial.claimtrace-hover-line { background: rgba(216, 154, 63, .17) !important; box-shadow: inset 3px 0 #d09237; }
 .claimtrace-citation-line.claimtrace-tone-danger.claimtrace-hover-line { background: rgba(208, 82, 82, .16) !important; box-shadow: inset 3px 0 #c85151; }
