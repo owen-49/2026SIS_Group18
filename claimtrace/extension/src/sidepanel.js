@@ -222,12 +222,14 @@ citationsTab.addEventListener("click", () => setView("citations"));
 papersTab.addEventListener("click", () => setView("papers"));
 syncButton.addEventListener("click", async () => {
   syncButton.classList.add("syncing");
+  let auditRefreshError;
   try {
     await refreshAuditPapers();
-    await loadWorkspace();
   } catch (error) {
-    syncText.textContent = error.message || "Unable to refresh uploaded papers";
+    auditRefreshError = error.message || "Unable to refresh uploaded papers for Audit";
   } finally {
+    await loadWorkspace();
+    if (auditRefreshError) auditStatus.textContent = auditRefreshError;
     window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
   }
 });
