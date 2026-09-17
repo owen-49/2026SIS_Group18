@@ -15,10 +15,6 @@
       <section class="context-card">
         <div><span class="context-dot"></span><strong id="sourceTitle">Overleaf project</strong></div>
         <small id="syncText">Waiting for editor content</small>
-        <div id="pdfAuditControls" class="pdf-audit-controls" hidden>
-          <select id="pdfSelect" aria-label="Manuscript PDF"><option value="">Select an uploaded manuscript PDF</option></select>
-          <button id="auditPdfButton" type="button" disabled>Audit PDF</button>
-        </div>
       </section>
 
       <div class="view-tabs" role="tablist" aria-label="ClaimTrace views">
@@ -41,9 +37,6 @@
       </section>
 
       <section id="papersView" hidden>
-        <div class="library-heading"><div><span class="eyebrow">Audit results</span><h1>Bibliography status</h1></div></div>
-        <section id="auditSummary" class="audit-summary" hidden></section>
-        <section id="auditList" class="audit-list" aria-live="polite" hidden></section>
         <div class="library-heading"><div><span class="eyebrow">Paper library</span><h1><span id="paperCount">0</span> sources found</h1></div></div>
         <section id="paperList" class="paper-list" aria-live="polite"></section>
         <section id="emptyState" class="empty-state" hidden><span>⌕</span><h2>No matching papers</h2><p>Open <code>references.bib</code> or try another search.</p></section>
@@ -51,7 +44,7 @@
     </main>
 
     <footer class="panel-footer">
-      <div class="success-message"><span>i</span><div><strong>ClaimTrace backend</strong><small id="footerDetail">No bibliography audit is running</small></div></div>
+      <div class="success-message"><span>i</span><div><strong>ClaimTrace backend</strong><small id="footerDetail">No backend verification is running</small></div></div>
       <button id="openDashboard" type="button">Open audit workspace <span>↗</span></button>
     </footer>
 
