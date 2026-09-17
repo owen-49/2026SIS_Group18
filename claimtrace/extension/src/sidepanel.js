@@ -15,9 +15,16 @@ const citationsTab = document.getElementById("citationsTab");
 const papersTab = document.getElementById("papersTab");
 const citationsView = document.getElementById("citationsView");
 const papersView = document.getElementById("papersView");
+const pdfAuditControls = document.getElementById("pdfAuditControls");
+const pdfSelect = document.getElementById("pdfSelect");
+const auditPdfButton = document.getElementById("auditPdfButton");
+const auditSummary = document.getElementById("auditSummary");
+const auditList = document.getElementById("auditList");
 
 let papers = [];
 let findings = [];
+let backendPapers = [];
+let audit = null;
 let activeView = "citations";
 let viewChosen = false;
 
@@ -40,11 +47,27 @@ function safeUrl(value) {
   }
 }
 
-function verdictClass(verdict) {
-  if (verdict === "PENDING") return "pending";
-  if (verdict === "SUPPORT") return "support";
-  if (verdict === "PARTIAL") return "partial";
+const statusLabels = {
+  VERIFIED: "Verified",
+  METADATA_MISMATCH: "Metadata mismatch",
+  NEEDS_REVIEW: "Needs review",
+  NOT_FOUND: "Not found",
+  LOOKUP_FAILED: "Lookup failed",
+};
+
+function statusClass(status) {
+  if (!status || status === "UNCHECKED") return "pending";
+  if (status === "VERIFIED") return "support";
+  if (status === "METADATA_MISMATCH" || status === "NEEDS_REVIEW") return "partial";
   return "danger";
+}
+
+function auditKey(result) {
+  return result?.entry?.metadata?.key || result?.entry?.entry_id || "";
+}
+
+function resultForCitation(citationKey) {
+  return audit?.results?.find((result) => auditKey(result) === citationKey);
 }
 
 function renderPapers() {
@@ -59,31 +82,34 @@ function renderPapers() {
   emptyState.hidden = visible.length > 0;
   paperList.hidden = visible.length === 0;
   paperList.innerHTML = visible.map((paper) => {
+    const result = resultForCitation(paper.citationKey);
     const url = safeUrl(paper.url);
     const link = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">Open paper <span>↗</span></a>` : `<span class="no-link">No link</span>`;
-    return `<article class="paper-card">
-      <div class="paper-title-row"><span class="paper-dot"></span><h2 title="${escapeHtml(paper.title)}">${escapeHtml(paper.title)}</h2></div>
+    return `<article class="paper-card tone-${statusClass(result?.status)}">
+      <div class="paper-title-row"><span class="paper-dot"></span><h2 title="${escapeHtml(paper.title)}">${escapeHtml(paper.title)}</h2><span class="audit-badge">${escapeHtml(statusLabels[result?.status] || "Not audited")}</span></div>
       <p class="paper-meta">${escapeHtml(paper.authors)} · ${escapeHtml(paper.venue)} ${escapeHtml(paper.year)}</p>
       <div class="paper-footer"><code>${escapeHtml(paper.citationKey)}</code>${link}</div>
     </article>`;
   }).join("");
 }
 
-function renderCandidates(finding) {
-  if (!finding.sourceCandidates?.length) return "";
-  return `<details class="source-review" ${finding.preview ? "open" : ""}>
-    <summary>Review candidate PDFs (${finding.sourceCandidates.length})</summary>
-    <p>Title similarity is not identity confirmation. Check the original PDF before choosing.</p>
-    ${finding.sourceCandidates.map((candidate) => `<div class="source-candidate">
-      <strong>${escapeHtml(candidate.title)}</strong>
-      <span>${escapeHtml(candidate.filename)}</span>
-      <small>Upload ID: ${escapeHtml(candidate.paperId)}</small>
-      <small>${escapeHtml(candidate.reason)} · ${Math.round(candidate.score * 100)}% title similarity</small>
-      <small>arXiv: ${escapeHtml(candidate.arxivId || "Unavailable")}</small>
-      <button type="button" data-review-finding="${escapeHtml(finding.id)}" data-review-paper="${escapeHtml(candidate.paperId)}"
-        ${candidate.conflict ? "disabled" : ""}>Choose this PDF and verify</button>
-    </div>`).join("")}
-  </details>`;
+function renderAudit() {
+  auditSummary.hidden = !audit;
+  auditList.hidden = !audit?.results?.length;
+  if (!audit) {
+    auditList.innerHTML = "";
+    return;
+  }
+  auditSummary.innerHTML = `<strong>${escapeHtml(audit.input_type.toUpperCase())} Audit</strong><span>${audit.total_entries} references · ${escapeHtml(audit.status.replaceAll("_", " "))}</span>`;
+  auditList.innerHTML = audit.results.map((result) => {
+    const metadata = result.entry?.metadata || {};
+    const mismatches = (result.field_checks || []).filter((field) => field.status !== "MATCH" && field.status !== "NOT_CHECKED");
+    return `<article class="audit-card tone-${statusClass(result.status)}">
+      <div><strong>${escapeHtml(metadata.title || auditKey(result) || "Untitled reference")}</strong><span class="audit-badge">${escapeHtml(statusLabels[result.status] || result.status)}</span></div>
+      <small>${escapeHtml(result.reason || "")}</small>
+      ${mismatches.length ? `<details><summary>${mismatches.length} field difference${mismatches.length === 1 ? "" : "s"}</summary>${mismatches.map((field) => `<p><b>${escapeHtml(field.field_name)}</b>: ${escapeHtml(field.input_value || "Missing")} → ${escapeHtml(field.source_value || "Missing")}</p>`).join("")}</details>` : ""}
+    </article>`;
+  }).join("");
 }
 
 function renderFindings() {
@@ -97,12 +123,15 @@ function renderFindings() {
   citationTabCount.textContent = String(findings.length);
   citationEmptyState.hidden = visible.length > 0;
   citationList.hidden = visible.length === 0;
-  citationList.innerHTML = visible.map((finding) => `<button class="citation-card tone-${verdictClass(finding.verdict)}" type="button" data-location-id="${escapeHtml(finding.id)}" data-citation-key="${escapeHtml(finding.citationKey)}">
-    <span class="citation-card-top"><span class="citation-verdict">${escapeHtml(finding.label)}</span><span class="citation-line">Editor location</span></span>
+  citationList.innerHTML = visible.map((finding) => {
+    const result = resultForCitation(finding.citationKey);
+    return `<button class="citation-card tone-${statusClass(result?.status)}" type="button" data-location-id="${escapeHtml(finding.id)}" data-citation-key="${escapeHtml(finding.citationKey)}">
+    <span class="citation-card-top"><span class="citation-verdict">${escapeHtml(statusLabels[result?.status] || "Not audited")}</span><span class="citation-line">Editor location</span></span>
     <strong>${escapeHtml(finding.claim)}</strong>
     <span class="citation-card-meta"><code>\\cite{${escapeHtml(finding.citationKey)}}</code><span>Locate in editor →</span></span>
-    <small>${escapeHtml(finding.annotation)} · ${finding.preview ? "local preview" : "backend verified"}</small>
-  </button>${renderCandidates(finding)}`).join("");
+    <small>${escapeHtml(result?.reason || "Citation location only; Audit checks the bibliography entry, not this claim.")}</small>
+  </button>`;
+  }).join("");
 }
 
 function setView(view, chosen = true) {
@@ -119,6 +148,7 @@ function setView(view, chosen = true) {
   searchInput.value = "";
   renderPapers();
   renderFindings();
+  renderAudit();
 }
 
 async function loadWorkspace() {
@@ -128,18 +158,29 @@ async function loadWorkspace() {
     "claimtraceFindings",
     "claimtraceCitationSource",
     "claimtraceBackendStatus",
+    "claimtraceBackendPapers",
+    "claimtraceAudit",
+    "claimtraceAuditInput",
   ]);
   papers = Array.isArray(stored.claimtracePapers) ? stored.claimtracePapers : [];
   findings = Array.isArray(stored.claimtraceFindings) ? stored.claimtraceFindings : [];
+  backendPapers = Array.isArray(stored.claimtraceBackendPapers) ? stored.claimtraceBackendPapers : [];
+  audit = stored.claimtraceAudit || null;
   const backendStatus = stored.claimtraceBackendStatus || {};
   const hasOverleafContent = stored.claimtraceSource === "overleaf" || stored.claimtraceCitationSource === "overleaf";
   sourceTitle.textContent = hasOverleafContent ? "Overleaf project" : "Extension preview";
-  syncText.textContent = findings.length
-    ? `${findings.length} cited claims annotated in the editor`
+  syncText.textContent = backendStatus.running ? "Audit in progress…" : findings.length
+    ? `${findings.length} citation location${findings.length === 1 ? "" : "s"} detected`
     : papers.length ? `${papers.length} bibliography entries linked` : "Open a .tex or .bib file to begin";
-  footerDetail.textContent = backendStatus.message || (findings.length
-    ? "Unmatched citations are shown as local previews"
-    : "No backend verification is running");
+  footerDetail.textContent = backendStatus.message || "No bibliography audit is running";
+  const completedPdfs = backendPapers.filter((paper) => paper.file_type === "pdf" && paper.status === "completed");
+  const selectedId = pdfSelect.value || (stored.claimtraceAuditInput?.inputType === "pdf" ? stored.claimtraceAuditInput.paperId : "");
+  pdfSelect.innerHTML = `<option value="">Select an uploaded manuscript PDF</option>${completedPdfs.map((paper) =>
+    `<option value="${escapeHtml(paper.paper_id)}">${escapeHtml(paper.original_filename || paper.title || paper.paper_id)}</option>`,
+  ).join("")}`;
+  if (completedPdfs.some((paper) => paper.paper_id === selectedId)) pdfSelect.value = selectedId;
+  pdfAuditControls.hidden = false;
+  auditPdfButton.disabled = !pdfSelect.value || backendStatus.running;
   if (!viewChosen) activeView = findings.length ? "citations" : "papers";
   setView(activeView, false);
 }
@@ -164,35 +205,40 @@ citationsTab.addEventListener("click", () => setView("citations"));
 papersTab.addEventListener("click", () => setView("papers"));
 syncButton.addEventListener("click", async () => {
   syncButton.classList.add("syncing");
-  await loadWorkspace();
-  window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
+  try {
+    const response = await chrome.runtime.sendMessage({ type: "refresh_backend_papers" });
+    if (response?.error) throw new Error(response.error);
+    await loadWorkspace();
+  } catch (error) {
+    syncText.textContent = error.message || "Unable to refresh uploaded papers";
+  } finally {
+    window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
+  }
 });
 citationList.addEventListener("click", async (event) => {
-  const reviewButton = event.target.closest("[data-review-paper]");
-  if (reviewButton) {
-    const finding = findings.find((item) => item.id === reviewButton.dataset.reviewFinding);
-    if (!finding) return;
-    reviewButton.disabled = true;
-    try {
-      const response = await chrome.runtime.sendMessage({
-        type: "review_source_candidate", findingId: finding.id, claim: finding.claim,
-        paperId: reviewButton.dataset.reviewPaper,
-      });
-      if (response?.error) throw new Error(response.error);
-      await loadWorkspace();
-    } catch (error) {
-      syncText.textContent = error.message || "Unable to review this source";
-    } finally {
-      reviewButton.disabled = false;
-    }
-    return;
-  }
   const card = event.target.closest(".citation-card");
   if (card) void locateFinding(card.dataset.locationId, card.dataset.citationKey, card);
 });
+pdfSelect.addEventListener("change", () => { auditPdfButton.disabled = !pdfSelect.value; });
+auditPdfButton.addEventListener("click", async () => {
+  if (!pdfSelect.value) return;
+  auditPdfButton.disabled = true;
+  syncText.textContent = "Running manuscript bibliography audit…";
+  try {
+    const response = await chrome.runtime.sendMessage({ type: "run_pdf_audit", manuscriptId: pdfSelect.value });
+    if (response?.error) throw new Error(response.error);
+    await loadWorkspace();
+  } catch (error) {
+    syncText.textContent = error.message || "Unable to audit the manuscript";
+  } finally {
+    auditPdfButton.disabled = !pdfSelect.value;
+  }
+});
 document.getElementById("openDashboard").addEventListener("click", () => chrome.tabs.create({ url: "http://localhost:3000/audit" }));
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus)) void loadWorkspace();
+  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus || changes.claimtraceBackendPapers || changes.claimtraceAudit)) void loadWorkspace();
 });
 
-void loadWorkspace();
+void chrome.runtime.sendMessage({ type: "refresh_backend_papers" })
+  .catch(() => undefined)
+  .finally(loadWorkspace);

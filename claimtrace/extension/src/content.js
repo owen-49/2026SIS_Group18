@@ -1,13 +1,7 @@
 const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 const CITE_PATTERN = /\\cite(?:t|p|alp|author|year|yearpar|text|num)?\*?(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]+)\}/gi;
-const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1, PENDING: 0 };
-const DEMO_VERDICTS = {
-  devlin2019bert: { verdict: "CONTRADICT", label: "Contradicted", confidence: 0.89, annotation: "Claim contradicts the cited source", rationale: "BERT used both masked-language modelling and next-sentence prediction during pre-training, so the word ‘exclusively’ is not supported." },
-  brown2020language: { verdict: "PARTIAL", label: "Partial", confidence: 0.82, annotation: "Claim is broader than the evidence", rationale: "The cited results show gains at several scales, but do not establish that larger models always improve every few-shot task." },
-  smith2024survey: { verdict: "NOT_FOUND", label: "Not found", confidence: 0.76, annotation: "Source could not be located", rationale: "No matching bibliography record or linked paper is available for this citation key." },
-  vaswani2017attention: { verdict: "SUPPORT", label: "Supported", confidence: 0.94, annotation: "Claim is supported by the cited source", rationale: "The paper describes the Transformer as relying on attention mechanisms without recurrence or convolutions." },
-  lewis2020retrieval: { verdict: "SUPPORT", label: "Supported", confidence: 0.91, annotation: "Claim is supported by the cited source", rationale: "The cited paper explicitly combines parametric model memory with non-parametric retrieved memory." },
-};
+const AUDIT_PRIORITY = { LOOKUP_FAILED: 4, NOT_FOUND: 4, METADATA_MISMATCH: 3, NEEDS_REVIEW: 2, VERIFIED: 1, UNCHECKED: 0 };
+const AUDIT_LABELS = { VERIFIED: "Verified", METADATA_MISMATCH: "Metadata mismatch", NEEDS_REVIEW: "Needs review", NOT_FOUND: "Not found", LOOKUP_FAILED: "Lookup failed", UNCHECKED: "Not audited" };
 const DEMO_SOURCES = {
   vaswani2017attention: { citationKey: "vaswani2017attention", title: "Attention Is All You Need", authors: "Vaswani et al.", venue: "NeurIPS", year: "2017" },
   devlin2019bert: { citationKey: "devlin2019bert", title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: "Devlin et al.", venue: "NAACL", year: "2019" },
@@ -18,7 +12,7 @@ const DEMO_SOURCES = {
 const citationLocations = new Map();
 const citationLineFindings = new WeakMap();
 const paperLibrary = new Map(Object.entries(DEMO_SOURCES));
-const backendFindings = new Map();
+const auditByCitation = new Map();
 let citationTargets = [];
 let activeCitationTarget;
 let hoverHideTimer;
@@ -204,22 +198,28 @@ function sentenceAroundCitation(lineText, start, end) {
   );
 }
 
-function verdictForClaim(findingId, citationKey, claim) {
-  const backendFinding = backendFindings.get(findingId);
-  if (backendFinding?.claim === claim && backendFinding.citationKey === citationKey) return backendFinding;
+function auditForCitation(citationKey) {
+  const result = auditByCitation.get(citationKey);
+  if (result) {
+    return {
+      auditStatus: result.status,
+      label: AUDIT_LABELS[result.status] || result.status,
+      annotation: result.reason,
+      rationale: "Audit checks publication identity and bibliography metadata; it does not judge the cited claim.",
+    };
+  }
   return {
-    verdict: "PENDING",
-    label: "Pending verification",
-    confidence: null,
-    annotation: "Awaiting verification of this claim",
-    rationale: "This claim has not been verified. A matching uploaded source PDF and an available backend are required.",
-    preview: true,
+    auditStatus: "UNCHECKED",
+    label: "Not audited",
+    annotation: "No Audit result is available for this bibliography entry.",
+    rationale: "Citation location only; Audit checks the bibliography entry, not this claim.",
   };
 }
 
-function verdictTone(verdict) {
-  if (verdict === "PENDING") return "pending";
-  return verdict === "SUPPORT" ? "support" : verdict === "PARTIAL" ? "partial" : "danger";
+function auditTone(status) {
+  if (status === "UNCHECKED") return "pending";
+  if (status === "VERIFIED") return "support";
+  return status === "METADATA_MISMATCH" || status === "NEEDS_REVIEW" ? "partial" : "danger";
 }
 
 function clearEditorAnnotations() {
@@ -261,12 +261,12 @@ function showCitationHover(target) {
   window.clearTimeout(hoverHideTimer);
   if (!target) return;
   const { finding, line, range } = target;
-  const tone = verdictTone(finding.verdict);
+  const tone = auditTone(finding.auditStatus);
   const source = paperLibrary.get(finding.citationKey);
   const card = getHoverCard();
   card.className = `claimtrace-hover-visible claimtrace-hover-${tone}`;
   card.querySelector(".claimtrace-hover-verdict").textContent = finding.label;
-  card.querySelector(".claimtrace-hover-confidence").textContent = finding.verdict === "PENDING" ? "Pending verification" : `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
+  card.querySelector(".claimtrace-hover-confidence").textContent = finding.auditStatus === "UNCHECKED" ? "Awaiting bibliography Audit" : "Bibliography Audit";
   card.querySelector(".claimtrace-hover-claim").textContent = finding.claim;
   card.querySelector(".claimtrace-hover-title").textContent = source?.title || "Source details unavailable";
   card.querySelector(".claimtrace-hover-meta").textContent = source
@@ -275,9 +275,7 @@ function showCitationHover(target) {
   card.querySelector(".claimtrace-hover-key").textContent = `\\cite{${finding.citationKey}}`;
   card.querySelector(".claimtrace-hover-detail").textContent = finding.rationale;
   card.querySelector(".claimtrace-hover-annotation").textContent = finding.annotation;
-  card.querySelector(".claimtrace-hover-status").textContent = finding.preview
-    ? (finding.backendReason || "Awaiting backend verification")
-    : "Backend verified against an uploaded source PDF";
+  card.querySelector(".claimtrace-hover-status").textContent = "Audit checks reference existence and metadata, not claim support";
 
   if (activeCitationTarget && activeCitationTarget !== target) {
     activeCitationTarget.line.classList.remove("claimtrace-hover-line");
@@ -337,25 +335,20 @@ function annotateCitationLines() {
       const keys = match[1].split(",").map((key) => key.trim()).filter(Boolean);
       keys.forEach((citationKey, keyIndex) => {
         const locationId = `${lineIndex + 1}-${match.index}-${keyIndex}-${citationKey}`;
-        const preview = verdictForClaim(locationId, citationKey, claim || `Citation ${citationKey}`);
+        const auditResult = auditForCitation(citationKey);
         const finding = {
           id: locationId,
           citationKey,
           claim: claim || `Citation ${citationKey}`,
           line: lineIndex + 1,
-          verdict: preview.verdict,
-          label: preview.label,
-          confidence: preview.confidence,
-          annotation: preview.annotation,
-          rationale: preview.rationale,
-          matches: preview.matches || [],
-          sourcePaperId: preview.sourcePaperId,
-          backendReason: preview.backendReason,
-          preview: preview.preview !== false,
+          auditStatus: auditResult.auditStatus,
+          label: auditResult.label,
+          annotation: auditResult.annotation,
+          rationale: auditResult.rationale,
         };
         findings.push(finding);
         lineFindings.push(finding);
-        const tone = verdictTone(finding.verdict);
+        const tone = auditTone(finding.auditStatus);
         const target = { finding, line, range, tone };
         citationLocations.set(locationId, target);
         if (range) citationTargets.push(target);
@@ -364,11 +357,11 @@ function annotateCitationLines() {
 
     if (!lineFindings.length) return;
     const strongest = lineFindings.reduce((current, finding) =>
-      VERDICT_PRIORITY[finding.verdict] > VERDICT_PRIORITY[current.verdict] ? finding : current,
+      AUDIT_PRIORITY[finding.auditStatus] > AUDIT_PRIORITY[current.auditStatus] ? finding : current,
     );
-    const tone = verdictTone(strongest.verdict);
+    const tone = auditTone(strongest.auditStatus);
     line.classList.add("claimtrace-citation-line", `claimtrace-tone-${tone}`);
-    line.dataset.claimtraceLabel = `ClaimTrace · ${strongest.preview ? "local preview" : "backend verification"} · ${strongest.label}`;
+    line.dataset.claimtraceLabel = `ClaimTrace · bibliography audit · ${strongest.label}`;
     line.dataset.claimtraceLocation = strongest.id;
     citationLineFindings.set(line, lineFindings);
   });
@@ -478,22 +471,24 @@ document.addEventListener("mousemove", (event) => {
 });
 document.addEventListener("mouseleave", () => hideCitationHover(0));
 
-chrome.storage.local.get(["claimtracePapers", "claimtraceFindings"], ({ claimtracePapers, claimtraceFindings }) => {
-  mergePaperLibrary(claimtracePapers);
-  backendFindings.clear();
-  (claimtraceFindings || []).filter((finding) => finding.preview === false).forEach((finding) => {
-    if (finding.id) backendFindings.set(finding.id, finding);
+function loadAuditResults(audit) {
+  auditByCitation.clear();
+  (audit?.results || []).forEach((result) => {
+    const key = result?.entry?.metadata?.key || result?.entry?.entry_id;
+    if (key) auditByCitation.set(key, result);
   });
-  if (backendFindings.size) annotateCitationLines();
+}
+
+chrome.storage.local.get(["claimtracePapers", "claimtraceAudit"], ({ claimtracePapers, claimtraceAudit }) => {
+  mergePaperLibrary(claimtracePapers);
+  loadAuditResults(claimtraceAudit);
+  if (auditByCitation.size) annotateCitationLines();
 });
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName !== "local") return;
   if (changes.claimtracePapers?.newValue) mergePaperLibrary(changes.claimtracePapers.newValue);
-  if (changes.claimtraceFindings?.newValue) {
-    backendFindings.clear();
-    (changes.claimtraceFindings.newValue || []).filter((finding) => finding.preview === false).forEach((finding) => {
-      if (finding.id) backendFindings.set(finding.id, finding);
-    });
+  if (changes.claimtraceAudit) {
+    loadAuditResults(changes.claimtraceAudit.newValue);
     annotateCitationLines();
   }
 });

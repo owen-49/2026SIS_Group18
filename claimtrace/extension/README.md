@@ -1,6 +1,6 @@
 # ClaimTrace Chrome Extension
 
-Manifest V3 extension that detects BibTeX and `\\cite{...}` commands in Overleaf. It opens a searchable bibliography in Chrome's Side Panel and sends `.bib` metadata and matched citation claims to the local ClaimTrace backend.
+Manifest V3 extension that detects BibTeX and `\\cite{...}` commands in Overleaf. It opens a searchable bibliography in Chrome's Side Panel and runs bibliography existence/metadata Audit against the local ClaimTrace backend.
 
 ## Load in Chrome
 
@@ -12,28 +12,28 @@ Manifest V3 extension that detects BibTeX and `\\cite{...}` commands in Overleaf
 6. Click the ClaimTrace toolbar action or the in-editor prompt.
 7. Open a `.tex` file. Lines containing supported citation commands highlight on hover; use the **Citations** tab to locate them from the Side Panel.
 
-The extension starts with four demo sources. When it can read BibTeX from the active Overleaf editor, the detected `.bib` content is uploaded to `http://localhost:8000/api/parse`, and the bibliography is checked against any previously uploaded source PDFs. Matching citation claims are sent to `/api/verify` and their results are shown in the editor and Side Panel.
+The extension starts with four demo sources. When it can read BibTeX from the active Overleaf editor, the detected `.bib` content is uploaded to `http://localhost:8000/api/parse`, then sent to `POST /api/audit` using its `bib_paper_id`. Audit results are shown beside bibliography entries and citation locations.
 
-When the backend is unavailable, or when no uploaded PDF matches a bibliography entry, the extension keeps the citation visibly labelled as a local preview. PDF uploads remain part of the web audit workspace; the extension itself only reads `.tex` and `.bib` content from Overleaf.
+PDF uploads remain part of the web audit workspace. The Side Panel lists completed uploaded PDFs and can run the same Audit contract with the selected PDF's `manuscript_id`. The extension does not run claim-support Verify: citation highlights remain navigation aids and display only the matching bibliography Audit status.
 
-## Review ambiguous source PDFs
+## Audit contract
 
-In the Citations tab, unresolved citations retain candidate PDFs under
-**Review candidate PDFs**. Compare filenames, upload IDs, arXiv IDs, and title
-similarity, then click **Choose this PDF and verify**. Title similarity is a
-candidate ranking, not proof of identity. Explicitly conflicting arXiv IDs
-cannot be selected. The selected upload ID is checked against the latest
-backend list before verification.
+The extension sends exactly one input identifier:
 
-Only a unique arXiv match or a sole exact-title candidate can be selected
-automatically. Fuzzy-only matches require review, even with one candidate.
-Manual selection applies to the current verification; re-detecting citations
-requires review again if the source remains ambiguous.
+```json
+{ "bib_paper_id": "uploaded-bib-id" }
+```
+
+or:
+
+```json
+{ "manuscript_id": "uploaded-pdf-id" }
+```
 
 Run regression tests with:
 
 ```sh
-node --test claimtrace/extension/arxiv-matching.test.cjs
+node --test claimtrace/extension/audit-flow.test.cjs
 ```
 
 ## Extension files

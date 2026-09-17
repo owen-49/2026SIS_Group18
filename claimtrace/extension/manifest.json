@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ClaimTrace — Citation Intelligence",
-  "version": "0.3.0",
-  "description": "Turn an Overleaf bibliography into a searchable paper library and preview citation locations while you write.",
+  "version": "0.4.0",
+  "description": "Audit an Overleaf bibliography and inspect reference metadata while you write.",
   "permissions": [
     "activeTab",
     "storage",
