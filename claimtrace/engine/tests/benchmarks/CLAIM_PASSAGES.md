@@ -53,7 +53,7 @@ Then, for each citing manuscript:
 ```json
 [
   {
-    "claim": "Pre-trained neural language models have been shown to learn a substantial amount of in-depth knowledge from data.",
+    "claim": "There has been extensive previous work proposing architectures to enrich systems with non-parametric memory which are trained from scratch for specific tasks, e.g. memory networks [64, 55], stackaugmented networks [25] and memory layers [30].",
     "source_passage": "the sentence in the cited paper, copied from it",
     "label": "SUPPORT",
     "source_paper": "f940bcbf",
@@ -76,19 +76,28 @@ half-filled file cannot be reported as a measured one.
 
 ### A first pair, waiting to be annotated
 
-The workspace holds exactly one citation that points at a paper which is also in
-the library: `92574678` (RAG, retrieved-augmented generation) cites `f940bcbf`
-(LAMA, "Language Models as Knowledge Bases?") as reference 47, and paragraph 9 of
-`92574678` reads:
+A scan of every `*.references.json` in the library, looking for a reference whose
+text quotes another library paper's title, returns exactly one hit: `92574678`
+(RAG, retrieval-augmented generation) cites `f940bcbf` ("Large Memory Layers with
+Product Keys", Lample et al.) as reference 30, and the sentence citing it is
+paragraph 39 of `92574678`:
 
-> Pre-trained neural language models have been shown to learn a substantial
-> amount of in-depth knowledge from data [47].
+> There has been extensive previous work proposing architectures to enrich
+> systems with non-parametric memory which are trained from scratch for specific
+> tasks, e.g. memory networks [64, 55], stackaugmented networks [25] and memory
+> layers [30].
 
 Both papers are already parsed, so this pair can be annotated today. It is the
 one entry the corpus can support without new uploads — everything else needs the
-cited PDFs added first. The label is not written down here because it is the
-annotation, and the point of the annotation is that a person reads both papers
-and decides.
+cited PDFs added first. Re-run that scan after uploading PDFs to find the next
+pair. The label is not written down here because it is the annotation, and the
+point of the annotation is that a person reads both papers and decides.
+
+Do not identify a library paper by its filename. `f940bcbf` is
+`1907.05242v2.pdf`, and only the paper's own text says which work that is. Two
+references in `92574678` look alike from a library listing — `[30]` memory layers
+is the work in the library, `[47]` (Petroni et al.) is not — and pairing the
+wrong one writes down a claim whose passage cannot exist in the paper it names.
 
 ## Running it
 
