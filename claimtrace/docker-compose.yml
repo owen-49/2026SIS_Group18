@@ -1,16 +1,15 @@
-version: "3.8"
-
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/src:/app/src
-      - ./parser/src:/app/parser
-      - ./engine/src:/app/engine
+      - ./backend/src:/app/backend/src
+      - ./backend/uploads:/app/uploads
+      - ./parser/parser:/app/parser/parser
+      - ./engine/engine:/app/engine/engine
     environment:
       - PYTHONPATH=/app:/app/parser:/app/engine
       - CLAIMTRACE_LLM_PROVIDER=${CLAIMTRACE_LLM_PROVIDER:-openai}
@@ -25,7 +24,8 @@ services:
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-all-MiniLM-L6-v2}
     env_file:
-      - .env
+      - path: .env
+        required: false
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:

@@ -16,6 +16,25 @@ The extension starts with four demo sources. When it can read BibTeX from the ac
 
 When the backend is unavailable, or when no uploaded PDF matches a bibliography entry, the extension keeps the citation visibly labelled as a local preview. PDF uploads remain part of the web audit workspace; the extension itself only reads `.tex` and `.bib` content from Overleaf.
 
+## Bibliography Audit
+
+Audit is added alongside the existing Verify workflow. A detected BibTeX file is
+audited through `POST /api/audit` with its parsed ID:
+
+```json
+{ "bib_paper_id": "uploaded-bib-id" }
+```
+
+The Side Panel also lists completed PDFs already uploaded through the web
+workspace. Selecting one and clicking **Audit PDF** uses:
+
+```json
+{ "manuscript_id": "uploaded-pdf-id" }
+```
+
+Audit results show publication existence, metadata differences, ambiguous
+records, and lookup failures. They do not replace or alter claim-support Verify.
+
 ## Review ambiguous source PDFs
 
 In the Citations tab, unresolved citations retain candidate PDFs under
