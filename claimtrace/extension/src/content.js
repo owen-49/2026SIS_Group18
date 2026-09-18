@@ -222,6 +222,58 @@ function verdictTone(verdict) {
   return verdict === "SUPPORT" ? "support" : verdict === "PARTIAL" ? "partial" : "danger";
 }
 
+// The passage text the backend retrieved from the source PDF, as returned by
+// /api/verify in `matches`. A citation either shows the passage that is meant to
+// support it or shows no passage section at all: an empty quote under a "Source
+// text" label reads as a broken card, and the assessment line has already said
+// how many passages came back.
+function hoverPassage(finding) {
+  if (finding.preview) return undefined;
+  const matches = Array.isArray(finding.matches) ? finding.matches : [];
+  const index = matches.findIndex(
+    (match) => typeof match?.passage_text === "string" && match.passage_text.trim(),
+  );
+  if (index < 0) return undefined;
+  const similarity = matches[index].similarity;
+  return {
+    text: matches[index].passage_text.trim(),
+    provenance: [
+      `Passage ${index + 1} of ${matches.length}`,
+      // "Lexical overlap" and not "similarity": /api/verify ranks paragraphs by
+      // shared-token overlap, which is a different quantity from the semantic
+      // retrieval score the web workspace labels "retrieval similarity".
+      typeof similarity === "number" ? `${Math.round(similarity * 100)}% lexical overlap` : "",
+    ].filter(Boolean).join(" · "),
+  };
+}
+
+// US-02 is stated as a latency ("under a second"), so the hover path carries a
+// measurement a person can read on the real Overleaf. The duration covers the
+// synchronous body of showCitationHover up to the layout read that positions
+// the card. It excludes the compositor paint and the one animation frame the
+// mousemove handler waits for, and it is the number extension/README.md tells a
+// reviewer how to collect.
+const HOVER_START_MARK = "claimtrace:hover:start";
+const HOVER_MEASURE = "claimtrace:hover";
+
+function markHoverStart() {
+  try {
+    window.performance?.mark?.(HOVER_START_MARK);
+  } catch {
+    // A diagnostic must not be able to break the feature it measures.
+  }
+}
+
+function measureHover() {
+  try {
+    const duration = window.performance?.measure?.(HOVER_MEASURE, HOVER_START_MARK)?.duration;
+    if (typeof duration !== "number") return;
+    console.log(`[ClaimTrace] hover card in ${duration.toFixed(1)} ms`);
+  } catch {
+    // Same reason as markHoverStart.
+  }
+}
+
 function clearEditorAnnotations() {
   document.querySelectorAll(".claimtrace-citation-line").forEach((line) => {
     line.classList.remove("claimtrace-citation-line", "claimtrace-tone-support", "claimtrace-tone-partial", "claimtrace-tone-danger", "claimtrace-tone-pending", "claimtrace-focus-line", "claimtrace-hover-line");
@@ -250,6 +302,7 @@ function getHoverCard() {
     <div class="claimtrace-hover-top"><span class="claimtrace-hover-verdict"></span><small class="claimtrace-hover-confidence"></small></div>
     <section class="claimtrace-hover-section claimtrace-hover-claim-section"><span>Claim</span><strong class="claimtrace-hover-claim"></strong></section>
     <section class="claimtrace-hover-source"><span>Source</span><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small><code class="claimtrace-hover-key"></code></section>
+    <section class="claimtrace-hover-section claimtrace-hover-passage" hidden><span>Source text</span><blockquote class="claimtrace-hover-quote"></blockquote><small class="claimtrace-hover-provenance"></small></section>
     <section class="claimtrace-hover-section"><span>Assessment</span><p class="claimtrace-hover-detail"></p><small class="claimtrace-hover-annotation"></small></section>
     <footer class="claimtrace-hover-status"></footer>
   `;
@@ -260,6 +313,7 @@ function getHoverCard() {
 function showCitationHover(target) {
   window.clearTimeout(hoverHideTimer);
   if (!target) return;
+  markHoverStart();
   const { finding, line, range } = target;
   const tone = verdictTone(finding.verdict);
   const source = paperLibrary.get(finding.citationKey);
@@ -278,6 +332,10 @@ function showCitationHover(target) {
   card.querySelector(".claimtrace-hover-status").textContent = finding.preview
     ? (finding.backendReason || "Awaiting backend verification")
     : "Backend verified against an uploaded source PDF";
+  const passage = hoverPassage(finding);
+  card.querySelector(".claimtrace-hover-quote").textContent = passage?.text || "";
+  card.querySelector(".claimtrace-hover-provenance").textContent = passage?.provenance || "";
+  card.querySelector(".claimtrace-hover-passage").hidden = !passage;
 
   if (activeCitationTarget && activeCitationTarget !== target) {
     activeCitationTarget.line.classList.remove("claimtrace-hover-line");
@@ -297,6 +355,7 @@ function showCitationHover(target) {
   const left = Math.min(Math.max(12, citationRect.left), window.innerWidth - cardRect.width - 12);
   card.style.top = `${top}px`;
   card.style.left = `${left}px`;
+  measureHover();
 }
 
 function hideCitationHover(delay = 80) {
