@@ -3,6 +3,10 @@
 This directory contains ground-truth claim-passage pairs used to
 evaluate the accuracy of the Semantic Lineage Engine.
 
+The pairs live in `claim_passages.json` and are scored by
+`passage_harness.py`. `CLAIM_PASSAGES.md` has the protocol, the working recipe,
+and how to read the report; the file is empty until the team annotates it.
+
 ## Format
 
 Each file is a JSON list:
