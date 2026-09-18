@@ -248,9 +248,78 @@ def test_manuscript_reference_parser_preserves_raw_text_and_location(
     assert (entry["number"], entry["page_start"], entry["page_end"]) == (7, 4, 5)
     assert entry["metadata"]["title"] == ""
     assert entry["metadata"]["raw_text"].startswith("[7]")
-    assert lookup.seen == []
+    # This entry used to be refused before any lookup ran, because the guard
+    # read the stored title -- empty for every PDF reference but one in the
+    # corpus -- rather than the title the raw text yields. It is searchable now,
+    # so the lookup must be reached.
+    assert [seen.entry_id for seen in lookup.seen] == [body["results"][0]["entry"]["entry_id"]]
+    # The point of the change: existence is now actually checked, and the record
+    # that was found reaches the report.
+    assert body["results"][0]["matched_record"]["metadata"]["title"] == "Retrieval with citations"
+    # Still NEEDS_REVIEW, because the comparison reads the stored fields and this
+    # entry stores none. The lookup answering is a separate question from the
+    # comparison agreeing; this pins the second one too.
     assert body["results"][0]["status"] == "NEEDS_REVIEW"
     assert "Parser sample warning" in body["warnings"]
+
+
+def test_a_corpus_shaped_pdf_reference_reaches_the_provider_chain(
+    client, storage_paths, monkeypatch
+):
+    # The shape every PDF reference in the corpus actually has: no structured
+    # fields at all, everything worth having in the raw text. This is the
+    # regression test for the guard reading the stored title, which made the
+    # whole provider chain dead code on the primary input path.
+    from engine.metadata_lookup import ProviderResponse
+
+    record = persist_manuscript(storage_paths)
+    raw = (
+        "[3] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and "
+        "Roger Zimmermann. 2018. Icon: Interactive conversational memory network for "
+        "multimodal emotion detection. In Proceedings of the 2018 conference on empirical "
+        "methods in natural language processing, pages 2594-2604."
+    )
+
+    def extract(path):
+        return SimpleNamespace(
+            references=[SimpleNamespace(raw_text=raw, number=3, page_start=4, page_end=5)],
+            warnings=[],
+        )
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+
+    seen = []
+
+    class RecordingProvider:
+        name = "openalex"
+
+        def search(self, query, *, limit, timeout_seconds):
+            seen.append(query)
+            return ProviderResponse(status="ok", candidates=[])
+
+    from backend.src.services.provider_chain_lookup import ProviderChainLookup
+
+    monkeypatch.setattr(
+        app.state,
+        "bibliography_lookup",
+        ProviderChainLookup([RecordingProvider()]),
+        raising=False,
+    )
+    body = client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
+
+    # The provider was asked, and asked with the reference as the raw text gives
+    # it -- which is the only description of it that exists.
+    assert len(seen) == 1
+    assert seen[0].title == (
+        "Icon: Interactive conversational memory network for multimodal emotion detection"
+    )
+    assert seen[0].authors[0] == "Devamanyu Hazarika"
+    assert seen[0].year == 2018
+    # A completed search that identifies nothing is NOT_FOUND, not NEEDS_REVIEW.
+    assert body["results"][0]["status"] == "NOT_FOUND"
+    # The attempt names the provider that answered, so a report says which
+    # source was searched rather than naming the adapter that drove it.
+    assert body["results"][0]["lookup_attempts"][0]["provider"] == "openalex"
 
 
 def test_empty_reference_list_is_not_a_successful_audit(client, storage_paths, monkeypatch):
@@ -266,11 +335,12 @@ def test_empty_reference_list_is_not_a_successful_audit(client, storage_paths, m
 
 
 @pytest.mark.parametrize("legacy", [False, True])
-def test_pdf_metadata_reaches_scholar_and_survives_reload(
+def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
     client, storage_paths, monkeypatch, legacy
 ):
-    from backend.src.services.google_scholar_lookup import GoogleScholarLookup
-    from engine.scholar_search import scholarly
+    from backend.src.services.provider_chain_lookup import ProviderChainLookup
+    from engine.identity import PublicationCandidate
+    from engine.metadata_lookup import ProviderResponse
     from parser.reference_json_extractor import parse_reference_metadata
 
     record = persist_manuscript(storage_paths)
@@ -296,27 +366,44 @@ def test_pdf_metadata_reaches_scholar_and_survives_reload(
 
     queries = []
 
-    def search(query, **kwargs):
-        queries.append((query, kwargs))
-        return iter([{
-            "bib": {"title": metadata.title, "author": metadata.authors,
-                    "pub_year": "2024", "venue": metadata.venue},
-            "pub_url": "https://example.org/publication",
-        }])
+    class EchoProvider:
+        """Answer with the reference itself, so the search is the only variable."""
+
+        name = "test-registry"
+
+        def search(self, query, *, limit, timeout_seconds):
+            queries.append(query)
+            return ProviderResponse(status="ok", candidates=[PublicationCandidate(
+                provider=self.name,
+                record_id="test-record",
+                title=query.title,
+                authors=list(query.authors),
+                year=query.year,
+                venue=query.venue,
+                kind="journal-article",
+                doi=query.doi,
+                url="https://example.org/publication",
+            )])
 
     monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
-    monkeypatch.setattr(scholarly, "search_pubs", search)
-    monkeypatch.setattr(app.state, "bibliography_lookup", GoogleScholarLookup(), raising=False)
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", ProviderChainLookup([EchoProvider()]), raising=False
+    )
     bodies = [client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
               for _ in range(2)]
     assert len(calls) == (0 if legacy else 1)
-    assert queries == [('"Retrieval with citations" Smith',
-                        {"year_low": 2024, "year_high": 2024})] * 2
+    # Asserted on the parsed reference rather than on a query string: what the
+    # provider receives is the reference's fields, and that is the contract that
+    # survives a change of provider.
+    assert [(q.title, q.authors, q.year) for q in queries] == [
+        ("Retrieval with citations", ["J. Smith"], 2024)
+    ] * 2
     row = bodies[0]["results"][0]
     assert row["entry"]["metadata"]["authors"] == ["J. Smith"]
     assert row["entry"] == bodies[1]["results"][0]["entry"]
     assert row["status"] == "VERIFIED"
     assert row["matched_record"]["url"] == "https://example.org/publication"
+    assert row["matched_record"]["provider"] == "test-registry"
     assert client.get(f"/api/audit/{bodies[0]['audit_id']}").json() == bodies[0]
     saved = json.loads(reference_path(record.paper_id).read_text(encoding="utf-8"))
     assert saved["references"][0]["title"] == "Retrieval with citations"
@@ -324,10 +411,10 @@ def test_pdf_metadata_reaches_scholar_and_survives_reload(
 
 
 def test_real_pdf_upload_to_audit(client, monkeypatch):
-    """Exercise PDF conversion too; only the external network is substituted."""
+    """Exercise PDF conversion too; only the external providers are substituted."""
     import pymupdf
-    from backend.src.services.google_scholar_lookup import GoogleScholarLookup
-    from engine.scholar_search import scholarly
+    from backend.src.services.provider_chain_lookup import ProviderChainLookup
+    from engine.metadata_lookup import ProviderResponse
 
     document = pymupdf.open()
     page = document.new_page()
@@ -343,12 +430,18 @@ def test_real_pdf_upload_to_audit(client, monkeypatch):
     document.close()
     queries = []
 
-    def search(query, **kwargs):
-        queries.append(query)
-        return iter([])
+    class EmptyProvider:
+        """A source that answers every query and holds neither reference."""
 
-    monkeypatch.setattr(scholarly, "search_pubs", search)
-    monkeypatch.setattr(app.state, "bibliography_lookup", GoogleScholarLookup(), raising=False)
+        name = "test-registry"
+
+        def search(self, query, *, limit, timeout_seconds):
+            queries.append(query)
+            return ProviderResponse(status="ok", candidates=[])
+
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", ProviderChainLookup([EmptyProvider()]), raising=False
+    )
     upload = client.post("/api/parse", files={"file": (
         "audit-fixture.pdf", content, "application/pdf"
     )})
@@ -358,8 +451,15 @@ def test_real_pdf_upload_to_audit(client, monkeypatch):
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["total_entries"] == 2, body
-    assert queries == ['"Retrieval with citations" Smith', '"Citation checking" Jones']
+    assert [q.title for q in queries] == ["Retrieval with citations", "Citation checking"]
+    # Every provider completed and neither held the work: negative evidence,
+    # reported as such rather than as an unchecked reference.
     assert all(row["status"] == "NOT_FOUND" for row in body["results"])
+    assert all(
+        attempt["outcome"] == "not_found"
+        for row in body["results"]
+        for attempt in row["lookup_attempts"]
+    )
     assert client.get(f"/api/audit/{body['audit_id']}").json() == body
 
 

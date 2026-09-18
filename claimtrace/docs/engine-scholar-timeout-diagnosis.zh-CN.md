@@ -1,5 +1,21 @@
 # Google Scholar 30 秒超时：诊断与建议
 
+> ## 🗄️ 本文已归档（superseded）— 2026-09-18
+>
+> 本文诊断的对象**已经不存在了**。Google Scholar 抓取路径（`scholarly`、Scholar worker
+> 子进程、`BoundedScholarLookup`、`SCHOLAR_*`）已整体删除，检索来源换成 **OpenAlex（主）
+> + Crossref（补）** 的 provider 链。§6/§7 里"换源"的建议**已经执行**，而且不是按本文设想的
+> 形态执行的：链路的身份判定、provider 数量、超时语义都与本文的提议不同。
+> 详见 [backend-audit-handoff- scholar- search.md](backend-audit-handoff-%20scholar-%20search.md) §8。
+>
+> **正文全部保留原样**，作为"当时如何定位一个被贴错标签的超时"的记录 —— 它的诊断结论
+> （外部封锁是触发器、代码缺陷是放大器）在事后被证实是对的，这一点有独立的记录价值。
+> 但**不要**再把本文当作当前系统的描述，也不要照着 §6/§7 的表去改代码：表里点名的文件
+> 全部已被删除。
+>
+> 当前行为请看：[audit-live-acceptance/audit-integration-handoff.md](audit-live-acceptance/audit-integration-handoff.md)
+> 与 [pdf-audit-integration-status.zh-CN.md](pdf-audit-integration-status.zh-CN.md)。
+
 > **读者**：Audit 集成负责人（PR #27 的提问者）。
 > **问题**：live Google Scholar 查询稳定 30 s 超时，返回 `LOOKUP_FAILED / SCHOLAR_TIMEOUT`。
 > 这是"预期中的 Scholar/网络封锁"，还是"需要改代码"？

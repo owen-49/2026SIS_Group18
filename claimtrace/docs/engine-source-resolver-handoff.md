@@ -253,6 +253,18 @@ cd claimtrace/backend && python -m pytest tests/ -v
 
 # Part 2: ScholarSearch 对接（audit 文献搜索）
 
+> 🗄️ **本部分已归档（superseded）— 2026-09-18。** ScholarSearch 就是 Part 2 提议并落地的方案，
+> 但它作为检索来源已经被替换：`engine/scholar_search.py` 与整条 Scholar 路径（含 `scholarly`
+> 依赖、worker 子进程、`SCHOLAR_*`）已删除，audit 现在走 **OpenAlex + Crossref** 的 provider 链，
+> backend 侧的接入点是 `backend/src/services/provider_chain_lookup.py`。
+> 下面提到的 `GoogleScholarLookup`、`search_scholar`、`scholarly` 版本约束、`SCHOLAR_SEARCH_FAILED`
+> 全部**不再存在**，`engine/tests/test_scholar_search.py` 也已删除。
+>
+> **正文保留原样**，作为当时接口约定与注意事项的记录（其中「限流会 downgrade 而不是崩溃」「URL 要兜底」
+> 这些约束在换源后依然成立，只是换了执行者）。当前实现见
+> [backend-audit-handoff- scholar- search.md](backend-audit-handoff-%20scholar-%20search.md) §8。
+> Part 1（SourceResolver）**未受影响**。
+
 ## 1. 功能概述
 
 `engine/scholar_search.py` 是 audit 的「外部文献查找」实现——之前 `bibliography_lookup.py` 的 `BibliographyLookup` Protocol 是空的（返回 `EXTERNAL_LOOKUP_NOT_CONFIGURED`）。这个模块在 Google Scholar 上搜索 reference，判断文献是否真实存在。

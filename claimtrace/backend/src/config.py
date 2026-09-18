@@ -77,12 +77,14 @@ class Settings:
     parser_hybrid_url: str = "http://localhost:5002"
     parser_use_struct_tree: bool = False
 
-    # ── Scholar lookup ───────────────────────────────────
-    # Google Scholar scraping is rate-limited (HTTP 429). Bound each lookup's
-    # wall-clock time and space consecutive lookups apart so a bibliography
-    # audit does not trip the limit.
-    scholar_lookup_timeout_seconds: float = 30.0
-    scholar_lookup_delay_seconds: float = 2.0
+    # ── Metadata lookup ──────────────────────────────────
+    # Per-socket-operation timeout for the bibliography audit's metadata
+    # providers (OpenAlex, then Crossref). Each provider makes exactly one
+    # request with no retry loop, so one reference costs at most two socket
+    # operations and this is the only bound on a lookup -- there is no overall
+    # deadline above it, because a blocking socket call can be abandoned but
+    # not cancelled.
+    metadata_lookup_timeout_seconds: float = 10.0
 
     @property
     def is_llm_configured(self) -> bool:
@@ -179,11 +181,8 @@ def _load_settings() -> Settings:
         parser_hybrid_mode=os.getenv("PARSER_HYBRID_MODE") or None,
         parser_hybrid_url=os.getenv("PARSER_HYBRID_URL", "http://localhost:5002"),
         parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
-        scholar_lookup_timeout_seconds=float(
-            os.getenv("SCHOLAR_LOOKUP_TIMEOUT_SECONDS", "30")
-        ),
-        scholar_lookup_delay_seconds=float(
-            os.getenv("SCHOLAR_LOOKUP_DELAY_SECONDS", "2")
+        metadata_lookup_timeout_seconds=float(
+            os.getenv("METADATA_LOOKUP_TIMEOUT_SECONDS", "10")
         ),
     )
 

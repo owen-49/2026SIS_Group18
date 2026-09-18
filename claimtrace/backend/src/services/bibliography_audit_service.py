@@ -22,6 +22,7 @@ from ..audit_models import (
 from ..models import AuditRequest
 from .bibliography_lookup import BibliographyLookup
 from .reference_input_service import load_audit_references
+from .reference_query import reference_query_for
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,14 @@ def compare_external_metadata(
 def audit_reference(
     entry: ReferenceEntry, lookup: BibliographyLookup | None
 ) -> ReferenceAuditResult:
-    if not entry.metadata.title.strip():
+    # The searchable title, not the stored one. A reference-list entry from a
+    # PDF carries its title in the raw text -- measured over the 174 entries
+    # under uploads/parsed, the structured field holds a title for exactly one
+    # of them, while the raw text yields one for 173. Guarding on the stored
+    # field therefore returned every PDF reference here before any lookup ran.
+    # The lookup resolves the same question through the same function, so the
+    # two cannot drift into disagreeing about what is searchable.
+    if not reference_query_for(entry).title.strip():
         return ReferenceAuditResult(
             entry=entry,
             status=AuditStatus.NEEDS_REVIEW,

@@ -43,11 +43,11 @@ async def startup():
     # Store settings in app.state so routes can access them
     app.state.settings = settings
 
-    from .services.bounded_scholar_lookup import BoundedScholarLookup
+    from .services.provider_chain_lookup import ProviderChainLookup, default_providers
 
-    app.state.bibliography_lookup = BoundedScholarLookup(
-        timeout_seconds=settings.scholar_lookup_timeout_seconds,
-        min_interval_seconds=settings.scholar_lookup_delay_seconds,
+    app.state.bibliography_lookup = ProviderChainLookup(
+        default_providers(),
+        timeout_seconds=settings.metadata_lookup_timeout_seconds,
     )
     # Finish or roll back file cleanup interrupted by an earlier deletion.
     from .services.paper_deletion_service import recover_pending_deletions
@@ -96,5 +96,6 @@ async def startup():
         print(
             f"[ClaimTrace] LLM NOT configured ({provider}). "
             "Set API key in .env. Single Verify uses a lexical baseline; "
-            "Bibliography Audit uses Google Scholar without an LLM."
+            "Bibliography Audit uses the OpenAlex/Crossref metadata chain "
+            "without an LLM."
         )

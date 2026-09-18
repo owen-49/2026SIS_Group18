@@ -111,6 +111,22 @@ def test_a_completed_provider_plus_a_failed_one_is_failed_not_not_found():
     assert "did not complete" in result.reason
 
 
+def test_a_completed_provider_plus_a_throttled_one_is_failed_not_not_found():
+    # The same rule as the failure above, and it needed the same care: a
+    # throttled provider is no evidence either, so the reference is not "not
+    # found" -- it was not fully searched. This used to fall through to
+    # not_found with a rate_limited attempt in the list, which the backend's
+    # LookupResult validator rejects outright, because rate_limited has no
+    # spelling in its outcome literal.
+    first = _FakeProvider("openalex", _ok())
+    second = _FakeProvider("crossref", _throttled())
+    result = lookup_reference(_QUERY, [first, second])
+    assert result.outcome == "failed"
+    assert [attempt.outcome for attempt in result.attempts] == ["not_found", "rate_limited"]
+    assert result.attempts[1].error_code == "OPENALEX_RATE_LIMITED"
+    assert "rate-limited" in result.reason
+
+
 def test_every_provider_completing_without_identity_is_not_found():
     first = _FakeProvider("openalex", _ok())
     second = _FakeProvider("crossref", _ok())

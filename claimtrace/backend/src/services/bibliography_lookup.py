@@ -1,6 +1,6 @@
 """External lookup integration boundary.
 
-GoogleScholarLookup adapts the Engine search module to this contract.
+ProviderChainLookup adapts the Engine's metadata provider chain to this contract.
 Implementations must return traceable publication records and distinguish
 query failures from completed searches without candidates.
 """
