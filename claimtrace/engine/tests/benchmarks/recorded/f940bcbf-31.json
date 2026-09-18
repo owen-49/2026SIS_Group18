@@ -1,0 +1,499 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alireza Makhzani",
+        "Brendan J. Frey"
+      ],
+      "doi": "10.48550/arxiv.1409.2752",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W1531103298",
+      "title": "Winner-Take-All Autoencoders",
+      "url": "http://arxiv.org/abs/1409.2752",
+      "venue": "arXiv (Cornell University)",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chuanhao Li",
+        "W\u011bi Zh\u0101ng",
+        "Gaoliang Peng",
+        "Shaohui Liu"
+      ],
+      "doi": "10.1109/access.2017.2717492",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2628062541",
+      "title": "Bearing Fault Diagnosis Using Fully-Connected Winner-Take-All Autoencoder",
+      "url": "https://doi.org/10.1109/access.2017.2717492",
+      "venue": "IEEE Access",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Hanh T. M. Tran",
+        "David Hogg"
+      ],
+      "doi": "10.5244/c.31.139",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2777288981",
+      "title": "Anomaly Detection using a Convolutional Winner-Take-All Autoencoder",
+      "url": "https://doi.org/10.5244/c.31.139",
+      "venue": "Procedings of the British Machine Vision Conference 2017",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alireza Makhzani",
+        "Brendan J. Frey"
+      ],
+      "doi": "",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W2952342326",
+      "title": "Winner-Take-All Autoencoders",
+      "url": "https://arxiv.org/pdf/1409.2752.pdf",
+      "venue": "arXiv (Cornell University)",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Huilin Zhu",
+        "Yanni Ren",
+        "Yanling Tian",
+        "Jinglu Hu"
+      ],
+      "doi": "10.1002/tee.23466",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W3193084277",
+      "title": "A Winner\u2010Take\u2010All Autoencoder Based Pieceswise Linear Model for Nonlinear Regression with Missing Data",
+      "url": "https://doi.org/10.1002/tee.23466",
+      "venue": "IEEJ Transactions on Electrical and Electronic Engineering",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alireza Makhzani",
+        "Brendan J. Frey"
+      ],
+      "doi": "",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W1793338510",
+      "title": "A Winner-Take-All Method for Training Sparse Convolutional Autoencoders.",
+      "url": "https://arxiv.org/abs/1409.2752v1",
+      "venue": "arXiv (Cornell University)",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-22",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-22",
+      "title": "TEEN The Gatekeepers of Winner Take All",
+      "url": "https://doi.org/10.4324/9780203485361-22",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-21",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-21",
+      "title": "The Roller-Coaster Policy Ride of Winner Take All",
+      "url": "https://doi.org/10.4324/9780203485361-21",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-17",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-17",
+      "title": "The Winner Take All Media: The Fourth Estate Sells Out",
+      "url": "https://doi.org/10.4324/9780203485361-17",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-20",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-20",
+      "title": "Winner Take All Policy: Where the Majority Does Not Always Rule",
+      "url": "https://doi.org/10.4324/9780203485361-20",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-13",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-13",
+      "title": "Worse Than Winner Take All: Affirmative Action for Low-Population States",
+      "url": "https://doi.org/10.4324/9780203485361-13",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-15",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-15",
+      "title": "Of Pollster-geists and Consultants: The Mad Science Of Winner Take All Campaigns",
+      "url": "https://doi.org/10.4324/9780203485361-15",
+      "venue": "Fixing Elections",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Pedroni, Volnei A."
+      ],
+      "doi": "10.21528/cbrn1994-028",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.21528/cbrn1994-028",
+      "title": "Low-Offset Neural Winner-take-all Network",
+      "url": "https://doi.org/10.21528/cbrn1994-028",
+      "venue": "Anais do 1. Congresso Brasileiro de Redes Neurais",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4135/9781452234144.n278",
+      "is_repository": false,
+      "kind": "reference-entry",
+      "provider": "crossref",
+      "record_id": "10.4135/9781452234144.n278",
+      "title": "Winner Take All",
+      "url": "https://doi.org/10.4135/9781452234144.n278",
+      "venue": "Elections A to Z",
+      "year": 2012
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.1021/acssynbio.4c00476.s001",
+      "is_repository": false,
+      "kind": "component",
+      "provider": "crossref",
+      "record_id": "10.1021/acssynbio.4c00476.s001",
+      "title": "Mitigating Winner-Take-All Resource Competition through Antithetic Control Mechanism",
+      "url": "https://doi.org/10.1021/acssynbio.4c00476.s001",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9780203485361-23",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9780203485361-23",
+      "title": "\u201cWinner Takes Nothing\u201d",
+      "url": "https://doi.org/10.4324/9780203485361-23",
+      "venue": "Fixing Elections",
+      "year": 2004
+    }
+  ],
+  "case_id": "f940bcbf-31",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "doi": "10.48550/arxiv.1409.2752",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W1531103298",
+          "title": "Winner-Take-All Autoencoders",
+          "url": "http://arxiv.org/abs/1409.2752",
+          "venue": "arXiv (Cornell University)",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chuanhao Li",
+            "W\u011bi Zh\u0101ng",
+            "Gaoliang Peng",
+            "Shaohui Liu"
+          ],
+          "doi": "10.1109/access.2017.2717492",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2628062541",
+          "title": "Bearing Fault Diagnosis Using Fully-Connected Winner-Take-All Autoencoder",
+          "url": "https://doi.org/10.1109/access.2017.2717492",
+          "venue": "IEEE Access",
+          "year": 2017
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Hanh T. M. Tran",
+            "David Hogg"
+          ],
+          "doi": "10.5244/c.31.139",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2777288981",
+          "title": "Anomaly Detection using a Convolutional Winner-Take-All Autoencoder",
+          "url": "https://doi.org/10.5244/c.31.139",
+          "venue": "Procedings of the British Machine Vision Conference 2017",
+          "year": 2017
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "doi": "",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W2952342326",
+          "title": "Winner-Take-All Autoencoders",
+          "url": "https://arxiv.org/pdf/1409.2752.pdf",
+          "venue": "arXiv (Cornell University)",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Huilin Zhu",
+            "Yanni Ren",
+            "Yanling Tian",
+            "Jinglu Hu"
+          ],
+          "doi": "10.1002/tee.23466",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W3193084277",
+          "title": "A Winner\u2010Take\u2010All Autoencoder Based Pieceswise Linear Model for Nonlinear Regression with Missing Data",
+          "url": "https://doi.org/10.1002/tee.23466",
+          "venue": "IEEJ Transactions on Electrical and Electronic Engineering",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "doi": "",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W1793338510",
+          "title": "A Winner-Take-All Method for Training Sparse Convolutional Autoencoders.",
+          "url": "https://arxiv.org/abs/1409.2752v1",
+          "venue": "arXiv (Cornell University)",
+          "year": 2014
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-22",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-22",
+          "title": "TEEN The Gatekeepers of Winner Take All",
+          "url": "https://doi.org/10.4324/9780203485361-22",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-21",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-21",
+          "title": "The Roller-Coaster Policy Ride of Winner Take All",
+          "url": "https://doi.org/10.4324/9780203485361-21",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-17",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-17",
+          "title": "The Winner Take All Media: The Fourth Estate Sells Out",
+          "url": "https://doi.org/10.4324/9780203485361-17",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-20",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-20",
+          "title": "Winner Take All Policy: Where the Majority Does Not Always Rule",
+          "url": "https://doi.org/10.4324/9780203485361-20",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-13",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-13",
+          "title": "Worse Than Winner Take All: Affirmative Action for Low-Population States",
+          "url": "https://doi.org/10.4324/9780203485361-13",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-15",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-15",
+          "title": "Of Pollster-geists and Consultants: The Mad Science Of Winner Take All Campaigns",
+          "url": "https://doi.org/10.4324/9780203485361-15",
+          "venue": "Fixing Elections",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Pedroni, Volnei A."
+          ],
+          "doi": "10.21528/cbrn1994-028",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.21528/cbrn1994-028",
+          "title": "Low-Offset Neural Winner-take-all Network",
+          "url": "https://doi.org/10.21528/cbrn1994-028",
+          "venue": "Anais do 1. Congresso Brasileiro de Redes Neurais",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4135/9781452234144.n278",
+          "is_repository": false,
+          "kind": "reference-entry",
+          "provider": "crossref",
+          "record_id": "10.4135/9781452234144.n278",
+          "title": "Winner Take All",
+          "url": "https://doi.org/10.4135/9781452234144.n278",
+          "venue": "Elections A to Z",
+          "year": 2012
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.1021/acssynbio.4c00476.s001",
+          "is_repository": false,
+          "kind": "component",
+          "provider": "crossref",
+          "record_id": "10.1021/acssynbio.4c00476.s001",
+          "title": "Mitigating Winner-Take-All Resource Competition through Antithetic Control Mechanism",
+          "url": "https://doi.org/10.1021/acssynbio.4c00476.s001",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9780203485361-23",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9780203485361-23",
+          "title": "\u201cWinner Takes Nothing\u201d",
+          "url": "https://doi.org/10.4324/9780203485361-23",
+          "venue": "Fixing Elections",
+          "year": 2004
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Alireza Makhzani",
+      "Brendan J Frey"
+    ],
+    "doi": "",
+    "title": "Winner-take-all autoencoders",
+    "venue": "Advances in Neural Information Processing Systems",
+    "year": 2015
+  },
+  "query_source": "fixture"
+}

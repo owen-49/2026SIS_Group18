@@ -1,0 +1,451 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Danqi Chen",
+        "Adam Fisch",
+        "Jason Weston",
+        "Antoine Bordes"
+      ],
+      "doi": "10.18653/v1/p17-1171",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2962985038",
+      "title": "Reading Wikipedia to Answer Open-Domain Questions",
+      "url": "https://doi.org/10.18653/v1/p17-1171",
+      "venue": "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Danqi Chen",
+        "Adam Fisch",
+        "Jason Weston",
+        "Antoine Bordes"
+      ],
+      "doi": "10.48550/arxiv.1704.00051",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W2604368306",
+      "title": "Reading Wikipedia to Answer Open-Domain Questions",
+      "url": "http://arxiv.org/abs/1704.00051",
+      "venue": "arXiv (Cornell University)",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chen, Danqi",
+        "Fisch, Adam",
+        "Weston, Jason",
+        "Bordes, Antoine"
+      ],
+      "doi": "10.18653/v1/p17-1171",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/p17-1171",
+      "title": "Reading Wikipedia to Answer Open-Domain Questions",
+      "url": "https://doi.org/10.18653/v1/p17-1171",
+      "venue": "Proceedings of the 55th Annual Meeting of the Association for\n          Computational Linguistics (Volume 1: Long Papers)",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Salmer\u00f3n, Ladislao",
+        "Cerd\u00e1n, Raquel",
+        "Naumann, Johannes"
+      ],
+      "doi": "10.1080/02103702.2015.1016750",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1080/02103702.2015.1016750",
+      "title": "How adolescents navigate Wikipedia to answer questions / \u00bfC\u00f3mo navegan los adolescentes en Wikipedia para contestar preguntas?",
+      "url": "https://doi.org/10.1080/02103702.2015.1016750",
+      "venue": "Infancia y Aprendizaje",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chen, Jing"
+      ],
+      "doi": "10.5194/gmd-2016-53-ac2",
+      "is_repository": false,
+      "kind": "peer-review",
+      "provider": "crossref",
+      "record_id": "10.5194/gmd-2016-53-ac2",
+      "title": "Answer to Peter Rayner's questions",
+      "url": "https://doi.org/10.5194/gmd-2016-53-ac2",
+      "venue": "",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.7717/peerjcs.903/table-6",
+      "is_repository": false,
+      "kind": "component",
+      "provider": "crossref",
+      "record_id": "10.7717/peerjcs.903/table-6",
+      "title": "Table 6: Answer strength to questions in form open question (Q1\u2013Q6).",
+      "url": "https://doi.org/10.7717/peerjcs.903/table-6",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Yue, Xiang",
+        "Pan, Xiaoman",
+        "Yao, Wenlin",
+        "Yu, Dian",
+        "Yu, Dong",
+        "Chen, Jianshu"
+      ],
+      "doi": "10.18653/v1/2022.acl-short.41",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2022.acl-short.41",
+      "title": "C-MORE: Pretraining to Answer Open-Domain Questions by Consulting Millions of References",
+      "url": "https://doi.org/10.18653/v1/2022.acl-short.41",
+      "venue": "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Roussinov, Dmitri",
+        "Robles, Jose"
+      ],
+      "doi": "10.1145/1008992.1009090",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1145/1008992.1009090",
+      "title": "Learning patterns to answer open domain questions on the web",
+      "url": "https://doi.org/10.1145/1008992.1009090",
+      "venue": "Proceedings of the 27th annual international ACM SIGIR conference on Research and development in information retrieval",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Morales, Alvaro",
+        "Premtoon, Varot",
+        "Avery, Cordelia",
+        "Felshin, Sue",
+        "Katz, Boris"
+      ],
+      "doi": "10.18653/v1/d16-1199",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/d16-1199",
+      "title": "Learning to Answer Questions from Wikipedia Infoboxes",
+      "url": "https://doi.org/10.18653/v1/d16-1199",
+      "venue": "Proceedings of the 2016 Conference on Empirical Methods in Natural\n          Language Processing",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Luchkina, Elena",
+        "Morgan, James",
+        "Williams, Deijah",
+        "Sobel, David Marc"
+      ],
+      "doi": "10.31219/osf.io/k7qsj",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.31219/osf.io/k7qsj",
+      "title": "Questions can answer questions about mechanisms of selective word learning",
+      "url": "https://doi.org/10.31219/osf.io/k7qsj",
+      "venue": "",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Shao, Zhihong",
+        "Huang, Minlie"
+      ],
+      "doi": "10.18653/v1/2022.acl-long.128",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2022.acl-long.128",
+      "title": "Answering Open-Domain Multi-Answer Questions via a Recall-then-Verify Framework",
+      "url": "https://doi.org/10.18653/v1/2022.acl-long.128",
+      "venue": "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Kim, Mintae",
+        "Lee, Sangheon",
+        "Oh, Yeongtaek",
+        "Choi, Hyunseung",
+        "Kim, Wooju"
+      ],
+      "doi": "10.1109/access.2020.3020245",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1109/access.2020.3020245",
+      "title": "A Near-Real-Time Answer Discovery for Open-Domain With Unanswerable Questions From the Web",
+      "url": "https://doi.org/10.1109/access.2020.3020245",
+      "venue": "IEEE Access",
+      "year": 2020
+    }
+  ],
+  "case_id": "92574678-5",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Danqi Chen",
+            "Adam Fisch",
+            "Jason Weston",
+            "Antoine Bordes"
+          ],
+          "doi": "10.18653/v1/p17-1171",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2962985038",
+          "title": "Reading Wikipedia to Answer Open-Domain Questions",
+          "url": "https://doi.org/10.18653/v1/p17-1171",
+          "venue": "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "year": 2017
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Danqi Chen",
+            "Adam Fisch",
+            "Jason Weston",
+            "Antoine Bordes"
+          ],
+          "doi": "10.48550/arxiv.1704.00051",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W2604368306",
+          "title": "Reading Wikipedia to Answer Open-Domain Questions",
+          "url": "http://arxiv.org/abs/1704.00051",
+          "venue": "arXiv (Cornell University)",
+          "year": 2017
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chen, Danqi",
+            "Fisch, Adam",
+            "Weston, Jason",
+            "Bordes, Antoine"
+          ],
+          "doi": "10.18653/v1/p17-1171",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/p17-1171",
+          "title": "Reading Wikipedia to Answer Open-Domain Questions",
+          "url": "https://doi.org/10.18653/v1/p17-1171",
+          "venue": "Proceedings of the 55th Annual Meeting of the Association for\n          Computational Linguistics (Volume 1: Long Papers)",
+          "year": 2017
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Salmer\u00f3n, Ladislao",
+            "Cerd\u00e1n, Raquel",
+            "Naumann, Johannes"
+          ],
+          "doi": "10.1080/02103702.2015.1016750",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1080/02103702.2015.1016750",
+          "title": "How adolescents navigate Wikipedia to answer questions / \u00bfC\u00f3mo navegan los adolescentes en Wikipedia para contestar preguntas?",
+          "url": "https://doi.org/10.1080/02103702.2015.1016750",
+          "venue": "Infancia y Aprendizaje",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chen, Jing"
+          ],
+          "doi": "10.5194/gmd-2016-53-ac2",
+          "is_repository": false,
+          "kind": "peer-review",
+          "provider": "crossref",
+          "record_id": "10.5194/gmd-2016-53-ac2",
+          "title": "Answer to Peter Rayner's questions",
+          "url": "https://doi.org/10.5194/gmd-2016-53-ac2",
+          "venue": "",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.7717/peerjcs.903/table-6",
+          "is_repository": false,
+          "kind": "component",
+          "provider": "crossref",
+          "record_id": "10.7717/peerjcs.903/table-6",
+          "title": "Table 6: Answer strength to questions in form open question (Q1\u2013Q6).",
+          "url": "https://doi.org/10.7717/peerjcs.903/table-6",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Yue, Xiang",
+            "Pan, Xiaoman",
+            "Yao, Wenlin",
+            "Yu, Dian",
+            "Yu, Dong",
+            "Chen, Jianshu"
+          ],
+          "doi": "10.18653/v1/2022.acl-short.41",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2022.acl-short.41",
+          "title": "C-MORE: Pretraining to Answer Open-Domain Questions by Consulting Millions of References",
+          "url": "https://doi.org/10.18653/v1/2022.acl-short.41",
+          "venue": "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Roussinov, Dmitri",
+            "Robles, Jose"
+          ],
+          "doi": "10.1145/1008992.1009090",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1145/1008992.1009090",
+          "title": "Learning patterns to answer open domain questions on the web",
+          "url": "https://doi.org/10.1145/1008992.1009090",
+          "venue": "Proceedings of the 27th annual international ACM SIGIR conference on Research and development in information retrieval",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Morales, Alvaro",
+            "Premtoon, Varot",
+            "Avery, Cordelia",
+            "Felshin, Sue",
+            "Katz, Boris"
+          ],
+          "doi": "10.18653/v1/d16-1199",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/d16-1199",
+          "title": "Learning to Answer Questions from Wikipedia Infoboxes",
+          "url": "https://doi.org/10.18653/v1/d16-1199",
+          "venue": "Proceedings of the 2016 Conference on Empirical Methods in Natural\n          Language Processing",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Luchkina, Elena",
+            "Morgan, James",
+            "Williams, Deijah",
+            "Sobel, David Marc"
+          ],
+          "doi": "10.31219/osf.io/k7qsj",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.31219/osf.io/k7qsj",
+          "title": "Questions can answer questions about mechanisms of selective word learning",
+          "url": "https://doi.org/10.31219/osf.io/k7qsj",
+          "venue": "",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Shao, Zhihong",
+            "Huang, Minlie"
+          ],
+          "doi": "10.18653/v1/2022.acl-long.128",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2022.acl-long.128",
+          "title": "Answering Open-Domain Multi-Answer Questions via a Recall-then-Verify Framework",
+          "url": "https://doi.org/10.18653/v1/2022.acl-long.128",
+          "venue": "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Kim, Mintae",
+            "Lee, Sangheon",
+            "Oh, Yeongtaek",
+            "Choi, Hyunseung",
+            "Kim, Wooju"
+          ],
+          "doi": "10.1109/access.2020.3020245",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1109/access.2020.3020245",
+          "title": "A Near-Real-Time Answer Discovery for Open-Domain With Unanswerable Questions From the Web",
+          "url": "https://doi.org/10.1109/access.2020.3020245",
+          "venue": "IEEE Access",
+          "year": 2020
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Danqi Chen",
+      "Adam Fisch",
+      "Jason Weston",
+      "Antoine Bordes"
+    ],
+    "doi": "10.18653/v1/P17-1171",
+    "title": "Reading Wikipedia to Answer Open-Domain Questions",
+    "venue": "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    "year": 2017
+  },
+  "query_source": "fixture"
+}

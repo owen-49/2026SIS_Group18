@@ -1,0 +1,801 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Ashish Vaswani",
+        "Noam Shazeer",
+        "Niki Parmar",
+        "Jakob Uszkoreit",
+        "Llion Jones",
+        "Aidan N. Gomez",
+        "\u0141ukasz Kaiser",
+        "Illia Polosukhin"
+      ],
+      "doi": "10.65215/2q58a426",
+      "is_repository": false,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W2626778328",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/2q58a426",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Cem Subakan",
+        "Mirco Ravanelli",
+        "Samuele Cornell",
+        "Mirko Bronzi",
+        "Jianyuan Zhong"
+      ],
+      "doi": "10.1109/icassp39728.2021.9413901",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3163652268",
+      "title": "Attention Is All You Need In Speech Separation",
+      "url": "https://doi.org/10.1109/icassp39728.2021.9413901",
+      "venue": "ICASSP 2021 - 2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Myungsub Choi",
+        "Heewon Kim",
+        "Bohyung Han",
+        "Ning Xu",
+        "Kyoung Mu Lee"
+      ],
+      "doi": "10.1609/aaai.v34i07.6693",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2997150500",
+      "title": "Channel Attention Is All You Need for Video Frame Interpolation",
+      "url": "https://doi.org/10.1609/aaai.v34i07.6693",
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Yang Zhang",
+        "Caiqi Liu",
+        "Mujiexin Liu",
+        "Tianyuan Liu",
+        "Hao Lin",
+        "Huang Cheng-bing",
+        "Ning Lin"
+      ],
+      "doi": "10.1093/bib/bbad467",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W4390678101",
+      "title": "Attention is all you need: utilizing attention in AI-enabled drug discovery",
+      "url": "https://doi.org/10.1093/bib/bbad467",
+      "venue": "Briefings in Bioinformatics",
+      "year": 2023
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Gedas Bertasius",
+        "Heng Wang",
+        "Lorenzo Torresani"
+      ],
+      "doi": "10.48550/arxiv.2102.05095",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W3126721948",
+      "title": "Is Space-Time Attention All You Need for Video Understanding?",
+      "url": "http://arxiv.org/abs/2102.05095",
+      "venue": "arXiv (Cornell University)",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Mozhdeh Gheini",
+        "Xiang Ren",
+        "Jonathan May"
+      ],
+      "doi": "10.18653/v1/2021.emnlp-main.132",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3199258042",
+      "title": "Cross-Attention is All You Need: Adapting Pretrained Transformers for Machine Translation",
+      "url": "https://doi.org/10.18653/v1/2021.emnlp-main.132",
+      "venue": "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Tian Ma",
+        "Wanwan Wang",
+        "Yu Chen"
+      ],
+      "doi": "10.1016/j.irfa.2023.102876",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W4385478480",
+      "title": "Attention is all you need: An interpretable transformer-based asset allocation approach",
+      "url": "https://doi.org/10.1016/j.irfa.2023.102876",
+      "venue": "International Review of Financial Analysis",
+      "year": 2023
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Sufeng Duan",
+        "Hai Zhao"
+      ],
+      "doi": "10.18653/v1/2020.emnlp-main.317",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3099527960",
+      "title": "Attention Is All You Need for Chinese Word Segmentation",
+      "url": "https://doi.org/10.18653/v1/2020.emnlp-main.317",
+      "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Wang Yin",
+        "Peng Lu",
+        "Zhaoran Zhao",
+        "Xujun Peng"
+      ],
+      "doi": "10.1145/3474085.3475385",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3207381926",
+      "title": "Yes, \"Attention Is All You Need\", for Exemplar based Colorization",
+      "url": "https://doi.org/10.1145/3474085.3475385",
+      "venue": "Proceedings of the 29th ACM International Conference on Multimedia",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Stefan Harrer"
+      ],
+      "doi": "10.1016/j.ebiom.2023.104512",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W4324373918",
+      "title": "Attention is not all you need: the complicated case of ethically using large language models in healthcare and medicine",
+      "url": "https://doi.org/10.1016/j.ebiom.2023.104512",
+      "venue": "EBioMedicine",
+      "year": 2023
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/r5bs2d54",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/r5bs2d54",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/r5bs2d54",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/ysbyhc05",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/ysbyhc05",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/ysbyhc05",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/mdcm8z23",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/mdcm8z23",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/mdcm8z23",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/nxvz2v36",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/nxvz2v36",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/nxvz2v36",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/pc26a033",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/pc26a033",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/pc26a033",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/2q58a426",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/2q58a426",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/2q58a426",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "N.Gomez, Aidan",
+        "Kaiser, Lukasz",
+        "Polosukhin, Illia"
+      ],
+      "doi": "10.65215/ctdc8e75",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.65215/ctdc8e75",
+      "title": "Attention Is All You Need",
+      "url": "https://doi.org/10.65215/ctdc8e75",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Mineault, Patrick"
+      ],
+      "doi": "10.1007/978-3-031-84300-6_13",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.1007/978-3-031-84300-6_13",
+      "title": "Is Attention All You Need?",
+      "url": "https://doi.org/10.1007/978-3-031-84300-6_13",
+      "venue": "From Human Attention to Computational Attention",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Akpan, Mfon"
+      ],
+      "doi": "10.2139/ssrn.4993784",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.4993784",
+      "title": "Attention Is All You Need: An Analysis Of The Valuation Of Artificial Intelligence Tokens",
+      "url": "https://doi.org/10.2139/ssrn.4993784",
+      "venue": "",
+      "year": 2024
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Canale, Giuseppe"
+      ],
+      "doi": "10.2139/ssrn.5967774",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.5967774",
+      "title": "Attention is All You Need... Unless You Are a CISO: The Inherent Incompatibility Between Transformer Architectures and Zero-Trust Environments",
+      "url": "https://doi.org/10.2139/ssrn.5967774",
+      "venue": "",
+      "year": 2026
+    }
+  ],
+  "case_id": "92574678-58",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Ashish Vaswani",
+            "Noam Shazeer",
+            "Niki Parmar",
+            "Jakob Uszkoreit",
+            "Llion Jones",
+            "Aidan N. Gomez",
+            "\u0141ukasz Kaiser",
+            "Illia Polosukhin"
+          ],
+          "doi": "10.65215/2q58a426",
+          "is_repository": false,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W2626778328",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/2q58a426",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Cem Subakan",
+            "Mirco Ravanelli",
+            "Samuele Cornell",
+            "Mirko Bronzi",
+            "Jianyuan Zhong"
+          ],
+          "doi": "10.1109/icassp39728.2021.9413901",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3163652268",
+          "title": "Attention Is All You Need In Speech Separation",
+          "url": "https://doi.org/10.1109/icassp39728.2021.9413901",
+          "venue": "ICASSP 2021 - 2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Myungsub Choi",
+            "Heewon Kim",
+            "Bohyung Han",
+            "Ning Xu",
+            "Kyoung Mu Lee"
+          ],
+          "doi": "10.1609/aaai.v34i07.6693",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2997150500",
+          "title": "Channel Attention Is All You Need for Video Frame Interpolation",
+          "url": "https://doi.org/10.1609/aaai.v34i07.6693",
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Yang Zhang",
+            "Caiqi Liu",
+            "Mujiexin Liu",
+            "Tianyuan Liu",
+            "Hao Lin",
+            "Huang Cheng-bing",
+            "Ning Lin"
+          ],
+          "doi": "10.1093/bib/bbad467",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W4390678101",
+          "title": "Attention is all you need: utilizing attention in AI-enabled drug discovery",
+          "url": "https://doi.org/10.1093/bib/bbad467",
+          "venue": "Briefings in Bioinformatics",
+          "year": 2023
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Gedas Bertasius",
+            "Heng Wang",
+            "Lorenzo Torresani"
+          ],
+          "doi": "10.48550/arxiv.2102.05095",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W3126721948",
+          "title": "Is Space-Time Attention All You Need for Video Understanding?",
+          "url": "http://arxiv.org/abs/2102.05095",
+          "venue": "arXiv (Cornell University)",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Mozhdeh Gheini",
+            "Xiang Ren",
+            "Jonathan May"
+          ],
+          "doi": "10.18653/v1/2021.emnlp-main.132",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3199258042",
+          "title": "Cross-Attention is All You Need: Adapting Pretrained Transformers for Machine Translation",
+          "url": "https://doi.org/10.18653/v1/2021.emnlp-main.132",
+          "venue": "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Tian Ma",
+            "Wanwan Wang",
+            "Yu Chen"
+          ],
+          "doi": "10.1016/j.irfa.2023.102876",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W4385478480",
+          "title": "Attention is all you need: An interpretable transformer-based asset allocation approach",
+          "url": "https://doi.org/10.1016/j.irfa.2023.102876",
+          "venue": "International Review of Financial Analysis",
+          "year": 2023
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Sufeng Duan",
+            "Hai Zhao"
+          ],
+          "doi": "10.18653/v1/2020.emnlp-main.317",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3099527960",
+          "title": "Attention Is All You Need for Chinese Word Segmentation",
+          "url": "https://doi.org/10.18653/v1/2020.emnlp-main.317",
+          "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Wang Yin",
+            "Peng Lu",
+            "Zhaoran Zhao",
+            "Xujun Peng"
+          ],
+          "doi": "10.1145/3474085.3475385",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3207381926",
+          "title": "Yes, \"Attention Is All You Need\", for Exemplar based Colorization",
+          "url": "https://doi.org/10.1145/3474085.3475385",
+          "venue": "Proceedings of the 29th ACM International Conference on Multimedia",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Stefan Harrer"
+          ],
+          "doi": "10.1016/j.ebiom.2023.104512",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W4324373918",
+          "title": "Attention is not all you need: the complicated case of ethically using large language models in healthcare and medicine",
+          "url": "https://doi.org/10.1016/j.ebiom.2023.104512",
+          "venue": "EBioMedicine",
+          "year": 2023
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/r5bs2d54",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/r5bs2d54",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/r5bs2d54",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/ysbyhc05",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/ysbyhc05",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/ysbyhc05",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/mdcm8z23",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/mdcm8z23",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/mdcm8z23",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/nxvz2v36",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/nxvz2v36",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/nxvz2v36",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/pc26a033",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/pc26a033",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/pc26a033",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/2q58a426",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/2q58a426",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/2q58a426",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/ctdc8e75",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/ctdc8e75",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/ctdc8e75",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Mineault, Patrick"
+          ],
+          "doi": "10.1007/978-3-031-84300-6_13",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.1007/978-3-031-84300-6_13",
+          "title": "Is Attention All You Need?",
+          "url": "https://doi.org/10.1007/978-3-031-84300-6_13",
+          "venue": "From Human Attention to Computational Attention",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Akpan, Mfon"
+          ],
+          "doi": "10.2139/ssrn.4993784",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.4993784",
+          "title": "Attention Is All You Need: An Analysis Of The Valuation Of Artificial Intelligence Tokens",
+          "url": "https://doi.org/10.2139/ssrn.4993784",
+          "venue": "",
+          "year": 2024
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Canale, Giuseppe"
+          ],
+          "doi": "10.2139/ssrn.5967774",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.5967774",
+          "title": "Attention is All You Need... Unless You Are a CISO: The Inherent Incompatibility Between Transformer Architectures and Zero-Trust Environments",
+          "url": "https://doi.org/10.2139/ssrn.5967774",
+          "venue": "",
+          "year": 2026
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakub Uszkoreit",
+      "Llion Jones",
+      "Aidan N Gomez",
+      "\u0141ukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "doi": "",
+    "title": "Attention is all you need",
+    "venue": "Advances in Neural Information Processing Systems 30",
+    "year": 2017
+  },
+  "query_source": "fixture"
+}

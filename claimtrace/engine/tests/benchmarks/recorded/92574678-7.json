@@ -1,0 +1,395 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Christopher Clark",
+        "Matt Gardner"
+      ],
+      "doi": "10.18653/v1/p18-1078",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2765390718",
+      "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+      "url": "https://doi.org/10.18653/v1/p18-1078",
+      "venue": "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Clark, Christopher",
+        "Gardner, Matt"
+      ],
+      "doi": "10.18653/v1/p18-1078",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/p18-1078",
+      "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+      "url": "https://doi.org/10.18653/v1/p18-1078",
+      "venue": "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chen, Xu"
+      ],
+      "doi": "10.1088/1742-6596/1871/1/012091",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1088/1742-6596/1871/1/012091",
+      "title": "Multi-Granularity Matching Network for Multi-Paragraph Machine Reading Comprehension",
+      "url": "https://doi.org/10.1088/1742-6596/1871/1/012091",
+      "venue": "Journal of Physics: Conference Series",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Wang, Zeyu"
+      ],
+      "doi": "10.1109/icaml57167.2022.00027",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icaml57167.2022.00027",
+      "title": "Single-paragraph Extractive Machine Reading Comprehension Model Based on Multi-layer Aligned Attention",
+      "url": "https://doi.org/10.1109/icaml57167.2022.00027",
+      "venue": "2022 4th International Conference on Applied Machine Learning (ICAML)",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Dai, Yilin",
+        "Ji, Qian",
+        "Liu, Gongshen",
+        "Su, Bo"
+      ],
+      "doi": "10.1109/ijcnn48605.2020.9206859",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/ijcnn48605.2020.9206859",
+      "title": "Multi-paragraph Reading Comprehension with Token-level Dynamic Reader and Hybrid Verifier",
+      "url": "https://doi.org/10.1109/ijcnn48605.2020.9206859",
+      "venue": "2020 International Joint Conference on Neural Networks (IJCNN)",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.4324/9781315759609-13",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.4324/9781315759609-13",
+      "title": "In Search of the \u201cSimple View\u201d of Reading Comprehension",
+      "url": "https://doi.org/10.4324/9781315759609-13",
+      "venue": "Handbook of Research on Reading Comprehension",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Arlin, Marshall"
+      ],
+      "doi": "10.1080/10862967609547190",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1080/10862967609547190",
+      "title": "Causal Priorities between Comprehension Subskills: Word Meaning and Paragraph Meaning",
+      "url": "https://doi.org/10.1080/10862967609547190",
+      "venue": "Journal of Reading Behavior",
+      "year": 1976
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Ragsdsale, Heather"
+      ],
+      "doi": "10.1037/e413782005-870",
+      "is_repository": false,
+      "kind": "dataset",
+      "provider": "crossref",
+      "record_id": "10.1037/e413782005-870",
+      "title": "Effective versus Non-effective Web Pages on Reading Comprehension",
+      "url": "https://doi.org/10.1037/e413782005-870",
+      "venue": "PsycEXTRA Dataset",
+      "year": 1999
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Guo, Xiaoxiao",
+        "Yu, Mo",
+        "Gao, Yupeng",
+        "Gan, Chuang",
+        "Campbell, Murray",
+        "Chang, Shiyu"
+      ],
+      "doi": "10.18653/v1/2020.emnlp-main.624",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2020.emnlp-main.624",
+      "title": "Interactive Fiction Game Playing as Multi-Paragraph Reading Comprehension with Reinforcement Learning",
+      "url": "https://doi.org/10.18653/v1/2020.emnlp-main.624",
+      "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Liu, Sisi",
+        "Chen, Chaofan",
+        "Sun, Yuan"
+      ],
+      "doi": "10.1109/ialp57159.2022.9961244",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/ialp57159.2022.9961244",
+      "title": "Paragraph-level Tibetan Question Generation for Machine Reading Comprehension",
+      "url": "https://doi.org/10.1109/ialp57159.2022.9961244",
+      "venue": "2022 International Conference on Asian Language Processing (IALP)",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Cho, Sanghyun",
+        "Park, SeongReol",
+        "Kim, Hye-Lynn",
+        "Lee, Jung-Hun",
+        "Shin, JoongMin",
+        "Kwon, Hyuk-Chul"
+      ],
+      "doi": "10.1080/08839514.2024.2367820",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1080/08839514.2024.2367820",
+      "title": "Multi-Paragraph Machine Reading Comprehension with Hybrid Reader over Tables and Text",
+      "url": "https://doi.org/10.1080/08839514.2024.2367820",
+      "venue": "Applied Artificial Intelligence",
+      "year": 2024
+    }
+  ],
+  "case_id": "92574678-7",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Christopher Clark",
+            "Matt Gardner"
+          ],
+          "doi": "10.18653/v1/p18-1078",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2765390718",
+          "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+          "url": "https://doi.org/10.18653/v1/p18-1078",
+          "venue": "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "year": 2018
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Clark, Christopher",
+            "Gardner, Matt"
+          ],
+          "doi": "10.18653/v1/p18-1078",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/p18-1078",
+          "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+          "url": "https://doi.org/10.18653/v1/p18-1078",
+          "venue": "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chen, Xu"
+          ],
+          "doi": "10.1088/1742-6596/1871/1/012091",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1088/1742-6596/1871/1/012091",
+          "title": "Multi-Granularity Matching Network for Multi-Paragraph Machine Reading Comprehension",
+          "url": "https://doi.org/10.1088/1742-6596/1871/1/012091",
+          "venue": "Journal of Physics: Conference Series",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Wang, Zeyu"
+          ],
+          "doi": "10.1109/icaml57167.2022.00027",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icaml57167.2022.00027",
+          "title": "Single-paragraph Extractive Machine Reading Comprehension Model Based on Multi-layer Aligned Attention",
+          "url": "https://doi.org/10.1109/icaml57167.2022.00027",
+          "venue": "2022 4th International Conference on Applied Machine Learning (ICAML)",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Dai, Yilin",
+            "Ji, Qian",
+            "Liu, Gongshen",
+            "Su, Bo"
+          ],
+          "doi": "10.1109/ijcnn48605.2020.9206859",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/ijcnn48605.2020.9206859",
+          "title": "Multi-paragraph Reading Comprehension with Token-level Dynamic Reader and Hybrid Verifier",
+          "url": "https://doi.org/10.1109/ijcnn48605.2020.9206859",
+          "venue": "2020 International Joint Conference on Neural Networks (IJCNN)",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.4324/9781315759609-13",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.4324/9781315759609-13",
+          "title": "In Search of the \u201cSimple View\u201d of Reading Comprehension",
+          "url": "https://doi.org/10.4324/9781315759609-13",
+          "venue": "Handbook of Research on Reading Comprehension",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Arlin, Marshall"
+          ],
+          "doi": "10.1080/10862967609547190",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1080/10862967609547190",
+          "title": "Causal Priorities between Comprehension Subskills: Word Meaning and Paragraph Meaning",
+          "url": "https://doi.org/10.1080/10862967609547190",
+          "venue": "Journal of Reading Behavior",
+          "year": 1976
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Ragsdsale, Heather"
+          ],
+          "doi": "10.1037/e413782005-870",
+          "is_repository": false,
+          "kind": "dataset",
+          "provider": "crossref",
+          "record_id": "10.1037/e413782005-870",
+          "title": "Effective versus Non-effective Web Pages on Reading Comprehension",
+          "url": "https://doi.org/10.1037/e413782005-870",
+          "venue": "PsycEXTRA Dataset",
+          "year": 1999
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Guo, Xiaoxiao",
+            "Yu, Mo",
+            "Gao, Yupeng",
+            "Gan, Chuang",
+            "Campbell, Murray",
+            "Chang, Shiyu"
+          ],
+          "doi": "10.18653/v1/2020.emnlp-main.624",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2020.emnlp-main.624",
+          "title": "Interactive Fiction Game Playing as Multi-Paragraph Reading Comprehension with Reinforcement Learning",
+          "url": "https://doi.org/10.18653/v1/2020.emnlp-main.624",
+          "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Liu, Sisi",
+            "Chen, Chaofan",
+            "Sun, Yuan"
+          ],
+          "doi": "10.1109/ialp57159.2022.9961244",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/ialp57159.2022.9961244",
+          "title": "Paragraph-level Tibetan Question Generation for Machine Reading Comprehension",
+          "url": "https://doi.org/10.1109/ialp57159.2022.9961244",
+          "venue": "2022 International Conference on Asian Language Processing (IALP)",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Cho, Sanghyun",
+            "Park, SeongReol",
+            "Kim, Hye-Lynn",
+            "Lee, Jung-Hun",
+            "Shin, JoongMin",
+            "Kwon, Hyuk-Chul"
+          ],
+          "doi": "10.1080/08839514.2024.2367820",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1080/08839514.2024.2367820",
+          "title": "Multi-Paragraph Machine Reading Comprehension with Hybrid Reader over Tables and Text",
+          "url": "https://doi.org/10.1080/08839514.2024.2367820",
+          "venue": "Applied Artificial Intelligence",
+          "year": 2024
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "1710.10723",
+    "authors": [
+      "Christopher Clark",
+      "Matt Gardner"
+    ],
+    "doi": "",
+    "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+    "venue": "",
+    "year": 2017
+  },
+  "query_source": "fixture"
+}

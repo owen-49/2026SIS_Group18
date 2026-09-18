@@ -1,0 +1,387 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alexei Baevski",
+        "Michael Auli"
+      ],
+      "doi": "10.48550/arxiv.1809.10853",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W2894175714",
+      "title": "Adaptive Input Representations for Neural Language Modeling",
+      "url": "http://arxiv.org/abs/1809.10853",
+      "venue": "arXiv (Cornell University)",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Edunov, Sergey",
+        "Baevski, Alexei",
+        "Auli, Michael"
+      ],
+      "doi": "10.18653/v1/n19-1409",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/n19-1409",
+      "title": "Pre-trained language model representations for language generation",
+      "url": "https://doi.org/10.18653/v1/n19-1409",
+      "venue": "Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+      "year": 2019
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Cangelosi, Angelo"
+      ],
+      "doi": "10.1016/j.langsci.2006.12.026",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1016/j.langsci.2006.12.026",
+      "title": "Adaptive agent modeling of distributed language: investigations on the effects of cultural variation and internal action representations",
+      "url": "https://doi.org/10.1016/j.langsci.2006.12.026",
+      "venue": "Language Sciences",
+      "year": 2007
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "K\u00dcHN, SIMONE",
+        "CRUSE, HOLK"
+      ],
+      "doi": "10.1142/9789812701886_0019",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1142/9789812701886_0019",
+      "title": "MENTAL REPRESENTATIONS AND COGNITIVE BEHAVIOUR \u2013 A RECURRENT NEURAL NETWORK APPROACH",
+      "url": "https://doi.org/10.1142/9789812701886_0019",
+      "venue": "Modeling Language, Cognition and Action",
+      "year": 2005
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Jackson, Thomas"
+      ],
+      "doi": "10.1201/9781420050646.ptb4",
+      "is_repository": false,
+      "kind": "book-chapter",
+      "provider": "crossref",
+      "record_id": "10.1201/9781420050646.ptb4",
+      "title": "Data Input and Output Representations",
+      "url": "https://doi.org/10.1201/9781420050646.ptb4",
+      "venue": "Handbook of Neural Computation",
+      "year": 1996
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Godey, Nathan"
+      ],
+      "doi": "10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+      "is_repository": false,
+      "kind": "dissertation",
+      "provider": "crossref",
+      "record_id": "10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+      "title": "Improving Representations for Language Modeling",
+      "url": "https://doi.org/10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Huang, Chao-Wei",
+        "Chen, Yun-Nung"
+      ],
+      "doi": "10.18653/v1/2020.acl-main.347",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2020.acl-main.347",
+      "title": "Learning Spoken Language Representations with Neural Lattice Language Modeling",
+      "url": "https://doi.org/10.18653/v1/2020.acl-main.347",
+      "venue": "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chunwijitra, Vataya",
+        "Chotimongkol, Ananlada",
+        "Wutiwiwatchai, Chai"
+      ],
+      "doi": "10.21437/interspeech.2015-516",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.21437/interspeech.2015-516",
+      "title": "Combining multiple-type input units using recurrent neural network for LVCSR language modeling",
+      "url": "https://doi.org/10.21437/interspeech.2015-516",
+      "venue": "Interspeech 2015",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "de Vries, Ingmar E.J.",
+        "Wurm, Moritz F."
+      ],
+      "doi": "10.1101/2022.09.02.506366",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.1101/2022.09.02.506366",
+      "title": "Predictive neural representations of naturalistic dynamic input",
+      "url": "https://doi.org/10.1101/2022.09.02.506366",
+      "venue": "",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Tanaka, Shoko",
+        "Shindo, Takahiro",
+        "Watanabe, Hiroshi"
+      ],
+      "doi": "10.1109/gcce65946.2025.11274839",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/gcce65946.2025.11274839",
+      "title": "Image-Adaptive Context Modeling for Compression Based on Implicit Neural Representations",
+      "url": "https://doi.org/10.1109/gcce65946.2025.11274839",
+      "venue": "2025 IEEE 14th Global Conference on Consumer Electronics (GCCE)",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Madi, Mahmoud K",
+        "Karameh, Fadi N"
+      ],
+      "doi": "10.1088/1741-2552/aac3f7",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1088/1741-2552/aac3f7",
+      "title": "Adaptive optimal input design and parametric estimation of nonlinear dynamical systems: application to neuronal modeling",
+      "url": "https://doi.org/10.1088/1741-2552/aac3f7",
+      "venue": "Journal of Neural Engineering",
+      "year": 2018
+    }
+  ],
+  "case_id": "f940bcbf-2",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alexei Baevski",
+            "Michael Auli"
+          ],
+          "doi": "10.48550/arxiv.1809.10853",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W2894175714",
+          "title": "Adaptive Input Representations for Neural Language Modeling",
+          "url": "http://arxiv.org/abs/1809.10853",
+          "venue": "arXiv (Cornell University)",
+          "year": 2018
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Edunov, Sergey",
+            "Baevski, Alexei",
+            "Auli, Michael"
+          ],
+          "doi": "10.18653/v1/n19-1409",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/n19-1409",
+          "title": "Pre-trained language model representations for language generation",
+          "url": "https://doi.org/10.18653/v1/n19-1409",
+          "venue": "Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+          "year": 2019
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Cangelosi, Angelo"
+          ],
+          "doi": "10.1016/j.langsci.2006.12.026",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1016/j.langsci.2006.12.026",
+          "title": "Adaptive agent modeling of distributed language: investigations on the effects of cultural variation and internal action representations",
+          "url": "https://doi.org/10.1016/j.langsci.2006.12.026",
+          "venue": "Language Sciences",
+          "year": 2007
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "K\u00dcHN, SIMONE",
+            "CRUSE, HOLK"
+          ],
+          "doi": "10.1142/9789812701886_0019",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1142/9789812701886_0019",
+          "title": "MENTAL REPRESENTATIONS AND COGNITIVE BEHAVIOUR \u2013 A RECURRENT NEURAL NETWORK APPROACH",
+          "url": "https://doi.org/10.1142/9789812701886_0019",
+          "venue": "Modeling Language, Cognition and Action",
+          "year": 2005
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Jackson, Thomas"
+          ],
+          "doi": "10.1201/9781420050646.ptb4",
+          "is_repository": false,
+          "kind": "book-chapter",
+          "provider": "crossref",
+          "record_id": "10.1201/9781420050646.ptb4",
+          "title": "Data Input and Output Representations",
+          "url": "https://doi.org/10.1201/9781420050646.ptb4",
+          "venue": "Handbook of Neural Computation",
+          "year": 1996
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Godey, Nathan"
+          ],
+          "doi": "10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+          "is_repository": false,
+          "kind": "dissertation",
+          "provider": "crossref",
+          "record_id": "10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+          "title": "Improving Representations for Language Modeling",
+          "url": "https://doi.org/10.70675/b6a15d0ez15bez43e5za967z16a069e0a8bb",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Huang, Chao-Wei",
+            "Chen, Yun-Nung"
+          ],
+          "doi": "10.18653/v1/2020.acl-main.347",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2020.acl-main.347",
+          "title": "Learning Spoken Language Representations with Neural Lattice Language Modeling",
+          "url": "https://doi.org/10.18653/v1/2020.acl-main.347",
+          "venue": "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chunwijitra, Vataya",
+            "Chotimongkol, Ananlada",
+            "Wutiwiwatchai, Chai"
+          ],
+          "doi": "10.21437/interspeech.2015-516",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.21437/interspeech.2015-516",
+          "title": "Combining multiple-type input units using recurrent neural network for LVCSR language modeling",
+          "url": "https://doi.org/10.21437/interspeech.2015-516",
+          "venue": "Interspeech 2015",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "de Vries, Ingmar E.J.",
+            "Wurm, Moritz F."
+          ],
+          "doi": "10.1101/2022.09.02.506366",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.1101/2022.09.02.506366",
+          "title": "Predictive neural representations of naturalistic dynamic input",
+          "url": "https://doi.org/10.1101/2022.09.02.506366",
+          "venue": "",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Tanaka, Shoko",
+            "Shindo, Takahiro",
+            "Watanabe, Hiroshi"
+          ],
+          "doi": "10.1109/gcce65946.2025.11274839",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/gcce65946.2025.11274839",
+          "title": "Image-Adaptive Context Modeling for Compression Based on Implicit Neural Representations",
+          "url": "https://doi.org/10.1109/gcce65946.2025.11274839",
+          "venue": "2025 IEEE 14th Global Conference on Consumer Electronics (GCCE)",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Madi, Mahmoud K",
+            "Karameh, Fadi N"
+          ],
+          "doi": "10.1088/1741-2552/aac3f7",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1088/1741-2552/aac3f7",
+          "title": "Adaptive optimal input design and parametric estimation of nonlinear dynamical systems: application to neuronal modeling",
+          "url": "https://doi.org/10.1088/1741-2552/aac3f7",
+          "venue": "Journal of Neural Engineering",
+          "year": 2018
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Alexei Baevski",
+      "Michael Auli"
+    ],
+    "doi": "",
+    "title": "Adaptive input representations for neural language modeling",
+    "venue": "International Conference on Representation Learning",
+    "year": 2019
+  },
+  "query_source": "fixture"
+}
