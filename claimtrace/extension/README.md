@@ -16,6 +16,25 @@ The extension starts with four demo sources. When it can read BibTeX from the ac
 
 When the backend is unavailable, or when no uploaded PDF matches a bibliography entry, the extension keeps the citation visibly labelled as a local preview. PDF uploads remain part of the web audit workspace; the extension itself only reads `.tex` and `.bib` content from Overleaf.
 
+## Bibliography Audit
+
+Audit is added alongside the existing Verify workflow. A detected BibTeX file is
+audited through `POST /api/audit` with its parsed ID:
+
+```json
+{ "bib_paper_id": "uploaded-bib-id" }
+```
+
+The Side Panel also lists completed PDFs already uploaded through the web
+workspace. Selecting one and clicking **Audit PDF** uses:
+
+```json
+{ "manuscript_id": "uploaded-pdf-id" }
+```
+
+Audit results show publication existence, metadata differences, ambiguous
+records, and lookup failures. They do not replace or alter claim-support Verify.
+
 ## Review ambiguous source PDFs
 
 In the Citations tab, unresolved citations retain candidate PDFs under
@@ -33,8 +52,43 @@ requires review again if the source remains ambiguous.
 Run regression tests with:
 
 ```sh
-node --test claimtrace/extension/arxiv-matching.test.cjs
+node --test claimtrace/extension/*.test.cjs
 ```
+
+## The citation hover card
+
+Hovering a `\cite{...}` highlights the line and shows a card assembled from what
+the page already has in memory: the claim the citation sits in, the bibliography
+entry, and — once the claim has been verified against an uploaded PDF — the
+passage `/api/verify` retrieved for it, with its rank among the matches and its
+lexical overlap. An unverified citation shows the same card without the passage;
+it does not show a spinner or an empty quote.
+
+The card is built on the hover event from `chrome.storage` state. It opens no
+connection and waits for nothing, which is what the one-second budget for
+hovering a citation requires.
+
+### Reading the latency on real Overleaf
+
+`showCitationHover` takes a `performance.measure("claimtrace:hover")` on every
+hover and prints it:
+
+```
+[ClaimTrace] hover card in 3.4 ms
+```
+
+Open DevTools on an Overleaf project, hover a citation, and read that line
+(filter the console for `hover card`). It covers the card's construction and the
+layout read that positions it, and stops before the browser paints the card.
+Every measurement is also readable after the fact:
+
+```js
+performance.getEntriesByName("claimtrace:hover").map((entry) => entry.duration)
+```
+
+Numbers produced by the test sandbox are not latency measurements: `fake-dom.cjs`
+has no clock, no layout and no paint, and only shows that the measurement is
+taken and reported.
 
 ## Extension files
 
@@ -42,3 +96,4 @@ node --test claimtrace/extension/arxiv-matching.test.cjs
 - `src/background.js` — panel behaviour and shared storage
 - `src/content.js` — Overleaf BibTeX/citation detection, editor highlighting, and location handling
 - `src/sidepanel.*` — searchable paper library and citation-location UI
+- `fake-dom.cjs`, `*.test.cjs` — the page the content and background scripts are tested against, and their cases

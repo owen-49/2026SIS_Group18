@@ -1,0 +1,411 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Marius Muja",
+        "David Lowe"
+      ],
+      "doi": "10.1109/tpami.2014.2321376",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2086504823",
+      "title": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+      "url": "https://doi.org/10.1109/tpami.2014.2321376",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Muja, Marius",
+        "Lowe, David G."
+      ],
+      "doi": "10.1109/tpami.2014.2321376",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1109/tpami.2014.2321376",
+      "title": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+      "url": "https://doi.org/10.1109/tpami.2014.2321376",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Renga Bashyam, K G",
+        "Vadhiyar, Sathish"
+      ],
+      "doi": "10.1109/cluster49012.2020.00040",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/cluster49012.2020.00040",
+      "title": "Fast Scalable Approximate Nearest Neighbor Search for High-dimensional Data",
+      "url": "https://doi.org/10.1109/cluster49012.2020.00040",
+      "venue": "2020 IEEE International Conference on Cluster Computing (CLUSTER)",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alasady, Heba",
+        "Addanki, Pavani",
+        "M, Harshitha. G",
+        "S, Uma.",
+        "Soni, Mukesh"
+      ],
+      "doi": "10.1109/iacis65746.2025.11211050",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/iacis65746.2025.11211050",
+      "title": "Scalable Clustering of High-Dimensional IoT Data Using Incremental PCA and HNSW-Based Approximate Nearest Neighbor Search",
+      "url": "https://doi.org/10.1109/iacis65746.2025.11211050",
+      "venue": "2025 2nd International Conference on Intelligent Algorithms for Computational Intelligence Systems (IACIS)",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alvaro Vargas Mu\u00f1oz, Javier"
+      ],
+      "doi": "10.47749/t/unicamp.2020.1129107",
+      "is_repository": false,
+      "kind": "dissertation",
+      "provider": "crossref",
+      "record_id": "10.47749/t/unicamp.2020.1129107",
+      "title": "Large-scale indexing of high dimensional data via nearest neighbor graphs",
+      "url": "https://doi.org/10.47749/t/unicamp.2020.1129107",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "K R, Madhavan",
+        "Kurban, Hasan",
+        "Kulekci, Oguzhan M.",
+        "Dalkilic, Mehmet M."
+      ],
+      "doi": "10.1038/s41598-025-09856-5",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1038/s41598-025-09856-5",
+      "title": "Telescope indexing for k-nearest neighbor search algorithms over high dimensional data &amp; large data sets",
+      "url": "https://doi.org/10.1038/s41598-025-09856-5",
+      "venue": "Scientific Reports",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Fang, Yixiang",
+        "Cheng, Reynold",
+        "Tang, Wenbin",
+        "Maniu, Silviu",
+        "Yang, Xuan"
+      ],
+      "doi": "10.1109/icde.2016.7498408",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icde.2016.7498408",
+      "title": "Scalable algorithms for nearest-neighbor joins on big trajectory data",
+      "url": "https://doi.org/10.1109/icde.2016.7498408",
+      "venue": "2016 IEEE 32nd International Conference on Data Engineering (ICDE)",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Lu, Jiaxuan",
+        "Gweon, Hyukjun"
+      ],
+      "doi": "10.7717/peerj-cs.2497",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.7717/peerj-cs.2497",
+      "title": "Random k conditional nearest neighbor for high-dimensional data",
+      "url": "https://doi.org/10.7717/peerj-cs.2497",
+      "venue": "PeerJ Computer Science",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Aggarwal, C.C."
+      ],
+      "doi": "10.1109/icde.2002.994777",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icde.2002.994777",
+      "title": "Towards meaningful high-dimensional nearest neighbor search by human-computer interaction",
+      "url": "https://doi.org/10.1109/icde.2002.994777",
+      "venue": "Proceedings 18th International Conference on Data Engineering",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Kumari, Sonal",
+        "Maurya, Saurabh",
+        "Goyal, Poonam",
+        "Balasubramaniam, Sundar S",
+        "Goyal, Navneet"
+      ],
+      "doi": "10.1109/hipc.2016.018",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/hipc.2016.018",
+      "title": "Scalable Parallel Algorithms for Shared Nearest Neighbor Clustering",
+      "url": "https://doi.org/10.1109/hipc.2016.018",
+      "venue": "2016 IEEE 23rd International Conference on High Performance Computing (HiPC)",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Fang, Yixiang",
+        "Cheng, Reynold",
+        "Tang, Wenbin",
+        "Maniu, Silviu",
+        "Yang, Xuan"
+      ],
+      "doi": "10.1109/tkde.2015.2492561",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1109/tkde.2015.2492561",
+      "title": "Scalable Algorithms for Nearest-Neighbor Joins on Big Trajectory Data",
+      "url": "https://doi.org/10.1109/tkde.2015.2492561",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "year": 2016
+    }
+  ],
+  "case_id": "f940bcbf-32",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Marius Muja",
+            "David Lowe"
+          ],
+          "doi": "10.1109/tpami.2014.2321376",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2086504823",
+          "title": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+          "url": "https://doi.org/10.1109/tpami.2014.2321376",
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "year": 2014
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Muja, Marius",
+            "Lowe, David G."
+          ],
+          "doi": "10.1109/tpami.2014.2321376",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1109/tpami.2014.2321376",
+          "title": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+          "url": "https://doi.org/10.1109/tpami.2014.2321376",
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Renga Bashyam, K G",
+            "Vadhiyar, Sathish"
+          ],
+          "doi": "10.1109/cluster49012.2020.00040",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/cluster49012.2020.00040",
+          "title": "Fast Scalable Approximate Nearest Neighbor Search for High-dimensional Data",
+          "url": "https://doi.org/10.1109/cluster49012.2020.00040",
+          "venue": "2020 IEEE International Conference on Cluster Computing (CLUSTER)",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alasady, Heba",
+            "Addanki, Pavani",
+            "M, Harshitha. G",
+            "S, Uma.",
+            "Soni, Mukesh"
+          ],
+          "doi": "10.1109/iacis65746.2025.11211050",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/iacis65746.2025.11211050",
+          "title": "Scalable Clustering of High-Dimensional IoT Data Using Incremental PCA and HNSW-Based Approximate Nearest Neighbor Search",
+          "url": "https://doi.org/10.1109/iacis65746.2025.11211050",
+          "venue": "2025 2nd International Conference on Intelligent Algorithms for Computational Intelligence Systems (IACIS)",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alvaro Vargas Mu\u00f1oz, Javier"
+          ],
+          "doi": "10.47749/t/unicamp.2020.1129107",
+          "is_repository": false,
+          "kind": "dissertation",
+          "provider": "crossref",
+          "record_id": "10.47749/t/unicamp.2020.1129107",
+          "title": "Large-scale indexing of high dimensional data via nearest neighbor graphs",
+          "url": "https://doi.org/10.47749/t/unicamp.2020.1129107",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "K R, Madhavan",
+            "Kurban, Hasan",
+            "Kulekci, Oguzhan M.",
+            "Dalkilic, Mehmet M."
+          ],
+          "doi": "10.1038/s41598-025-09856-5",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1038/s41598-025-09856-5",
+          "title": "Telescope indexing for k-nearest neighbor search algorithms over high dimensional data &amp; large data sets",
+          "url": "https://doi.org/10.1038/s41598-025-09856-5",
+          "venue": "Scientific Reports",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Fang, Yixiang",
+            "Cheng, Reynold",
+            "Tang, Wenbin",
+            "Maniu, Silviu",
+            "Yang, Xuan"
+          ],
+          "doi": "10.1109/icde.2016.7498408",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icde.2016.7498408",
+          "title": "Scalable algorithms for nearest-neighbor joins on big trajectory data",
+          "url": "https://doi.org/10.1109/icde.2016.7498408",
+          "venue": "2016 IEEE 32nd International Conference on Data Engineering (ICDE)",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Lu, Jiaxuan",
+            "Gweon, Hyukjun"
+          ],
+          "doi": "10.7717/peerj-cs.2497",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.7717/peerj-cs.2497",
+          "title": "Random k conditional nearest neighbor for high-dimensional data",
+          "url": "https://doi.org/10.7717/peerj-cs.2497",
+          "venue": "PeerJ Computer Science",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Aggarwal, C.C."
+          ],
+          "doi": "10.1109/icde.2002.994777",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icde.2002.994777",
+          "title": "Towards meaningful high-dimensional nearest neighbor search by human-computer interaction",
+          "url": "https://doi.org/10.1109/icde.2002.994777",
+          "venue": "Proceedings 18th International Conference on Data Engineering",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Kumari, Sonal",
+            "Maurya, Saurabh",
+            "Goyal, Poonam",
+            "Balasubramaniam, Sundar S",
+            "Goyal, Navneet"
+          ],
+          "doi": "10.1109/hipc.2016.018",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/hipc.2016.018",
+          "title": "Scalable Parallel Algorithms for Shared Nearest Neighbor Clustering",
+          "url": "https://doi.org/10.1109/hipc.2016.018",
+          "venue": "2016 IEEE 23rd International Conference on High Performance Computing (HiPC)",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Fang, Yixiang",
+            "Cheng, Reynold",
+            "Tang, Wenbin",
+            "Maniu, Silviu",
+            "Yang, Xuan"
+          ],
+          "doi": "10.1109/tkde.2015.2492561",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1109/tkde.2015.2492561",
+          "title": "Scalable Algorithms for Nearest-Neighbor Joins on Big Trajectory Data",
+          "url": "https://doi.org/10.1109/tkde.2015.2492561",
+          "venue": "IEEE Transactions on Knowledge and Data Engineering",
+          "year": 2016
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Marius Muja",
+      "David G. Lowe"
+    ],
+    "doi": "",
+    "title": "Scalable nearest neighbor algorithms for high dimensional data",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2014
+  },
+  "query_source": "fixture"
+}

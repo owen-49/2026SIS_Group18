@@ -1,0 +1,679 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Alireza Makhzani",
+        "Brendan J. Frey"
+      ],
+      "doi": "10.48550/arxiv.1312.5663",
+      "is_repository": true,
+      "kind": "preprint",
+      "provider": "openalex",
+      "record_id": "W1853900790",
+      "title": "k-Sparse Autoencoders",
+      "url": "http://arxiv.org/abs/1312.5663",
+      "venue": "arXiv (Cornell University)",
+      "year": 2013
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Pushkar Bhatkoti",
+        "Manoranjan Paul"
+      ],
+      "doi": "10.1109/ivcnz.2016.7804459",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2567961463",
+      "title": "Early diagnosis of Alzheimer's disease: A multi-class deep learning framework with modified k-sparse autoencoder classification",
+      "url": "https://doi.org/10.1109/ivcnz.2016.7804459",
+      "venue": "2016 International Conference on Image and Vision Computing New Zealand (IVCNZ)",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Afan Ali",
+        "Fan Yangyu"
+      ],
+      "doi": "10.1109/lcomm.2017.2717821",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2683165743",
+      "title": "${k}$ -Sparse Autoencoder-Based Automatic Modulation Classification With Low Complexity",
+      "url": "https://doi.org/10.1109/lcomm.2017.2717821",
+      "venue": "IEEE Communications Letters",
+      "year": 2017
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Nikhil Dhengre",
+        "Saugata Sinha"
+      ],
+      "doi": "10.1007/s00371-020-02054-6",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W3128867981",
+      "title": "K sparse autoencoder-based accelerated reconstruction of magnetic resonance imaging",
+      "url": "https://doi.org/10.1007/s00371-020-02054-6",
+      "venue": "The Visual Computer",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Sujoy Kumar Roy Chowdhury",
+        "Amitava Chatterjee"
+      ],
+      "doi": "10.1109/icais50930.2021.9396033",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3154083231",
+      "title": "Speech Enhancement using K-Sparse Autoencoder Techniques",
+      "url": "https://doi.org/10.1109/icais50930.2021.9396033",
+      "venue": "2021 International Conference on Artificial Intelligence and Smart Systems (ICAIS)",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Takahiko Furuya",
+        "Ryutarou Ohbuchi"
+      ],
+      "doi": "10.1145/2911996.2912054",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2410948830",
+      "title": "Accurate Aggregation of Local Features by using K-sparse Autoencoder for 3D Model Retrieval",
+      "url": "https://doi.org/10.1145/2911996.2912054",
+      "venue": "Proceedings of the 2016 ACM on International Conference on Multimedia Retrieval",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Rushi Lan",
+        "Zeya Li",
+        "Zhenbing Liu",
+        "Tianlong Gu",
+        "Xiaonan Luo"
+      ],
+      "doi": "10.1016/j.asoc.2018.08.049",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2900180889",
+      "title": "Hyperspectral image classification using k-sparse denoising autoencoder and spectral\u2013restricted spatial characteristics",
+      "url": "https://doi.org/10.1016/j.asoc.2018.08.049",
+      "venue": "Applied Soft Computing",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Jesna Mohan",
+        "Prof. (Dr.) Madhu S. Nair"
+      ],
+      "doi": "10.3233/jifs-169906",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2913508955",
+      "title": "Domain independent static video summarization using sparse autoencoders and K-means clustering",
+      "url": "https://doi.org/10.3233/jifs-169906",
+      "venue": "Journal of Intelligent & Fuzzy Systems",
+      "year": 2019
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Yandong Bi",
+        "Peng Wang",
+        "Xuchao Guo",
+        "Zhijun Wang",
+        "Shuhan Cheng"
+      ],
+      "doi": "10.1007/s11220-019-0227-1",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2919023148",
+      "title": "K-Means Clustering Optimizing Deep Stacked Sparse Autoencoder",
+      "url": "https://doi.org/10.1007/s11220-019-0227-1",
+      "venue": "Sensing and Imaging",
+      "year": 2019
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Zhengnan Yao",
+        "Feishen Wei",
+        "Yifan Huang"
+      ],
+      "doi": "10.1109/icirdc62824.2023.00098",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W4396605628",
+      "title": "Residential Electricity Behavior Classification Model Based on Sparse Denoising Autoencoder And K-Means",
+      "url": "https://doi.org/10.1109/icirdc62824.2023.00098",
+      "venue": "2023 International Conference on Internet of Things, Robotics and Distributed Computing (ICIRDC)",
+      "year": 2023
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Sharma, Abhinav"
+      ],
+      "doi": "10.2139/ssrn.4182178",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.4182178",
+      "title": "Autoencoders Learning Sparse Representation",
+      "url": "https://doi.org/10.2139/ssrn.4182178",
+      "venue": "",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Makhzani, Alireza",
+        "Valaee, Shahrokh"
+      ],
+      "doi": "10.1109/icc.2012.6364058",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icc.2012.6364058",
+      "title": "Reconstruction of jointly sparse signals using iterative hard thresholding",
+      "url": "https://doi.org/10.1109/icc.2012.6364058",
+      "venue": "2012 IEEE International Conference on Communications (ICC)",
+      "year": 2012
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Noguer I Alonso, Miquel"
+      ],
+      "doi": "10.2139/ssrn.5032256",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.5032256",
+      "title": "The Mathematics of Sparse Autoencoders",
+      "url": "https://doi.org/10.2139/ssrn.5032256",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Kalorii, Dane"
+      ],
+      "doi": "10.14293/pr2199.004035.v1",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.14293/pr2199.004035.v1",
+      "title": "Sparse Autoencoders as an Interpretable Interface for LLM Development and Control",
+      "url": "https://doi.org/10.14293/pr2199.004035.v1",
+      "venue": "",
+      "year": 2026
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Yu, Michael",
+        "Olson, Matthew L."
+      ],
+      "doi": "10.64898/2026.06.08.730928",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.64898/2026.06.08.730928",
+      "title": "VFUSE: Virulent Feature Understanding with Sparse autoEncoders",
+      "url": "https://doi.org/10.64898/2026.06.08.730928",
+      "venue": "",
+      "year": 2026
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Arag\u00f3n Urrego, Daniel"
+      ],
+      "doi": "10.18601/17941113.n28.05",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.18601/17941113.n28.05",
+      "title": "Aplicaci\u00f3n de autoencoders y autoencoders variacionales al sparse index tracking del S&amp;P100",
+      "url": "https://doi.org/10.18601/17941113.n28.05",
+      "venue": "ODEON",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Mahmoud, Abeer",
+        "Karamti, Hanen",
+        "Alrowais, Fadwa"
+      ],
+      "doi": "10.5220/0009397605400547",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.5220/0009397605400547",
+      "title": "An Effective Sparse Autoencoders based Deep Learning Framework for fMRI Scans Classification",
+      "url": "https://doi.org/10.5220/0009397605400547",
+      "venue": "Proceedings of the 22nd International Conference on Enterprise Information Systems",
+      "year": 2020
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Nakka, Krishna Kanth"
+      ],
+      "doi": "10.21203/rs.3.rs-7614664/v1",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.21203/rs.3.rs-7614664/v1",
+      "title": "Mammo-SAE: Interpreting Breast Cancer Concept Learning with Sparse Autoencoders",
+      "url": "https://doi.org/10.21203/rs.3.rs-7614664/v1",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chon, Paul"
+      ],
+      "doi": "10.31979/etd.tj23-rm78",
+      "is_repository": false,
+      "kind": "dissertation",
+      "provider": "crossref",
+      "record_id": "10.31979/etd.tj23-rm78",
+      "title": "Towards Mechanistic Interpretability of Antimicrobial Resistance Proteins Using Sparse Autoencoders and Cross-Layer Transcoders",
+      "url": "https://doi.org/10.31979/etd.tj23-rm78",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Simon, Elana",
+        "Zou, James"
+      ],
+      "doi": "10.1101/2024.11.14.623630",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.1101/2024.11.14.623630",
+      "title": "InterPLM: Discovering Interpretable Features in Protein Language Models via Sparse Autoencoders",
+      "url": "https://doi.org/10.1101/2024.11.14.623630",
+      "venue": "",
+      "year": 2024
+    }
+  ],
+  "case_id": "f940bcbf-30",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "doi": "10.48550/arxiv.1312.5663",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W1853900790",
+          "title": "k-Sparse Autoencoders",
+          "url": "http://arxiv.org/abs/1312.5663",
+          "venue": "arXiv (Cornell University)",
+          "year": 2013
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Pushkar Bhatkoti",
+            "Manoranjan Paul"
+          ],
+          "doi": "10.1109/ivcnz.2016.7804459",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2567961463",
+          "title": "Early diagnosis of Alzheimer's disease: A multi-class deep learning framework with modified k-sparse autoencoder classification",
+          "url": "https://doi.org/10.1109/ivcnz.2016.7804459",
+          "venue": "2016 International Conference on Image and Vision Computing New Zealand (IVCNZ)",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Afan Ali",
+            "Fan Yangyu"
+          ],
+          "doi": "10.1109/lcomm.2017.2717821",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2683165743",
+          "title": "${k}$ -Sparse Autoencoder-Based Automatic Modulation Classification With Low Complexity",
+          "url": "https://doi.org/10.1109/lcomm.2017.2717821",
+          "venue": "IEEE Communications Letters",
+          "year": 2017
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Nikhil Dhengre",
+            "Saugata Sinha"
+          ],
+          "doi": "10.1007/s00371-020-02054-6",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W3128867981",
+          "title": "K sparse autoencoder-based accelerated reconstruction of magnetic resonance imaging",
+          "url": "https://doi.org/10.1007/s00371-020-02054-6",
+          "venue": "The Visual Computer",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Sujoy Kumar Roy Chowdhury",
+            "Amitava Chatterjee"
+          ],
+          "doi": "10.1109/icais50930.2021.9396033",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3154083231",
+          "title": "Speech Enhancement using K-Sparse Autoencoder Techniques",
+          "url": "https://doi.org/10.1109/icais50930.2021.9396033",
+          "venue": "2021 International Conference on Artificial Intelligence and Smart Systems (ICAIS)",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Takahiko Furuya",
+            "Ryutarou Ohbuchi"
+          ],
+          "doi": "10.1145/2911996.2912054",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2410948830",
+          "title": "Accurate Aggregation of Local Features by using K-sparse Autoencoder for 3D Model Retrieval",
+          "url": "https://doi.org/10.1145/2911996.2912054",
+          "venue": "Proceedings of the 2016 ACM on International Conference on Multimedia Retrieval",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Rushi Lan",
+            "Zeya Li",
+            "Zhenbing Liu",
+            "Tianlong Gu",
+            "Xiaonan Luo"
+          ],
+          "doi": "10.1016/j.asoc.2018.08.049",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2900180889",
+          "title": "Hyperspectral image classification using k-sparse denoising autoencoder and spectral\u2013restricted spatial characteristics",
+          "url": "https://doi.org/10.1016/j.asoc.2018.08.049",
+          "venue": "Applied Soft Computing",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Jesna Mohan",
+            "Prof. (Dr.) Madhu S. Nair"
+          ],
+          "doi": "10.3233/jifs-169906",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2913508955",
+          "title": "Domain independent static video summarization using sparse autoencoders and K-means clustering",
+          "url": "https://doi.org/10.3233/jifs-169906",
+          "venue": "Journal of Intelligent & Fuzzy Systems",
+          "year": 2019
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Yandong Bi",
+            "Peng Wang",
+            "Xuchao Guo",
+            "Zhijun Wang",
+            "Shuhan Cheng"
+          ],
+          "doi": "10.1007/s11220-019-0227-1",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2919023148",
+          "title": "K-Means Clustering Optimizing Deep Stacked Sparse Autoencoder",
+          "url": "https://doi.org/10.1007/s11220-019-0227-1",
+          "venue": "Sensing and Imaging",
+          "year": 2019
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Zhengnan Yao",
+            "Feishen Wei",
+            "Yifan Huang"
+          ],
+          "doi": "10.1109/icirdc62824.2023.00098",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W4396605628",
+          "title": "Residential Electricity Behavior Classification Model Based on Sparse Denoising Autoencoder And K-Means",
+          "url": "https://doi.org/10.1109/icirdc62824.2023.00098",
+          "venue": "2023 International Conference on Internet of Things, Robotics and Distributed Computing (ICIRDC)",
+          "year": 2023
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Sharma, Abhinav"
+          ],
+          "doi": "10.2139/ssrn.4182178",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.4182178",
+          "title": "Autoencoders Learning Sparse Representation",
+          "url": "https://doi.org/10.2139/ssrn.4182178",
+          "venue": "",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Makhzani, Alireza",
+            "Valaee, Shahrokh"
+          ],
+          "doi": "10.1109/icc.2012.6364058",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icc.2012.6364058",
+          "title": "Reconstruction of jointly sparse signals using iterative hard thresholding",
+          "url": "https://doi.org/10.1109/icc.2012.6364058",
+          "venue": "2012 IEEE International Conference on Communications (ICC)",
+          "year": 2012
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Noguer I Alonso, Miquel"
+          ],
+          "doi": "10.2139/ssrn.5032256",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.5032256",
+          "title": "The Mathematics of Sparse Autoencoders",
+          "url": "https://doi.org/10.2139/ssrn.5032256",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Kalorii, Dane"
+          ],
+          "doi": "10.14293/pr2199.004035.v1",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.14293/pr2199.004035.v1",
+          "title": "Sparse Autoencoders as an Interpretable Interface for LLM Development and Control",
+          "url": "https://doi.org/10.14293/pr2199.004035.v1",
+          "venue": "",
+          "year": 2026
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Yu, Michael",
+            "Olson, Matthew L."
+          ],
+          "doi": "10.64898/2026.06.08.730928",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.64898/2026.06.08.730928",
+          "title": "VFUSE: Virulent Feature Understanding with Sparse autoEncoders",
+          "url": "https://doi.org/10.64898/2026.06.08.730928",
+          "venue": "",
+          "year": 2026
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Arag\u00f3n Urrego, Daniel"
+          ],
+          "doi": "10.18601/17941113.n28.05",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.18601/17941113.n28.05",
+          "title": "Aplicaci\u00f3n de autoencoders y autoencoders variacionales al sparse index tracking del S&amp;P100",
+          "url": "https://doi.org/10.18601/17941113.n28.05",
+          "venue": "ODEON",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Mahmoud, Abeer",
+            "Karamti, Hanen",
+            "Alrowais, Fadwa"
+          ],
+          "doi": "10.5220/0009397605400547",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.5220/0009397605400547",
+          "title": "An Effective Sparse Autoencoders based Deep Learning Framework for fMRI Scans Classification",
+          "url": "https://doi.org/10.5220/0009397605400547",
+          "venue": "Proceedings of the 22nd International Conference on Enterprise Information Systems",
+          "year": 2020
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Nakka, Krishna Kanth"
+          ],
+          "doi": "10.21203/rs.3.rs-7614664/v1",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.21203/rs.3.rs-7614664/v1",
+          "title": "Mammo-SAE: Interpreting Breast Cancer Concept Learning with Sparse Autoencoders",
+          "url": "https://doi.org/10.21203/rs.3.rs-7614664/v1",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chon, Paul"
+          ],
+          "doi": "10.31979/etd.tj23-rm78",
+          "is_repository": false,
+          "kind": "dissertation",
+          "provider": "crossref",
+          "record_id": "10.31979/etd.tj23-rm78",
+          "title": "Towards Mechanistic Interpretability of Antimicrobial Resistance Proteins Using Sparse Autoencoders and Cross-Layer Transcoders",
+          "url": "https://doi.org/10.31979/etd.tj23-rm78",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Simon, Elana",
+            "Zou, James"
+          ],
+          "doi": "10.1101/2024.11.14.623630",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.1101/2024.11.14.623630",
+          "title": "InterPLM: Discovering Interpretable Features in Protein Language Models via Sparse Autoencoders",
+          "url": "https://doi.org/10.1101/2024.11.14.623630",
+          "venue": "",
+          "year": 2024
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Alireza Makhzani",
+      "Brendan Frey"
+    ],
+    "doi": "",
+    "title": "K-sparse autoencoders",
+    "venue": "International Conference on Representation Learning",
+    "year": 2014
+  },
+  "query_source": "fixture"
+}

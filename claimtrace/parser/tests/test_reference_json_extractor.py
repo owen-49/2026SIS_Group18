@@ -526,6 +526,7 @@ class TestEndToEndExtraction:
         assert references[0]["title"] == "An IEEE paper title"
         assert references[0]["authors"] == ["J. A. Smith"]
         assert references[1] == {
+            "reference_id": 2,
             "raw_text": "[2] An irregular reference that does not match a parser.",
             "authors": None,
             "year": None,
@@ -776,6 +777,7 @@ class TestEndToEndExtraction:
             "source_file": "sample.pdf",
             "references": [
                 {
+                    "reference_id": 1,
                     "raw_text": "[1] A. Author. Example title. 2021.",
                     "authors": None,
                     "year": None,
@@ -784,6 +786,7 @@ class TestEndToEndExtraction:
                     "doi": None,
                 },
                 {
+                    "reference_id": 2,
                     "raw_text": (
                         "[2] B. Author. Another title. 2022. https://example.org/paper"
                     ),
@@ -795,6 +798,36 @@ class TestEndToEndExtraction:
                 },
             ],
         }
+
+    def test_reference_ids_use_labels_for_numbered_entries(self):
+        document = sample_document(
+            [
+                element("References", 8, "heading"),
+                element("[3] Third reference.", 8),
+                element("[4] Fourth reference.", 8),
+            ]
+        )
+
+        references = json.loads(
+            reference_list_to_json(extract_references_from_document(document))
+        )["references"]
+
+        assert [reference["reference_id"] for reference in references] == [3, 4]
+
+    def test_reference_ids_use_one_based_positions_for_unnumbered_entries(self):
+        document = sample_document(
+            [
+                element("References", 8, "heading"),
+                element("Smith, J. (2020). First paper. Journal.", 8),
+                element("Jones, B. (2021). Second paper. Journal.", 8),
+            ]
+        )
+
+        references = json.loads(
+            reference_list_to_json(extract_references_from_document(document))
+        )["references"]
+
+        assert [reference["reference_id"] for reference in references] == [1, 2]
 
 
 class TestHangingIndentFallback:

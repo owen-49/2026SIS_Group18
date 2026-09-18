@@ -1,0 +1,428 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Devamanyu Hazarika",
+        "Soujanya Poria",
+        "Rada Mihalcea",
+        "Erik Cambria",
+        "Roger Zimmermann"
+      ],
+      "doi": "10.18653/v1/d18-1280",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2891359673",
+      "title": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+      "url": "https://doi.org/10.18653/v1/d18-1280",
+      "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Hazarika, Devamanyu",
+        "Poria, Soujanya",
+        "Mihalcea, Rada",
+        "Cambria, Erik",
+        "Zimmermann, Roger"
+      ],
+      "doi": "10.18653/v1/d18-1280",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/d18-1280",
+      "title": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+      "url": "https://doi.org/10.18653/v1/d18-1280",
+      "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Chen, Yachao",
+        "Xu, Yunfeng",
+        "Tan, Haipeng"
+      ],
+      "doi": "10.1016/j.specom.2026.103474",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1016/j.specom.2026.103474",
+      "title": "MAG-EMN-KD: Multimodal Attention Gating with Emotion Memory Network and Knowledge Distillation for conversational emotion recognition",
+      "url": "https://doi.org/10.1016/j.specom.2026.103474",
+      "venue": "Speech Communication",
+      "year": 2026
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Liu, Kangwei",
+        "Mao, Qirong"
+      ],
+      "doi": "10.2139/ssrn.5500185",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.5500185",
+      "title": "Multimodal Dual-Head Adversarial Learning Network for Conversational Emotion Recognition",
+      "url": "https://doi.org/10.2139/ssrn.5500185",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Zhang, Haidong",
+        "Chai, Yekun"
+      ],
+      "doi": "10.18653/v1/2021.maiworkshop-1.3",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2021.maiworkshop-1.3",
+      "title": "COIN: Conversational Interactive Networks for Emotion Recognition in Conversation",
+      "url": "https://doi.org/10.18653/v1/2021.maiworkshop-1.3",
+      "venue": "Proceedings of the Third Workshop on Multimodal Artificial Intelligence",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Tu, Geng",
+        "Wang, Jun",
+        "Li, Zhenyu",
+        "Chen, Shiwei",
+        "Liang, Bin",
+        "Zeng, Xi",
+        "Yang, Min",
+        "Xu, Ruifeng"
+      ],
+      "doi": "10.18653/v1/2024.findings-emnlp.222",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2024.findings-emnlp.222",
+      "title": "Multiple Knowledge-Enhanced Interactive Graph Network for Multimodal Conversational Emotion Recognition",
+      "url": "https://doi.org/10.18653/v1/2024.findings-emnlp.222",
+      "venue": "Findings of the Association for Computational Linguistics: EMNLP 2024",
+      "year": 2024
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Sunil Kumar V"
+      ],
+      "doi": "10.59543/jidmis.v3.1810",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.59543/jidmis.v3.1810",
+      "title": "Graph-Based Adaptive Multimodal Transformer with Temporal Emotion Memory for Robust Conversational Emotion Recognition",
+      "url": "https://doi.org/10.59543/jidmis.v3.1810",
+      "venue": "Journal of Intelligent Decision Making and Information Science",
+      "year": 2026
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Hazarika, Devamanyu",
+        "Poria, Soujanya",
+        "Zadeh, Amir",
+        "Cambria, Erik",
+        "Morency, Louis-Philippe",
+        "Zimmermann, Roger"
+      ],
+      "doi": "10.18653/v1/n18-1193",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/n18-1193",
+      "title": "Conversational Memory Network for Emotion Recognition in Dyadic Dialogue Videos",
+      "url": "https://doi.org/10.18653/v1/n18-1193",
+      "venue": "Proceedings of the 2018 Conference of the North American Chapter of\n          the Association for Computational Linguistics: Human Language\n          Technologies, Volume 1 (Long Papers)",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Hazarika, Devamanyu",
+        "Gorantla, Sruthi",
+        "Poria, Soujanya",
+        "Zimmermann, Roger"
+      ],
+      "doi": "10.1109/mipr.2018.00043",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/mipr.2018.00043",
+      "title": "Self-Attentive Feature-Level Fusion for Multimodal Emotion Detection",
+      "url": "https://doi.org/10.1109/mipr.2018.00043",
+      "venue": "2018 IEEE Conference on Multimedia Information Processing and Retrieval (MIPR)",
+      "year": 2018
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Jatoth, Abhinay",
+        "Abri, Faranak",
+        "Nguyen, Tien"
+      ],
+      "doi": "10.12720/jait.16.8.1127-1141",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.12720/jait.16.8.1127-1141",
+      "title": "Multimodal Emotion Detection and Analysis from Conversational Data",
+      "url": "https://doi.org/10.12720/jait.16.8.1127-1141",
+      "venue": "Journal of Advances in Information Technology",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Feng, Junwei",
+        "Fan, Xueyan"
+      ],
+      "doi": "10.1109/ijcnn64981.2025.11228051",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/ijcnn64981.2025.11228051",
+      "title": "Cross-modal Context Fusion and Adaptive Graph Convolutional Network for Multimodal Conversational Emotion Recognition",
+      "url": "https://doi.org/10.1109/ijcnn64981.2025.11228051",
+      "venue": "2025 International Joint Conference on Neural Networks (IJCNN)",
+      "year": 2025
+    }
+  ],
+  "case_id": "cdb78a91-3",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Devamanyu Hazarika",
+            "Soujanya Poria",
+            "Rada Mihalcea",
+            "Erik Cambria",
+            "Roger Zimmermann"
+          ],
+          "doi": "10.18653/v1/d18-1280",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2891359673",
+          "title": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+          "url": "https://doi.org/10.18653/v1/d18-1280",
+          "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+          "year": 2018
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Hazarika, Devamanyu",
+            "Poria, Soujanya",
+            "Mihalcea, Rada",
+            "Cambria, Erik",
+            "Zimmermann, Roger"
+          ],
+          "doi": "10.18653/v1/d18-1280",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/d18-1280",
+          "title": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+          "url": "https://doi.org/10.18653/v1/d18-1280",
+          "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Chen, Yachao",
+            "Xu, Yunfeng",
+            "Tan, Haipeng"
+          ],
+          "doi": "10.1016/j.specom.2026.103474",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1016/j.specom.2026.103474",
+          "title": "MAG-EMN-KD: Multimodal Attention Gating with Emotion Memory Network and Knowledge Distillation for conversational emotion recognition",
+          "url": "https://doi.org/10.1016/j.specom.2026.103474",
+          "venue": "Speech Communication",
+          "year": 2026
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Liu, Kangwei",
+            "Mao, Qirong"
+          ],
+          "doi": "10.2139/ssrn.5500185",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.5500185",
+          "title": "Multimodal Dual-Head Adversarial Learning Network for Conversational Emotion Recognition",
+          "url": "https://doi.org/10.2139/ssrn.5500185",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Zhang, Haidong",
+            "Chai, Yekun"
+          ],
+          "doi": "10.18653/v1/2021.maiworkshop-1.3",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2021.maiworkshop-1.3",
+          "title": "COIN: Conversational Interactive Networks for Emotion Recognition in Conversation",
+          "url": "https://doi.org/10.18653/v1/2021.maiworkshop-1.3",
+          "venue": "Proceedings of the Third Workshop on Multimodal Artificial Intelligence",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Tu, Geng",
+            "Wang, Jun",
+            "Li, Zhenyu",
+            "Chen, Shiwei",
+            "Liang, Bin",
+            "Zeng, Xi",
+            "Yang, Min",
+            "Xu, Ruifeng"
+          ],
+          "doi": "10.18653/v1/2024.findings-emnlp.222",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2024.findings-emnlp.222",
+          "title": "Multiple Knowledge-Enhanced Interactive Graph Network for Multimodal Conversational Emotion Recognition",
+          "url": "https://doi.org/10.18653/v1/2024.findings-emnlp.222",
+          "venue": "Findings of the Association for Computational Linguistics: EMNLP 2024",
+          "year": 2024
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Sunil Kumar V"
+          ],
+          "doi": "10.59543/jidmis.v3.1810",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.59543/jidmis.v3.1810",
+          "title": "Graph-Based Adaptive Multimodal Transformer with Temporal Emotion Memory for Robust Conversational Emotion Recognition",
+          "url": "https://doi.org/10.59543/jidmis.v3.1810",
+          "venue": "Journal of Intelligent Decision Making and Information Science",
+          "year": 2026
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Hazarika, Devamanyu",
+            "Poria, Soujanya",
+            "Zadeh, Amir",
+            "Cambria, Erik",
+            "Morency, Louis-Philippe",
+            "Zimmermann, Roger"
+          ],
+          "doi": "10.18653/v1/n18-1193",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/n18-1193",
+          "title": "Conversational Memory Network for Emotion Recognition in Dyadic Dialogue Videos",
+          "url": "https://doi.org/10.18653/v1/n18-1193",
+          "venue": "Proceedings of the 2018 Conference of the North American Chapter of\n          the Association for Computational Linguistics: Human Language\n          Technologies, Volume 1 (Long Papers)",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Hazarika, Devamanyu",
+            "Gorantla, Sruthi",
+            "Poria, Soujanya",
+            "Zimmermann, Roger"
+          ],
+          "doi": "10.1109/mipr.2018.00043",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/mipr.2018.00043",
+          "title": "Self-Attentive Feature-Level Fusion for Multimodal Emotion Detection",
+          "url": "https://doi.org/10.1109/mipr.2018.00043",
+          "venue": "2018 IEEE Conference on Multimedia Information Processing and Retrieval (MIPR)",
+          "year": 2018
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Jatoth, Abhinay",
+            "Abri, Faranak",
+            "Nguyen, Tien"
+          ],
+          "doi": "10.12720/jait.16.8.1127-1141",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.12720/jait.16.8.1127-1141",
+          "title": "Multimodal Emotion Detection and Analysis from Conversational Data",
+          "url": "https://doi.org/10.12720/jait.16.8.1127-1141",
+          "venue": "Journal of Advances in Information Technology",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Feng, Junwei",
+            "Fan, Xueyan"
+          ],
+          "doi": "10.1109/ijcnn64981.2025.11228051",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/ijcnn64981.2025.11228051",
+          "title": "Cross-modal Context Fusion and Adaptive Graph Convolutional Network for Multimodal Conversational Emotion Recognition",
+          "url": "https://doi.org/10.1109/ijcnn64981.2025.11228051",
+          "venue": "2025 International Joint Conference on Neural Networks (IJCNN)",
+          "year": 2025
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Devamanyu Hazarika",
+      "Soujanya Poria",
+      "Rada Mihalcea",
+      "Erik Cambria",
+      "Roger Zimmermann"
+    ],
+    "doi": "",
+    "title": "Icon: Interactive conversational memory network for multimodal emotion detection",
+    "venue": "Proceedings of the 2018 conference on empirical methods in natural language processing",
+    "year": 2018
+  },
+  "query_source": "fixture"
+}
