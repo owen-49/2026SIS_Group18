@@ -23,6 +23,7 @@ from .reference_json_extractor import (
     extract_references_from_document,
     find_reference_section,
     order_reference_elements,
+    reference_id_for,
 )
 
 BRACKET_CITATION_PATTERN = re.compile(
@@ -339,7 +340,7 @@ def _author_year_references(reference_list: ReferenceList) -> list[_AuthorYearRe
     """Build linkable APA author/year keys from reference-list entries."""
 
     keys: list[_AuthorYearReference] = []
-    for reference_id, reference in enumerate(reference_list.references, start=1):
+    for position, reference in enumerate(reference_list.references, start=1):
         date_match = _REFERENCE_AUTHOR_YEAR_PATTERN.search(reference.raw_text[:300])
         if date_match is None:
             continue
@@ -357,7 +358,7 @@ def _author_year_references(reference_list: ReferenceList) -> list[_AuthorYearRe
 
         keys.append(
             _AuthorYearReference(
-                reference_id=reference_id,
+                reference_id=reference_id_for(reference, position),
                 surnames=surnames,
                 year=_normalise_year(date_match.group("year")),
                 corporate_author=corporate_author,
@@ -690,8 +691,8 @@ def extract_citation_sentences_from_document(
 
     resolved_references = reference_list or extract_references_from_document(document)
     valid_reference_ids = {
-        reference.number
-        for reference in resolved_references.references
+        reference_id_for(reference, position)
+        for position, reference in enumerate(resolved_references.references, start=1)
         if reference.number is not None
     }
     author_year_references = (

@@ -442,6 +442,7 @@ APA_PERSON_PATTERN = re.compile(
 class Reference:
     """One extracted reference-list entry."""
 
+    reference_id: int | None = None
     raw_text: str = ""
     number: int | None = None
     page_start: int | None = None
@@ -497,6 +498,23 @@ class ParsedReferenceMetadata:
     title: str | None = None
     venue: str | None = None
     doi: str | None = None
+
+
+def reference_id_for(reference: Reference, position: int) -> int:
+    """Return the public ID used to link a citation to this reference."""
+
+    if reference.reference_id is not None:
+        return reference.reference_id
+    if reference.number is not None:
+        return reference.number
+    return position
+
+
+def _assign_reference_ids(references: list[Reference]) -> None:
+    """Assign number-based or one-based IDs after entry extraction."""
+
+    for position, reference in enumerate(references, start=1):
+        reference.reference_id = reference_id_for(reference, position)
 
 
 def _normalise_heading(text: str) -> str:
@@ -1168,6 +1186,7 @@ def extract_references_from_document(
     references = [
         parse_reference_candidate(candidate) for candidate in candidates if candidate.text.strip()
     ]
+    _assign_reference_ids(references)
 
     warnings: list[str] = []
 
@@ -1234,6 +1253,7 @@ def extract_references(pdf_path: Path) -> ReferenceList:
         for candidate in layout_candidates
     ]
     result.references = [parse_reference_candidate(candidate) for candidate in candidates]
+    _assign_reference_ids(result.references)
     result.end_page = max(
         (reference.page_end for reference in result.references if reference.page_end is not None),
         default=result.start_page,
@@ -1282,6 +1302,7 @@ def reference_list_to_dict(reference_list: ReferenceList) -> dict:
         "source_file": reference_list.source_file,
         "references": [
             {
+                "reference_id": reference_id_for(reference, position),
                 "raw_text": reference.raw_text,
                 "authors": reference.authors,
                 "year": reference.year,
@@ -1289,7 +1310,7 @@ def reference_list_to_dict(reference_list: ReferenceList) -> dict:
                 "venue": reference.venue,
                 "doi": reference.doi,
             }
-            for reference in reference_list.references
+            for position, reference in enumerate(reference_list.references, start=1)
         ],
     }
     if reference_list.warnings:
