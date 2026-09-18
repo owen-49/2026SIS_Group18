@@ -1,3 +1,17 @@
+function publicationLink(paper = {}) {
+  const safe = (value) => {
+    try { const url = new URL(value); return ["https:", "http:"].includes(url.protocol) ? url.href : ""; }
+    catch { return ""; }
+  };
+  const direct = safe(paper.url);
+  if (direct) return { url: direct, label: "Open paper" };
+  const doi = String(paper.doi || "").trim().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i, "");
+  if (/^10\.\d{4,9}\/\S+$/i.test(doi)) return { url: `https://doi.org/${doi}`, label: "Open paper" };
+  const arxiv = String(paper.arxivId || paper.eprint || "").trim().replace(/^(?:https?:\/\/arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*)/i, "").replace(/\.pdf$/i, "");
+  if (/^(?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})(?:v\d+)?$/i.test(arxiv)) return { url: `https://arxiv.org/abs/${arxiv}`, label: "Open paper" };
+  return { url: `https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title || paper.citationKey || "")}`, label: "Find paper" };
+}
+
 const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 const CITE_PATTERN = /\\cite(?:t|p|alp|author|year|yearpar|text|num)?\*?(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]+)\}/gi;
 const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1, PENDING: 0 };
@@ -22,6 +36,7 @@ const backendFindings = new Map();
 let citationTargets = [];
 let activeCitationTarget;
 let hoverHideTimer;
+
 
 function readVisibleEditorText() {
   const selectors = [".cm-content", ".ace_content", "[role='textbox'][contenteditable='true']", "textarea"];
@@ -122,8 +137,7 @@ function parseBibliography(source) {
       arxivId,
 
       url:
-        readField(entry, "url") ||
-        (doi ? `https://doi.org/${doi}` : ""),
+        readField(entry, "url"),
 
       status: "linked",
     };
@@ -297,15 +311,18 @@ function getHoverCard() {
   if (card) return card;
   card = document.createElement("aside");
   card.id = "claimtrace-citation-hover";
-  card.setAttribute("role", "tooltip");
+  card.setAttribute("role", "dialog");
+  card.setAttribute("aria-label", "Citation details");
+  card.hidden = true;
   card.innerHTML = `
-    <div class="claimtrace-hover-top"><span class="claimtrace-hover-verdict"></span><small class="claimtrace-hover-confidence"></small></div>
-    <section class="claimtrace-hover-section claimtrace-hover-claim-section"><span>Claim</span><strong class="claimtrace-hover-claim"></strong></section>
-    <section class="claimtrace-hover-source"><span>Source</span><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small><code class="claimtrace-hover-key"></code></section>
-    <section class="claimtrace-hover-section claimtrace-hover-passage" hidden><span>Source text</span><blockquote class="claimtrace-hover-quote"></blockquote><small class="claimtrace-hover-provenance"></small></section>
-    <section class="claimtrace-hover-section"><span>Assessment</span><p class="claimtrace-hover-detail"></p><small class="claimtrace-hover-annotation"></small></section>
-    <footer class="claimtrace-hover-status"></footer>
+    <div class="claimtrace-hover-toolbar"><span class="claimtrace-hover-verdict"></span><button class="claimtrace-hover-close" type="button" aria-label="Close citation details">×</button></div>
+    <section class="claimtrace-hover-source"><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small></section>
+    <section class="claimtrace-hover-claim-section"><span>In your writing</span><p class="claimtrace-hover-claim"></p></section>
+    <section class="claimtrace-hover-passage" hidden><span>Supporting passage</span><blockquote class="claimtrace-hover-quote"></blockquote><small class="claimtrace-hover-provenance"></small></section>
+    <p class="claimtrace-hover-detail" hidden></p>
+    <footer><a class="claimtrace-hover-open" target="_blank" rel="noreferrer">Open paper ↗</a><small>Esc to close</small></footer>
   `;
+  card.querySelector(".claimtrace-hover-close").addEventListener("click", closeCitationHover);
   document.body.appendChild(card);
   return card;
 }
@@ -318,20 +335,20 @@ function showCitationHover(target) {
   const tone = verdictTone(finding.verdict);
   const source = paperLibrary.get(finding.citationKey);
   const card = getHoverCard();
+  card.hidden = false;
   card.className = `claimtrace-hover-visible claimtrace-hover-${tone}`;
-  card.querySelector(".claimtrace-hover-verdict").textContent = finding.label;
-  card.querySelector(".claimtrace-hover-confidence").textContent = finding.verdict === "PENDING" ? "Pending verification" : `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
+  card.querySelector(".claimtrace-hover-verdict").textContent = finding.preview ? "Not checked" : finding.label;
   card.querySelector(".claimtrace-hover-claim").textContent = finding.claim;
-  card.querySelector(".claimtrace-hover-title").textContent = source?.title || "Source details unavailable";
+  card.querySelector(".claimtrace-hover-title").textContent = source?.title || finding.citationKey;
   card.querySelector(".claimtrace-hover-meta").textContent = source
-    ? [source.authors, source.venue, source.year].filter(Boolean).join(" · ")
-    : "No matching bibliography entry";
-  card.querySelector(".claimtrace-hover-key").textContent = `\\cite{${finding.citationKey}}`;
-  card.querySelector(".claimtrace-hover-detail").textContent = finding.rationale;
-  card.querySelector(".claimtrace-hover-annotation").textContent = finding.annotation;
-  card.querySelector(".claimtrace-hover-status").textContent = finding.preview
-    ? (finding.backendReason || "Awaiting backend verification")
-    : "Backend verified against an uploaded source PDF";
+    ? [source.authors, source.venue, source.year].filter(Boolean).join(" · ") : "Bibliography entry unavailable";
+  const detail = card.querySelector(".claimtrace-hover-detail");
+  detail.textContent = finding.preview ? "" : finding.rationale;
+  detail.hidden = !detail.textContent;
+  const link = publicationLink(source || { citationKey: finding.citationKey });
+  const open = card.querySelector(".claimtrace-hover-open");
+  open.setAttribute("href", link.url);
+  open.textContent = `${link.label} ↗`;
   const passage = hoverPassage(finding);
   card.querySelector(".claimtrace-hover-quote").textContent = passage?.text || "";
   card.querySelector(".claimtrace-hover-provenance").textContent = passage?.provenance || "";
@@ -358,15 +375,29 @@ function showCitationHover(target) {
   measureHover();
 }
 
-function hideCitationHover(delay = 80) {
+function closeCitationHover() {
   window.clearTimeout(hoverHideTimer);
-  hoverHideTimer = window.setTimeout(() => {
-    document.getElementById("claimtrace-citation-hover")?.classList.remove("claimtrace-hover-visible");
-    activeCitationTarget?.line.classList.remove("claimtrace-hover-line");
-    activeCitationTarget = undefined;
-    if (typeof CSS !== "undefined") CSS.highlights?.delete("claimtrace-citation-active");
-  }, delay);
+  const card = document.getElementById("claimtrace-citation-hover");
+  if (card) {
+    card.classList.remove("claimtrace-hover-visible");
+    card.hidden = true;
+  }
+  activeCitationTarget?.line.classList.remove("claimtrace-hover-line");
+  activeCitationTarget = undefined;
+  if (typeof CSS !== "undefined") CSS.highlights?.delete("claimtrace-citation-active");
 }
+
+document.addEventListener("pointerdown", (event) => {
+  if (event.target?.closest?.("#claimtrace-citation-hover")) return;
+  const target = citationTargets.find(({ range }) => Array.from(range.getClientRects()).some((rect) =>
+    event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom));
+  if (target) showCitationHover(target);
+  else closeCitationHover();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeCitationHover();
+});
 
 function installCitationHighlights() {
   if (typeof CSS === "undefined" || !CSS.highlights || typeof Highlight === "undefined") return;
@@ -377,6 +408,7 @@ function installCitationHighlights() {
 }
 
 function annotateCitationLines() {
+  const openFinding = activeCitationTarget?.finding;
   clearEditorAnnotations();
   const findings = [];
   const lines = getEditorLines();
@@ -433,6 +465,11 @@ function annotateCitationLines() {
   });
 
   installCitationHighlights();
+  if (openFinding) {
+    const replacement = citationLocations.get(openFinding.id);
+    if (replacement && replacement.finding.claim === openFinding.claim) showCitationHover(replacement);
+    else closeCitationHover();
+  }
   return findings;
 }
 
@@ -513,29 +550,34 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     showCitationHover(target);
     window.setTimeout(() => {
       line.classList.remove("claimtrace-focus-line");
-      hideCitationHover(0);
     }, 1800);
   }, 350);
   sendResponse({ found: true });
 });
 
 let pointerFrame;
+let latestPointer;
 document.addEventListener("mousemove", (event) => {
+  latestPointer = event;
+  if (event.target?.closest?.("#claimtrace-citation-hover")) {
+    window.clearTimeout(hoverHideTimer);
+    return;
+  }
   if (pointerFrame) return;
   pointerFrame = window.requestAnimationFrame(() => {
     pointerFrame = undefined;
+    const event = latestPointer;
+    if (event.target?.closest?.("#claimtrace-citation-hover")) return;
     const target = citationTargets.find(({ range }) => Array.from(range.getClientRects()).some((rect) =>
       event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom,
     ));
     if (target) {
       if (target !== activeCitationTarget) showCitationHover(target);
       else window.clearTimeout(hoverHideTimer);
-    } else if (activeCitationTarget) {
-      hideCitationHover();
     }
   });
 });
-document.addEventListener("mouseleave", () => hideCitationHover(0));
+
 
 chrome.storage.local.get(["claimtracePapers", "claimtraceFindings"], ({ claimtracePapers, claimtraceFindings }) => {
   mergePaperLibrary(claimtracePapers);

@@ -26,7 +26,7 @@ audited through `POST /api/audit` with its parsed ID:
 ```
 
 The Side Panel also lists completed PDFs already uploaded through the web
-workspace. Selecting one and clicking **Audit PDF** uses:
+workspace. Selecting one and clicking **Check** uses:
 
 ```json
 { "manuscript_id": "uploaded-pdf-id" }
@@ -97,3 +97,34 @@ taken and reported.
 - `src/content.js` — Overleaf BibTeX/citation detection, editor highlighting, and location handling
 - `src/sidepanel.*` — searchable paper library and citation-location UI
 - `fake-dom.cjs`, `*.test.cjs` — the page the content and background scripts are tested against, and their cases
+
+## Audit retry and paper links
+
+After opening a `.bib` file in Overleaf, use **Check references** to retry
+without editing the file. Retry validates the cached upload and recreates it
+only if the backend returns 404. This Audit path is independent of claim Verify.
+Audit results expose identified publication links and clearly labelled
+unconfirmed candidate links. Backend errors and report warnings remain visible.
+
+The search box filters local entries. In Papers, **Search title on Google
+Scholar** opens an external search page for the entered text; entries without a
+URL offer the same title-search fallback. This is not a backend search API or
+proof of publication identity. Backend alignment and current live-check limits
+are recorded in [BACKEND_ALIGNMENT.zh-CN.md](BACKEND_ALIGNMENT.zh-CN.md).
+
+
+## Reading and reviewing
+
+The Papers tab groups the **Check references** action with an optional manuscript
+check under **Check a manuscript instead**. The side panel has no backend banner
+or dashboard footer link.
+
+Hover over a citation to open a compact reading card. It stays open as you move
+to the card, select text, or open the paper. Close it with **×**, **Escape**, or a
+click outside; hovering over another citation switches the card. There is no pin
+mode. The card shows the publication first, your cited sentence, and retrieved
+evidence when available. Unverified citations say **Not checked** once.
+
+Both the reading card and paper list resolve real entries from a safe HTTP(S)
+URL, DOI (bare or doi.org URL), or arXiv eprint. Without an identifier, **Find
+paper** opens a title search and does not claim an identified publication.

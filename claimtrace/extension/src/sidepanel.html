@@ -8,17 +8,14 @@
   </head>
   <body>
     <header class="panel-header">
-      <div class="brand"><span class="brand-mark">✓</span><div><strong>ClaimTrace</strong><small>Citation intelligence</small></div></div>
+      <div class="brand"><span class="brand-mark">✓</span><div><strong>ClaimTrace</strong><small>A quieter way to review</small></div></div>
     </header>
 
     <main>
       <section class="context-card">
-        <div><span class="context-dot"></span><strong id="sourceTitle">Overleaf project</strong></div>
-        <small id="syncText">Waiting for editor content</small>
-        <div id="pdfAuditControls" class="pdf-audit-controls" hidden>
-          <select id="pdfSelect" aria-label="Manuscript PDF"><option value="">Select an uploaded manuscript PDF</option></select>
-          <button id="auditPdfButton" type="button" disabled>Audit PDF</button>
-        </div>
+        <span class="eyebrow">Your research, in focus</span>
+        <h1 id="sourceTitle">Citation workspace</h1>
+        <p id="syncText" role="status">Open a bibliography to begin</p>
       </section>
 
       <div class="view-tabs" role="tablist" aria-label="ClaimTrace views">
@@ -28,12 +25,12 @@
 
       <label class="search-box">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-        <span class="sr-only">Search citations</span>
+        <span class="sr-only">Filter citations or papers</span>
         <input id="searchInput" type="search" placeholder="Search citations…" autocomplete="off" />
       </label>
 
       <section id="citationsView">
-        <div class="library-heading"><div><span class="eyebrow">Editor findings</span><h1><span id="citationCount">0</span> cited claims found</h1></div>
+        <div class="library-heading"><div><span class="eyebrow">Editor findings</span><h1>Citations <span id="citationCount">0</span></h1></div>
           <button id="syncButton" class="sync-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"></path><path d="M20 2l-4 4a8 8 0 1 0 2 9"></path></svg>Sync</button>
         </div>
         <section id="citationList" class="citation-list" aria-live="polite"></section>
@@ -41,19 +38,28 @@
       </section>
 
       <section id="papersView" hidden>
-        <div class="library-heading"><div><span class="eyebrow">Bibliography audit</span><h1>Audit results</h1></div></div>
+        <section class="audit-workspace" aria-label="Reference review">
+          <div class="audit-heading"><div><span class="eyebrow">Reference check</span><h2>Check your sources</h2></div>
+            <button id="auditBibButton" class="primary-button" type="button">Check references <span aria-hidden="true">↗</span></button>
+          </div>
+          <p class="section-note">Review the bibliography linked from your editor.</p>
+          <details class="pdf-options">
+            <summary>Check a manuscript instead</summary>
+            <div id="pdfAuditControls" class="pdf-audit-controls">
+              <label for="pdfSelect">Uploaded manuscript</label>
+              <div class="pdf-input-row"><select id="pdfSelect"><option value="">Choose a PDF…</option></select>
+              <button id="auditPdfButton" class="secondary-button" type="button" disabled>Check</button></div>
+            </div>
+          </details>
+        </section>
         <section id="auditStatus" class="audit-status">No Audit has been run yet.</section>
         <section id="auditList" class="audit-list" aria-live="polite" hidden></section>
-        <div class="library-heading"><div><span class="eyebrow">Paper library</span><h1><span id="paperCount">0</span> sources found</h1></div></div>
+        <div class="library-heading"><div><span class="eyebrow">Paper library</span><h1>Sources <span id="paperCount">0</span></h1></div></div>
+        <a id="searchOnline" target="_blank" rel="noreferrer" hidden>Search title on Google Scholar ↗</a>
         <section id="paperList" class="paper-list" aria-live="polite"></section>
         <section id="emptyState" class="empty-state" hidden><span>⌕</span><h2>No matching papers</h2><p>Open <code>references.bib</code> or try another search.</p></section>
       </section>
     </main>
-
-    <footer class="panel-footer">
-      <div class="success-message"><span>i</span><div><strong>ClaimTrace backend</strong><small id="footerDetail">No backend verification is running</small></div></div>
-      <button id="openDashboard" type="button">Open audit workspace <span>↗</span></button>
-    </footer>
 
     <script src="sidepanel.js"></script>
   </body>

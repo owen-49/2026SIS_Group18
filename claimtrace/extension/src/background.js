@@ -31,7 +31,13 @@ async function apiJson(path, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.detail || `Backend request failed (${response.status})`);
+    const detail = payload.detail;
+    const message = typeof detail === "string" ? detail
+      : Array.isArray(detail) ? detail.map((item) => item.msg).join("; ")
+      : detail?.message;
+    const error = new Error(message || `Backend request failed (${response.status})`);
+    error.status = response.status;
+    throw error;
   }
   return payload;
 }
@@ -208,7 +214,7 @@ function previewFinding(finding, reason) {
   };
 }
 
-async function syncBibliography(bibSource, requestId) {
+async function syncBibliography(bibSource, requestId, auditOnly = false) {
   try {
     if (requestId !== latestBibliographyRequest) return;
     const bibSourceHash = await hashText(bibSource);
@@ -225,21 +231,34 @@ async function syncBibliography(bibSource, requestId) {
     const form = new FormData();
     form.append("file", new Blob([bibSource], { type: "text/plain" }), "overleaf-references.bib");
     let parsed;
-    if (bibPaperId && previousBibSourceHash === bibSourceHash) {
-      parsed = { paper_id: bibPaperId };
-    } else {
-      const existingPaperId = bibPaperId;
-      parsed = await apiJson(
-        existingPaperId ? `/api/parse/${encodeURIComponent(existingPaperId)}` : "/api/parse",
-        { method: existingPaperId ? "PUT" : "POST", body: form },
-      );
+    try {
+      if (bibPaperId && previousBibSourceHash === bibSourceHash) {
+        parsed = await apiJson(`/api/parse/${encodeURIComponent(bibPaperId)}`);
+      } else {
+        parsed = await apiJson(
+          bibPaperId ? `/api/parse/${encodeURIComponent(bibPaperId)}` : "/api/parse",
+          { method: bibPaperId ? "PUT" : "POST", body: form },
+        );
+      }
+    } catch (error) {
+      if (!bibPaperId || error.status !== 404) throw error;
+      parsed = await apiJson("/api/parse", { method: "POST", body: form });
+    }
+    if (!parsed.paper_id || parsed.status !== "completed") {
+      throw new Error("Bibliography parsing is not completed; retry after parsing finishes");
     }
     activeBibPaperId = parsed.paper_id;
     activeBibSourceHash = bibSourceHash;
     if (requestId !== latestBibliographyRequest) return;
 
+    await chrome.storage.local.set({
+      claimtraceBibPaperId: parsed.paper_id,
+      claimtraceBibSourceHash: bibSourceHash,
+    });
+
     // Audit is independent of the existing Verify flow. Run it from the
     // persisted BibTeX ID without changing PR #26's source-PDF matching path.
+    if (auditOnly) return await runAudit(parsed.paper_id, "bib");
     void runAudit(parsed.paper_id, "bib").catch(() => undefined);
 
     const backendPapers = await loadBackendPapers();
@@ -284,6 +303,7 @@ async function syncBibliography(bibSource, requestId) {
       connected: false,
       message: error instanceof Error ? error.message : "Backend verification is unavailable",
     });
+    if (auditOnly) throw error;
   }
 }
 
@@ -434,6 +454,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     void chrome.storage.local.set({
       claimtracePapers: Array.isArray(message.papers) ? message.papers : [],
       claimtraceSource: "overleaf",
+      claimtraceBibSource: message.bibSource || "",
       claimtraceUpdatedAt: Date.now(),
     });
     if (typeof message.bibSource === "string" && message.bibSource.trim()) {
@@ -459,6 +480,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         stored.claimtraceSourcePapers || [],
         requestId,
       ));
+  }
+
+  if (message.type === "run_bib_audit") {
+    void (async () => {
+      const stored = await chrome.storage.local.get(["claimtraceBibSource"]);
+      if (!stored.claimtraceBibSource?.trim()) {
+        throw new Error("Open a .bib file in Overleaf first, then retry Audit");
+      }
+      const requestId = ++latestBibliographyRequest;
+      bibliographySyncChain = bibliographySyncChain.catch(() => undefined)
+        .then(() => syncBibliography(stored.claimtraceBibSource, requestId, true));
+      await bibliographySyncChain;
+      sendResponse({ ok: true });
+    })().catch((error) => sendResponse({ error: error.message }));
+    return true;
   }
 
   if (message.type === "refresh_audit_papers") {

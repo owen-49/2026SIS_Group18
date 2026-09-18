@@ -1,3 +1,17 @@
+function publicationLink(paper = {}) {
+  const safe = (value) => {
+    try { const url = new URL(value); return ["https:", "http:"].includes(url.protocol) ? url.href : ""; }
+    catch { return ""; }
+  };
+  const direct = safe(paper.url);
+  if (direct) return { url: direct, label: "Open paper" };
+  const doi = String(paper.doi || "").trim().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i, "");
+  if (/^10\.\d{4,9}\/\S+$/i.test(doi)) return { url: `https://doi.org/${doi}`, label: "Open paper" };
+  const arxiv = String(paper.arxivId || paper.eprint || "").trim().replace(/^(?:https?:\/\/arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*)/i, "").replace(/\.pdf$/i, "");
+  if (/^(?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})(?:v\d+)?$/i.test(arxiv)) return { url: `https://arxiv.org/abs/${arxiv}`, label: "Open paper" };
+  return { url: `https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title || paper.citationKey || "")}`, label: "Find paper" };
+}
+
 const paperList = document.getElementById("paperList");
 const citationList = document.getElementById("citationList");
 const emptyState = document.getElementById("emptyState");
@@ -9,7 +23,6 @@ const citationTabCount = document.getElementById("citationTabCount");
 const searchInput = document.getElementById("searchInput");
 const sourceTitle = document.getElementById("sourceTitle");
 const syncText = document.getElementById("syncText");
-const footerDetail = document.getElementById("footerDetail");
 const syncButton = document.getElementById("syncButton");
 const citationsTab = document.getElementById("citationsTab");
 const papersTab = document.getElementById("papersTab");
@@ -18,6 +31,8 @@ const papersView = document.getElementById("papersView");
 const pdfAuditControls = document.getElementById("pdfAuditControls");
 const pdfSelect = document.getElementById("pdfSelect");
 const auditPdfButton = document.getElementById("auditPdfButton");
+const auditBibButton = document.getElementById("auditBibButton");
+const searchOnline = document.getElementById("searchOnline");
 const auditStatus = document.getElementById("auditStatus");
 const auditList = document.getElementById("auditList");
 
@@ -62,13 +77,15 @@ function renderPapers() {
       .some((value) => String(value || "").toLowerCase().includes(query)),
   );
 
+  searchOnline.hidden = !query;
+  searchOnline.href = `https://scholar.google.com/scholar?q=${encodeURIComponent(searchInput.value.trim())}`;
   paperCount.textContent = String(visible.length);
   paperTabCount.textContent = String(papers.length);
   emptyState.hidden = visible.length > 0;
   paperList.hidden = visible.length === 0;
   paperList.innerHTML = visible.map((paper) => {
-    const url = safeUrl(paper.url);
-    const link = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">Open paper <span>↗</span></a>` : `<span class="no-link">No link</span>`;
+    const destination = publicationLink(paper);
+    const link = `<a href="${escapeHtml(destination.url)}" target="_blank" rel="noreferrer">${destination.label} <span>↗</span></a>`;
     return `<article class="paper-card">
       <div class="paper-title-row"><span class="paper-dot"></span><h2 title="${escapeHtml(paper.title)}">${escapeHtml(paper.title)}</h2></div>
       <p class="paper-meta">${escapeHtml(paper.authors)} · ${escapeHtml(paper.venue)} ${escapeHtml(paper.year)}</p>
@@ -128,7 +145,8 @@ function auditTone(status) {
 }
 
 function renderAudit() {
-  auditStatus.textContent = auditState.message || "No Audit has been run yet.";
+  auditBibButton.disabled = Boolean(auditState.running);
+  auditStatus.textContent = [auditState.message || "No Audit has been run yet.", ...(audit?.warnings || [])].join(" · ");
   auditStatus.classList.toggle("running", Boolean(auditState.running));
   auditList.hidden = !audit?.results?.length;
   auditList.innerHTML = (audit?.results || []).map((result) => {
@@ -138,6 +156,9 @@ function renderAudit() {
     return `<article class="audit-card tone-${auditTone(result.status)}">
       <div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(auditLabels[result.status] || result.status)}</span></div>
       <small>${escapeHtml(result.reason || "")}</small>
+      ${safeUrl(result.matched_record?.url) ? `<p><a href="${escapeHtml(safeUrl(result.matched_record.url))}" target="_blank" rel="noreferrer">Open paper ↗</a></p>` : ""}
+      ${(result.candidates || []).filter((record) => safeUrl(record.url)).map((record) => `<p><a href="${escapeHtml(safeUrl(record.url))}" target="_blank" rel="noreferrer">Review candidate: ${escapeHtml(record.metadata?.title || record.record_id)} ↗</a> (unconfirmed)</p>`).join("")}
+
       ${differences.length ? `<details><summary>${differences.length} field difference${differences.length === 1 ? "" : "s"}</summary>${differences.map((field) => `<p><b>${escapeHtml(field.field_name)}</b>: ${escapeHtml(field.input_value || "Missing")} → ${escapeHtml(field.source_value || "Missing")}</p>`).join("")}</details>` : ""}
     </article>`;
   }).join("");
@@ -154,7 +175,7 @@ function setView(view, chosen = true) {
   citationsTab.setAttribute("aria-selected", String(showingCitations));
   papersTab.setAttribute("aria-selected", String(!showingCitations));
   searchInput.placeholder = showingCitations ? "Search cited claims…" : "Search papers…";
-  searchInput.value = "";
+  if (chosen) searchInput.value = "";
   renderPapers();
   renderFindings();
   renderAudit();
@@ -175,18 +196,14 @@ async function loadWorkspace() {
   findings = Array.isArray(stored.claimtraceFindings) ? stored.claimtraceFindings : [];
   audit = stored.claimtraceAudit || null;
   auditState = stored.claimtraceAuditStatus || {};
-  const backendStatus = stored.claimtraceBackendStatus || {};
   const hasOverleafContent = stored.claimtraceSource === "overleaf" || stored.claimtraceCitationSource === "overleaf";
-  sourceTitle.textContent = hasOverleafContent ? "Overleaf project" : "Extension preview";
+  sourceTitle.textContent = hasOverleafContent ? "Your references" : "Citation workspace";
   syncText.textContent = findings.length
-    ? `${findings.length} cited claims annotated in the editor`
-    : papers.length ? `${papers.length} bibliography entries linked` : "Open a .tex or .bib file to begin";
-  footerDetail.textContent = backendStatus.message || (findings.length
-    ? "Unmatched citations are shown as local previews"
-    : "No backend verification is running");
+    ? `${findings.length} citation${findings.length === 1 ? "" : "s"} ready to review`
+    : papers.length ? `${papers.length} reference${papers.length === 1 ? "" : "s"} linked` : "Open a .tex or .bib file to begin";
   const selectedId = pdfSelect.value || (stored.claimtraceAuditInput?.inputType === "pdf" ? stored.claimtraceAuditInput.paperId : "");
   const completedPdfs = backendPapers.filter((paper) => paper.file_type === "pdf" && paper.status === "completed");
-  pdfSelect.innerHTML = `<option value="">Select an uploaded manuscript PDF</option>${completedPdfs.map((paper) =>
+  pdfSelect.innerHTML = `<option value="">Choose a PDF…</option>${completedPdfs.map((paper) =>
     `<option value="${escapeHtml(paper.paper_id)}">${escapeHtml(paper.original_filename || paper.title || paper.paper_id)}</option>`,
   ).join("")}`;
   if (completedPdfs.some((paper) => paper.paper_id === selectedId)) pdfSelect.value = selectedId;
@@ -204,7 +221,7 @@ async function locateFinding(locationId, citationKey, card) {
     if (!response?.found) throw new Error("Citation is not visible in the current editor file");
     document.querySelectorAll(".citation-card.located").forEach((element) => element.classList.remove("located"));
     card.classList.add("located");
-    syncText.textContent = `Located \\cite{${citationKey}} in the editor`;
+    syncText.textContent = "Citation opened in your editor";
     window.setTimeout(() => card.classList.remove("located"), 1600);
   } catch (error) {
     syncText.textContent = error instanceof Error ? error.message : "Unable to locate this citation";
@@ -256,7 +273,20 @@ citationList.addEventListener("click", async (event) => {
   const card = event.target.closest(".citation-card");
   if (card) void locateFinding(card.dataset.locationId, card.dataset.citationKey, card);
 });
-pdfSelect.addEventListener("change", () => { auditPdfButton.disabled = !pdfSelect.value; });
+auditBibButton.addEventListener("click", async () => {
+  auditBibButton.disabled = true;
+  setView("papers");
+  try {
+    const response = await chrome.runtime.sendMessage({ type: "run_bib_audit" });
+    if (response?.error) throw new Error(response.error);
+    await loadWorkspace();
+  } catch (error) {
+    auditStatus.textContent = error.message || "Unable to retry bibliography Audit";
+  } finally {
+    auditBibButton.disabled = Boolean(auditState.running);
+  }
+});
+pdfSelect.addEventListener("change", () => { auditPdfButton.disabled = !pdfSelect.value || Boolean(auditState.running); });
 auditPdfButton.addEventListener("click", async () => {
   if (!pdfSelect.value) return;
   auditPdfButton.disabled = true;
@@ -268,14 +298,16 @@ auditPdfButton.addEventListener("click", async () => {
   } catch (error) {
     auditStatus.textContent = error.message || "Unable to audit the manuscript";
   } finally {
-    auditPdfButton.disabled = !pdfSelect.value;
+    auditPdfButton.disabled = !pdfSelect.value || Boolean(auditState.running);
   }
 });
-document.getElementById("openDashboard").addEventListener("click", () => chrome.tabs.create({ url: "http://localhost:3000/audit" }));
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus || changes.claimtraceAuditStatus || changes.claimtraceAudit)) void loadWorkspace();
 });
 
 void refreshAuditPapers()
-  .catch(() => undefined)
-  .finally(loadWorkspace);
+  .then(loadWorkspace)
+  .catch(async (error) => {
+    await loadWorkspace();
+    auditStatus.textContent = error.message || "Unable to load backend papers";
+  });

@@ -95,3 +95,55 @@ test("PDF Audit validates the current paper list and sends manuscript_id", async
   assert.equal(result.ok, true);
   assert.deepEqual(JSON.parse(requests[1].options.body), { manuscript_id: "pdf-1" });
 });
+
+test("structured Audit errors show the backend message", async () => {
+  const { context, storage } = createHarness(() => jsonResponse({ detail: { code: "INPUT_NOT_FOUND", message: "Upload is missing" } }, false, 404));
+  await assert.rejects(context.runAudit("missing", "bib"), /Upload is missing/);
+  assert.equal(storage.claimtraceAuditStatus.message, "Upload is missing");
+});
+
+test("Bib retry recreates a deleted upload and does not depend on Verify", async () => {
+  const { context, storage, requests, getMessageListener } = createHarness((url) => {
+    if (url.endsWith("/api/parse/old")) return jsonResponse({ detail: "Paper not found" }, false, 404);
+    if (url.endsWith("/api/parse")) return jsonResponse({ paper_id: "new", status: "completed" });
+    if (url.endsWith("/api/audit")) return jsonResponse(auditResponse);
+    throw new Error(`Unexpected call: ${url}`);
+  });
+  storage.claimtraceBibSource = '@article{ref,title={Paper}}';
+  storage.claimtraceBibPaperId = "old";
+  storage.claimtraceBibSourceHash = await context.hashText(storage.claimtraceBibSource);
+  const result = await new Promise((resolve) => getMessageListener()({ type: "run_bib_audit" }, {}, resolve));
+  assert.equal(result.ok, true);
+  assert.equal(storage.claimtraceBibPaperId, "new");
+  assert.equal(requests[1].options.method, "POST");
+  assert.deepEqual(JSON.parse(requests[2].options.body), { bib_paper_id: "new" });
+});
+
+test("Bib retry reports parse failures without running Audit", async () => {
+  const { storage, requests, getMessageListener } = createHarness(() => jsonResponse({ detail: "Invalid BibTeX" }, false, 422));
+  storage.claimtraceBibSource = "invalid";
+  const result = await new Promise((resolve) => getMessageListener()({ type: "run_bib_audit" }, {}, resolve));
+  assert.equal(result.error, "Invalid BibTeX");
+  assert.equal(requests.length, 1);
+});
+
+test("unchanged Bib retry checks the persisted ID and avoids a duplicate upload", async () => {
+  const { context, storage, requests, getMessageListener } = createHarness((url) => {
+    if (url.endsWith("/api/parse/existing")) return jsonResponse({ paper_id: "existing", status: "completed" });
+    return jsonResponse(auditResponse);
+  });
+  storage.claimtraceBibSource = '@article{ref,title={Paper}}';
+  storage.claimtraceBibPaperId = "existing";
+  storage.claimtraceBibSourceHash = await context.hashText(storage.claimtraceBibSource);
+  const result = await new Promise((resolve) => getMessageListener()({ type: "run_bib_audit" }, {}, resolve));
+  assert.equal(result.ok, true);
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].options.method, undefined);
+});
+
+test("Bib retry requires detected source instead of auditing demo entries", async () => {
+  const { requests, getMessageListener } = createHarness(() => { throw new Error("No requests expected"); });
+  const result = await new Promise((resolve) => getMessageListener()({ type: "run_bib_audit" }, {}, resolve));
+  assert.match(result.error, /Open a .bib file/);
+  assert.equal(requests.length, 0);
+});
