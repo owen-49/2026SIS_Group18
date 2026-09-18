@@ -7,6 +7,10 @@ Two kinds of ground truth live here, with different formats: the claim-passage
 pairs described below, and the reference-identity fixture the metadata provider
 layer is measured against (see the last section).
 
+The pairs live in `claim_passages.json` and are scored by
+`passage_harness.py`. `CLAIM_PASSAGES.md` has the protocol, the working recipe,
+and how to read the report; the file is empty until the team annotates it.
+
 ## Format
 
 Each file is a JSON list:
