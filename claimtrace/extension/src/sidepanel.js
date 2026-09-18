@@ -106,7 +106,7 @@ function renderCandidates(finding) {
       <small>${escapeHtml(candidate.reason)} · ${Math.round(candidate.score * 100)}% title similarity</small>
       <small>arXiv: ${escapeHtml(candidate.arxivId || "Unavailable")}</small>
       <button type="button" data-review-finding="${escapeHtml(finding.id)}" data-review-paper="${escapeHtml(candidate.paperId)}"
-        ${candidate.conflict ? "disabled" : ""}>Choose this PDF and verify</button>
+        ${candidate.conflict ? "disabled" : ""}>Choose this PDF</button>
     </div>`).join("")}
   </details>`;
 }
@@ -126,8 +126,8 @@ function renderFindings() {
     <span class="citation-card-top"><span class="citation-verdict">${escapeHtml(finding.label)}</span><span class="citation-line">Editor location</span></span>
     <strong>${escapeHtml(finding.claim)}</strong>
     <span class="citation-card-meta"><code>\\cite{${escapeHtml(finding.citationKey)}}</code><span>Locate in editor →</span></span>
-    <small>${escapeHtml(finding.annotation)} · ${finding.preview ? "local preview" : "backend verified"}</small>
-  </button>${renderCandidates(finding)}`).join("");
+    <small>${escapeHtml(finding.annotation)} · not checked in the extension</small>
+  </button>`).join("");
 }
 
 const auditLabels = {
@@ -232,6 +232,7 @@ async function refreshAuditPapers() {
   const response = await chrome.runtime.sendMessage({ type: "refresh_audit_papers" });
   if (response?.error) throw new Error(response.error);
   backendPapers = Array.isArray(response?.papers) ? response.papers : [];
+  return response?.warning || "";
 }
 
 searchInput.addEventListener("input", () => activeView === "citations" ? renderFindings() : renderPapers());
@@ -241,7 +242,7 @@ syncButton.addEventListener("click", async () => {
   syncButton.classList.add("syncing");
   let auditRefreshError;
   try {
-    await refreshAuditPapers();
+    auditRefreshError = await refreshAuditPapers();
   } catch (error) {
     auditRefreshError = error.message || "Unable to refresh uploaded papers for Audit";
   } finally {

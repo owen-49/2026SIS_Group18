@@ -181,7 +181,7 @@ test("the card still renders when the page offers no performance or CSS API", ()
   assert.equal(dom.textIn(".claimtrace-hover-quote"), PASSAGE);
 });
 
-test("citation detection, the bibliography prompt and highlights are unchanged", () => {
+test("citation detection remains a local preview in Audit-only mode", () => {
   const dom = load();
   const [finding] = dom.reports("citations_detected")[0].findings;
   const line = dom.document.querySelectorAll(".cm-line").at(-1);
@@ -189,7 +189,7 @@ test("citation detection, the bibliography prompt and highlights are unchanged",
   assert.equal(finding.citationKey, "lewis2020retrieval");
   assert.equal(finding.preview, true);
   assert.equal(line.classList.contains("claimtrace-citation-line"), true);
-  assert.equal(line.dataset.claimtraceLabel, "ClaimTrace · local preview · Pending verification");
+  assert.equal(line.dataset.claimtraceLabel, "ClaimTrace · local citation preview · Not checked");
   assert.equal(dom.reports("bibliography_detected")[0].papers.length, 1);
   assert.equal(dom.highlights.has("claimtrace-citations-pending"), true);
   assert.equal(

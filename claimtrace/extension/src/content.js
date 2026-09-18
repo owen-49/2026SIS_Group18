@@ -15,13 +15,6 @@ function publicationLink(paper = {}) {
 const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 const CITE_PATTERN = /\\cite(?:t|p|alp|author|year|yearpar|text|num)?\*?(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]+)\}/gi;
 const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1, PENDING: 0 };
-const DEMO_VERDICTS = {
-  devlin2019bert: { verdict: "CONTRADICT", label: "Contradicted", confidence: 0.89, annotation: "Claim contradicts the cited source", rationale: "BERT used both masked-language modelling and next-sentence prediction during pre-training, so the word ‘exclusively’ is not supported." },
-  brown2020language: { verdict: "PARTIAL", label: "Partial", confidence: 0.82, annotation: "Claim is broader than the evidence", rationale: "The cited results show gains at several scales, but do not establish that larger models always improve every few-shot task." },
-  smith2024survey: { verdict: "NOT_FOUND", label: "Not found", confidence: 0.76, annotation: "Source could not be located", rationale: "No matching bibliography record or linked paper is available for this citation key." },
-  vaswani2017attention: { verdict: "SUPPORT", label: "Supported", confidence: 0.94, annotation: "Claim is supported by the cited source", rationale: "The paper describes the Transformer as relying on attention mechanisms without recurrence or convolutions." },
-  lewis2020retrieval: { verdict: "SUPPORT", label: "Supported", confidence: 0.91, annotation: "Claim is supported by the cited source", rationale: "The cited paper explicitly combines parametric model memory with non-parametric retrieved memory." },
-};
 const DEMO_SOURCES = {
   vaswani2017attention: { citationKey: "vaswani2017attention", title: "Attention Is All You Need", authors: "Vaswani et al.", venue: "NeurIPS", year: "2017" },
   devlin2019bert: { citationKey: "devlin2019bert", title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: "Devlin et al.", venue: "NAACL", year: "2019" },
@@ -223,10 +216,10 @@ function verdictForClaim(findingId, citationKey, claim) {
   if (backendFinding?.claim === claim && backendFinding.citationKey === citationKey) return backendFinding;
   return {
     verdict: "PENDING",
-    label: "Pending verification",
+    label: "Not checked",
     confidence: null,
-    annotation: "Awaiting verification of this claim",
-    rationale: "This claim has not been verified. A matching uploaded source PDF and an available backend are required.",
+    annotation: "Citation detected locally",
+    rationale: "The extension performs bibliography Audit only; claim Verify is not enabled here.",
     preview: true,
   };
 }
@@ -236,11 +229,9 @@ function verdictTone(verdict) {
   return verdict === "SUPPORT" ? "support" : verdict === "PARTIAL" ? "partial" : "danger";
 }
 
-// The passage text the backend retrieved from the source PDF, as returned by
-// /api/verify in `matches`. A citation either shows the passage that is meant to
-// support it or shows no passage section at all: an empty quote under a "Source
-// text" label reads as a broken card, and the assessment line has already said
-// how many passages came back.
+// Keep this renderer compatible with older stored findings, but do not create
+// new claim evidence in the extension: the current plugin scope is bibliography
+// Audit only.
 function hoverPassage(finding) {
   if (finding.preview) return undefined;
   const matches = Array.isArray(finding.matches) ? finding.matches : [];
@@ -253,9 +244,8 @@ function hoverPassage(finding) {
     text: matches[index].passage_text.trim(),
     provenance: [
       `Passage ${index + 1} of ${matches.length}`,
-      // "Lexical overlap" and not "similarity": /api/verify ranks paragraphs by
-      // shared-token overlap, which is a different quantity from the semantic
-      // retrieval score the web workspace labels "retrieval similarity".
+      // Keep the legacy field readable without implying that this extension
+      // currently produces claim evidence.
       typeof similarity === "number" ? `${Math.round(similarity * 100)}% lexical overlap` : "",
     ].filter(Boolean).join(" · "),
   };
@@ -459,7 +449,7 @@ function annotateCitationLines() {
     );
     const tone = verdictTone(strongest.verdict);
     line.classList.add("claimtrace-citation-line", `claimtrace-tone-${tone}`);
-    line.dataset.claimtraceLabel = `ClaimTrace · ${strongest.preview ? "local preview" : "backend verification"} · ${strongest.label}`;
+    line.dataset.claimtraceLabel = `ClaimTrace · local citation preview · ${strongest.label}`;
     line.dataset.claimtraceLocation = strongest.id;
     citationLineFindings.set(line, lineFindings);
   });

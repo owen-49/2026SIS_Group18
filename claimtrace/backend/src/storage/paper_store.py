@@ -6,6 +6,7 @@ Uvicorn worker.
 """
 
 import json
+import logging
 import os
 from datetime import UTC, datetime
 from pathlib import Path
@@ -21,6 +22,7 @@ PAPERS_FILE = get_settings().papers_file
 STORE_VERSION = 1
 
 _STORE_LOCK = RLock()
+logger = logging.getLogger(__name__)
 _UPDATABLE_FIELDS = {
     "status",
     "file_size",
@@ -127,13 +129,30 @@ def list_papers(*, papers_file: Path | None = None) -> list[PaperRecord]:
 
     with _STORE_LOCK:
         data = _read_store(target)
-        try:
-            records = [
-                PaperRecord.model_validate(raw_record)
-                for raw_record in data["papers"].values()
-            ]
-        except ValidationError as exc:
-            raise PaperStoreError("Invalid paper metadata in store.") from exc
+        records = []
+        invalid_ids = []
+        for paper_id, raw_record in data["papers"].items():
+            try:
+                records.append(PaperRecord.model_validate(raw_record))
+            except ValidationError:
+                # One stale record should not make the whole read-only paper
+                # list unusable. Keep the record untouched so it can be
+                # repaired or removed deliberately, and leave the details in
+                # the backend log for diagnosis.
+                invalid_ids.append(str(paper_id))
+                logger.exception(
+                    "Skipping invalid paper metadata for paper_id=%s in %s",
+                    paper_id,
+                    target,
+                )
+
+        if invalid_ids:
+            logger.warning(
+                "Skipped %d invalid paper metadata record(s) while listing %s: %s",
+                len(invalid_ids),
+                target,
+                ", ".join(invalid_ids),
+            )
 
     return sorted(records, key=lambda record: record.created_at, reverse=True)
 
