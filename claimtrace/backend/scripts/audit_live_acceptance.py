@@ -1,9 +1,10 @@
-"""Run real Parser/Audit/storage with live Scholar or controlled Scholar transport.
+"""Run real Parser/Audit/storage with live or controlled metadata providers.
 
 Usage: python backend/scripts/audit_live_acceptance.py --mode controlled --output DIR
        python backend/scripts/audit_live_acceptance.py --mode live --output DIR
 No production data or developer .env is used. Controlled mode replaces only the
-Scholar worker's network iterator; it still runs the production worker adapter.
+bytes each provider's HTTP request receives; the provider, the URL it builds,
+the response mapper, the identity rules, the adapter and storage all stay real.
 """
 
 import argparse
@@ -14,8 +15,10 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import ExitStack, nullcontext
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "engine"), str(ROOT / "parser")]
@@ -73,42 +76,93 @@ def verify_process_restart(reports):
                 process.wait(timeout=10)
 
 
-def controlled_worker():
-    """Subprocess-only transport fixtures, not another provider or API mode."""
-    from backend.src.audit_models import ReferenceEntry
-    from backend.src.services.google_scholar_lookup import GoogleScholarLookup
-    from engine.scholar_search import scholarly
+# ── Controlled transport ─────────────────────────────────────────────────────
+#
+# Fixtures replace the bytes each provider's request receives, and nothing else:
+# the provider builds its own URL, maps its own response and applies the real
+# identity rules, so a fixture that stops matching the API's shape fails here
+# rather than passing quietly.
+#
+# Both providers are patched at the name they imported, because each does
+# ``from .metadata_lookup import http_get_json``. Patching
+# ``engine.metadata_lookup.http_get_json`` instead would leave both providers
+# calling the real function and silently reach the network.
 
-    entry = ReferenceEntry.model_validate_json(sys.stdin.buffer.read())
-    title = entry.metadata.title
-    if title == "Acceptance timeout fixture":
-        time.sleep(60)
-    if title == "Acceptance worker failure fixture":
-        sys.exit(3)
+# The work the fixtures hold. The author is spelled the way the BibTeX entry
+# stores it ("Family, Given"), because VERIFIED means field-for-field agreement:
+# compare_external_metadata's exact gate compares normalised author lists
+# element by element, and the Engine's field comparator -- which tolerates order
+# -- is not that gate. Note what this makes of the two fixtures below, which
+# cite the same work: the BibTeX entry, stored in the same form, verifies,
+# while the PDF entry's "A. Vaswani" does not, and is sent to review instead.
+# That difference is a property of the reference's own author spelling, not of
+# which provider answered, and it is left visible rather than papered over.
+_OPENALEX_WORK = {
+    "id": "https://openalex.org/W2963403868",
+    "doi": "https://doi.org/10.48550/arxiv.1706.03762",
+    "title": "Attention Is All You Need",
+    "display_name": "Attention Is All You Need",
+    "publication_year": 2017,
+    "type": "article",
+    "authorships": [{"author": {"display_name": "Vaswani, A."}}],
+    "primary_location": {
+        "landing_page_url": "https://arxiv.org/abs/1706.03762",
+        "source": {"display_name": "NeurIPS"},
+    },
+}
 
-    def search(*args, **kwargs):
-        if title == "Acceptance rate limit fixture":
-            from scholarly import DOSException
+_CROSSREF_ITEM = {
+    "DOI": "10.48550/arxiv.1706.03762",
+    "URL": "https://arxiv.org/abs/1706.03762",
+    "title": ["Attention Is All You Need"],
+    "author": [{"given": "A.", "family": "Vaswani"}],
+    "issued": {"date-parts": [[2017]]},
+    "container-title": ["NeurIPS"],
+    "type": "proceedings-article",
+}
 
-            raise DOSException("controlled acceptance rate limit")
-        if title == "Acceptance absent fixture":
-            return iter([])
-        return iter(
-            [
-                {
-                    "bib": {
-                        "title": "Attention Is All You Need",
-                        "author": ["Vaswani, A."],
-                        "pub_year": "2017",
-                        "venue": "NeurIPS",
-                    },
-                    "pub_url": "https://arxiv.org/abs/1706.03762",
-                }
-            ]
-        )
+_ABSENT = "Acceptance absent fixture"
+_TIMEOUT = "Acceptance timeout fixture"
+_FAILURE = "Acceptance worker failure fixture"
+_RATE_LIMIT = "Acceptance rate limit fixture"
+_MATCHING = "Attention Is All You Need"
 
-    with patch.object(scholarly, "search_pubs", search):
-        print(GoogleScholarLookup().lookup(entry).model_dump_json())
+
+def _queried_title(url: str) -> str:
+    """Return the reference title a provider's request URL is asking about."""
+    params = parse_qs(urlsplit(url).query)
+    asked = " ".join(params.get("filter", []) + params.get("query.bibliographic", []))
+    for title in (_MATCHING, _ABSENT, _TIMEOUT, _FAILURE, _RATE_LIMIT):
+        if title in asked:
+            return title
+    return ""
+
+
+def controlled_http_get_json(provider):
+    """Return a stand-in for one provider's ``http_get_json``."""
+    from engine.metadata_lookup import HttpResult
+
+    def fake(url, **kwargs):
+        title = _queried_title(url)
+        if title == _TIMEOUT:
+            return HttpResult(status_code=0, error="request failed: timed out")
+        if title == _FAILURE:
+            return HttpResult(status_code=500, error="HTTP 500 Internal Server Error")
+        if title == _RATE_LIMIT:
+            return HttpResult(status_code=429, error="HTTP 429 Too Many Requests")
+        if title == _MATCHING:
+            body = (
+                {"results": [_OPENALEX_WORK]}
+                if provider == "openalex"
+                else {"message": {"items": [_CROSSREF_ITEM]}}
+            )
+            return HttpResult(status_code=200, body=body)
+        # The absent fixture, and anything the fixtures do not know: an API
+        # answer that holds no such record.
+        body = {"results": []} if provider == "openalex" else {"message": {"items": []}}
+        return HttpResult(status_code=200, body=body)
+
+    return fake
 
 
 def run(mode, output):
@@ -128,38 +182,40 @@ def run(mode, output):
                 "PARSED_DIR": str(upload / "parsed"),
                 "PARSER_HYBRID": "off",
                 "CLAIMTRACE_LLM_PROVIDER": "openai",
-                "SCHOLAR_LOOKUP_TIMEOUT_SECONDS": "30",
-                "SCHOLAR_LOOKUP_DELAY_SECONDS": "2" if mode == "live" else "0",
+                "METADATA_LOOKUP_TIMEOUT_SECONDS": "30",
                 "PYTHONPATH": os.pathsep.join(map(str, [ROOT, ROOT / "engine", ROOT / "parser"])),
             }
         )
         for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY"):
             os.environ.pop(name, None)
 
+        import engine.crossref_lookup
+        import engine.openalex_lookup
         from backend.src.main import app
-        from backend.src.services import bounded_scholar_lookup
 
-        original_run = subprocess.run
-
-        def worker_run(command, **kwargs):
-            # Match the module invocation, not the whole command: the adapter
-            # appends its own flags (--deadline-seconds), and comparing the full
-            # argv would silently stop replacing fixtures and hit the network.
-            if mode == "controlled" and command[1:3] == ["-m", "src.services.scholar_worker"]:
-                # Real child process, deadline, serialization and adapter; only
-                # public Scholar responses are replaced by repeatable fixtures.
-                source = kwargs["stdin"]
-                payload = json.load(source)
-                source.seek(0)
-                if payload["metadata"]["title"] == "Acceptance timeout fixture":
-                    command = [sys.executable, "-c", "import time; time.sleep(60)"]
-                    kwargs["timeout"] = 0.2
-                else:
-                    command = [sys.executable, str(Path(__file__).resolve()), "--worker"]
-            return original_run(command, **kwargs)
+        # Both names, because each provider imported the function into its own
+        # namespace. See the note above controlled_http_get_json. Live mode
+        # patches nothing and reaches the real APIs.
+        if mode == "controlled":
+            transports = (
+                patch.object(
+                    engine.openalex_lookup,
+                    "http_get_json",
+                    controlled_http_get_json("openalex"),
+                ),
+                patch.object(
+                    engine.crossref_lookup,
+                    "http_get_json",
+                    controlled_http_get_json("crossref"),
+                ),
+            )
+        else:
+            transports = (nullcontext(),)
 
         reports = []
-        with patch.object(bounded_scholar_lookup.subprocess, "run", worker_run):
+        with ExitStack() as stack:
+            for transport in transports:
+                stack.enter_context(transport)
             with TestClient(app) as client:
                 assert client.get("/health").json()["status"] == "ok"
                 evidence["startup"] = "passed: fresh nested upload directory"
@@ -226,27 +282,40 @@ def run(mode, output):
         verify_process_restart(reports)
         evidence["retrieval_after_process_restart_over_http"] = True
         if mode == "controlled":
-            actual = [row["status"] for row in reports[0]["results"]]
-            assert actual == [
+            provider_report = reports[0]
+            assert [row["status"] for row in provider_report["results"]] == [
                 "VERIFIED",
-                "METADATA_MISMATCH",
+                "NOT_FOUND",
                 "NOT_FOUND",
                 "LOOKUP_FAILED",
                 "LOOKUP_FAILED",
                 "LOOKUP_FAILED",
-            ], actual
-            assert reports[1]["results"][0]["status"] == "NEEDS_REVIEW", reports[1]
-            year = next(
-                field
-                for field in reports[0]["results"][1]["field_checks"]
-                if field["field_name"] == "year"
-            )
-            assert (year["input_value"], year["source_value"], year["status"]) == (
-                "2020",
-                "2017",
-                "MISMATCH",
-            )
-            evidence["expected_statuses_and_year_difference"] = "passed"
+            ], [row["status"] for row in provider_report["results"]]
+            # The second entry differs from the first only by its year, and the
+            # identity rules reject the record outright rather than matching it
+            # and reporting a field difference: abs(2020 - 2017) > YEAR_TOLERANCE.
+            # So it never reaches a comparison, and no field checks exist for it.
+            assert provider_report["results"][1]["field_checks"] == []
+            assert "No acceptable record" in provider_report["results"][1]["reason"]
+            # Each failure names the provider and the reason, so a reader can
+            # tell a throttled source from a broken one from an absent record.
+            codes = [
+                (row["lookup_attempts"][0]["provider"], row["lookup_attempts"][0]["error_code"])
+                for row in provider_report["results"][3:]
+            ]
+            assert codes == [
+                ("openalex", "OPENALEX_TRANSPORT"),
+                ("openalex", "OPENALEX_HTTP_500"),
+                ("openalex", "OPENALEX_RATE_LIMITED"),
+            ], codes
+            # The PDF fixture's first reference resolves and its second is
+            # rejected on the year, exactly as above.
+            assert [row["status"] for row in reports[1]["results"]] == [
+                "NEEDS_REVIEW",
+                "NOT_FOUND",
+            ], [row["status"] for row in reports[1]["results"]]
+            assert reports[1]["results"][0]["matched_record"]["provider"] == "openalex"
+            evidence["expected_statuses_and_year_rejection"] = "passed"
     (output / (mode + "-evidence.json")).write_text(
         json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
     )
@@ -264,13 +333,10 @@ def run(mode, output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--mode", choices=["live", "controlled"], default="controlled")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    if args.worker:
-        controlled_worker()
-    elif args.output:
+    if args.output:
         run(args.mode, args.output.resolve())
     else:
         parser.error(

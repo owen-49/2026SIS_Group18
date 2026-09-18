@@ -1,5 +1,24 @@
 # PR20：PDF Audit 接线进度
 
+> ⚠️ **2026-09-18 现状更正**：本文是 PR20 期间的进度日志，**正文保留原样**作为当时的记录，
+> 但其中所有关于 **Google Scholar / scholarly / BoundedScholarLookup / worker 子进程 /
+> `SCHOLAR_*` 环境变量 / bibtexparser 固定版本**的描述**均已过时**。
+>
+> 检索来源已替换为 **OpenAlex（主）+ Crossref（补）** 的 provider 链，由
+> `backend/src/services/provider_chain_lookup.py::ProviderChainLookup` 适配到既有的
+> `LookupResult` / Audit v2 契约。Scholar 路径、worker 子进程与上述依赖已整体删除；
+> 新增 `METADATA_LOOKUP_TIMEOUT_SECONDS`（单次 socket 操作），`SCHOLAR_*` 全部移除。
+> 详见 [backend-audit-handoff- scholar- search.md](backend-audit-handoff-%20scholar-%20search.md) §8
+> 与 [audit-live-acceptance/audit-integration-handoff.md](audit-live-acceptance/audit-integration-handoff.md)。
+>
+> 仍**有效**的部分：PDF 上传 / Manage papers / Run audit 的入口接线、结构化元数据的保存与读取、
+> raw-text 缓存升级、五种状态与报告落盘、前端契约（`contract_version: 2`）——这些都没有改动。
+>
+> **一处语义变化**，见下方"缺标题条目保留为 Needs review"：该守卫原先读**结构化** title，
+> 而 PDF 引用里这个字段 174 条中只有 1 条非空，所以实际上**每一条** PDF 引用都在检索前被退回
+> Needs review，lookup 从未被调用。现在守卫改读**可检索** title（结构化优先，空则用 raw_text 解析，
+> 两者共用一个函数），该状态仍然存在，只是不再吞掉整条路径。
+
 ## 已完成
 
 - 网页现有的 PDF 上传 / Manage papers / Run audit 入口接入后端 Audit。

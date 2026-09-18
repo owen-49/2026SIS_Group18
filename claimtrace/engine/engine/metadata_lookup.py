@@ -24,15 +24,18 @@ Design notes:
 - The chain stops at the first provider that lets the identity be settled.
   Measured: a reference resolvable from the first provider never reaches the
   second, which is the point of ordering them.
-- ``rate_limited`` is this module's own vocabulary, not the backend's. The
-  existing Scholar adapter maps it to ``outcome="failed"`` with an uppercase
-  ``error_code``, and these providers are meant to be adapted the same way.
+- ``rate_limited`` is this module's own vocabulary, not the backend's: the wire
+  model has no such outcome. The backend adapter in
+  ``backend/src/services/provider_chain_lookup.py`` maps it to
+  ``outcome="failed"`` with an uppercase ``error_code``, so a throttle is never
+  reported as an absent publication.
 - Bounded worst case: each provider makes **one** request -- there is no retry
   loop, because neither API has a punitive backoff to wait out -- and
   ``timeout_seconds`` bounds each socket operation. It does not bound the whole
-  exchange: a server that dribbles bytes can outlast it. A caller needing a hard
-  ceiling must impose its own deadline, as the Scholar path does in
-  ``backend/src/services/bounded_scholar_lookup.py``.
+  exchange: a server that dribbles bytes can outlast it. The bibliography
+  adapter that calls this therefore documents the bound -- one request per
+  provider, so about two socket operations per reference -- rather than
+  pretending to enforce a ceiling it cannot.
 - A provider that raises is caught here rather than trusted to return a status,
   so one broken provider cannot take the audit down with it.
 """
@@ -346,6 +349,25 @@ def lookup_reference(
             outcome="rate_limited",
             query=query,
             reason=f"Every provider refused the request{incomplete}",
+            attempts=attempts,
+        )
+    if throttled:
+        # A throttled provider is no evidence at all, so a reference the others
+        # happened not to find is not "not found" -- it is a partial search, and
+        # this module does not report a partial search as a conclusion. The same
+        # rule that sends a transport failure to ``failed`` above. The backend
+        # enforces it from its side too: its ``LookupResult`` validator rejects
+        # ``not_found`` unless every attempt is itself ``not_found``, and a
+        # ``rate_limited`` attempt has no such spelling on the wire.
+        return MetadataLookupResult(
+            outcome="failed",
+            query=query,
+            reason=(
+                f"{throttled} provider(s) were rate-limited, so the search is inconclusive"
+                f"{_decision_note(decision)}"
+            ),
+            candidates=decision.candidates,
+            rejected=[item.candidate for item in decision.rejected],
             attempts=attempts,
         )
     return _result_from_decision("not_found", query, decision, attempts)
