@@ -1,0 +1,446 @@
+{
+  "description": "Annotated references for the reference-identity benchmark. Every raw_text is copied byte for byte from claimtrace/backend/uploads/parsed/*.references.json, including the PDF extractor's artifacts. acceptable_dois is filled in from --mode record, never guessed: see tests/benchmarks/recorded/. Cases carrying their own candidates are constructed, and their notes say so.",
+  "cases": [
+    {
+      "case_id": "f940bcbf-1",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 1,
+      "raw_text": "[1] Artem Babenko and Victor Lempitsky. The inverted multi-index. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014.",
+      "query": {
+        "title": "The inverted multi-index",
+        "authors": [
+          "Artem Babenko",
+          "Victor Lempitsky"
+        ],
+        "year": 2014,
+        "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.1109/TPAMI.2014.2361319"
+        ],
+        "forbidden_dois": [
+          "10.1109/CVPR.2012.6248038"
+        ],
+        "forbidden_doi_prefixes": [],
+        "notes": "the TPAMI article. The CVPR 2012 conference version is a different work with a different DOI and is banned. Both providers returned the TPAMI record, dated 2014 and 2015."
+      }
+    },
+    {
+      "case_id": "f940bcbf-2",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 2,
+      "raw_text": "[2] Alexei Baevski and Michael Auli. Adaptive input representations for neural language modeling. In International Conference on Representation Learning, 2019.",
+      "query": {
+        "title": "Adaptive input representations for neural language modeling",
+        "authors": [
+          "Alexei Baevski",
+          "Michael Auli"
+        ],
+        "year": 2019,
+        "venue": "International Conference on Representation Learning"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.48550/arXiv.1809.10853"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "the arXiv preprint of the ICLR 2019 paper, dated 2018 and so inside the year tolerance. The ICLR record itself was not returned by either provider."
+      }
+    },
+    {
+      "case_id": "f940bcbf-9",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 9,
+      "raw_text": "[9] Zihang Dai, Zhilin Yang, Yiming Yang, William W Cohen, Jaime Carbonell, Quoc V Le, and Ruslan Salakhutdinov. Transformer-xl: Attentive language models beyond a ﬁxed-length context. In Conference of the Association for Computational Linguistics, 2019.",
+      "query": {
+        "title": "Transformer-xl: Attentive language models beyond a fixed-length context",
+        "authors": [
+          "Zihang Dai",
+          "Zhilin Yang",
+          "Yiming Yang",
+          "William W Cohen",
+          "Jaime Carbonell",
+          "Quoc V Le",
+          "Ruslan Salakhutdinov"
+        ],
+        "year": 2019,
+        "venue": "Conference of the Association for Computational Linguistics"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.18653/v1/P19-1285"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "verified against Crossref: Transformer-XL, ACL 2019."
+      }
+    },
+    {
+      "case_id": "f940bcbf-30",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 30,
+      "raw_text": "[30] Alireza Makhzani and Brendan Frey. K-sparse autoencoders. In International Conference on Representation Learning, 2014.",
+      "query": {
+        "title": "K-sparse autoencoders",
+        "authors": [
+          "Alireza Makhzani",
+          "Brendan Frey"
+        ],
+        "year": 2014,
+        "venue": "International Conference on Representation Learning"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.48550/arXiv.1312.5663"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "the arXiv preprint. The cited venue is wrong in the manuscript -- the paper is ICML 2014, not ICLR -- and the ICML record was not returned. The preprint is the same work and the venue must not veto it."
+      }
+    },
+    {
+      "case_id": "f940bcbf-31",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 31,
+      "raw_text": "[31] Alireza Makhzani and Brendan J Frey. Winner-take-all autoencoders. In Advances in Neural Information Processing Systems, 2015.",
+      "query": {
+        "title": "Winner-take-all autoencoders",
+        "authors": [
+          "Alireza Makhzani",
+          "Brendan J Frey"
+        ],
+        "year": 2015,
+        "venue": "Advances in Neural Information Processing Systems"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.48550/arXiv.1409.2752"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "the arXiv preprint; the NeurIPS 2015 record was not returned. OpenAlex also returned a DOI-less duplicate of it, which has to fold into one work with the preprint."
+      }
+    },
+    {
+      "case_id": "f940bcbf-32",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 32,
+      "raw_text": "[32] Marius Muja and David G. Lowe. Scalable nearest neighbor algorithms for high dimensional data. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014.",
+      "query": {
+        "title": "Scalable nearest neighbor algorithms for high dimensional data",
+        "authors": [
+          "Marius Muja",
+          "David G. Lowe"
+        ],
+        "year": 2014,
+        "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.1109/TPAMI.2014.2321376"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "verified against Crossref: Muja & Lowe, TPAMI 2014."
+      }
+    },
+    {
+      "case_id": "92574678-5",
+      "source_file": "92574678-2554-4a1c-83b7-7a24822e060f.references.json",
+      "source_number": 5,
+      "raw_text": "[5] Danqi Chen, Adam Fisch, Jason Weston, and Antoine Bordes. Reading Wikipedia to Answer Open-Domain Questions. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1870–1879, Vancouver, Canada, July 2017. Association for Computational Linguistics. doi: 10.18653/v1/P17-1171. URL https://www.aclweb.org/anthology/P17-1171.",
+      "query": {
+        "title": "Reading Wikipedia to Answer Open-Domain Questions",
+        "authors": [
+          "Danqi Chen",
+          "Adam Fisch",
+          "Jason Weston",
+          "Antoine Bordes"
+        ],
+        "year": 2017,
+        "venue": "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+        "doi": "10.18653/v1/P17-1171"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.18653/v1/P17-1171"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "the entry carries its own DOI and both providers returned a record under it, so the identifier pre-pass has to settle this one."
+      }
+    },
+    {
+      "case_id": "92574678-7",
+      "source_file": "92574678-2554-4a1c-83b7-7a24822e060f.references.json",
+      "source_number": 7,
+      "raw_text": "[7] Christopher Clark and Matt Gardner. Simple and Effective Multi-Paragraph Reading Comprehension. arXiv:1710.10723 [cs], October 2017. URL http://arxiv.org/abs/1710.10723. arXiv: 1710.10723.",
+      "query": {
+        "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+        "authors": [
+          "Christopher Clark",
+          "Matt Gardner"
+        ],
+        "year": 2017,
+        "venue": "",
+        "arxiv_id": "1710.10723"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.18653/v1/P18-1078"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "the ACL 2018 paper, which is the published version of the cited arXiv:1710.10723. The preprint record itself was not returned."
+      }
+    },
+    {
+      "case_id": "92574678-58",
+      "source_file": "92574678-2554-4a1c-83b7-7a24822e060f.references.json",
+      "source_number": 58,
+      "raw_text": "[58] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems 30, pages 5998–6008. Curran Associates, Inc., 2017. URL http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf.",
+      "query": {
+        "title": "Attention is all you need",
+        "authors": [
+          "Ashish Vaswani",
+          "Noam Shazeer",
+          "Niki Parmar",
+          "Jakub Uszkoreit",
+          "Llion Jones",
+          "Aidan N Gomez",
+          "Łukasz Kaiser",
+          "Illia Polosukhin"
+        ],
+        "year": 2017,
+        "venue": "Advances in Neural Information Processing Systems 30"
+      },
+      "expected": {
+        "status": "not_found",
+        "acceptable_dois": [],
+        "forbidden_dois": [
+          "10.2139/ssrn.4993784",
+          "10.2139/ssrn.5967774"
+        ],
+        "forbidden_doi_prefixes": [
+          "10.65215"
+        ],
+        "notes": "seven records under the 10.65215 prefix carry the exact title, the real author list, a 2025 year and no venue; two SSRN posted-content records are also venue-less. The correct NeurIPS 2017 record was not returned by either provider, so refusing is the right answer rather than a near miss."
+      }
+    },
+    {
+      "case_id": "cdb78a91-3",
+      "source_file": "cdb78a91-0c8c-4e49-901e-510bae3575c4.references.json",
+      "source_number": 3,
+      "raw_text": "[3] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and Roger Zimmermann. 2018. Icon: Interactive conversational memory network for multimodal emotion detection. In Proceedings of the 2018 conference on empirical methods in natural language processing. 2594–2604.",
+      "query": {
+        "title": "Icon: Interactive conversational memory network for multimodal emotion detection",
+        "authors": [
+          "Devamanyu Hazarika",
+          "Soujanya Poria",
+          "Rada Mihalcea",
+          "Erik Cambria",
+          "Roger Zimmermann"
+        ],
+        "year": 2018,
+        "venue": "Proceedings of the 2018 conference on empirical methods in natural language processing"
+      },
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.18653/v1/D18-1280"
+        ],
+        "forbidden_dois": [
+          "10.18653/v1/N18-1193"
+        ],
+        "forbidden_doi_prefixes": [],
+        "notes": "ICON. The banned record is a real sibling paper by the same authors, 'Conversational Memory Network for Emotion Recognition', which the live response returned alongside and which must never be selected."
+      }
+    },
+    {
+      "case_id": "constructed-spoof-alone",
+      "source_file": "92574678-2554-4a1c-83b7-7a24822e060f.references.json",
+      "source_number": 58,
+      "raw_text": "[58] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems 30, pages 5998–6008. Curran Associates, Inc., 2017. URL http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf.",
+      "query": {
+        "title": "Attention is all you need",
+        "authors": [
+          "Ashish Vaswani",
+          "Noam Shazeer",
+          "Niki Parmar",
+          "Jakub Uszkoreit",
+          "Llion Jones",
+          "Aidan N Gomez",
+          "Łukasz Kaiser",
+          "Illia Polosukhin"
+        ],
+        "year": 2017,
+        "venue": "Advances in Neural Information Processing Systems 30"
+      },
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Ashish Vaswani",
+            "Noam Shazeer",
+            "Niki Parmar",
+            "Jakob Uszkoreit",
+            "Llion Jones",
+            "Aidan N. Gomez",
+            "Łukasz Kaiser",
+            "Illia Polosukhin"
+          ],
+          "doi": "10.65215/2q58a426",
+          "is_repository": false,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W2626778328",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/2q58a426",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Vaswani, Ashish",
+            "Shazeer, Noam",
+            "Parmar, Niki",
+            "Uszkoreit, Jakob",
+            "Jones, Llion",
+            "N.Gomez, Aidan",
+            "Kaiser, Lukasz",
+            "Polosukhin, Illia"
+          ],
+          "doi": "10.65215/2q58a426",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.65215/2q58a426",
+          "title": "Attention Is All You Need",
+          "url": "https://doi.org/10.65215/2q58a426",
+          "venue": "",
+          "year": 2025
+        }
+      ],
+      "expected": {
+        "status": "not_found",
+        "acceptable_dois": [],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [
+          "10.65215"
+        ],
+        "notes": "CONSTRUCTED, from the recorded set for 92574678-58. The recorded set holds seven of these, and with that many the title never matches exactly once anyway. Reduced to one, a weighted rule scores the exact title plus the verbatim author list over any bar it would set, and reports the fabricated record as verified. This is the case the structural filters exist for, and a live query cannot produce it."
+      }
+    },
+    {
+      "case_id": "constructed-preprint-alone",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 30,
+      "raw_text": "[30] Alireza Makhzani and Brendan Frey. K-sparse autoencoders. In International Conference on Representation Learning, 2014.",
+      "query": {
+        "title": "K-sparse autoencoders",
+        "authors": [
+          "Alireza Makhzani",
+          "Brendan Frey"
+        ],
+        "year": 2014,
+        "venue": "International Conference on Representation Learning"
+      },
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "doi": "10.48550/arxiv.1312.5663",
+          "is_repository": true,
+          "kind": "preprint",
+          "provider": "openalex",
+          "record_id": "W1853900790",
+          "title": "k-Sparse Autoencoders",
+          "url": "http://arxiv.org/abs/1312.5663",
+          "venue": "arXiv (Cornell University)",
+          "year": 2013
+        }
+      ],
+      "expected": {
+        "status": "found",
+        "acceptable_dois": [
+          "10.48550/arXiv.1312.5663"
+        ],
+        "forbidden_dois": [],
+        "forbidden_doi_prefixes": [],
+        "notes": "CONSTRUCTED, from the recorded set for f940bcbf-30. The preprint alone, so nothing else can carry the decision. Its venue is a repository and the reference names a conference, and its year is one before the reference's. If either the venue requirement or the year tolerance were a fraction tighter this correct record would be rejected."
+      }
+    },
+    {
+      "case_id": "constructed-superseded-alone",
+      "source_file": "f940bcbf-fe2e-44ec-8022-c0786133ebf5.references.json",
+      "source_number": 1,
+      "raw_text": "[1] Artem Babenko and Victor Lempitsky. The inverted multi-index. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014.",
+      "query": {
+        "title": "The inverted multi-index",
+        "authors": [
+          "Artem Babenko",
+          "Victor Lempitsky"
+        ],
+        "year": 2014,
+        "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+      },
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "А. Б. Бабенко",
+            "Victor Lempitsky"
+          ],
+          "doi": "10.1109/cvpr.2012.6248038",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2039742379",
+          "title": "The inverted multi-index",
+          "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+          "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+          "year": 2012
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Babenko, A.",
+            "Lempitsky, V."
+          ],
+          "doi": "10.1109/cvpr.2012.6248038",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/cvpr.2012.6248038",
+          "title": "The inverted multi-index",
+          "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+          "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+          "year": 2012
+        }
+      ],
+      "expected": {
+        "status": "not_found",
+        "acceptable_dois": [],
+        "forbidden_dois": [
+          "10.1109/CVPR.2012.6248038"
+        ],
+        "forbidden_doi_prefixes": [],
+        "notes": "CONSTRUCTED, from the recorded set for f940bcbf-1. The superseded CVPR 2012 version alone: the exact title, the same authors, and a venue sharing the reference's 'IEEE' and 'Pattern'. Only the year separates it from the cited journal article, which is why the tolerance is 1 and not 2."
+      }
+    }
+  ]
+}

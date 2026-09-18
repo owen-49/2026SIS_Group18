@@ -1,0 +1,711 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "\u0410. \u0411. \u0411\u0430\u0431\u0435\u043d\u043a\u043e",
+        "Victor Lempitsky"
+      ],
+      "doi": "10.1109/cvpr.2012.6248038",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2039742379",
+      "title": "The inverted multi-index",
+      "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+      "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+      "year": 2012
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Artem Babenko",
+        "Victor Lempitsky"
+      ],
+      "doi": "10.1109/tpami.2014.2361319",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2171572695",
+      "title": "The Inverted Multi-Index",
+      "url": "https://doi.org/10.1109/tpami.2014.2361319",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Jin Chen",
+        "Defu Lian",
+        "Binbin Jin",
+        "Xu Huang",
+        "Kai Zheng",
+        "Enhong Chen"
+      ],
+      "doi": "10.1145/3485447.3512068",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W3200418702",
+      "title": "Fast Variational AutoEncoder with Inverted Multi-Index for Collaborative Filtering",
+      "url": "https://doi.org/10.1145/3485447.3512068",
+      "venue": "Proceedings of the ACM Web Conference 2022",
+      "year": 2022
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Xianming Lin",
+        "Yunhang Shen",
+        "Ling Cai",
+        "Rongrong Ji"
+      ],
+      "doi": "10.1016/j.neucom.2015.11.131",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2415479887",
+      "title": "The distributed system for inverted multi-index visual retrieval",
+      "url": "https://doi.org/10.1016/j.neucom.2015.11.131",
+      "venue": "Neurocomputing",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Bing Wang",
+        "Wei Song",
+        "Wenjing Lou",
+        "Y. Thomas Hou"
+      ],
+      "doi": "10.1109/infocom.2015.7218594",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W1572096077",
+      "title": "Inverted index based multi-keyword public-key searchable encryption with strong privacy guarantee",
+      "url": "https://doi.org/10.1109/infocom.2015.7218594",
+      "venue": "2015 IEEE Conference on Computer Communications (INFOCOM)",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Xiangbin Shi",
+        "Zhongqiang Guo",
+        "Deyuan Zhang",
+        "Xuejian Fang"
+      ],
+      "doi": "10.1109/icvrv.2015.39",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2363285620",
+      "title": "Multiple Features Fusion Based Inverted Multi-index for Image Retrieval",
+      "url": "https://doi.org/10.1109/icvrv.2015.39",
+      "venue": "2015 International Conference on Virtual Reality and Visualization (ICVRV)",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Yanrong Liang",
+        "Yanping Li",
+        "Kai Zhang",
+        "Lina Ma"
+      ],
+      "doi": "10.1016/j.sysarc.2021.102255",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W3187986658",
+      "title": "DMSE: Dynamic Multi-keyword Search Encryption based on inverted index",
+      "url": "https://doi.org/10.1016/j.sysarc.2021.102255",
+      "venue": "Journal of Systems Architecture",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "J Inglis"
+      ],
+      "doi": "10.1093/comjnl/17.1.59",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2125585631",
+      "title": "Inverted indexes and multi-list structures",
+      "url": "https://doi.org/10.1093/comjnl/17.1.59",
+      "venue": "The Computer Journal",
+      "year": 1974
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Guido D\u2019Urso",
+        "Luigi Dini",
+        "Francesco Vuolo",
+        "Luis Alonso",
+        "Luis Guanter",
+        "Facolt\u00e0 di Agraria"
+      ],
+      "doi": "",
+      "is_repository": false,
+      "kind": "article",
+      "provider": "openalex",
+      "record_id": "W2134881739",
+      "title": "RETRIEVAL OF LEAF AREA INDEX BY INVERTING HYPER-SPECTRAL, MULTI-ANGULAR CHRIS/PROBA DATA FROM SPARC 2003",
+      "url": "http://earth.esa.int/workshops/chris_proba_04/papers/15_durso.pdf",
+      "venue": "",
+      "year": 2004
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Minghan Li",
+        "Sheng-Chieh Lin",
+        "Xueguang Ma",
+        "Jimmy Lin"
+      ],
+      "doi": "10.1145/3539618.3591977",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W4376123230",
+      "title": "SLIM: Sparsified Late Interaction for Multi-Vector Retrieval with Inverted Indexes",
+      "url": "https://doi.org/10.1145/3539618.3591977",
+      "venue": "Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+      "year": 2023
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Babenko, A.",
+        "Lempitsky, V."
+      ],
+      "doi": "10.1109/cvpr.2012.6248038",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/cvpr.2012.6248038",
+      "title": "The inverted multi-index",
+      "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+      "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+      "year": 2012
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Babenko, Artem",
+        "Lempitsky, Victor"
+      ],
+      "doi": "10.1109/tpami.2014.2361319",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1109/tpami.2014.2361319",
+      "title": "The Inverted Multi-Index",
+      "url": "https://doi.org/10.1109/tpami.2014.2361319",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.1007/springerreference_65153",
+      "is_repository": false,
+      "kind": "reference-entry",
+      "provider": "crossref",
+      "record_id": "10.1007/springerreference_65153",
+      "title": "Inverted Index",
+      "url": "https://doi.org/10.1007/springerreference_65153",
+      "venue": "SpringerReference",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Sun, Decai",
+        "Wang, Xiaoxia"
+      ],
+      "doi": "10.1109/iscid.2014.81",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/iscid.2014.81",
+      "title": "Inverted Index Compression Using Multi-codes",
+      "url": "https://doi.org/10.1109/iscid.2014.81",
+      "venue": "2014 Seventh International Symposium on Computational Intelligence and Design",
+      "year": 2014
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.1007/springerreference_64966",
+      "is_repository": false,
+      "kind": "reference-entry",
+      "provider": "crossref",
+      "record_id": "10.1007/springerreference_64966",
+      "title": "Full Text Inverted Index",
+      "url": "https://doi.org/10.1007/springerreference_64966",
+      "venue": "SpringerReference",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Lin, Xianming",
+        "Shen, Yunhang",
+        "Cai, Ling",
+        "Ji, Rongrong"
+      ],
+      "doi": "10.1016/j.neucom.2015.11.131",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1016/j.neucom.2015.11.131",
+      "title": "The distributed system for inverted multi-index visual retrieval",
+      "url": "https://doi.org/10.1016/j.neucom.2015.11.131",
+      "venue": "Neurocomputing",
+      "year": 2016
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Araujo, Alan",
+        "Barreiros Jr., Willian",
+        "Kong, Jun",
+        "Ferreira, Renato",
+        "Teodoro, George"
+      ],
+      "doi": "10.2139/ssrn.4839994",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.4839994",
+      "title": "Imi-Gpu: Inverted Multi-Index for Billion-Scale Approximate Nearest Neighbor Search with Gpus",
+      "url": "https://doi.org/10.2139/ssrn.4839994",
+      "venue": "",
+      "year": 2024
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.1021/acs.jcim.9b00069.s001",
+      "is_repository": false,
+      "kind": "component",
+      "provider": "crossref",
+      "record_id": "10.1021/acs.jcim.9b00069.s001",
+      "title": "RISC: Rapid Inverted-Index Based Search of Chemical Fingerprints",
+      "url": "https://doi.org/10.1021/acs.jcim.9b00069.s001",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Shi, Xiangbin",
+        "Guo, Zhongqiang",
+        "Zhang, Deyuan",
+        "Fang, Xuejian"
+      ],
+      "doi": "10.1109/icvrv.2015.39",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icvrv.2015.39",
+      "title": "Multiple Features Fusion Based Inverted Multi-index for Image Retrieval",
+      "url": "https://doi.org/10.1109/icvrv.2015.39",
+      "venue": "2015 International Conference on Virtual Reality and Visualization (ICVRV)",
+      "year": 2015
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Pei, Lishen",
+        "Ye, Mao",
+        "Xu, Pei",
+        "Zhao, Xuezhuan",
+        "Li, Tao"
+      ],
+      "doi": "10.1109/icip.2013.6738735",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.1109/icip.2013.6738735",
+      "title": "Multi-class action recognition based on inverted index of action states",
+      "url": "https://doi.org/10.1109/icip.2013.6738735",
+      "venue": "2013 IEEE International Conference on Image Processing",
+      "year": 2013
+    }
+  ],
+  "case_id": "f940bcbf-1",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "\u0410. \u0411. \u0411\u0430\u0431\u0435\u043d\u043a\u043e",
+            "Victor Lempitsky"
+          ],
+          "doi": "10.1109/cvpr.2012.6248038",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2039742379",
+          "title": "The inverted multi-index",
+          "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+          "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+          "year": 2012
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Artem Babenko",
+            "Victor Lempitsky"
+          ],
+          "doi": "10.1109/tpami.2014.2361319",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2171572695",
+          "title": "The Inverted Multi-Index",
+          "url": "https://doi.org/10.1109/tpami.2014.2361319",
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Jin Chen",
+            "Defu Lian",
+            "Binbin Jin",
+            "Xu Huang",
+            "Kai Zheng",
+            "Enhong Chen"
+          ],
+          "doi": "10.1145/3485447.3512068",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W3200418702",
+          "title": "Fast Variational AutoEncoder with Inverted Multi-Index for Collaborative Filtering",
+          "url": "https://doi.org/10.1145/3485447.3512068",
+          "venue": "Proceedings of the ACM Web Conference 2022",
+          "year": 2022
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Xianming Lin",
+            "Yunhang Shen",
+            "Ling Cai",
+            "Rongrong Ji"
+          ],
+          "doi": "10.1016/j.neucom.2015.11.131",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2415479887",
+          "title": "The distributed system for inverted multi-index visual retrieval",
+          "url": "https://doi.org/10.1016/j.neucom.2015.11.131",
+          "venue": "Neurocomputing",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Bing Wang",
+            "Wei Song",
+            "Wenjing Lou",
+            "Y. Thomas Hou"
+          ],
+          "doi": "10.1109/infocom.2015.7218594",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W1572096077",
+          "title": "Inverted index based multi-keyword public-key searchable encryption with strong privacy guarantee",
+          "url": "https://doi.org/10.1109/infocom.2015.7218594",
+          "venue": "2015 IEEE Conference on Computer Communications (INFOCOM)",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Xiangbin Shi",
+            "Zhongqiang Guo",
+            "Deyuan Zhang",
+            "Xuejian Fang"
+          ],
+          "doi": "10.1109/icvrv.2015.39",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2363285620",
+          "title": "Multiple Features Fusion Based Inverted Multi-index for Image Retrieval",
+          "url": "https://doi.org/10.1109/icvrv.2015.39",
+          "venue": "2015 International Conference on Virtual Reality and Visualization (ICVRV)",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Yanrong Liang",
+            "Yanping Li",
+            "Kai Zhang",
+            "Lina Ma"
+          ],
+          "doi": "10.1016/j.sysarc.2021.102255",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W3187986658",
+          "title": "DMSE: Dynamic Multi-keyword Search Encryption based on inverted index",
+          "url": "https://doi.org/10.1016/j.sysarc.2021.102255",
+          "venue": "Journal of Systems Architecture",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "J Inglis"
+          ],
+          "doi": "10.1093/comjnl/17.1.59",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2125585631",
+          "title": "Inverted indexes and multi-list structures",
+          "url": "https://doi.org/10.1093/comjnl/17.1.59",
+          "venue": "The Computer Journal",
+          "year": 1974
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Guido D\u2019Urso",
+            "Luigi Dini",
+            "Francesco Vuolo",
+            "Luis Alonso",
+            "Luis Guanter",
+            "Facolt\u00e0 di Agraria"
+          ],
+          "doi": "",
+          "is_repository": false,
+          "kind": "article",
+          "provider": "openalex",
+          "record_id": "W2134881739",
+          "title": "RETRIEVAL OF LEAF AREA INDEX BY INVERTING HYPER-SPECTRAL, MULTI-ANGULAR CHRIS/PROBA DATA FROM SPARC 2003",
+          "url": "http://earth.esa.int/workshops/chris_proba_04/papers/15_durso.pdf",
+          "venue": "",
+          "year": 2004
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Minghan Li",
+            "Sheng-Chieh Lin",
+            "Xueguang Ma",
+            "Jimmy Lin"
+          ],
+          "doi": "10.1145/3539618.3591977",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W4376123230",
+          "title": "SLIM: Sparsified Late Interaction for Multi-Vector Retrieval with Inverted Indexes",
+          "url": "https://doi.org/10.1145/3539618.3591977",
+          "venue": "Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+          "year": 2023
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Babenko, A.",
+            "Lempitsky, V."
+          ],
+          "doi": "10.1109/cvpr.2012.6248038",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/cvpr.2012.6248038",
+          "title": "The inverted multi-index",
+          "url": "https://doi.org/10.1109/cvpr.2012.6248038",
+          "venue": "2012 IEEE Conference on Computer Vision and Pattern Recognition",
+          "year": 2012
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Babenko, Artem",
+            "Lempitsky, Victor"
+          ],
+          "doi": "10.1109/tpami.2014.2361319",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1109/tpami.2014.2361319",
+          "title": "The Inverted Multi-Index",
+          "url": "https://doi.org/10.1109/tpami.2014.2361319",
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.1007/springerreference_65153",
+          "is_repository": false,
+          "kind": "reference-entry",
+          "provider": "crossref",
+          "record_id": "10.1007/springerreference_65153",
+          "title": "Inverted Index",
+          "url": "https://doi.org/10.1007/springerreference_65153",
+          "venue": "SpringerReference",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Sun, Decai",
+            "Wang, Xiaoxia"
+          ],
+          "doi": "10.1109/iscid.2014.81",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/iscid.2014.81",
+          "title": "Inverted Index Compression Using Multi-codes",
+          "url": "https://doi.org/10.1109/iscid.2014.81",
+          "venue": "2014 Seventh International Symposium on Computational Intelligence and Design",
+          "year": 2014
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.1007/springerreference_64966",
+          "is_repository": false,
+          "kind": "reference-entry",
+          "provider": "crossref",
+          "record_id": "10.1007/springerreference_64966",
+          "title": "Full Text Inverted Index",
+          "url": "https://doi.org/10.1007/springerreference_64966",
+          "venue": "SpringerReference",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Lin, Xianming",
+            "Shen, Yunhang",
+            "Cai, Ling",
+            "Ji, Rongrong"
+          ],
+          "doi": "10.1016/j.neucom.2015.11.131",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1016/j.neucom.2015.11.131",
+          "title": "The distributed system for inverted multi-index visual retrieval",
+          "url": "https://doi.org/10.1016/j.neucom.2015.11.131",
+          "venue": "Neurocomputing",
+          "year": 2016
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Araujo, Alan",
+            "Barreiros Jr., Willian",
+            "Kong, Jun",
+            "Ferreira, Renato",
+            "Teodoro, George"
+          ],
+          "doi": "10.2139/ssrn.4839994",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.4839994",
+          "title": "Imi-Gpu: Inverted Multi-Index for Billion-Scale Approximate Nearest Neighbor Search with Gpus",
+          "url": "https://doi.org/10.2139/ssrn.4839994",
+          "venue": "",
+          "year": 2024
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.1021/acs.jcim.9b00069.s001",
+          "is_repository": false,
+          "kind": "component",
+          "provider": "crossref",
+          "record_id": "10.1021/acs.jcim.9b00069.s001",
+          "title": "RISC: Rapid Inverted-Index Based Search of Chemical Fingerprints",
+          "url": "https://doi.org/10.1021/acs.jcim.9b00069.s001",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Shi, Xiangbin",
+            "Guo, Zhongqiang",
+            "Zhang, Deyuan",
+            "Fang, Xuejian"
+          ],
+          "doi": "10.1109/icvrv.2015.39",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icvrv.2015.39",
+          "title": "Multiple Features Fusion Based Inverted Multi-index for Image Retrieval",
+          "url": "https://doi.org/10.1109/icvrv.2015.39",
+          "venue": "2015 International Conference on Virtual Reality and Visualization (ICVRV)",
+          "year": 2015
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Pei, Lishen",
+            "Ye, Mao",
+            "Xu, Pei",
+            "Zhao, Xuezhuan",
+            "Li, Tao"
+          ],
+          "doi": "10.1109/icip.2013.6738735",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.1109/icip.2013.6738735",
+          "title": "Multi-class action recognition based on inverted index of action states",
+          "url": "https://doi.org/10.1109/icip.2013.6738735",
+          "venue": "2013 IEEE International Conference on Image Processing",
+          "year": 2013
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Artem Babenko",
+      "Victor Lempitsky"
+    ],
+    "doi": "",
+    "title": "The inverted multi-index",
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "year": 2014
+  },
+  "query_source": "fixture"
+}

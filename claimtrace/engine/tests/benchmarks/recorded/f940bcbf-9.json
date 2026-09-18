@@ -1,0 +1,398 @@
+{
+  "candidates": [
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Zihang Dai",
+        "Zhilin Yang",
+        "Yiming Yang",
+        "Jaime Carbonell",
+        "Quoc V. Le",
+        "Ruslan Salakhutdinov"
+      ],
+      "doi": "10.18653/v1/p19-1285",
+      "is_repository": false,
+      "kind": "conference-paper",
+      "provider": "openalex",
+      "record_id": "W2964110616",
+      "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+      "url": "https://doi.org/10.18653/v1/p19-1285",
+      "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+      "year": 2019
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Dai, Zihang",
+        "Yang, Zhilin",
+        "Yang, Yiming",
+        "Carbonell, Jaime",
+        "Le, Quoc",
+        "Salakhutdinov, Ruslan"
+      ],
+      "doi": "10.18653/v1/p19-1285",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/p19-1285",
+      "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+      "url": "https://doi.org/10.18653/v1/p19-1285",
+      "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+      "year": 2019
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Kyoung, Minyoung",
+        "Lim, Joon-Ho",
+        "Kim, Youngsoo"
+      ],
+      "doi": "10.1109/access.2025.3617449",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1109/access.2025.3617449",
+      "title": "Reasoning Beyond Length Limits: Improving Accuracy in Long-Context Question Answering With Small-Scale Language Models",
+      "url": "https://doi.org/10.1109/access.2025.3617449",
+      "venue": "IEEE Access",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Jack, William"
+      ],
+      "doi": "10.22541/au.174102439.94682577/v1",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.22541/au.174102439.94682577/v1",
+      "title": "Beyond Words: The Evolution of Large Language Models in Context-Aware",
+      "url": "https://doi.org/10.22541/au.174102439.94682577/v1",
+      "venue": "",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Gruetzemacher, Ross",
+        "Paradice, David"
+      ],
+      "doi": "10.2139/ssrn.3944942",
+      "is_repository": true,
+      "kind": "posted-content",
+      "provider": "crossref",
+      "record_id": "10.2139/ssrn.3944942",
+      "title": "Deep Transfer Learning &amp;amp; Beyond: Transformer Language Models in Information Systems Research",
+      "url": "https://doi.org/10.2139/ssrn.3944942",
+      "venue": "",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [],
+      "doi": "10.7717/peerj-cs.2983/supp-6",
+      "is_repository": false,
+      "kind": "component",
+      "provider": "crossref",
+      "record_id": "10.7717/peerj-cs.2983/supp-6",
+      "title": "Supplemental Information 6: Details of reproducing the codes of the proposed Deep Context-Attentive Transformer Transfer Learning model for financial forecasting.",
+      "url": "https://doi.org/10.7717/peerj-cs.2983/supp-6",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Li, Jiaoda",
+        "Cotterell, Ryan"
+      ],
+      "doi": "10.52202/085713-5329",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.52202/085713-5329",
+      "title": "Characterizing the Expressivity of Fixed-Precision Transformer Language Models",
+      "url": "https://doi.org/10.52202/085713-5329",
+      "venue": "Advances in Neural Information Processing Systems 38",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Feng, Ling",
+        "Sinchai, Ananta"
+      ],
+      "doi": "10.7717/peerj-cs.2983",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.7717/peerj-cs.2983",
+      "title": "Deep context-attentive transformer transfer learning for financial forecasting",
+      "url": "https://doi.org/10.7717/peerj-cs.2983",
+      "venue": "PeerJ Computer Science",
+      "year": 2025
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Varis, Dusan",
+        "Bojar, Ond\u0159ej"
+      ],
+      "doi": "10.18653/v1/2021.emnlp-main.650",
+      "is_repository": false,
+      "kind": "proceedings-article",
+      "provider": "crossref",
+      "record_id": "10.18653/v1/2021.emnlp-main.650",
+      "title": "Sequence Length is a Domain: Length-based Overfitting in Transformer Models",
+      "url": "https://doi.org/10.18653/v1/2021.emnlp-main.650",
+      "venue": "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
+      "year": 2021
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Stephenson, Brooke"
+      ],
+      "doi": "10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+      "is_repository": false,
+      "kind": "dissertation",
+      "provider": "crossref",
+      "record_id": "10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+      "title": "Beyond words : leveraging language models for incremental and context-aware text-to-speech synthesis",
+      "url": "https://doi.org/10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+      "venue": "",
+      "year": null
+    },
+    {
+      "arxiv_id": "",
+      "authors": [
+        "Canbay, Pelin"
+      ],
+      "doi": "10.1016/j.ipm.2026.105126",
+      "is_repository": false,
+      "kind": "journal-article",
+      "provider": "crossref",
+      "record_id": "10.1016/j.ipm.2026.105126",
+      "title": "Lexicon-guided representation learning with self-attentive transformer models: Enhancing offensive language detection in low-resourced languages",
+      "url": "https://doi.org/10.1016/j.ipm.2026.105126",
+      "venue": "Information Processing &amp; Management",
+      "year": 2027
+    }
+  ],
+  "case_id": "f940bcbf-9",
+  "providers": [
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Zihang Dai",
+            "Zhilin Yang",
+            "Yiming Yang",
+            "Jaime Carbonell",
+            "Quoc V. Le",
+            "Ruslan Salakhutdinov"
+          ],
+          "doi": "10.18653/v1/p19-1285",
+          "is_repository": false,
+          "kind": "conference-paper",
+          "provider": "openalex",
+          "record_id": "W2964110616",
+          "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+          "url": "https://doi.org/10.18653/v1/p19-1285",
+          "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+          "year": 2019
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "openalex",
+      "status": "ok"
+    },
+    {
+      "candidates": [
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Dai, Zihang",
+            "Yang, Zhilin",
+            "Yang, Yiming",
+            "Carbonell, Jaime",
+            "Le, Quoc",
+            "Salakhutdinov, Ruslan"
+          ],
+          "doi": "10.18653/v1/p19-1285",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/p19-1285",
+          "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+          "url": "https://doi.org/10.18653/v1/p19-1285",
+          "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+          "year": 2019
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Kyoung, Minyoung",
+            "Lim, Joon-Ho",
+            "Kim, Youngsoo"
+          ],
+          "doi": "10.1109/access.2025.3617449",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1109/access.2025.3617449",
+          "title": "Reasoning Beyond Length Limits: Improving Accuracy in Long-Context Question Answering With Small-Scale Language Models",
+          "url": "https://doi.org/10.1109/access.2025.3617449",
+          "venue": "IEEE Access",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Jack, William"
+          ],
+          "doi": "10.22541/au.174102439.94682577/v1",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.22541/au.174102439.94682577/v1",
+          "title": "Beyond Words: The Evolution of Large Language Models in Context-Aware",
+          "url": "https://doi.org/10.22541/au.174102439.94682577/v1",
+          "venue": "",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Gruetzemacher, Ross",
+            "Paradice, David"
+          ],
+          "doi": "10.2139/ssrn.3944942",
+          "is_repository": true,
+          "kind": "posted-content",
+          "provider": "crossref",
+          "record_id": "10.2139/ssrn.3944942",
+          "title": "Deep Transfer Learning &amp;amp; Beyond: Transformer Language Models in Information Systems Research",
+          "url": "https://doi.org/10.2139/ssrn.3944942",
+          "venue": "",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [],
+          "doi": "10.7717/peerj-cs.2983/supp-6",
+          "is_repository": false,
+          "kind": "component",
+          "provider": "crossref",
+          "record_id": "10.7717/peerj-cs.2983/supp-6",
+          "title": "Supplemental Information 6: Details of reproducing the codes of the proposed Deep Context-Attentive Transformer Transfer Learning model for financial forecasting.",
+          "url": "https://doi.org/10.7717/peerj-cs.2983/supp-6",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Li, Jiaoda",
+            "Cotterell, Ryan"
+          ],
+          "doi": "10.52202/085713-5329",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.52202/085713-5329",
+          "title": "Characterizing the Expressivity of Fixed-Precision Transformer Language Models",
+          "url": "https://doi.org/10.52202/085713-5329",
+          "venue": "Advances in Neural Information Processing Systems 38",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Feng, Ling",
+            "Sinchai, Ananta"
+          ],
+          "doi": "10.7717/peerj-cs.2983",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.7717/peerj-cs.2983",
+          "title": "Deep context-attentive transformer transfer learning for financial forecasting",
+          "url": "https://doi.org/10.7717/peerj-cs.2983",
+          "venue": "PeerJ Computer Science",
+          "year": 2025
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Varis, Dusan",
+            "Bojar, Ond\u0159ej"
+          ],
+          "doi": "10.18653/v1/2021.emnlp-main.650",
+          "is_repository": false,
+          "kind": "proceedings-article",
+          "provider": "crossref",
+          "record_id": "10.18653/v1/2021.emnlp-main.650",
+          "title": "Sequence Length is a Domain: Length-based Overfitting in Transformer Models",
+          "url": "https://doi.org/10.18653/v1/2021.emnlp-main.650",
+          "venue": "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
+          "year": 2021
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Stephenson, Brooke"
+          ],
+          "doi": "10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+          "is_repository": false,
+          "kind": "dissertation",
+          "provider": "crossref",
+          "record_id": "10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+          "title": "Beyond words : leveraging language models for incremental and context-aware text-to-speech synthesis",
+          "url": "https://doi.org/10.70675/5b6c082czf0c2z4055zb230z5c5b56888ca5",
+          "venue": "",
+          "year": null
+        },
+        {
+          "arxiv_id": "",
+          "authors": [
+            "Canbay, Pelin"
+          ],
+          "doi": "10.1016/j.ipm.2026.105126",
+          "is_repository": false,
+          "kind": "journal-article",
+          "provider": "crossref",
+          "record_id": "10.1016/j.ipm.2026.105126",
+          "title": "Lexicon-guided representation learning with self-attentive transformer models: Enhancing offensive language detection in low-resourced languages",
+          "url": "https://doi.org/10.1016/j.ipm.2026.105126",
+          "venue": "Information Processing &amp; Management",
+          "year": 2027
+        }
+      ],
+      "error": "",
+      "error_code": null,
+      "name": "crossref",
+      "status": "ok"
+    }
+  ],
+  "query": {
+    "arxiv_id": "",
+    "authors": [
+      "Zihang Dai",
+      "Zhilin Yang",
+      "Yiming Yang",
+      "William W Cohen",
+      "Jaime Carbonell",
+      "Quoc V Le",
+      "Ruslan Salakhutdinov"
+    ],
+    "doi": "",
+    "title": "Transformer-xl: Attentive language models beyond a fixed-length context",
+    "venue": "Conference of the Association for Computational Linguistics",
+    "year": 2019
+  },
+  "query_source": "fixture"
+}
