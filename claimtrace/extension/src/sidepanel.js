@@ -41,6 +41,8 @@ let findings = [];
 let backendPapers = [];
 let audit = null;
 let auditState = {};
+let bibSyncError = "";
+let paperListWarning = "";
 let activeView = "citations";
 let viewChosen = false;
 
@@ -146,7 +148,7 @@ function auditTone(status) {
 
 function renderAudit() {
   auditBibButton.disabled = Boolean(auditState.running);
-  auditStatus.textContent = [auditState.message || "No Audit has been run yet.", ...(audit?.warnings || [])].join(" · ");
+  auditStatus.textContent = [bibSyncError ? `Bibliography: ${bibSyncError}` : "", auditState.message || (bibSyncError ? "" : "No Audit has been run yet."), paperListWarning, ...(audit?.warnings || [])].filter(Boolean).join(" · ");
   auditStatus.classList.toggle("running", Boolean(auditState.running));
   auditList.hidden = !audit?.results?.length;
   auditList.innerHTML = (audit?.results || []).map((result) => {
@@ -188,6 +190,7 @@ async function loadWorkspace() {
     "claimtraceFindings",
     "claimtraceCitationSource",
     "claimtraceBackendStatus",
+    "claimtraceBibSyncError",
     "claimtraceAuditStatus",
     "claimtraceAudit",
     "claimtraceAuditInput",
@@ -196,6 +199,7 @@ async function loadWorkspace() {
   findings = Array.isArray(stored.claimtraceFindings) ? stored.claimtraceFindings : [];
   audit = stored.claimtraceAudit || null;
   auditState = stored.claimtraceAuditStatus || {};
+  bibSyncError = stored.claimtraceBibSyncError || "";
   const hasOverleafContent = stored.claimtraceSource === "overleaf" || stored.claimtraceCitationSource === "overleaf";
   sourceTitle.textContent = hasOverleafContent ? "Your references" : "Citation workspace";
   syncText.textContent = findings.length
@@ -229,10 +233,14 @@ async function locateFinding(locationId, citationKey, card) {
 }
 
 async function refreshAuditPapers() {
-  const response = await chrome.runtime.sendMessage({ type: "refresh_audit_papers" });
-  if (response?.error) throw new Error(response.error);
-  backendPapers = Array.isArray(response?.papers) ? response.papers : [];
-  return response?.warning || "";
+  try {
+    const response = await chrome.runtime.sendMessage({ type: "refresh_audit_papers" });
+    if (response?.error) throw new Error(response.error);
+    backendPapers = Array.isArray(response?.papers) ? response.papers : [];
+    paperListWarning = response?.warning || "";
+  } catch (error) {
+    paperListWarning = error.message || "Unable to load uploaded papers";
+  }
 }
 
 searchInput.addEventListener("input", () => activeView === "citations" ? renderFindings() : renderPapers());
@@ -240,14 +248,10 @@ citationsTab.addEventListener("click", () => setView("citations"));
 papersTab.addEventListener("click", () => setView("papers"));
 syncButton.addEventListener("click", async () => {
   syncButton.classList.add("syncing");
-  let auditRefreshError;
   try {
-    auditRefreshError = await refreshAuditPapers();
-  } catch (error) {
-    auditRefreshError = error.message || "Unable to refresh uploaded papers for Audit";
+    await refreshAuditPapers();
   } finally {
     await loadWorkspace();
-    if (auditRefreshError) auditStatus.textContent = auditRefreshError;
     window.setTimeout(() => syncButton.classList.remove("syncing"), 550);
   }
 });
@@ -303,7 +307,7 @@ auditPdfButton.addEventListener("click", async () => {
   }
 });
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && (changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus || changes.claimtraceAuditStatus || changes.claimtraceAudit)) void loadWorkspace();
+  if (areaName === "local" && (changes.claimtraceBibSyncError || changes.claimtracePapers || changes.claimtraceFindings || changes.claimtraceBackendStatus || changes.claimtraceAuditStatus || changes.claimtraceAudit)) void loadWorkspace();
 });
 
 void refreshAuditPapers()

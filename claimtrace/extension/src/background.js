@@ -208,8 +208,10 @@ function previewFinding(finding, reason) {
 }
 
 async function syncBibliography(bibSource, requestId) {
+  let auditStarted = false;
   try {
     if (requestId !== latestBibliographyRequest) return;
+    await chrome.storage.local.set({ claimtraceBibSyncError: "" });
     const bibSourceHash = await hashText(bibSource);
     if (requestId !== latestBibliographyRequest) return;
 
@@ -252,6 +254,7 @@ async function syncBibliography(bibSource, requestId) {
     // The extension scope is bibliography Audit only. Audit uses the
     // persisted BibTeX ID directly and must not depend on /api/papers or any
     // claim/source Verify endpoint.
+    auditStarted = true;
     const audit = await runAudit(parsed.paper_id, "bib");
     if (requestId !== latestBibliographyRequest) return;
     await setBackendStatus({
@@ -263,6 +266,9 @@ async function syncBibliography(bibSource, requestId) {
     return audit;
   } catch (error) {
     if (requestId !== latestBibliographyRequest) return;
+    if (!auditStarted) {
+      await chrome.storage.local.set({ claimtraceBibSyncError: error.message || "Unable to parse bibliography" });
+    }
     await setBackendStatus({
       connected: false,
       message: error instanceof Error ? error.message : "Bibliography Audit is unavailable",

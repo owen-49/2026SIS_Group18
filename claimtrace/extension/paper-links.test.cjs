@@ -4,10 +4,10 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const path = require("node:path");
 
-function panelContext() {
+function panelContext(sendMessage = async () => ({ papers: [] })) {
   const source = fs.readFileSync(path.join(__dirname, "src/sidepanel.js"), "utf8");
   const elements = new Map();
-  const context = vm.createContext({ URL, document: { getElementById(id) {
+  const context = vm.createContext({ URL, chrome: { runtime: { sendMessage } }, document: { getElementById(id) {
     if (!elements.has(id)) elements.set(id, { value: "", classList: { toggle() {} } });
     return elements.get(id);
   } } });
@@ -47,4 +47,31 @@ test("real publications support DOI URLs, arXiv eprints and safe fallback", () =
   assert.equal(context.publicationLink({arxivId:'2307.12345v2'}).url, 'https://arxiv.org/abs/2307.12345v2');
   assert.equal(context.publicationLink({url:'https://publisher.example/paper'}).url, 'https://publisher.example/paper');
   assert.equal(context.publicationLink({url:'javascript:alert(1)',title:'A real title'}).label,'Find paper');
+});
+
+
+test("cached-list warning survives rerender and clears after successful refresh", async () => {
+  let response = { papers: [], warning: "Using cached list: backend unavailable" };
+  const { context, elements } = panelContext(async () => response);
+  await context.refreshAuditPapers();
+  vm.runInContext('renderAudit(); renderAudit()', context);
+  assert.match(elements.get("auditStatus").textContent, /Using cached list/);
+  response = { papers: [] };
+  await context.refreshAuditPapers();
+  vm.runInContext('renderAudit()', context);
+  assert.doesNotMatch(elements.get("auditStatus").textContent, /Using cached list/);
+});
+
+test("parse error and paper list warning are both visible", () => {
+  const { context, elements } = panelContext();
+  vm.runInContext('bibSyncError = "Invalid BibTeX"; paperListWarning = "Using cached list"; renderAudit()', context);
+  assert.match(elements.get("auditStatus").textContent, /Invalid BibTeX/);
+  assert.match(elements.get("auditStatus").textContent, /Using cached list/);
+});
+
+test("a previous Bib parse error does not hide a subsequent PDF Audit status", () => {
+  const { context, elements } = panelContext();
+  vm.runInContext('bibSyncError = "Invalid BibTeX"; auditState = { message: "Audit complete · 2 references" }; renderAudit()', context);
+  assert.match(elements.get("auditStatus").textContent, /Bibliography: Invalid BibTeX/);
+  assert.match(elements.get("auditStatus").textContent, /Audit complete/);
 });

@@ -180,3 +180,18 @@ test("Bib retry requires detected source instead of auditing demo entries", asyn
   assert.match(result.error, /Open a .bib file/);
   assert.equal(requests.length, 0);
 });
+
+test("automatic Bib parse failures persist a visible error and retry clears it", async () => {
+  let failing = true;
+  const { context, storage } = createHarness((url) => {
+    if (failing) return jsonResponse({ detail: "Invalid BibTeX" }, false, 422);
+    if (url.endsWith("/api/audit")) return jsonResponse(auditResponse);
+    return jsonResponse({ paper_id: "bib-new", status: "completed" });
+  });
+  await assert.rejects(context.syncBibliography("bad source", 0), /Invalid BibTeX/);
+  assert.equal(storage.claimtraceBibSyncError, "Invalid BibTeX");
+  failing = false;
+  await context.syncBibliography("valid source", 0);
+  assert.equal(storage.claimtraceBibSyncError, "");
+  assert.equal(storage.claimtraceAudit.audit_id, auditResponse.audit_id);
+});

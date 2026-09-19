@@ -24,3 +24,20 @@
 ## 本地验收
 
 在 chrome://extensions 对已加载的 claimtrace/extension 点重新加载，并刷新 Overleaf 页面。选中 .bib 文件，打开侧栏 → Audit / retry BibTeX。在 Papers 下检查 Audit 状态及 Open paper / Review candidate 链接，再输入关键词验证本地过滤与外部搜索入口。后端恢复 papers 接口后，重新打开侧栏加载 PDF 列表再验 Audit PDF。
+
+## 3b00fd4 后续复测与提示修复
+
+- 自动 Bib 上传/解析失败现在写入单独的 claimtraceBibSyncError，Audit 区显示具体错误；重试时清除，避免恢复后仍显示旧错误。不会用 Bib 解析错误覆盖 PDF Audit 的运行/完成状态。
+- 实时 paper 列表失败或回退缓存的警告由侧栏保存并统一渲染；首次打开、切换视图及状态刷新不会丢失提示，成功重新加载列表后清除。
+- 插件回归测试：45 项通过。真实 Chrome 模拟失败响应：两个错误场景均可见；正常的浮层操作及 320/390/520px 布局检查通过。
+- 后端测试：临时使用 Temurin Java 17 后，201 项全部通过。此前 Java 8 下的 10 个 PDF 相关失败未再出现。未修改系统 Java 默认配置，也未重启用户的 8000 服务。
+- 仍未完成登录状态下真实 Overleaf 与外部检索服务的端到端验收。
+
+本机复测命令（临时目录清理后需重新准备测试环境）：
+
+```sh
+cd /Users/lijunli/Code/Hub/2026SIS_Group18
+PATH="/tmp/claimtrace-jre17/jdk-17.0.20.1+1-jre/Contents/Home/bin:$PATH" \
+PYTHONPATH=claimtrace:claimtrace/engine:claimtrace/parser \
+/tmp/claimtrace-3b00fd4-venv/bin/python -m pytest claimtrace/backend/tests -q
+```
