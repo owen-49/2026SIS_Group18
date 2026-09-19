@@ -4,11 +4,13 @@
 import pytest
 
 from engine.bib_parser import (
+    BibEntry,
     _clean_title,
     _extract_last_name,
     _normalize_author_name,
     _parse_authors,
     _parse_year,
+    author_surnames,
     find_entry_by_key,
     find_entry_by_title,
     parse_bib_file,
@@ -363,6 +365,30 @@ class TestAuthorNormalization:
         assert _extract_last_name("Wei, Jason") == "wei"
         assert _extract_last_name("Jason Wei") == "wei"
         assert _extract_last_name("Brown, Tom B.") == "brown"
+
+
+class TestAuthorSurnames:
+    """The public surname rule: both name orders, and the order of the input kept."""
+
+    def test_reads_both_orders_alike(self):
+        assert author_surnames(["Wei, Jason"]) == author_surnames(["Jason Wei"]) == ["wei"]
+
+    def test_keeps_the_order_given(self):
+        # A caller pairing the two sides element by element needs the positions to
+        # mean the same thing on both.
+        assert author_surnames(["Jason Wei", "Yi Tay"]) == ["wei", "tay"]
+        assert author_surnames(["Tay, Yi", "Wei, Jason"]) == ["tay", "wei"]
+
+    def test_strips_trailing_punctuation(self):
+        assert author_surnames(["Vaswani, A."]) == ["vaswani"]
+        assert author_surnames(["Ashish Vaswani."]) == ["vaswani"]
+
+    def test_empty_list(self):
+        assert author_surnames([]) == []
+
+    def test_is_what_author_last_names_returns(self):
+        entry = BibEntry(key="k", authors=["Jason Wei", "Tay, Yi"])
+        assert entry.author_last_names == author_surnames(entry.authors) == ["wei", "tay"]
 
 
 # ── File parsing ─────────────────────────────────────────────

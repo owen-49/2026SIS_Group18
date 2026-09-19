@@ -18,6 +18,20 @@
 > 而 PDF 引用里这个字段 174 条中只有 1 条非空，所以实际上**每一条** PDF 引用都在检索前被退回
 > Needs review，lookup 从未被调用。现在守卫改读**可检索** title（结构化优先，空则用 raw_text 解析，
 > 两者共用一个函数），该状态仍然存在，只是不再吞掉整条路径。
+>
+> **同一处缺陷的第二个层面**：比对层 `compare_external_metadata` 当时仍读**结构化**字段，
+> 于是检索用一个描述、比对用另一个描述。174 条 PDF 引用中结构化字段几乎全空，导致每条字段检查
+> 都是 `INPUT_MISSING`、每个结果都是 `NEEDS_REVIEW`——lookup 即使已经找到了记录也无法得出结论，
+> `VERIFIED` 不可达，`METADATA_MISMATCH` 也从未触发。现在比对层与守卫、lookup 共读同一个描述
+> （`reference_query_for`）。记录级实测（`backend/uploads/parsed/audits/` 中 91 条已匹配记录）：
+> 改动前 0 `VERIFIED` / 0 `METADATA_MISMATCH` / 91 `NEEDS_REVIEW`，改动后
+> 18 / 0 / 73；若只把字段来源换掉而不改判定规则，则是 10 / 62 / 19——即把三分之二的引用直接
+> 判为元数据不符，其中绝大多数是 `ACL` 对完整会议名这类缩写差异，而不是错误。
+> 因此：**由 raw_text 恢复出来的字段**出现差异只阻止 `VERIFIED`（退回 `NEEDS_REVIEW`），
+> **引用自身元数据里写明的字段**出现差异仍然是 `METADATA_MISMATCH`。作者比对同时改为读姓氏
+> 加双方各自写出的名（91 条中 69 条一致，原先逐元素相等只有 36 条），姓名顺序、缩写与变音符
+> 不再算差异。复现命令见
+> [audit-live-acceptance/audit-integration-handoff.md](audit-live-acceptance/audit-integration-handoff.md)。
 
 ## 已完成
 

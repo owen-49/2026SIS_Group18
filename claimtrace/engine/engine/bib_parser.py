@@ -40,7 +40,7 @@ class BibEntry:
     @property
     def author_last_names(self) -> list[str]:
         """Return just the last names for fuzzy matching."""
-        return [_extract_last_name(a) for a in self.authors]
+        return author_surnames(self.authors)
 
     @property
     def first_author_last_name(self) -> str:
@@ -505,6 +505,24 @@ def _normalize_author_name(raw: str) -> str:
     last = parts[-1]
     first = " ".join(parts[:-1])
     return f"{last}, {first}"
+
+
+def author_surnames(authors: list[str]) -> list[str]:
+    """Return the comparison form of every author's surname, in the order given.
+
+    The one place this project decides what an author's surname is. Two sides
+    reaching a comparison usually disagree about name order -- a reference list
+    writes "Bastian Epping" while a provider record writes "Epping, Bastian" --
+    so a caller that compares names has to come through here rather than assume
+    one order. :func:`_extract_last_name` handles both.
+
+    Args:
+        authors: Author names, in either order, as stored on either side.
+
+    Returns:
+        Lower-cased surnames, one per input, in the same order.
+    """
+    return [_extract_last_name(author) for author in authors]
 
 
 def _extract_last_name(author: str) -> str:
