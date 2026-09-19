@@ -4,9 +4,11 @@ import json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 from backend.src.models import PaperRecord, ParsedDocument, ParsedParagraph, ParseStatus
 from backend.src.routes import parse as parse_route
+from backend.src.services import engine_adapter
 from backend.src.storage.paper_store import create_paper, get_paper, update_paper
 from backend.src.storage.parsed_document_store import save_parsed_document
 
@@ -358,6 +360,53 @@ def test_verify_returns_frontend_contract(client, sample_pdf_bytes):
     assert body["confidence"] > 0
     assert body["matches"]
     assert body["matches"][0]["passage_text"]
+
+
+def _llm_client(reply: str):
+    """A stand-in LLM client that always answers with the given text."""
+
+    def create(**_kwargs):
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=reply))]
+        )
+
+    return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+
+
+def test_verify_reports_an_unjudged_claim_as_a_failure(client, sample_pdf_bytes, monkeypatch):
+    """The wire must carry a failure, not a verdict the Engine never reached.
+
+    An out-of-range label is not a judgement about the claim, and this endpoint
+    used to answer it with ``SUPPORT`` or ``NOT_FOUND`` depending on lexical
+    overlap. ``NOT_FOUND`` is itself a verdict, so the response must have no
+    ``verdict`` field anywhere for the Engine's status to be honestly reported.
+    """
+    uploaded = client.post(
+        "/api/parse",
+        files={"file": ("attention.pdf", sample_pdf_bytes, "application/pdf")},
+    ).json()
+    monkeypatch.setattr(
+        engine_adapter,
+        "_get_llm_client",
+        lambda: _llm_client('{"label": "SUPPORTS", "rationale": "..."}'),
+    )
+
+    response = client.post(
+        "/api/verify",
+        json={
+            "claim": "Self-attention removes the need for recurrence.",
+            "source_paper_id": uploaded["paper_id"],
+        },
+    )
+
+    assert response.status_code == 503
+    body = response.json()
+    assert body["detail"]["code"] == "INVALID_LABEL"
+    # The Engine's own diagnostic reaches the caller verbatim, so the reason is
+    # visible rather than collapsed into a code.
+    assert "SUPPORTS" in body["detail"]["message"]
+    assert "verdict" not in body
+    assert "matches" not in body
 
 
 def test_verify_unknown_paper_returns_404(client):

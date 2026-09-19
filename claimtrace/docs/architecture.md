@@ -184,6 +184,19 @@ Response: {
 }
 ```
 
+**Legacy endpoint — no client in this repository.** The Review page uses
+`POST /api/verify/citation` instead, and the extension calls no Verify endpoint.
+Kept for contract stability; new integrations should use `/api/verify/citation`.
+
+`verdict` is one of the four judgements, never a stand-in for "not judged". When a
+configured LLM declines to judge (`NO_EVIDENCE`, `MODEL_ERROR`, `INVALID_LABEL`,
+`INVALID_RESPONSE`), the endpoint answers **503** with
+`{ "detail": { "code": <VerificationStatus>, "message": <rationale> } }` — there is no slot
+for that outcome in the response above, and `NOT_FOUND` is itself a verdict, so reporting
+one would invent a finding. The only 200 response without an LLM is the announced lexical
+baseline, which is used when no client is configured at all. See
+`engine-verify-contract.zh-CN.md` §6.2.
+
 ### POST /api/audit
 
 ```text
