@@ -1,5 +1,6 @@
 """Tests for atomic JSON paper metadata persistence."""
 
+import json
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -54,6 +55,20 @@ def test_list_papers_orders_newest_first(tmp_path):
     records = list_papers(papers_file=papers_file)
 
     assert [record.paper_id for record in records] == ["newer", "older"]
+
+
+def test_list_papers_skips_one_invalid_record_without_blocking_valid_records(tmp_path):
+    papers_file = tmp_path / "papers.json"
+    valid = _paper_record("valid")
+    create_paper(valid, papers_file=papers_file)
+
+    data = json.loads(papers_file.read_text(encoding="utf-8"))
+    data["papers"]["broken"] = {"paper_id": "broken", "file_type": "pdf"}
+    papers_file.write_text(json.dumps(data), encoding="utf-8")
+
+    records = list_papers(papers_file=papers_file)
+
+    assert [record.paper_id for record in records] == ["valid"]
 
 
 def test_update_paper_persists_mutable_fields(tmp_path):

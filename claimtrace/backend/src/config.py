@@ -15,6 +15,11 @@ from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
+# Resolve the default data directory from the backend package rather than the
+# process working directory.  This keeps local `uvicorn` invocations from the
+# repository root and the Docker image on the same uploads/papers.json file.
+_DEFAULT_DATA_DIR = Path(__file__).resolve().parents[1]
+
 
 @dataclass
 class Settings:
@@ -64,9 +69,9 @@ class Settings:
 
     # ── Upload ────────────────────────────────────────────
     max_upload_size_mb: int = 50
-    upload_dir: Path = Path("uploads")
-    papers_file: Path = Path("uploads/papers.json")
-    parsed_dir: Path = Path("uploads/parsed")
+    upload_dir: Path = _DEFAULT_DATA_DIR / "uploads"
+    papers_file: Path = _DEFAULT_DATA_DIR / "uploads" / "papers.json"
+    parsed_dir: Path = _DEFAULT_DATA_DIR / "uploads" / "parsed"
 
     # ── Parser ───────────────────────────────────────────
     # Yi Jiang's PDF-to-Markdown converter uses Java locally by default.
@@ -140,7 +145,7 @@ def _load_settings() -> Settings:
         "chrome-extension://*",
     ]
 
-    upload_dir = Path(os.getenv("UPLOAD_DIR", "uploads"))
+    upload_dir = Path(os.getenv("UPLOAD_DIR", str(_DEFAULT_DATA_DIR / "uploads")))
     papers_file = Path(os.getenv("PAPERS_FILE", str(upload_dir / "papers.json")))
     parsed_dir = Path(os.getenv("PARSED_DIR", str(upload_dir / "parsed")))
 

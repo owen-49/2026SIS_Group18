@@ -67,7 +67,7 @@ test("hovering a verified citation shows the retrieved passage, not only its cou
   assert.equal(dom.textIn(".claimtrace-hover-quote"), PASSAGE);
   assert.equal(dom.textIn(".claimtrace-hover-provenance"), "Passage 1 of 3 · 87% lexical overlap");
   assert.equal(dom.textIn(".claimtrace-hover-title"), "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks");
-  assert.equal(dom.textIn(".claimtrace-hover-annotation"), "Backend verification · 3 matching passage(s)");
+  assert.equal(dom.elementIn(".claimtrace-hover-detail").hidden, false);
 });
 
 test("the card shows the sentence the citation sits in", () => {
@@ -81,7 +81,7 @@ test("a citation that was never verified offers no passage", () => {
   const dom = load();
   dom.move(...ON_CITATION);
 
-  assert.equal(dom.textIn(".claimtrace-hover-verdict"), "Pending verification");
+  assert.equal(dom.textIn(".claimtrace-hover-verdict"), "Not checked");
   assert.equal(dom.elementIn(".claimtrace-hover-passage").hidden, true);
   assert.equal(dom.textIn(".claimtrace-hover-quote"), "");
 });
@@ -91,7 +91,7 @@ test("a verified citation with no retrieved passages says so rather than quoting
   verify(dom, []);
   dom.move(...ON_CITATION);
 
-  assert.equal(dom.textIn(".claimtrace-hover-annotation"), "Backend verification · 0 matching passage(s)");
+  assert.equal(dom.elementIn(".claimtrace-hover-detail").hidden, false);
   assert.equal(dom.elementIn(".claimtrace-hover-passage").hidden, true);
 });
 
@@ -147,10 +147,10 @@ test("each hover takes one latency measurement and reports it to the console", (
   dom.move(...AWAY);
   dom.flushTimers();
   dom.move(...ON_CITATION);
-  assert.equal(dom.measures.length, 2, "a second hover must be measured on its own, not reuse the first");
+  assert.equal(dom.measures.length, 1, "moving away preserves the existing card");
 });
 
-test("the card hides when the pointer leaves the citation", () => {
+test("the card stays open when the pointer leaves the citation", () => {
   const dom = load();
   verify(dom, [match(PASSAGE, 0.9)]);
   dom.move(...ON_CITATION);
@@ -158,7 +158,7 @@ test("the card hides when the pointer leaves the citation", () => {
 
   dom.move(...AWAY);
   dom.flushTimers();
-  assert.equal(dom.hoverCard().classList.contains("claimtrace-hover-visible"), false);
+  assert.equal(dom.hoverCard().classList.contains("claimtrace-hover-visible"), true);
 });
 
 test("focusing a citation from the side panel shows the card with its passage", () => {
@@ -181,7 +181,7 @@ test("the card still renders when the page offers no performance or CSS API", ()
   assert.equal(dom.textIn(".claimtrace-hover-quote"), PASSAGE);
 });
 
-test("citation detection, the bibliography prompt and highlights are unchanged", () => {
+test("citation detection remains a local preview in Audit-only mode", () => {
   const dom = load();
   const [finding] = dom.reports("citations_detected")[0].findings;
   const line = dom.document.querySelectorAll(".cm-line").at(-1);
@@ -189,11 +189,54 @@ test("citation detection, the bibliography prompt and highlights are unchanged",
   assert.equal(finding.citationKey, "lewis2020retrieval");
   assert.equal(finding.preview, true);
   assert.equal(line.classList.contains("claimtrace-citation-line"), true);
-  assert.equal(line.dataset.claimtraceLabel, "ClaimTrace · local preview · Pending verification");
+  assert.equal(line.dataset.claimtraceLabel, "ClaimTrace · local citation preview · Not checked");
   assert.equal(dom.reports("bibliography_detected")[0].papers.length, 1);
   assert.equal(dom.highlights.has("claimtrace-citations-pending"), true);
   assert.equal(
     dom.document.getElementById("claimtrace-bib-prompt").querySelector(".claimtrace-prompt-open").textContent,
     "Open ClaimTrace",
   );
+});
+
+test("the card stays open until its close button is clicked", () => {
+  const dom = load();
+  dom.move(...ON_CITATION);
+  dom.move(...AWAY);
+  dom.leave();
+  assert.equal(dom.hoverCard().hidden, false);
+  assert.equal(dom.elementIn(".claimtrace-hover-pin"), null);
+  dom.elementIn(".claimtrace-hover-close").listeners.click();
+  assert.equal(dom.hoverCard().hidden, true);
+});
+
+test("a citation opened from the side panel stays open after the highlight finishes", () => {
+  const dom = load();
+  const detected = verify(dom, [match(PASSAGE, 0.9)]);
+  dom.focusCitation(detected.id);
+  dom.flushTimers();
+  dom.move(...AWAY);
+  dom.flushTimers();
+  assert.equal(dom.hoverCard().hidden, false);
+});
+
+test("open content refreshes when verification changes", () => {
+  const dom = load();
+  dom.move(...ON_CITATION);
+  verify(dom, [match(PASSAGE, .9)]);
+  assert.equal(dom.hoverCard().hidden, false);
+  assert.equal(dom.textIn(".claimtrace-hover-quote"), PASSAGE);
+});
+
+test("a citation on its own line keeps its sentence from the complete document", () => {
+  const citation = '\\cite{vaswani2017attention}.';
+  const prefix = '\\section{Introduction}\n\nAttention is useful for sequence modeling\n';
+  const dom = createDom({ lines: [citation] });
+  vm.createContext(dom);
+  vm.runInContext(CONTENT, dom);
+  const findings = vm.runInContext(`
+    editorDocumentText = ${JSON.stringify(prefix + citation)};
+    editorLineOffsets.set(document.querySelectorAll('.cm-line')[0], ${prefix.length});
+    annotateCitationLines();
+  `, dom);
+  assert.equal(findings[0].claim, 'Attention is useful for sequence modeling [vaswani2017attention].');
 });

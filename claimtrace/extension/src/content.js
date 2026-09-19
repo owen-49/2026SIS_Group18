@@ -1,13 +1,20 @@
+function publicationLink(paper = {}) {
+  const safe = (value) => {
+    try { const url = new URL(value); return ["https:", "http:"].includes(url.protocol) ? url.href : ""; }
+    catch { return ""; }
+  };
+  const direct = safe(paper.url);
+  if (direct) return { url: direct, label: "Open paper" };
+  const doi = String(paper.doi || "").trim().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i, "");
+  if (/^10\.\d{4,9}\/\S+$/i.test(doi)) return { url: `https://doi.org/${doi}`, label: "Open paper" };
+  const arxiv = String(paper.arxivId || paper.eprint || "").trim().replace(/^(?:https?:\/\/arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*)/i, "").replace(/\.pdf$/i, "");
+  if (/^(?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})(?:v\d+)?$/i.test(arxiv)) return { url: `https://arxiv.org/abs/${arxiv}`, label: "Open paper" };
+  return { url: `https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title || paper.citationKey || "")}`, label: "Find paper" };
+}
+
 const BIB_ENTRY_START = /@(article|inproceedings|book|incollection|misc|phdthesis|mastersthesis|techreport)\s*\{/gi;
 const CITE_PATTERN = /\\cite(?:t|p|alp|author|year|yearpar|text|num)?\*?(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]+)\}/gi;
 const VERDICT_PRIORITY = { CONTRADICT: 3, NOT_FOUND: 3, PARTIAL: 2, SUPPORT: 1, PENDING: 0 };
-const DEMO_VERDICTS = {
-  devlin2019bert: { verdict: "CONTRADICT", label: "Contradicted", confidence: 0.89, annotation: "Claim contradicts the cited source", rationale: "BERT used both masked-language modelling and next-sentence prediction during pre-training, so the word ‘exclusively’ is not supported." },
-  brown2020language: { verdict: "PARTIAL", label: "Partial", confidence: 0.82, annotation: "Claim is broader than the evidence", rationale: "The cited results show gains at several scales, but do not establish that larger models always improve every few-shot task." },
-  smith2024survey: { verdict: "NOT_FOUND", label: "Not found", confidence: 0.76, annotation: "Source could not be located", rationale: "No matching bibliography record or linked paper is available for this citation key." },
-  vaswani2017attention: { verdict: "SUPPORT", label: "Supported", confidence: 0.94, annotation: "Claim is supported by the cited source", rationale: "The paper describes the Transformer as relying on attention mechanisms without recurrence or convolutions." },
-  lewis2020retrieval: { verdict: "SUPPORT", label: "Supported", confidence: 0.91, annotation: "Claim is supported by the cited source", rationale: "The cited paper explicitly combines parametric model memory with non-parametric retrieved memory." },
-};
 const DEMO_SOURCES = {
   vaswani2017attention: { citationKey: "vaswani2017attention", title: "Attention Is All You Need", authors: "Vaswani et al.", venue: "NeurIPS", year: "2017" },
   devlin2019bert: { citationKey: "devlin2019bert", title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: "Devlin et al.", venue: "NAACL", year: "2019" },
@@ -23,7 +30,30 @@ let citationTargets = [];
 let activeCitationTarget;
 let hoverHideTimer;
 
+
+let editorDocumentText = null;
+let editorLineOffsets = new WeakMap();
+if (typeof CustomEvent !== "undefined") {
+  document.addEventListener("claimtrace:editor-document", (event) => {
+    try {
+      const payload = JSON.parse(event.detail);
+      editorDocumentText = typeof payload.text === "string" ? payload.text : null;
+      editorLineOffsets = new WeakMap();
+      document.querySelectorAll(".cm-line").forEach((line, index) => {
+        const offset = payload.lineOffsets?.[index];
+        if (Number.isInteger(offset) && offset >= 0) editorLineOffsets.set(line, offset);
+      });
+    } catch { editorDocumentText = null; }
+  });
+}
+
 function readVisibleEditorText() {
+  if (typeof CustomEvent !== "undefined" && document.querySelector(".cm-content, .ace_editor")) {
+    editorDocumentText = null;
+    document.dispatchEvent(new CustomEvent("claimtrace:read-editor"));
+    // Never synchronize a partial virtualized viewport if the adapter is unavailable.
+    return editorDocumentText || "";
+  }
   const selectors = [".cm-content", ".ace_content", "[role='textbox'][contenteditable='true']", "textarea"];
   const chunks = [];
   for (const selector of selectors) {
@@ -122,8 +152,7 @@ function parseBibliography(source) {
       arxivId,
 
       url:
-        readField(entry, "url") ||
-        (doi ? `https://doi.org/${doi}` : ""),
+        readField(entry, "url"),
 
       status: "linked",
     };
@@ -180,16 +209,9 @@ function sentenceAroundCitation(lineText, start, end) {
   const before = lineText.slice(0, start);
   const after = lineText.slice(end);
 
-  const previousStops = [
-    before.lastIndexOf(". "),
-    before.lastIndexOf("? "),
-    before.lastIndexOf("! ")
-  ];
-
-  const previousStop = Math.max(...previousStops);
-
-  const sentenceStart =
-    previousStop >= 0 ? previousStop + 2 : 0;
+  const boundaries = Array.from(before.matchAll(/[.!?]\s+|\n\s*\n/g));
+  const boundary = boundaries.at(-1);
+  const sentenceStart = boundary ? boundary.index + boundary[0].length : 0;
 
   const nextStop =
     after.search(/[.!?](?:\s|$)/);
@@ -209,10 +231,10 @@ function verdictForClaim(findingId, citationKey, claim) {
   if (backendFinding?.claim === claim && backendFinding.citationKey === citationKey) return backendFinding;
   return {
     verdict: "PENDING",
-    label: "Pending verification",
+    label: "Not checked",
     confidence: null,
-    annotation: "Awaiting verification of this claim",
-    rationale: "This claim has not been verified. A matching uploaded source PDF and an available backend are required.",
+    annotation: "Citation detected locally",
+    rationale: "The extension performs bibliography Audit only; claim Verify is not enabled here.",
     preview: true,
   };
 }
@@ -222,11 +244,9 @@ function verdictTone(verdict) {
   return verdict === "SUPPORT" ? "support" : verdict === "PARTIAL" ? "partial" : "danger";
 }
 
-// The passage text the backend retrieved from the source PDF, as returned by
-// /api/verify in `matches`. A citation either shows the passage that is meant to
-// support it or shows no passage section at all: an empty quote under a "Source
-// text" label reads as a broken card, and the assessment line has already said
-// how many passages came back.
+// Keep this renderer compatible with older stored findings, but do not create
+// new claim evidence in the extension: the current plugin scope is bibliography
+// Audit only.
 function hoverPassage(finding) {
   if (finding.preview) return undefined;
   const matches = Array.isArray(finding.matches) ? finding.matches : [];
@@ -239,9 +259,8 @@ function hoverPassage(finding) {
     text: matches[index].passage_text.trim(),
     provenance: [
       `Passage ${index + 1} of ${matches.length}`,
-      // "Lexical overlap" and not "similarity": /api/verify ranks paragraphs by
-      // shared-token overlap, which is a different quantity from the semantic
-      // retrieval score the web workspace labels "retrieval similarity".
+      // Keep the legacy field readable without implying that this extension
+      // currently produces claim evidence.
       typeof similarity === "number" ? `${Math.round(similarity * 100)}% lexical overlap` : "",
     ].filter(Boolean).join(" · "),
   };
@@ -297,15 +316,18 @@ function getHoverCard() {
   if (card) return card;
   card = document.createElement("aside");
   card.id = "claimtrace-citation-hover";
-  card.setAttribute("role", "tooltip");
+  card.setAttribute("role", "dialog");
+  card.setAttribute("aria-label", "Citation details");
+  card.hidden = true;
   card.innerHTML = `
-    <div class="claimtrace-hover-top"><span class="claimtrace-hover-verdict"></span><small class="claimtrace-hover-confidence"></small></div>
-    <section class="claimtrace-hover-section claimtrace-hover-claim-section"><span>Claim</span><strong class="claimtrace-hover-claim"></strong></section>
-    <section class="claimtrace-hover-source"><span>Source</span><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small><code class="claimtrace-hover-key"></code></section>
-    <section class="claimtrace-hover-section claimtrace-hover-passage" hidden><span>Source text</span><blockquote class="claimtrace-hover-quote"></blockquote><small class="claimtrace-hover-provenance"></small></section>
-    <section class="claimtrace-hover-section"><span>Assessment</span><p class="claimtrace-hover-detail"></p><small class="claimtrace-hover-annotation"></small></section>
-    <footer class="claimtrace-hover-status"></footer>
+    <div class="claimtrace-hover-toolbar"><span class="claimtrace-hover-verdict"></span><button class="claimtrace-hover-close" type="button" aria-label="Close citation details">×</button></div>
+    <section class="claimtrace-hover-source"><strong class="claimtrace-hover-title"></strong><small class="claimtrace-hover-meta"></small></section>
+    <section class="claimtrace-hover-claim-section"><span>In your writing</span><p class="claimtrace-hover-claim"></p></section>
+    <section class="claimtrace-hover-passage" hidden><span>Supporting passage</span><blockquote class="claimtrace-hover-quote"></blockquote><small class="claimtrace-hover-provenance"></small></section>
+    <p class="claimtrace-hover-detail" hidden></p>
+    <footer><a class="claimtrace-hover-open" target="_blank" rel="noreferrer">Open paper ↗</a><small>Esc to close</small></footer>
   `;
+  card.querySelector(".claimtrace-hover-close").addEventListener("click", closeCitationHover);
   document.body.appendChild(card);
   return card;
 }
@@ -318,20 +340,20 @@ function showCitationHover(target) {
   const tone = verdictTone(finding.verdict);
   const source = paperLibrary.get(finding.citationKey);
   const card = getHoverCard();
+  card.hidden = false;
   card.className = `claimtrace-hover-visible claimtrace-hover-${tone}`;
-  card.querySelector(".claimtrace-hover-verdict").textContent = finding.label;
-  card.querySelector(".claimtrace-hover-confidence").textContent = finding.verdict === "PENDING" ? "Pending verification" : `${finding.preview ? "Local preview" : "Backend verification"} · ${Math.round(finding.confidence * 100)}%`;
+  card.querySelector(".claimtrace-hover-verdict").textContent = finding.preview ? "Not checked" : finding.label;
   card.querySelector(".claimtrace-hover-claim").textContent = finding.claim;
-  card.querySelector(".claimtrace-hover-title").textContent = source?.title || "Source details unavailable";
+  card.querySelector(".claimtrace-hover-title").textContent = source?.title || finding.citationKey;
   card.querySelector(".claimtrace-hover-meta").textContent = source
-    ? [source.authors, source.venue, source.year].filter(Boolean).join(" · ")
-    : "No matching bibliography entry";
-  card.querySelector(".claimtrace-hover-key").textContent = `\\cite{${finding.citationKey}}`;
-  card.querySelector(".claimtrace-hover-detail").textContent = finding.rationale;
-  card.querySelector(".claimtrace-hover-annotation").textContent = finding.annotation;
-  card.querySelector(".claimtrace-hover-status").textContent = finding.preview
-    ? (finding.backendReason || "Awaiting backend verification")
-    : "Backend verified against an uploaded source PDF";
+    ? [source.authors, source.venue, source.year].filter(Boolean).join(" · ") : "Bibliography entry unavailable";
+  const detail = card.querySelector(".claimtrace-hover-detail");
+  detail.textContent = finding.preview ? "" : finding.rationale;
+  detail.hidden = !detail.textContent;
+  const link = publicationLink(source || { citationKey: finding.citationKey });
+  const open = card.querySelector(".claimtrace-hover-open");
+  open.setAttribute("href", link.url);
+  open.textContent = `${link.label} ↗`;
   const passage = hoverPassage(finding);
   card.querySelector(".claimtrace-hover-quote").textContent = passage?.text || "";
   card.querySelector(".claimtrace-hover-provenance").textContent = passage?.provenance || "";
@@ -358,15 +380,29 @@ function showCitationHover(target) {
   measureHover();
 }
 
-function hideCitationHover(delay = 80) {
+function closeCitationHover() {
   window.clearTimeout(hoverHideTimer);
-  hoverHideTimer = window.setTimeout(() => {
-    document.getElementById("claimtrace-citation-hover")?.classList.remove("claimtrace-hover-visible");
-    activeCitationTarget?.line.classList.remove("claimtrace-hover-line");
-    activeCitationTarget = undefined;
-    if (typeof CSS !== "undefined") CSS.highlights?.delete("claimtrace-citation-active");
-  }, delay);
+  const card = document.getElementById("claimtrace-citation-hover");
+  if (card) {
+    card.classList.remove("claimtrace-hover-visible");
+    card.hidden = true;
+  }
+  activeCitationTarget?.line.classList.remove("claimtrace-hover-line");
+  activeCitationTarget = undefined;
+  if (typeof CSS !== "undefined") CSS.highlights?.delete("claimtrace-citation-active");
 }
+
+document.addEventListener("pointerdown", (event) => {
+  if (event.target?.closest?.("#claimtrace-citation-hover")) return;
+  const target = citationTargets.find(({ range }) => Array.from(range.getClientRects()).some((rect) =>
+    event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom));
+  if (target) showCitationHover(target);
+  else closeCitationHover();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeCitationHover();
+});
 
 function installCitationHighlights() {
   if (typeof CSS === "undefined" || !CSS.highlights || typeof Highlight === "undefined") return;
@@ -377,6 +413,7 @@ function installCitationHighlights() {
 }
 
 function annotateCitationLines() {
+  const openFinding = activeCitationTarget?.finding;
   clearEditorAnnotations();
   const findings = [];
   const lines = getEditorLines();
@@ -387,7 +424,11 @@ function annotateCitationLines() {
     CITE_PATTERN.lastIndex = 0;
     let match;
     while ((match = CITE_PATTERN.exec(text))) {
-      const claim = sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
+      const offset = editorLineOffsets.get(line);
+      const hasFullContext = Number.isInteger(offset) && editorDocumentText?.slice(offset, offset + text.length) === text;
+      const claim = hasFullContext
+        ? sentenceAroundCitation(editorDocumentText, offset + match.index, offset + CITE_PATTERN.lastIndex)
+        : sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
       console.log("[ClaimTrace] line text:", text);
       console.log("[ClaimTrace] citation:", match[0]);
       console.log("[ClaimTrace] match index:", match.index);
@@ -427,12 +468,17 @@ function annotateCitationLines() {
     );
     const tone = verdictTone(strongest.verdict);
     line.classList.add("claimtrace-citation-line", `claimtrace-tone-${tone}`);
-    line.dataset.claimtraceLabel = `ClaimTrace · ${strongest.preview ? "local preview" : "backend verification"} · ${strongest.label}`;
+    line.dataset.claimtraceLabel = `ClaimTrace · local citation preview · ${strongest.label}`;
     line.dataset.claimtraceLocation = strongest.id;
     citationLineFindings.set(line, lineFindings);
   });
 
   installCitationHighlights();
+  if (openFinding) {
+    const replacement = citationLocations.get(openFinding.id);
+    if (replacement && replacement.finding.claim === openFinding.claim) showCitationHover(replacement);
+    else closeCitationHover();
+  }
   return findings;
 }
 
@@ -513,29 +559,34 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     showCitationHover(target);
     window.setTimeout(() => {
       line.classList.remove("claimtrace-focus-line");
-      hideCitationHover(0);
     }, 1800);
   }, 350);
   sendResponse({ found: true });
 });
 
 let pointerFrame;
+let latestPointer;
 document.addEventListener("mousemove", (event) => {
+  latestPointer = event;
+  if (event.target?.closest?.("#claimtrace-citation-hover")) {
+    window.clearTimeout(hoverHideTimer);
+    return;
+  }
   if (pointerFrame) return;
   pointerFrame = window.requestAnimationFrame(() => {
     pointerFrame = undefined;
+    const event = latestPointer;
+    if (event.target?.closest?.("#claimtrace-citation-hover")) return;
     const target = citationTargets.find(({ range }) => Array.from(range.getClientRects()).some((rect) =>
       event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom,
     ));
     if (target) {
       if (target !== activeCitationTarget) showCitationHover(target);
       else window.clearTimeout(hoverHideTimer);
-    } else if (activeCitationTarget) {
-      hideCitationHover();
     }
   });
 });
-document.addEventListener("mouseleave", () => hideCitationHover(0));
+
 
 chrome.storage.local.get(["claimtracePapers", "claimtraceFindings"], ({ claimtracePapers, claimtraceFindings }) => {
   mergePaperLibrary(claimtracePapers);

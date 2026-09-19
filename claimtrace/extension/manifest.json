@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ClaimTrace — Citation Intelligence",
+  "name": "ClaimTrace \u2014 Citation Intelligence",
   "version": "0.4.0",
   "description": "Turn an Overleaf bibliography into a searchable paper library and preview citation locations while you write.",
   "permissions": [
@@ -18,9 +18,25 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.overleaf.com/project/*"],
-      "js": ["src/content.js"],
-      "css": ["src/content.css"],
+      "matches": [
+        "https://www.overleaf.com/project/*"
+      ],
+      "js": [
+        "src/editor-bridge.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.overleaf.com/project/*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "css": [
+        "src/content.css"
+      ],
       "run_at": "document_end"
     }
   ],

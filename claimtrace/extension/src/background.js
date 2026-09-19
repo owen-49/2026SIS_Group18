@@ -7,13 +7,6 @@ const DEMO_PAPERS = [
   { citationKey: "lewis2020retrieval", title: "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", authors: "Lewis et al.", venue: "NeurIPS", year: "2020", url: "https://arxiv.org/abs/2005.11401", status: "linked" },
 ];
 
-const VERDICT_LABELS = {
-  SUPPORT: "Supported",
-  PARTIAL: "Partial",
-  CONTRADICT: "Contradicted",
-  NOT_FOUND: "Not found",
-};
-
 let latestBibliographyRequest = 0;
 let latestClaimsRequest = 0;
 let latestAuditRequest = 0;
@@ -31,7 +24,13 @@ async function apiJson(path, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.detail || `Backend request failed (${response.status})`);
+    const detail = payload.detail;
+    const message = typeof detail === "string" ? detail
+      : Array.isArray(detail) ? detail.map((item) => item.msg).join("; ")
+      : detail?.message;
+    const error = new Error(message || `Backend request failed (${response.status})`);
+    error.status = response.status;
+    throw error;
   }
   return payload;
 }
@@ -196,7 +195,7 @@ function previewFinding(finding, reason) {
   return {
     ...finding,
     verdict: "PENDING",
-    label: "Pending verification",
+    label: "Not checked",
     confidence: null,
     annotation: reason,
     rationale: reason,
@@ -209,8 +208,10 @@ function previewFinding(finding, reason) {
 }
 
 async function syncBibliography(bibSource, requestId) {
+  let auditStarted = false;
   try {
     if (requestId !== latestBibliographyRequest) return;
+    await chrome.storage.local.set({ claimtraceBibSyncError: "" });
     const bibSourceHash = await hashText(bibSource);
     if (requestId !== latestBibliographyRequest) return;
 
@@ -225,182 +226,78 @@ async function syncBibliography(bibSource, requestId) {
     const form = new FormData();
     form.append("file", new Blob([bibSource], { type: "text/plain" }), "overleaf-references.bib");
     let parsed;
-    if (bibPaperId && previousBibSourceHash === bibSourceHash) {
-      parsed = { paper_id: bibPaperId };
-    } else {
-      const existingPaperId = bibPaperId;
-      parsed = await apiJson(
-        existingPaperId ? `/api/parse/${encodeURIComponent(existingPaperId)}` : "/api/parse",
-        { method: existingPaperId ? "PUT" : "POST", body: form },
-      );
+    try {
+      if (bibPaperId && previousBibSourceHash === bibSourceHash) {
+        parsed = await apiJson(`/api/parse/${encodeURIComponent(bibPaperId)}`);
+      } else {
+        parsed = await apiJson(
+          bibPaperId ? `/api/parse/${encodeURIComponent(bibPaperId)}` : "/api/parse",
+          { method: bibPaperId ? "PUT" : "POST", body: form },
+        );
+      }
+    } catch (error) {
+      if (!bibPaperId || error.status !== 404) throw error;
+      parsed = await apiJson("/api/parse", { method: "POST", body: form });
+    }
+    if (!parsed.paper_id || parsed.status !== "completed") {
+      throw new Error("Bibliography parsing is not completed; retry after parsing finishes");
     }
     activeBibPaperId = parsed.paper_id;
     activeBibSourceHash = bibSourceHash;
     if (requestId !== latestBibliographyRequest) return;
 
-    // Audit is independent of the existing Verify flow. Run it from the
-    // persisted BibTeX ID without changing PR #26's source-PDF matching path.
-    void runAudit(parsed.paper_id, "bib").catch(() => undefined);
-
-    const backendPapers = await loadBackendPapers();
-    const sourcePapers = completedPdfPapers(backendPapers);
-    const verification = await apiJson("/api/verify/bib", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        bib_paper_id: parsed.paper_id,
-        source_paper_ids: sourcePapers.map((paper) => paper.paper_id),
-      }),
-    });
-    if (requestId !== latestBibliographyRequest) return;
-
     await chrome.storage.local.set({
       claimtraceBibPaperId: parsed.paper_id,
       claimtraceBibSourceHash: bibSourceHash,
-      claimtraceBibVerification: verification,
-      claimtraceSourcePapers: sourcePapers,
     });
+
+    // The extension scope is bibliography Audit only. Audit uses the
+    // persisted BibTeX ID directly and must not depend on /api/papers or any
+    // claim/source Verify endpoint.
+    auditStarted = true;
+    const audit = await runAudit(parsed.paper_id, "bib");
     if (requestId !== latestBibliographyRequest) return;
     await setBackendStatus({
       connected: true,
-      message: sourcePapers.length
-        ? `Backend verified the bibliography against ${sourcePapers.length} uploaded PDF(s)`
-        : "Backend parsed the bibliography; upload source PDFs in the audit workspace to verify claims",
+      message: audit
+        ? `Bibliography Audit complete · ${audit.total_entries} reference${audit.total_entries === 1 ? "" : "s"}`
+        : "Bibliography Audit was superseded by a newer request",
     });
-
-    const stored = await chrome.storage.local.get(["claimtraceFindings", "claimtracePapers"]);
-    if (requestId === latestBibliographyRequest && Array.isArray(stored.claimtraceFindings)) {
-      const claimsRequestId = ++latestClaimsRequest;
-      await syncClaims(
-        stored.claimtraceFindings,
-        stored.claimtracePapers || [],
-        sourcePapers,
-        claimsRequestId,
-      );
+    return audit;
+  } catch (error) {
+    if (requestId !== latestBibliographyRequest) return;
+    if (!auditStarted) {
+      await chrome.storage.local.set({ claimtraceBibSyncError: error.message || "Unable to parse bibliography" });
     }
-  } catch (error) {
-    if (requestId !== latestBibliographyRequest) return;
     await setBackendStatus({
       connected: false,
-      message: error instanceof Error ? error.message : "Backend verification is unavailable",
+      message: error instanceof Error ? error.message : "Bibliography Audit is unavailable",
     });
+    throw error;
   }
 }
 
-async function syncClaims(findings, localPapers, knownSourcePapers, requestId, review) {
-  try {
-    if (requestId !== latestClaimsRequest) return;
-   const stored = await chrome.storage.local.get([
-  "claimtraceBibVerification",
-  "claimtraceSourcePapers"
-]);
+function auditOnlyFinding(finding) {
+  return {
+    ...previewFinding(
+      finding,
+      "The extension provides bibliography Audit only; claim Verify is not enabled here.",
+    ),
+    label: "Not checked",
+    sourceCandidates: [],
+    manuallyReviewed: false,
+  };
+}
 
-if (requestId !== latestClaimsRequest) return;
-
-let sourcePapers = [];
-
-try {
-  // Always ask backend for the latest uploaded papers.
-  const backendPapers = await loadBackendPapers();
-
-  sourcePapers = completedPdfPapers(backendPapers);
-
-  // Refresh the cache as well.
+async function syncClaims(findings, _localPapers, _knownSourcePapers, requestId, _review) {
+  // Keep this helper local for callers that still emit citation updates, but
+  // never turn citation detection into a claim Verify request. The extension
+  // only owns bibliography Audit.
+  if (requestId !== latestClaimsRequest) return;
   await chrome.storage.local.set({
-    claimtraceSourcePapers: sourcePapers,
+    claimtraceFindings: findings.map(auditOnlyFinding),
+    claimtraceCitationUpdatedAt: Date.now(),
   });
-
-  console.log(
-    "[ClaimTrace] Fresh backend source papers:",
-    sourcePapers.map((paper) => ({
-      paperId: paper.paper_id,
-      title: paper.title,
-      filename: paper.original_filename,
-      status: paper.status,
-    }))
-  );
-} catch (error) {
-  if (review) throw new Error("Unable to refresh uploaded PDFs; retry manual review when the backend is available");
-  console.warn(
-    "[ClaimTrace] Could not refresh backend papers, using cached papers",
-    error
-  );
-
-  const fallbackPapers =
-    Array.isArray(knownSourcePapers) && knownSourcePapers.length
-      ? knownSourcePapers
-      : Array.isArray(stored.claimtraceSourcePapers)
-        ? stored.claimtraceSourcePapers
-        : [];
-
-  sourcePapers = completedPdfPapers(fallbackPapers);
-}
-    const verificationByKey = new Map(
-      (stored.claimtraceBibVerification?.results || []).map((result) => [result.citation_key, result]),
-    );
-    const syncedFindings = await Promise.all(findings.map(async (finding) => {
-      const resolution = sourceResolution(finding.citationKey, localPapers, sourcePapers);
-      const reviewedCandidate = review?.findingId === finding.id && review.claim === finding.claim
-        ? resolution.candidates.find((candidate) => candidate.paperId === review.paperId && !candidate.conflict)
-        : undefined;
-      const sourcePaper = reviewedCandidate?.paper || resolution.automatic;
-      finding = { ...finding, sourceCandidates: resolution.candidates.map(({ paper, ...candidate }) => candidate),
-        manuallyReviewed: Boolean(reviewedCandidate) };
-      if (!sourcePaper) {
-        return previewFinding(finding, resolution.reason);
-      }
-
-      try {
-        const result = await apiJson("/api/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            claim: finding.claim,
-            source_paper_id: sourcePaper.paper_id,
-          }),
-        });
-        const bibResult = verificationByKey.get(finding.citationKey);
-        const matchCount = Array.isArray(result.matches) ? result.matches.length : 0;
-        return {
-          ...finding,
-          verdict: result.verdict,
-          label: VERDICT_LABELS[result.verdict] || result.verdict,
-          confidence: result.confidence,
-          annotation: `${reviewedCandidate ? "Manually selected PDF" : "Backend verification"} · ${matchCount} matching passage(s)`,
-          rationale: result.rationale,
-          matches: result.matches || [],
-          sourcePaperId: sourcePaper.paper_id,
-          bibVerification: bibResult || null,
-          preview: false,
-          backendReason: undefined,
-        };
-      } catch (error) {
-        return previewFinding(
-          finding,
-          error instanceof Error ? error.message : "Backend claim verification failed",
-        );
-      }
-    }));
-
-    if (requestId !== latestClaimsRequest) return;
-    await chrome.storage.local.set({
-      claimtraceFindings: syncedFindings,
-      claimtraceCitationUpdatedAt: Date.now(),
-    });
-    if (requestId !== latestClaimsRequest) return;
-    await setBackendStatus({
-      connected: true,
-      message: syncedFindings.some((finding) => !finding.preview)
-        ? "Backend verification is active for matched source PDFs"
-        : "Backend is connected; unmatched citations remain local previews",
-    });
-  } catch (error) {
-    if (requestId !== latestClaimsRequest) return;
-    await setBackendStatus({
-      connected: false,
-      message: error instanceof Error ? error.message : "Backend verification is unavailable",
-    });
-  }
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -416,66 +313,80 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "review_source_candidate" && sender.url === chrome.runtime.getURL("src/sidepanel.html")) {
-    const requestId = ++latestClaimsRequest;
-    void (async () => {
-      const stored = await chrome.storage.local.get(["claimtraceFindings", "claimtracePapers"]);
-      const findings = stored.claimtraceFindings || [];
-      const finding = findings.find((item) => item.id === message.findingId && item.claim === message.claim);
-      if (!finding?.sourceCandidates?.some((candidate) => candidate.paperId === message.paperId && !candidate.conflict)) {
-        throw new Error("Candidate changed; refresh the citation and review again");
-      }
-      await syncClaims(findings, stored.claimtracePapers || [], [], requestId, message);
-      sendResponse({ ok: true });
-    })().catch((error) => sendResponse({ error: error.message }));
+  if (message.type === "review_source_candidate") {
+    sendResponse({ error: "Claim Verify is not part of the extension; use bibliography Audit instead." });
     return true;
   }
   if (message.type === "bibliography_detected") {
     void chrome.storage.local.set({
       claimtracePapers: Array.isArray(message.papers) ? message.papers : [],
       claimtraceSource: "overleaf",
+      claimtraceBibSource: message.bibSource || "",
       claimtraceUpdatedAt: Date.now(),
     });
     if (typeof message.bibSource === "string" && message.bibSource.trim()) {
       const requestId = ++latestBibliographyRequest;
       bibliographySyncChain = bibliographySyncChain
         .catch(() => undefined)
-        .then(() => syncBibliography(message.bibSource, requestId));
+        .then(() => syncBibliography(message.bibSource, requestId))
+        .catch(() => undefined);
       void bibliographySyncChain;
     }
   }
 
   if (message.type === "citations_detected" && Array.isArray(message.findings)) {
-    const requestId = ++latestClaimsRequest;
     void chrome.storage.local.set({
-      claimtraceFindings: message.findings,
+      claimtraceFindings: message.findings.map(auditOnlyFinding),
       claimtraceCitationSource: "overleaf",
       claimtraceCitationUpdatedAt: Date.now(),
     });
-    void chrome.storage.local.get(["claimtracePapers", "claimtraceSourcePapers"])
-      .then((stored) => syncClaims(
-        message.findings,
-        stored.claimtracePapers || [],
-        stored.claimtraceSourcePapers || [],
-        requestId,
-      ));
+  }
+
+  if (message.type === "run_bib_audit") {
+    void (async () => {
+      const stored = await chrome.storage.local.get(["claimtraceBibSource"]);
+      if (!stored.claimtraceBibSource?.trim()) {
+        throw new Error("Open a .bib file in Overleaf first, then retry Audit");
+      }
+      const requestId = ++latestBibliographyRequest;
+      bibliographySyncChain = bibliographySyncChain.catch(() => undefined)
+        .then(() => syncBibliography(stored.claimtraceBibSource, requestId));
+      await bibliographySyncChain;
+      sendResponse({ ok: true });
+    })().catch((error) => sendResponse({ error: error.message }));
+    return true;
   }
 
   if (message.type === "refresh_audit_papers") {
     void loadBackendPapers()
-      .then((papers) => sendResponse({ ok: true, papers }))
-      .catch((error) => sendResponse({ error: error.message || "Unable to load uploaded papers" }));
+      .then(async (papers) => {
+        await chrome.storage.local.set({ claimtraceSourcePapers: papers });
+        sendResponse({ ok: true, papers });
+      })
+      .catch(async (error) => {
+        const stored = await chrome.storage.local.get(["claimtraceSourcePapers"]);
+        const cached = Array.isArray(stored.claimtraceSourcePapers)
+          ? stored.claimtraceSourcePapers
+          : [];
+        if (cached.length) {
+          sendResponse({
+            ok: false,
+            papers: cached,
+            warning: `Live paper list unavailable; using the last cached list. ${error.message || ""}`.trim(),
+          });
+          return;
+        }
+        sendResponse({ error: error.message || "Unable to load uploaded papers" });
+      });
     return true;
   }
 
   if (message.type === "run_pdf_audit") {
     void (async () => {
-      const papers = await loadBackendPapers();
-      const selected = papers.find((paper) => paper.paper_id === message.manuscriptId);
-      if (!selected || selected.file_type !== "pdf" || selected.status !== "completed") {
-        throw new Error("The selected manuscript PDF is no longer available");
-      }
-      const audit = await runAudit(selected.paper_id, "pdf");
+      if (!message.manuscriptId) throw new Error("Select a manuscript PDF first");
+      // The backend validates the ID and input type. Do not make a second
+      // /api/papers request here: a stale/corrupt list must not block Audit.
+      const audit = await runAudit(message.manuscriptId, "pdf");
       sendResponse({ ok: true, audit });
     })().catch((error) => sendResponse({ error: error.message || "Unable to audit the manuscript" }));
     return true;

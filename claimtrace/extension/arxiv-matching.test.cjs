@@ -96,8 +96,7 @@ test("ID conflicts stay visible with a conflict flag; duplicate bibliography key
   assert.equal(context.sourceResolution("ref", [entry, entry], [target]).automatic, undefined);
 });
 
-test("ambiguous sync sends no verification; manual choice sends only the chosen PDF", async () => {
-  const sources = [target, { ...target, paper_id: "copy" }].map((p) => ({ ...p, file_type: "pdf", status: "completed" }));
+test("citation sync remains local and sends no Verify request", async () => {
   const storage = {};
   const sent = [];
   const sandbox = vm.createContext({
@@ -116,17 +115,7 @@ test("ambiguous sync sends no verification; manual choice sends only the chosen 
   const finding = { id: "f1", citationKey: "ref", claim: "A test claim", verdict: "SUPPORT", sourcePaperId: "stale" };
   await sandbox.syncClaims([finding], [entry], [], 0);
   assert.equal(sent.length, 0);
-  assert.equal(storage.claimtraceFindings[0].sourceCandidates.length, 2);
   assert.equal(storage.claimtraceFindings[0].verdict, "PENDING");
   assert.equal(storage.claimtraceFindings[0].sourcePaperId, undefined);
-  await sandbox.syncClaims([finding], [entry], [], 0, { findingId: "f1", claim: finding.claim, paperId: "copy" });
-  assert.equal(sent.length, 1);
-  assert.equal(sent[0].source_paper_id, "copy");
-  assert.equal(storage.claimtraceFindings[0].manuallyReviewed, true);
-  sources.pop();
-  // A removed candidate cannot be selected from stale review data.
-  sources.length = 0;
-  await sandbox.syncClaims([finding], [entry], [], 0, { findingId: "f1", claim: finding.claim, paperId: "copy" });
-  assert.equal(sent.length, 1);
-  assert.equal(storage.claimtraceFindings[0].verdict, "PENDING");
+  assert.equal(storage.claimtraceFindings[0].label, "Not checked");
 });
