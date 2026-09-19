@@ -226,3 +226,17 @@ test("open content refreshes when verification changes", () => {
   assert.equal(dom.hoverCard().hidden, false);
   assert.equal(dom.textIn(".claimtrace-hover-quote"), PASSAGE);
 });
+
+test("a citation on its own line keeps its sentence from the complete document", () => {
+  const citation = '\\cite{vaswani2017attention}.';
+  const prefix = '\\section{Introduction}\n\nAttention is useful for sequence modeling\n';
+  const dom = createDom({ lines: [citation] });
+  vm.createContext(dom);
+  vm.runInContext(CONTENT, dom);
+  const findings = vm.runInContext(`
+    editorDocumentText = ${JSON.stringify(prefix + citation)};
+    editorLineOffsets.set(document.querySelectorAll('.cm-line')[0], ${prefix.length});
+    annotateCitationLines();
+  `, dom);
+  assert.equal(findings[0].claim, 'Attention is useful for sequence modeling [vaswani2017attention].');
+});

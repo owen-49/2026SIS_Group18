@@ -31,7 +31,29 @@ let activeCitationTarget;
 let hoverHideTimer;
 
 
+let editorDocumentText = null;
+let editorLineOffsets = new WeakMap();
+if (typeof CustomEvent !== "undefined") {
+  document.addEventListener("claimtrace:editor-document", (event) => {
+    try {
+      const payload = JSON.parse(event.detail);
+      editorDocumentText = typeof payload.text === "string" ? payload.text : null;
+      editorLineOffsets = new WeakMap();
+      document.querySelectorAll(".cm-line").forEach((line, index) => {
+        const offset = payload.lineOffsets?.[index];
+        if (Number.isInteger(offset) && offset >= 0) editorLineOffsets.set(line, offset);
+      });
+    } catch { editorDocumentText = null; }
+  });
+}
+
 function readVisibleEditorText() {
+  if (typeof CustomEvent !== "undefined" && document.querySelector(".cm-content, .ace_editor")) {
+    editorDocumentText = null;
+    document.dispatchEvent(new CustomEvent("claimtrace:read-editor"));
+    // Never synchronize a partial virtualized viewport if the adapter is unavailable.
+    return editorDocumentText || "";
+  }
   const selectors = [".cm-content", ".ace_content", "[role='textbox'][contenteditable='true']", "textarea"];
   const chunks = [];
   for (const selector of selectors) {
@@ -187,16 +209,9 @@ function sentenceAroundCitation(lineText, start, end) {
   const before = lineText.slice(0, start);
   const after = lineText.slice(end);
 
-  const previousStops = [
-    before.lastIndexOf(". "),
-    before.lastIndexOf("? "),
-    before.lastIndexOf("! ")
-  ];
-
-  const previousStop = Math.max(...previousStops);
-
-  const sentenceStart =
-    previousStop >= 0 ? previousStop + 2 : 0;
+  const boundaries = Array.from(before.matchAll(/[.!?]\s+|\n\s*\n/g));
+  const boundary = boundaries.at(-1);
+  const sentenceStart = boundary ? boundary.index + boundary[0].length : 0;
 
   const nextStop =
     after.search(/[.!?](?:\s|$)/);
@@ -409,7 +424,11 @@ function annotateCitationLines() {
     CITE_PATTERN.lastIndex = 0;
     let match;
     while ((match = CITE_PATTERN.exec(text))) {
-      const claim = sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
+      const offset = editorLineOffsets.get(line);
+      const hasFullContext = Number.isInteger(offset) && editorDocumentText?.slice(offset, offset + text.length) === text;
+      const claim = hasFullContext
+        ? sentenceAroundCitation(editorDocumentText, offset + match.index, offset + CITE_PATTERN.lastIndex)
+        : sentenceAroundCitation(text, match.index, CITE_PATTERN.lastIndex);
       console.log("[ClaimTrace] line text:", text);
       console.log("[ClaimTrace] citation:", match[0]);
       console.log("[ClaimTrace] match index:", match.index);
