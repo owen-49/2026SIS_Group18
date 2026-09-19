@@ -51,13 +51,17 @@
 | 页码溯源 | 无 | 有（`evidence[].page` / `location`） |
 | 无 LLM 时 | 降级为词法判定 | **503 拒绝** |
 
-> 旧端点的词法降级逻辑**保留不动**（`engine_adapter.verify_claim`）——它服务的是旧端点，
+> 旧端点的**无 client 词法降级**逻辑保留不动（`engine_adapter.verify_claim`）——它服务的是旧端点，
 > 不影响新端点。
 >
 > **更新（2026-09-14）**：`verify_claim` 加了一个**显式状态分支**（原来是靠 `AttributeError`
 > 被安全网 `except` 吞掉才"碰巧"降级的）。响应形状、状态码、`VerdictEnum` 取值**都不变**，
 > 只有两处取值按设计改变（坏 JSON 回复 / 空白原文改走词重叠降级）。
-> 详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
+>
+> **更新（2026-09-19）**：**有 client 但模型没判定成功**的情况不再是词法降级——它改走
+> **HTTP 503 + `{"detail": {"code": <VerificationStatus>, "message": <rationale>}}`**。
+> 上表"无 LLM 时 = 降级为词法判定"那一行只对**完全没配 client** 成立。
+> 响应形状仍未改。详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
 
 ---
 
@@ -280,10 +284,13 @@ if (body.status === "COMPARED") {
 可见，而不是被折叠成一个 code。测试 `test_out_of_enum_label_is_llm_failed_not_a_500`
 的 `assert "SUPPORTS" in body["message"]` 就依赖这一点。
 
-> ⚠️ **`/api/verify`（旧端点）仍是"失败伪装成正常判定"。**
-> 它的响应契约里没有表达"未判定"的位置，去掉它需要前端可见的失败表示——超出本次范围。
+> ✅ **已修（2026-09-19）：`/api/verify`（旧端点）不再"失败伪装成正常判定"。**
+> 它的响应契约里没有表达"未判定"的位置，所以未判定改走 **HTTP 503 +
+> `{"detail": {"code": <VerificationStatus>, "message": <rationale>}}`**——路径与本节新端点
+> 完全一致，响应**形状**未改，前端与插件一字未动。
 > 详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
-> **不要靠给 `Verdict` 加成员来"修"它**——那会同时打破前端与后端的三处消费者。
+> **仍然不要靠给 `Verdict` 加成员来"修"它**——那会同时打破前端与后端的三处消费者。
+> 该端点现已无客户端（前端 `verifyClaim` 无调用者，插件从不调它）。
 
 ### 坑 4：负余弦 —— 不做夹紧会直接 500
 

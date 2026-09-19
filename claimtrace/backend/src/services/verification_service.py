@@ -52,3 +52,8 @@ def verify_paper_claim(paper_id: str, claim: str) -> VerifyResponse:
         return verify_claim(claim, document)
     except (ParsedDocumentStoreError, EngineAdapterError) as exc:
         raise VerificationServiceError("Unable to verify the claim.") from exc
+    # ClaimNotJudgedError is deliberately absent from the tuple above. It is not
+    # a failure of this service: it carries the Engine's own status and
+    # rationale, and collapsing it here would replace both with the generic
+    # message above. It is meant to reach the route, which reports it as its own
+    # response. Do not add it to that tuple.

@@ -52,7 +52,17 @@ GET /api/papers/MANUSCRIPT_ID/claims?bib_paper_id=BIB_UPLOAD_ID
 
 Only `status == COMPARED` carries `judgement`. Render `message` for other statuses, preserving any returned source/evidence. `resolution_status == identified` in `/claims` means a reference was associated, not that a model judged it or that a PDF exists. Use `cited_source.source_paper_id` to tell whether an uploaded source was found. Missing LLM configuration remains HTTP 503 as in main.
 
-The legacy `/api/verify` is unchanged and still has its documented lexical fallback. Junli and Yiyang must migrate their user flows before the product can claim all failures are shown as unjudged.
+**Update (2026-09-19).** The migration this section asked for is done: the web Review page calls
+`/api/verify/citation`, and the extension calls no Verify endpoint at all. The legacy
+`/api/verify` now has no client in the repository.
+
+It also no longer hides a failure behind a verdict. When an Engine the endpoint did configure
+declines to judge, it answers **503** with
+`{"detail": {"code": "<VerificationStatus>", "message": "<Engine rationale>"}}` instead of a
+`SUPPORT`/`NOT_FOUND` the Engine never reached. The response *shape* is unchanged, and no
+frontend or extension file was touched. The one case that still returns 200 with a
+lexical verdict is the announced no-LLM baseline, where no model call was attempted at all.
+See `engine-verify-contract.zh-CN.md` §6.2.
 
 ## Coordination required / suggested decisions
 

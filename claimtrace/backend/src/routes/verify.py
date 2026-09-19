@@ -13,6 +13,7 @@ from ..services.citation_comparison_service import (
     ComparisonLLMNotConfiguredError,
     compare_claim_to_cited_paper,
 )
+from ..services.engine_adapter import ClaimNotJudgedError
 from ..services.verification_service import (
     InvalidPaperError,
     PaperNotFoundError,
@@ -32,6 +33,12 @@ async def verify_claim(request: VerifyRequest):
 
     Returns the verdict (SUPPORT/PARTIAL/CONTRADICT/NOT_FOUND) with
     matching passages and rationale.
+
+    A claim the Engine did not judge is **not** one of those verdicts. This
+    response model has no slot to say "not judged" and ``NOT_FOUND`` is itself a
+    verdict, so that outcome is a 503 carrying the Engine's status and rationale
+    instead of an invented finding. Its sibling, POST /api/verify/citation, is
+    the endpoint current clients use; this one has none.
     """
     if not request.claim.strip():
         raise HTTPException(status_code=400, detail="Claim text is required.")
@@ -41,6 +48,11 @@ async def verify_claim(request: VerifyRequest):
             paper_id=request.source_paper_id,
             claim=request.claim.strip(),
         )
+    except ClaimNotJudgedError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={"code": exc.code, "message": exc.message},
+        ) from exc
     except PaperNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except PaperNotReadyError as exc:

@@ -8,6 +8,11 @@
 >
 > **本次改动**：只加固 engine 的失败路径与调用方的状态映射。**没有**新增 `Verdict` 成员，
 > **没有**改 `/api/verify` 的响应形状或状态码，**没有**动网页或浏览器插件。
+>
+> **更新（2026-09-19）**：§6.2 里那条"`/api/verify` 上失败仍表现为正常判定"的注脚
+> **已经不再成立**。该端点的模型失败现在以 **HTTP 503 + 结构化 code** 上报，**响应形状仍然没改**
+> （失败走的是标准错误信封，不是 `VerifyResponse`），前端与插件仍然一字未动。
+> §6.2 已按当前行为重写，§7 表格同步。
 
 ---
 
@@ -238,39 +243,62 @@ VerificationResult.failed(claim="c", status=VerificationStatus.JUDGED, rationale
 `message=result.rationale` 是**承重的**：它让引擎的具体原因（比如非法标签的字面值）
 可见，而不是被折叠成一个 code。这是新端点**唯一**消费者，映射干净。
 
-### 6.2 `POST /api/verify`（既有端点）—— 诚实的注脚
+### 6.2 `POST /api/verify`（既有端点，已无客户端）—— 未判定以失败上报
 
 **这个端点的响应契约里没有表达"未判定"的位置。** `VerifyResponse.verdict` 是必填的
-`VerdictEnum`，去掉它需要前端可见的失败表示——而那些约束（"不要改网页或插件接口"）
-不允许。所以：
+`VerdictEnum`，而 `NOT_FOUND` **本身就是一个判定**（"源文献存在，但没谈到这件事"），
+所以往这个字段里塞任何值都是伪造发现。
 
-> ⚠️ **在 `/api/verify` 上，模型调用失败仍然表现为一个正常的 `SUPPORT` / `NOT_FOUND`。
-> 只有 `rationale` 泄露了失败**（`"LLM verification failed (...); mock fallback used."`）。
->
-> **不要靠给 `Verdict` 加成员来"修"这件事**——那会同时打破 §3.1 里的三个消费者。
-> 真正的修法是给这个端点一个前端可见的失败表示，而那是一次前端改动。
+**因此未判定不走响应体，改走 HTTP 状态码**——响应**形状**一个字节都没改：
 
-加固后的行为：显式分支到端点**既有的、有文档的**词重叠降级路径
-（[engine_adapter.py:124-137](../backend/src/services/engine_adapter.py#L124-L137)），
-`rationale` 文案**逐字保留**以免前端字符串失配。
+```http
+503 Service Unavailable
+{"detail": {"code": "<VerificationStatus>", "message": "<Engine 的 rationale>"}}
+```
 
-**逐行等价性**（响应形状 / 状态码 / 枚举取值均不变）：
+[engine_adapter.py](../backend/src/services/engine_adapter.py) 在
+`result.status is not VerificationStatus.JUDGED` 时抛 `ClaimNotJudgedError`，
+[routes/verify.py](../backend/src/routes/verify.py) 把它映射成上面的响应。
 
-| Engine 路径 | 加固前 adapter 输出 | 加固后 | 等价？ |
+| Engine 路径 | 从前的 adapter 输出 | 现在 | HTTP |
 |---|---|---|---|
-| 合法标签 | 模型判定 | 相同 | ✅ |
-| 枚举外标签 | 词重叠降级（经 `ValueError`） | 词重叠降级（显式分支） | ✅ 同 verdict 同 confidence，仅 rationale 文本更具体 |
-| `json.loads(None)` → `TypeError` | 词重叠降级 | 词重叠降级 | ✅ |
-| `create()` 抛错 | 词重叠降级 | 词重叠降级 | ✅ |
-| **坏 JSON 回复** | 模型派生的 `NOT_FOUND` | 词重叠降级 | ❌ **有意变化** |
-| **空白原文** | 拿空 source 去问模型 | 词重叠降级，不调模型 | ❌ **有意变化** |
+| `JUDGED` | 模型判定 | 相同 | 200 |
+| `NO_EVIDENCE` | 伪 `SUPPORT` / `NOT_FOUND` + conf 0.2 | `ClaimNotJudgedError` | 503 `NO_EVIDENCE` |
+| `MODEL_ERROR` | 同上 | 同上 | 503 `MODEL_ERROR` |
+| `INVALID_LABEL` | 同上 | 同上 | 503 `INVALID_LABEL` |
+| `INVALID_RESPONSE` | 同上 | 同上 | 503 `INVALID_RESPONSE` |
+| **未配置 client** | 词法基线（有文档的降级模式） | **不变** | 200 |
 
-两处变化都是拿"从未被证成的判定"换成端点**已有的、有文档的**降级路径。
-**方向性风险**：坏 JSON 回复在词重叠 ≥ 0.2 时可能从伪 `NOT_FOUND` 变成伪 `SUPPORT`。
-这与该端点对网络错误、非法标签的既有降级行为一致，但值得知情。
+`code` **直接用 Engine 的 `VerificationStatus` 取值**，而不是折叠成一个笼统的码：
+§3 的表里每种状态对应不同的修法，丢掉这个区别就等于丢掉可操作性。
+`message` 放 rationale 原文，理由与 §6.1 相同。这两个字段也正好是前端
+`readResponse`（[client.ts:11-29](../frontend/src/api/client.ts#L11-L29)）已经认识的形状。
+
+> **仍然不要靠给 `Verdict` 加成员来"修"这件事**——那会同时打破 §3.1 里的三个消费者。
+> **失败由判别符表达，不由 verdict 表达**；这个端点没有判别符字段，所以用状态码。
+
+三个实现上的要点（都很容易写错，写错了测试仍可能通过）：
+
+1. **`ClaimNotJudgedError` 刻意不继承 `EngineAdapterError`。** 后者会被
+   `verification_service` 规范化成通用的 500 `"Unable to verify the claim."`，
+   把 code 与 rationale 一起丢掉。它也因此**故意缺席** service 里那个 except 元组。
+2. **抛出点在 `try` 之外。** 那个 `except Exception` 是给"Engine 抛了它自己没有建模成状态的
+   东西"用的安全网；抛出点若在 `try` 内，会被自己的安全网捕获并重新包装成 adapter 故障。
+3. **`VerdictEnum(result.verdict.value)` 也移到了安全网之外。** 从前枚举镜像不一致会被吞成
+   一个伪造判定；现在它会响亮地失败。这条闭集契约在两个包里都有测试钉着
+   （`test_verdict_is_still_a_closed_four_member_set`），不一致属于代码缺陷。
+
+**无 client 时的词法基线不在这次改动内。** 它是端点**被公告的**降级模式（启动横幅
+`"Single Verify uses a lexical baseline"`，rationale 写 `"Local evidence analysis:"`），
+也是 CI 与无 key 本地开发的路径。但要注意：它输出的 `NOT_FOUND` 同样是一个判定，
+只是这个模式是公开声明过的，且不掩盖任何模型失败。要改它是另一件事。
+
+**这个端点已无客户端。** 前端的 `verifyClaim` 全仓无调用者（`VerifyPage` 用的是 §6.1 的
+`/api/verify/citation`），浏览器插件从不调它，`frontend/tests/verify-citation.spec.mjs` 里
+还有一句 `'Legacy Verify must not be called'`。**新集成请用 §6.1 的端点。**
 
 `NO_CLIENT` 在 `/api/verify` 上**不可达**（adapter 只在 `_get_llm_client()` 非 `None`
-时才调 verifier），其分支纯属防御。
+时才调 verifier），防御分支而已。
 
 ---
 
@@ -280,7 +308,8 @@ VerificationResult.failed(claim="c", status=VerificationStatus.JUDGED, rationale
 |---|---|---|
 | R3 | **engine 的超时与重试**。SDK 默认 `read=600s` × 3 次尝试，同步 handler 里最坏 30 分钟 | 改进方式已明确（`Verifier.__init__(timeout=...)` 透传给 `create(timeout=...)`，默认 `None` 不影响现有调用），但它会改变真实链路的行为特征，应与可观测性一起做，不混进本次 |
 | R4 | **`confidence` 仍是硬编码档位** | 改了会动验收结果（§4.1） |
-| —— | **`/api/verify` 没有可见的失败表示** | 需要前端改动，超出本次范围（§6.2） |
+| —— | **`/api/verify` 无 client 时的词法基线仍会产出判定** | 它是被公告的降级模式，且 CI 与无 key 本地开发依赖它；改它要同时动启动横幅、模块 docstring 与测试（§6.2） |
+| —— | **`/api/verify` 的 503 是客户端没见过的状态码** | 该端点目前零消费者；且失败信封与 `/api/verify/citation` 的 503 同形（§6.2） |
 | —— | **不给 `Verdict` 加成员** | 会打破三个包外消费者（§3.1） |
 | —— | **不动网页 / 浏览器插件** | 需求明文约束 |
 
@@ -336,7 +365,7 @@ cd /Users/owen/Desktop/SIS-2026S2/claimtrace && python backend/scripts/acceptanc
 |---|---|
 | [engine/engine/verifier.py](../engine/engine/verifier.py) | `VerificationStatus`、`VerificationResult` 重构、两个方法重写、模块 docstring。**`ENTAILMENT_PROMPT` 渲染结果逐字节不变**（sha256 `bfdc28a9…`，895 bytes） |
 | [engine/tests/test_verifier.py](../engine/tests/test_verifier.py) | 全量重写，50 项 |
-| [backend/src/services/engine_adapter.py](../backend/src/services/engine_adapter.py) | 显式状态分支；`rationale` 文案逐字保留 |
+| [backend/src/services/engine_adapter.py](../backend/src/services/engine_adapter.py) | 显式状态分支（2026-09-19 起改为抛 `ClaimNotJudgedError`，见 §6.2） |
 | [backend/src/services/citation_comparison_service.py](../backend/src/services/citation_comparison_service.py) | 状态映射；模块 docstring 与内联注释更新（原注释称"`Verdict(label)` 在 try 外"，已不成立） |
 | [backend/tests/test_citation_comparison_api.py](../backend/tests/test_citation_comparison_api.py) | 1 项改写 + 5 项新增 + 2 处 docstring |
 | [backend/tests/test_engine_adapter.py](../backend/tests/test_engine_adapter.py) | 新增 4 项 |
