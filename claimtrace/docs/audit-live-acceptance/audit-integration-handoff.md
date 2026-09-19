@@ -90,12 +90,23 @@ HTTP 500 and an HTTP 429 for the same fixture produce
 The chain then consults Crossref, which the fixtures also fail, so the overall
 outcome is `LOOKUP_FAILED` — a failure is never reported as an absent publication.
 
-**The controlled VERIFIED case depends on author spelling.** The fixture record
-spells the author the way the BibTeX entry stores it ("Vaswani, A."), because
-`VERIFIED` means field-for-field agreement and `compare_external_metadata`'s `exact`
-gate compares normalised author lists element by element. The PDF fixture cites the
-same work as "A. Vaswani" and lands in `NEEDS_REVIEW` instead. That difference is a
-property of the reference's own author spelling, not of which provider answered.
+**Author spelling no longer decides the verdict.** The two fixtures cite the same
+work in the two name orders — the BibTeX entry stores "Vaswani, A." and the PDF
+reference reads "A. Vaswani" — and both now reach `VERIFIED`.
+`compare_external_metadata`'s `exact` gate reads each author's surname and the
+given names the reference states, so the order a source writes a name in, and
+whether it abbreviates the given name, are not metadata differences. The
+fixtures keep the two spellings deliberately: they are what holds that.
+
+**The committed controlled evidence predates this.** Its PDF report records
+`NEEDS_REVIEW` for the first entry, where the code now returns `VERIFIED`, and
+two of its differences are older still than that: the provider maps a DOI the
+snapshot records as empty (`doi` moves `NOT_CHECKED` → `INPUT_MISSING`), and the
+wrong-year entry was already rejected before comparison (below) so it is
+`NOT_FOUND` rather than the `METADATA_MISMATCH` the snapshot shows. Re-running
+controlled mode passes and produces all of this; the snapshot was left alone
+here to keep the diff of that change to the comparison layer. Re-record it with
+the command below before treating the committed report as evidence.
 
 ## Reproduction
 
@@ -157,17 +168,45 @@ that live retrieval works.
   venue-less preprint records (`../backend-audit-handoff- scholar- search.md` §8.1).
   Both are measured rules; relaxing either is a separate change needing its own
   measurement.
-- **`VERIFIED` is field-for-field, and author spelling is part of it.**
-  `compare_external_metadata`'s `exact` gate compares normalised author lists
-  element by element, so the same work cited as "Vaswani, A." verifies while
-  "A. Vaswani" does not. The Engine's own comparator tolerates that order
-  difference; this gate does not. Widening the gate is deliberately out of scope
-  here and needs its own measurement.
+- **`VERIFIED` is field-for-field, and author spelling is not part of it.**
+  `compare_external_metadata`'s `exact` gate compares each author's surname and
+  the given names the reference states, so the same work verifies whether it is
+  cited as "Vaswani, A." or "A. Vaswani" — name order, middle initials and
+  accents are how a source spells a name, not what it says. What it still
+  refuses is a stated difference: "Smith, Jane" against "Smith, John" shares a
+  surname and is not the same person, and a name one side abbreviates cannot
+  contradict, so "Vaswani, A." is never refused against "Vaswani, Ashish".
+  Measured over the 91 matched records in the stored audits: 69 agree under this
+  rule where 36 did under the element-wise comparison it replaces. The 22 that
+  do not divide into 10 references listing fewer authors than the record (an
+  `et al.` or a truncated extraction), 2 listing more, and 10 disagreeing at
+  equal length — the last includes extraction damage such as "Jan Šediv\`y"
+  against "Ján Šedivý" and a record whose author is a different person
+  ("Cordelia Schmid" against "Calvin F. Schmid"). Over-refusing a true match
+  costs a `NEEDS_REVIEW`; the gate is stricter than the Engine's on purpose.
+- **A difference recovered from the reference's raw text withholds `VERIFIED`; it
+  does not accuse.** For a PDF reference the compared values come from the raw
+  text, because the structured fields are empty (below). A difference in such a
+  value may be the extraction's rather than the reference's, so it returns
+  `NEEDS_REVIEW` and never `METADATA_MISMATCH`. Measured over the same 91: venue
+  differs in 50, and nearly all are the reference abbreviating a venue the record
+  spells out ("ACL" against the full proceedings name). Reporting those as
+  `METADATA_MISMATCH` — which a plain swap of the compared field source does,
+  turning 62 of the 91 into accusations — told the user their reference was
+  wrong. A difference in a value the reference's *own metadata* states is still
+  `METADATA_MISMATCH`: that value is the user's.
 - **Query text comes from the reference, not only from its structured fields.**
   For a PDF reference the structured fields are usually empty and the title is
-  recovered from the raw text; the audit service and the lookup share one function
-  (`reference_query_for`) so they cannot disagree about what is searchable. A
-  BibTeX block is never re-parsed as a reference-list entry — doing so recovers a
-  corrupted DOI that would silently disable the identifier tier.
+  recovered from the raw text; the searchability guard, the lookup and the field
+  comparison share one function (`reference_query_for`) so they cannot disagree
+  about what the reference says. A BibTeX block is never re-parsed as a
+  reference-list entry — doing so recovers a corrupted DOI that would silently
+  disable the identifier tier.
+- **The audit's reference-list corpus is separate from the acceptance fixtures.**
+  Measured over the 174 PDF references under `backend/uploads/parsed`, the
+  structured title is non-empty for exactly one, and the raw text yields one for
+  173 — which is why the comparison reads the raw text. Reproduce the field
+  comparison over your own recorded audits with
+  `python backend/scripts/audit_comparison_measurement.py DIR`.
 - No frontend/browser acceptance or changes are included. Draft status must remain
   until the team accepts the live-search evidence and any external availability limits.

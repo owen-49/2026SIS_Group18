@@ -88,15 +88,15 @@ def verify_process_restart(reports):
 # ``engine.metadata_lookup.http_get_json`` instead would leave both providers
 # calling the real function and silently reach the network.
 
-# The work the fixtures hold. The author is spelled the way the BibTeX entry
-# stores it ("Family, Given"), because VERIFIED means field-for-field agreement:
-# compare_external_metadata's exact gate compares normalised author lists
-# element by element, and the Engine's field comparator -- which tolerates order
-# -- is not that gate. Note what this makes of the two fixtures below, which
-# cite the same work: the BibTeX entry, stored in the same form, verifies,
-# while the PDF entry's "A. Vaswani" does not, and is sent to review instead.
-# That difference is a property of the reference's own author spelling, not of
-# which provider answered, and it is left visible rather than papered over.
+# The work the fixtures hold. The provider spells the author "Family, Given",
+# while the two fixtures below cite the same work in the other order -- the
+# BibTeX entry as "Vaswani, A." and the PDF entry as "A. Vaswani". Both verify.
+# compare_external_metadata's exact gate reads an author's surname and the given
+# names the reference states, so the order a source happens to write a name in,
+# and whether it abbreviates the given name, are not differences -- which keeps
+# the fixture's outcome a property of the reference's content rather than of the
+# spelling convention its loader used. Spelling both fixtures differently is
+# deliberate: it is what holds that.
 _OPENALEX_WORK = {
     "id": "https://openalex.org/W2963403868",
     "doi": "https://doi.org/10.48550/arxiv.1706.03762",
@@ -309,9 +309,13 @@ def run(mode, output):
                 ("openalex", "OPENALEX_RATE_LIMITED"),
             ], codes
             # The PDF fixture's first reference resolves and its second is
-            # rejected on the year, exactly as above.
+            # rejected on the year, exactly as above. The first one verifies
+            # although it spells the author "A. Vaswani" where the provider
+            # writes "Vaswani, A.": the exact gate reads an author's surname and
+            # the given names the reference states, so name order and an
+            # abbreviated given name are not metadata differences.
             assert [row["status"] for row in reports[1]["results"]] == [
-                "NEEDS_REVIEW",
+                "VERIFIED",
                 "NOT_FOUND",
             ], [row["status"] for row in reports[1]["results"]]
             assert reports[1]["results"][0]["matched_record"]["provider"] == "openalex"

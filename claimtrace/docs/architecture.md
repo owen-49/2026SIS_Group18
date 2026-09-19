@@ -132,6 +132,11 @@ extractor, then delegates publication lookup to an external-record adapter and
 compares metadata through the existing Engine comparator. It never ranks source
 passages or classifies claim support. The external lookup implementation is still
 missing; unconfigured lookups return `EXTERNAL_LOOKUP_NOT_CONFIGURED`.
+A reference carries two descriptions of itself — the structured fields a parser
+filled in, and its raw text — and which one is complete depends on how the paper was
+loaded. The searchability guard, the lookup and the field comparison therefore all
+read the same one, through `reference_query_for`, so the audit cannot search on one
+description and compare against another.
 See [backend Audit contract and handoff](backend-audit-handoff.md) for boundaries,
 team dependencies, and the frontend migration still required.
 

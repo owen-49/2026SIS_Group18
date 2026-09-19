@@ -21,8 +21,12 @@ Audit display layout; populate it with bibliographic records and field differenc
   silent re-extraction. Explicit PDF reprocessing invalidates old references.
 - Reuse `engine.bib_verifier.verify_bib_against_pdf` through a backend adapter.
   Its `PdfMetadata` object carries external metadata here; no source PDF is read.
-- Preserve both values of each compared field. Existing fuzzy Engine matches are
-  conservatively classified as `NEEDS_REVIEW` rather than fully verified.
+- Preserve both values of each compared field. A difference in a value the reference's
+  own metadata states is `METADATA_MISMATCH`; a difference in a value recovered from the
+  reference's raw text may be the extraction's, so it withholds `VERIFIED` and returns
+  `NEEDS_REVIEW` instead. `VERIFIED` is reserved for agreement on title, authors, year
+  and venue, with the author comparison reading surnames and the given names both sides
+  state — name order, middle initials and accents are not metadata differences.
 - Keep local `/verify/bib` unchanged. Its local PDF comparison is not existence proof.
 - Keep Verify claims unresolved when numerical references lack a reliable mapping,
   when multiple Bib uploads have no manuscript association, or when keys are ambiguous.

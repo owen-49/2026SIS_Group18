@@ -20,6 +20,7 @@ from backend.src.models import PaperRecord, ParsedDocument, ParseStatus
 from backend.src.routes import audit as audit_route
 from backend.src.services import pipeline_service, reference_input_service
 from backend.src.services.analysis_service import _find_bib_entry, _load_bibliography_entries
+from backend.src.services.bibliography_audit_service import _authors_agree
 from backend.src.storage.paper_store import create_paper
 from backend.src.storage.reference_store import ReferenceStoreError, reference_path
 from engine.bib_parser import BibEntry
@@ -179,6 +180,126 @@ def test_fuzzy_engine_author_match_is_not_fully_verified(client, monkeypatch):
     assert row["status"] == "NEEDS_REVIEW"
 
 
+def audit_pdf_reference(client, monkeypatch, storage_paths, raw_text, record):
+    """Audit one PDF-shaped reference against one explicit external record."""
+    record_entry = persist_manuscript(storage_paths)
+
+    def extract(path):
+        return SimpleNamespace(
+            references=[SimpleNamespace(raw_text=raw_text, number=1, page_start=2, page_end=2)],
+            warnings=[],
+        )
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+    lookup = FakeLookup(lookup_result(records=[record]))
+    monkeypatch.setattr(app.state, "bibliography_lookup", lookup, raising=False)
+    body = client.post("/api/audit", json={"manuscript_id": record_entry.paper_id}).json()
+    return body["results"][0]
+
+
+def test_a_pdf_reference_is_compared_on_the_text_it_was_searched_with(
+    client, monkeypatch, storage_paths
+):
+    # The corpus shape: no structured fields at all, everything in the raw text.
+    # Before this change the comparison read the stored fields, so a record the
+    # lookup had found was compared against empty strings: every check came back
+    # INPUT_MISSING and no PDF reference could reach VERIFIED.
+    row = audit_pdf_reference(
+        client,
+        monkeypatch,
+        storage_paths,
+        "[3] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and "
+        "Roger Zimmermann. 2018. Icon: Interactive conversational memory network for "
+        "multimodal emotion detection. In Proceedings of the 2018 conference on empirical "
+        "methods in natural language processing.",
+        external_record(
+            title="Icon: Interactive conversational memory network for multimodal emotion "
+            "detection",
+            authors=[
+                "Hazarika, Devamanyu",
+                "Poria, Soujanya",
+                "Mihalcea, Rada",
+                "Cambria, Erik",
+                "Zimmermann, Roger",
+            ],
+            year=2018,
+            venue="Proceedings of the 2018 conference on empirical methods in natural language "
+            "processing",
+        ),
+    )
+    assert row["status"] == "VERIFIED"
+    title = next(check for check in row["field_checks"] if check["field_name"] == "title")
+    assert title["status"] == "MATCH"
+    # The value the lookup searched on is the value compared, not the empty
+    # stored field -- otherwise the report shows a comparison against nothing.
+    assert title["input_value"].startswith("Icon: Interactive conversational")
+    assert "raw text" in title["detail"]
+
+
+def test_name_order_is_not_a_metadata_difference(client, monkeypatch, storage_paths):
+    # A reference list writes "Bastian Epping"; a provider record writes
+    # "Epping, Bastian". The element-wise rule this replaces compared the two
+    # normalised strings, so it measured which order each source happened to use.
+    row = audit_pdf_reference(
+        client,
+        monkeypatch,
+        storage_paths,
+        "[1] Bastian Epping and Michael Schaub. Graph Neural Networks Do Not Always "
+        "Oversmooth. Advances in Neural Information Processing Systems, 2024.",
+        external_record(
+            title="Graph Neural Networks Do Not Always Oversmooth",
+            authors=["Epping, Bastian", "Schaub, Michael"],
+            year=2024,
+            venue="Advances in Neural Information Processing Systems",
+        ),
+    )
+    assert row["status"] == "VERIFIED"
+    authors = next(check for check in row["field_checks"] if check["field_name"] == "authors")
+    assert authors["status"] == "MATCH"
+
+
+def test_a_recovered_field_difference_is_not_an_accusation(client, monkeypatch, storage_paths):
+    # Measured over the 91 stored matched records: venue differs in 50 of them and
+    # nearly every one is the reference abbreviating a venue the record spells
+    # out. Reporting those as METADATA_MISMATCH told the user their reference was
+    # wrong. A recovered value can withhold VERIFIED; it cannot accuse.
+    row = audit_pdf_reference(
+        client,
+        monkeypatch,
+        storage_paths,
+        "[2] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. BERT: "
+        "Pre-training of Deep Bidirectional Transformers for Language Understanding. ACL.",
+        external_record(
+            title="BERT: Pre-training of Deep Bidirectional Transformers for Language "
+            "Understanding",
+            authors=[
+                "Devlin, Jacob",
+                "Chang, Ming-Wei",
+                "Lee, Kenton",
+                "Toutanova, Kristina",
+            ],
+            year=2019,
+            venue="Proceedings of the 2019 Conference of the North American Chapter of the "
+            "Association for Computational Linguistics",
+        ),
+    )
+    assert row["status"] == "NEEDS_REVIEW"
+    venue = next(check for check in row["field_checks"] if check["field_name"] == "venue")
+    assert (venue["input_value"], venue["status"]) == ("ACL", "MISMATCH")
+    assert "extraction rather than in the reference" in venue["detail"]
+
+
+def test_a_stored_field_difference_is_still_reported_as_a_mismatch(client, monkeypatch):
+    # The other half of the rule: a value the reference's own metadata states is
+    # the user's, so a difference there is still the reference's difference.
+    lookup = FakeLookup(lookup_result(records=[external_record(year=2023)]))
+    monkeypatch.setattr(app.state, "bibliography_lookup", lookup, raising=False)
+    row = client.post("/api/audit", json={"bib_paper_id": upload_bib(client)}).json()["results"][0]
+    assert row["status"] == "METADATA_MISMATCH"
+    year = next(check for check in row["field_checks"] if check["field_name"] == "year")
+    assert "raw text" not in year["detail"]
+
+
 def test_no_doi_is_sent_to_bibliographic_lookup(client, monkeypatch):
     lookup = FakeLookup(lookup_result(records=[external_record(doi="")]))
     monkeypatch.setattr(app.state, "bibliography_lookup", lookup, raising=False)
@@ -256,9 +377,11 @@ def test_manuscript_reference_parser_preserves_raw_text_and_location(
     # The point of the change: existence is now actually checked, and the record
     # that was found reaches the report.
     assert body["results"][0]["matched_record"]["metadata"]["title"] == "Retrieval with citations"
-    # Still NEEDS_REVIEW, because the comparison reads the stored fields and this
-    # entry stores none. The lookup answering is a separate question from the
-    # comparison agreeing; this pins the second one too.
+    # Still NEEDS_REVIEW, and now for a reason the report can name: the reference
+    # text "[7] Smith. Retrieval with citations. 2024." leaves "2024" in the venue
+    # position, and the record calls it "Journal of Retrieval". The comparison
+    # reads the raw text now, so it has an opinion at all -- but a recovered value
+    # disagreeing withholds VERIFIED rather than reporting a mismatch.
     assert body["results"][0]["status"] == "NEEDS_REVIEW"
     assert "Parser sample warning" in body["warnings"]
 
@@ -658,3 +781,41 @@ def test_claim_resolution_does_not_guess_numeric_order_or_duplicate_keys():
 def test_claims_do_not_combine_unrelated_bibliographies():
     records = [SimpleNamespace(file_type="bib", status=ParseStatus.COMPLETED) for _ in range(2)]
     assert _load_bibliography_entries(records) == []
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "agree"),
+    [
+        # Order, on both axes, is how a source spells a name rather than what it says.
+        (["Jason Wei"], ["Wei, Jason"], True),
+        (["Wei, Jason", "Tay, Yi"], ["Tay, Yi", "Wei, Jason"], True),
+        (["Jason Wei", "Yi Tay"], ["Tay, Yi", "Wei, Jason"], True),
+        # An initial is a source abbreviating a name, not stating a different one.
+        (["Wei, Jason"], ["Wei, J."], True),
+        (["Vaswani, A."], ["Vaswani, Ashish"], True),
+        # Diacritics and non-ASCII hyphens: one person, two spellings.
+        (["Tomas Mikolov"], ["Mikolov, Tomáš"], True),
+        (["Ming-Wei Chang"], ["Chang, Ming‐Wei"], True),
+        # Middle names are stated on one side only.
+        (["Brown, Tom B."], ["Brown, Tom"], True),
+        # Different people sharing a surname are not the same author, and the count
+        # is part of it: a reference that lists three authors does not name two.
+        (["Smith, Jane"], ["Smith, John"], False),
+        (["Smith, Jane"], ["Smith", "John"], False),
+        (["Wei, Jason"], ["Tay, Yi"], False),
+        (["Wei, Jason"], ["Wei, Jason", "Tay, Yi"], False),
+        (["Wei, Jason"], [], False),
+        ([], ["Wei, Jason"], False),
+    ],
+)
+def test_author_agreement_reads_names_not_spellings(left, right, agree):
+    assert _authors_agree(left, right) is agree
+
+
+def test_author_agreement_does_not_require_a_matching_partner_to_be_adjacent():
+    # "Wei, Jason" has to find its partner among the surnames still unmatched, not
+    # at a fixed position, or a reordered list would be read as a disagreement.
+    assert _authors_agree(
+        ["Wei, Jason", "Tay, Yi", "Brown, Tom"],
+        ["Brown, Tom", "Wei, Jason", "Tay, Yi"],
+    )
