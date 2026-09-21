@@ -95,8 +95,8 @@ a tracker with no entries is worse than no tracker, because it looks like proces
 
 ```sh
 cd claimtrace
-python -m pytest backend/tests -q                    # backend
-cd engine    && PYTHONPATH=.. python -m pytest tests -q
+python -m pytest backend/tests -q                    # backend — needs claimtrace/ as cwd
+cd engine    && python -m pytest tests -q            # engine — no PYTHONPATH needed
 cd parser    && PYTHONPATH=.. python -m pytest tests -q
 cd ../frontend && npm run test:integration           # Playwright, own server on :3100
 cd ../extension && node --test extension/*.test.cjs  # must be a glob, not a directory
@@ -114,7 +114,7 @@ Whoever owns a directory owns its side of these. Each contract has one document:
 | Contract | Document | Owner |
 | --- | --- | --- |
 | Audit v2, five states, provider chain, lookup rules | `docs/audit-contract.md` | Backend |
-| Verify and citation comparison, Engine evidence | `docs/engine-contract.zh-CN.md` | Engine |
+| Verify and citation comparison, Engine evidence | `docs/engine-verify-contract.zh-CN.md` | Engine |
 | Claim × source-paper comparison | `docs/citation-comparison.zh-CN.md` | Engine |
 | Parser output, reference fields, the open metadata gap | `docs/parser-handoff.md` | Parser |
 | Web app and extension behaviour | `docs/frontend-handoff.md` | Frontend |
