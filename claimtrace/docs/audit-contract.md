@@ -232,26 +232,48 @@ there is none — a failure to check, never a claim of absence.
 
 ### Reading the committed snapshots
 
-`controlled/` and `live/` hold recorded snapshots, and **both still predate the provider
-chain**: they carry `provider="google_scholar"` and `SCHOLAR_TIMEOUT`, recorded
-2026-09-15, because the lookup they exercised no longer exists. They are left unedited —
-editing a record to match later behaviour falsifies it. Re-recording them against the
-current chain is tracked separately from this contract; until that lands, read them as a
-record of that date rather than as current output.
+`controlled/` and `live/` hold snapshots recorded **2026-09-21** against the current
+provider chain: every lookup attempt names `openalex` or `crossref`, and no record carries
+`google_scholar`.
+
+The Scholar-era snapshots recorded 2026-09-14 — 30 `provider="google_scholar"` entries and
+`SCHOLAR_TIMEOUT` — are preserved unedited under `archive-scholar-era/`. They record what
+actually happened at the time and were moved rather than overwritten, because editing a
+record to match later behaviour falsifies it.
+
+**Read the live snapshot's headline result before treating it as a regression.** Its single
+BibTeX entry is "Attention Is All You Need", and it reports `NOT_FOUND` — see §7, where that
+is the documented limitation rather than a failure of the chain. The Scholar-era run over
+the same fixture reported `LOOKUP_FAILED`, so the change from `LOOKUP_FAILED` to `NOT_FOUND`
+is the lookup completing, not the answer improving.
 
 A snapshot records **when it was taken**, not current behaviour. Nothing fails when it
 goes stale, because the script's assertions check live output rather than the snapshot.
 
 ## 7. Known limits
 
-- **The venue rule costs coverage.** A reference whose only candidates carry no venue
-  reports `NOT_FOUND` where Scholar would have returned a hit. This is the
-  anti-fabrication rule working, and it is a real cost rather than a bug. Do not "fix" it
-  by relaxing the venue requirement or `NON_PUBLICATION_KINDS` without a measurement
-  showing what the relaxation admits. The clearest example is a famous paper: OpenAlex
-  holds "Attention Is All You Need" (Vaswani et al.) as a single venue-less preprint, so
-  both the venue rule and the year rule reject it and the audit reports `NOT_FOUND`. The
-  reason string names the rule that fired.
+- **Coverage is lost before the rules run, and then to the rules.** A reference whose
+  candidates are other papers reports `NOT_FOUND` where Scholar would have returned a hit.
+  This is the anti-fabrication behaviour working at both layers, and it is a real cost
+  rather than a bug. Do not relax the venue requirement or `NON_PUBLICATION_KINDS` without a
+  measurement showing what the relaxation admits.
+
+  The clearest example is the most-cited paper in the field. Measured 2026-09-21,
+  `filter=title.search:Attention Is All You Need&per-page=10` returns ten records and **none
+  is the Vaswani et al. paper**: nine share the title but not the year and are rejected as
+  ineligible, and the tenth is a venue-less 2025 preprint carrying the real paper's 7,608
+  citations — a hijacked title, and the one `openalex_lookup.py` names as the reason
+  `locations[]` is never consulted. Adding `publication_year:2017` to the filter returns
+  **zero** records, so there is no correct OpenAlex record for the title search to rank.
+  The audit reports `NOT_FOUND`, names the rule that fired, and says it does not prove
+  fabrication.
+
+  Two consequences are worth keeping straight. The loss is not only the venue rule: a record
+  must be **in the returned page** before any rule can accept it, and this title has 266
+  matches with a page size of 10. And `NOT_FOUND` here is not a claim that the paper does
+  not exist — it is the report declining to verify against records it cannot trust, which is
+  the same choice the venue rule makes. `live/` now records this case, so it is reproducible
+  rather than asserted.
 - **The identity rules decide before any field comparison, and they are strict.** A
   wrong-year citation is rejected as *ineligible* rather than reported as a field
   difference, so there are **no field checks at all** for that entry. The rejection is
