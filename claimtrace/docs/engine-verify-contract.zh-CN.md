@@ -27,7 +27,7 @@
 是**伪造发现**。仓库早有明文禁令：
 
 > A failed query must not be converted to `NOT_FOUND`.
-> —— [docs/backend-audit-handoff.md:90](backend-audit-handoff.md#L90)
+> —— [audit-contract.md](audit-contract.md) §2「The rule the rest of the repository quotes」
 
 ---
 
@@ -135,8 +135,8 @@ class VerificationStatus(str, Enum):     # engine/verifier.py:49
 | `INVALID_RESPONSE` | 回复不是 JSON 对象 | provider 未遵守 `response_format`，或传输被截断 |
 
 `INVALID_LABEL` 与 `INVALID_RESPONSE` **分开是有意的**：二者的上游原因与处置完全不同。
-命名沿用仓库既有的 SCREAMING_SNAKE 约定（`SCHOLAR_TIMEOUT` / `LOOKUP_FAILED` /
-`LLM_FAILED` / `SOURCE_EMPTY`）。
+命名沿用仓库既有的 SCREAMING_SNAKE 约定（`LOOKUP_FAILED` / `LLM_FAILED` /
+`SOURCE_EMPTY`）。
 
 ### 3.1 🚫 绝不新增 `Verdict` 成员
 
@@ -318,14 +318,14 @@ VerificationResult.failed(claim="c", status=VerificationStatus.JUDGED, rationale
 ## 8. 测试与验收
 
 ```bash
-# engine 套件 —— 必须从仓库根跑（从 engine/ 跑会 collection error：
-# tests/test_google_scholar_lookup.py 要 import backend.src.audit_models）
-cd /Users/owen/Desktop/SIS-2026S2/claimtrace && python -m pytest engine/tests -q
-#   基线 95 passed → 加固后 141 passed
+# engine 套件 —— engine/ 目录内外都可以（engine 以 editable 安装，测试只 import engine.*）
+cd /Users/owen/Desktop/SIS-2026S2/claimtrace/engine && python -m pytest tests -q
+# 也可：cd claimtrace && python -m pytest engine/tests -q
+# （早期本文说必须从根跑，且因 test_google_scholar_lookup.py 的 backend import 会
+#   collection error —— 那个文件已删除，这条限制不复存在）
 
-# 后端套件 —— 同样必须从仓库根（conftest 里是 from backend.src.main import app）
+# 后端套件 —— 必须从 claimtrace/ 跑（conftest 里是 from backend.src.main import app）
 cd /Users/owen/Desktop/SIS-2026S2/claimtrace && python -m pytest backend/tests -q
-#   基线 137 passed → 加固后 150 passed
 
 # 离线保证：无网络、无 key 也必须全绿
 cd /Users/owen/Desktop/SIS-2026S2/claimtrace && \
@@ -370,7 +370,7 @@ cd /Users/owen/Desktop/SIS-2026S2/claimtrace && python backend/scripts/acceptanc
 | [backend/tests/test_citation_comparison_api.py](../backend/tests/test_citation_comparison_api.py) | 1 项改写 + 5 项新增 + 2 处 docstring |
 | [backend/tests/test_engine_adapter.py](../backend/tests/test_engine_adapter.py) | 新增 4 项 |
 | [scripts/llm_smoke_test.py](../scripts/llm_smoke_test.py) | 状态优先输出；打印 `source_text_used`；未判定则 `exit(1)` |
-| [docs/citation-comparison-backend-handoff.zh-CN.md](citation-comparison-backend-handoff.zh-CN.md) | §5 坑 1/2/3 由"后端绕过"改为"引擎已修"；§7.2/§7.3 同步 |
+| [docs/citation-comparison.zh-CN.md](citation-comparison.zh-CN.md) | §5 坑 1/2/3 由"后端绕过"改为"引擎已修"；§7.2/§7.3 同步 |
 | 本文档 | 新建 |
 
 **前端与浏览器插件：一字未动。**

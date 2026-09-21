@@ -1,7 +1,7 @@
-# Claim × 原论文 语义对照 —— 后端交接文档
+# Claim × 原论文 语义对照契约
 
-> 面向：接手前端接线或继续加固后端的组员
-> 对应规格：`docs/engine-source-resolver-handoff.md` Part 1（引擎侧已完成，本文档是后端侧的实现说明）
+> 面向：接手前端接线或继续加固后端的组员；**这是现行契约，不是历史交接**
+> 对应规格：Engine 的 `SourceResolver` 契约（`engine/engine/source_resolver.py`；引擎侧已完成，本文档是后端侧的实现说明）
 > 状态：后端链路已打通并通过真实 DeepSeek 验收；**前端视图与 Chrome 扩展不在本次范围**
 
 ---
@@ -16,14 +16,14 @@
 
 | 新增 | 位置 |
 |---|---|
-| 端点 `POST /api/verify/citation` | [routes/verify.py:54](backend/src/routes/verify.py#L54) |
-| 5 个响应模型 + `ComparisonStatus` 枚举 | [models.py:297-377](backend/src/models.py#L297-L377) |
-| 引用定位（marker → 源论文 → 段落） | [services/source_locator.py](backend/src/services/source_locator.py) |
-| 编排（定位 → 检索 → LLM 判定） | [services/citation_comparison_service.py](backend/src/services/citation_comparison_service.py) |
-| 缓存的 Embedder 单例 | [engine_adapter.py:73](backend/src/services/engine_adapter.py#L73) |
-| 让 `.env` 真正生效 | [config.py:130](backend/src/config.py#L130) |
-| 测试隔离（离线、断网） | [tests/conftest.py](backend/tests/conftest.py) |
-| 真实 LLM 验收脚本 | [backend/scripts/acceptance_citation_comparison.py](backend/scripts/acceptance_citation_comparison.py) |
+| 端点 `POST /api/verify/citation` | [routes/verify.py:54](../backend/src/routes/verify.py#L54) |
+| 5 个响应模型 + `ComparisonStatus` 枚举 | [models.py:297-377](../backend/src/models.py#L297-L377) |
+| 引用定位（marker → 源论文 → 段落） | [services/source_locator.py](../backend/src/services/source_locator.py) |
+| 编排（定位 → 检索 → LLM 判定） | [services/citation_comparison_service.py](../backend/src/services/citation_comparison_service.py) |
+| 缓存的 Embedder 单例 | [engine_adapter.py:73](../backend/src/services/engine_adapter.py#L73) |
+| 让 `.env` 真正生效 | [config.py:130](../backend/src/config.py#L130) |
+| 测试隔离（离线、断网） | [tests/conftest.py](../backend/tests/conftest.py) |
+| 真实 LLM 验收脚本 | [backend/scripts/acceptance_citation_comparison.py](../backend/scripts/acceptance_citation_comparison.py) |
 
 ### 1.2 有意**不**做
 
@@ -32,7 +32,7 @@
 - **不做 `risk_level`** —— 规格里的 `CitationAuditResult` 有这个字段，但它是前端展示层概念，
   不该由后端凭 confidence 硬编码。前端可以用 `confidence` 自行分档。
 - **不改 Audit 的任何行为** —— Audit 管"参考文献是否存在"，Verify 管"主张是否被支持"，
-  两条线继续互不干扰（见 `docs/backend-audit-handoff.md`）。
+  两条线继续互不干扰（见 [audit-contract.md](audit-contract.md)）。
 - **不修引擎** —— 本次只做"吸收"（见 §5）。
   > **更新（2026-09-14）**：引擎侧的失败路径**已经修了**（见 §5 与
   > [engine-verify-contract.zh-CN.md](engine-verify-contract.zh-CN.md)）。
@@ -143,8 +143,8 @@ Content-Type: application/json
 - `judgement` **只在 `status == "COMPARED"` 时存在**，否则恒为 `null`。
 - **`status != "COMPARED"` 意味着"这次没能判定"，绝不意味着"这个 claim 不支持"。**
 
-这条规矩来自仓库既有约定。`docs/backend-audit-handoff.md:90` 写着
-"A failed query must not be converted to `NOT_FOUND`"。原因很直白：`NOT_FOUND` 本身
+这条规矩来自仓库既有约定，成文于 [audit-contract.md](audit-contract.md) §2
+（"A failed query must not be converted to `NOT_FOUND`"）。原因很直白：`NOT_FOUND` 本身
 **是一个判定**（"源论文存在，但没有讲这件事"），把"查询失败"塞进 `NOT_FOUND` 就是在
 **伪造结论**——用户会以为系统真的读过原文并且没找到支持。
 
@@ -213,7 +213,7 @@ if (body.status === "COMPARED") {
 
 ## 4. 为什么收 marker 而不是 bib key
 
-`docs/engine-source-resolver-handoff.md` §3 的方案 A 建议请求直接传干净的 bib key。
+引擎侧 `SourceResolver` 的最初设计建议请求直接传干净的 bib key。
 **这里有意偏离了**，理由：
 
 `GET /api/papers/{id}/claims` 产出的 `ExtractedClaim.citation_marker` 有三种形态：
@@ -267,10 +267,10 @@ if (body.status === "COMPARED") {
 "我们查过了，源论文没提这件事"——而事实是"我们没查成"。这与仓库既有禁令同源：
 
 > A failed query must not be converted to `NOT_FOUND`.
-> —— [docs/backend-audit-handoff.md:90](backend-audit-handoff.md#L90)
+> —— [audit-contract.md](audit-contract.md) §2「The rule the rest of the repository quotes」
 
 **现在后端怎么接**：不再靠宽 `except Exception` 兜底，而是**显式状态分支**
-（[citation_comparison_service.py:214-252](backend/src/services/citation_comparison_service.py#L214-L252)）：
+（[citation_comparison_service.py:214-252](../backend/src/services/citation_comparison_service.py#L214-L252)）：
 
 | Engine 状态 | `ComparisonStatus` |
 |---|---|
@@ -295,11 +295,11 @@ if (body.status === "COMPARED") {
 ### 坑 4：负余弦 —— 不做夹紧会直接 500
 
 `Retriever` 用 `faiss.IndexFlatIP`，配合
-[embedder.py:45](engine/engine/embedder.py#L45) 的 `normalize_embeddings=True`，
+[embedder.py:45](../engine/engine/embedder.py#L45) 的 `normalize_embeddings=True`，
 内积**恰好等于余弦相似度**，而余弦**可以为负**（实测不相关句子 −0.105）。
 
 `ComparisonEvidence.similarity` 有 `ge=0.0` 约束（`MatchResult` 也一样，
-[models.py:181](backend/src/models.py#L181)），直接塞进去就是 500。
+[models.py:181](../backend/src/models.py#L181)），直接塞进去就是 500。
 
 **吸收方式**：`_clamp_similarity()` 夹到 `[0, 1]`。
 
@@ -337,7 +337,7 @@ evidence[].location ← view.paragraph_locations.get(passage_index)
 但本地 `uvicorn src.main:app` 完全读不到 `.env`——启动日志永远是
 `LLM NOT configured`，即使 `.env` 里 key 填得好好的。
 
-现在 [config.py:130](backend/src/config.py#L130) 会加载：
+现在 [config.py:130](../backend/src/config.py#L130) 会加载：
 
 ```python
 load_dotenv(os.getenv("CLAIMTRACE_ENV_FILE") or find_dotenv(), override=False)
@@ -400,11 +400,11 @@ python -m pytest backend/tests
 模式安装（只有 `claimtrace-engine` / `claimtrace-parser` 装了），从 `backend/` 里跑会直接
 `ModuleNotFoundError: No module named 'backend'`。
 
-> 📌 这一点**推翻了** `docs/engine-source-resolver-handoff.md:226` 里写的
-> `cd claimtrace/backend && python -m pytest tests/ -v`。那份文档这一行是错的
-> （本次没有改动那份文档，仅在此标注）。
+> 📌 早期一份 Engine 交接文档曾建议 `cd claimtrace/backend && python -m pytest tests/ -v`，
+> 那条命令是错的，原因如上。本文的写法是唯一正确的一种。
 
-当前结果：**150 passed**（original 93 项 + claim 对照 44 项 + 引擎加固新增 13 项），全程离线、无网络。
+复现：`python -m pytest backend/tests`（全程离线、无网络）。当前基线见 [team.md](team.md) §3
+—— 本文档不再复制具体数字，它们随每次合并漂移。
 
 ### 7.2 新增测试
 

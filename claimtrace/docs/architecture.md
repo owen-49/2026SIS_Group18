@@ -1,8 +1,10 @@
 # ClaimTrace Architecture
 
-> Last updated: 2026-08-28 | v0.2  
-> 反映当前真实代码结构（三队：Frontend / Backend / Engine+Parser）。  
-> v0.1 → v0.2 变更：团队结构从 Pair 改为三队、新增 bib 验证、papers.json 持久化、markdown converter、多 provider LLM。
+> Last updated: 2026-09-21 | v0.3  
+> 反映当前真实代码结构（**四组**：Backend / Frontend / Parser / Engine —— 见 [team.md](team.md)）。  
+> v0.2 → v0.3 变更：Audit 从语义批量判定改为**文献元数据核对**（外部查询已接 OpenAlex + Crossref
+> provider 链）、前端已迁移到 v2 契约、补全 API 端点表、§6 缺口表按代码逐行重核。  
+> ⚠️ 本文曾长期**低报完成度**：§6 原有 6 行缺口中有 4 行早已关闭。凡写「未实现」前请先打开文件。
 
 ---
 
@@ -18,15 +20,16 @@ flowchart TB
     subgraph API["后端层 · FastAPI (claimtrace-backend)"]
         direction LR
         subgraph ROUTES["Routes"]
-            R_PARSE["/api/parse"]
-            R_PAPERS["/api/papers<br/>/claims"]
-            R_VERIFY["/api/verify"]
-            R_AUDIT["/api/audit"]
+            R_PARSE["/api/parse<br/>/api/parse/bib"]
+            R_PAPERS["/api/papers<br/>/claims · DELETE"]
+            R_VERIFY["/api/verify/citation"]
+            R_AUDIT["/api/audit<br/>/api/audit/{id}"]
             R_BIB["/api/verify/bib"]
         end
         CFG["config.py<br/>多 provider 配置"]
         STORE[("papers.json<br/>文件持久化")]
-        SVC["services/<br/>metadata 适配"]
+        SVC["services/<br/>parser_adapter<br/>metadata 适配"]
+        CHAIN["provider_chain_lookup<br/>OpenAlex → Crossref"]
     end
 
     subgraph ENGINE["Engine 包 · claimtrace-engine"]
@@ -51,12 +54,17 @@ flowchart TB
     ROUTES --> ENGINE
     ROUTES --> PARSER
     ROUTES --> STORE
+    ROUTES --> CHAIN
+    CHAIN --> EXTREF["外部文献库<br/>OpenAlex / Crossref"]
     LC --> LLM["外部 LLM<br/>OpenAI / Gemini /<br/>Claude / Ollama"]
 ```
 
 **关键边界**：
 - `Backend ↔ Engine/Parser` 是 **Python 包 import**（同进程），不是 REST —— 避免重复造 API。
-- `Backend ↔ Frontend/Extension` 是 **REST `/api/*`**，这是唯一真正的网络边界。
+- `Backend ↔ Frontend/Extension` 是 **REST `/api/*`**。
+- `Backend ↔ 外部 LLM` 与 `Backend ↔ 外部文献库（OpenAlex / Crossref）` 是另外两条出网边界。
+  两者都是**可失败**的：查询失败必须表现为 `LOOKUP_FAILED`，绝不能退化成 `NOT_FOUND`
+  （见 [audit-contract.md](audit-contract.md)）。这是全系统最重要的一条不变量。
 - `papers.json` 是文件持久化，**不是数据库**（见 §5 设计决策）。
 
 ---
@@ -130,15 +138,18 @@ Local source association is not external publication verification.
 Bibliography Audit reads persisted Bib entries or calls the existing PDF reference
 extractor, then delegates publication lookup to an external-record adapter and
 compares metadata through the existing Engine comparator. It never ranks source
-passages or classifies claim support. The external lookup implementation is still
-missing; unconfigured lookups return `EXTERNAL_LOOKUP_NOT_CONFIGURED`.
+passages or classifies claim support. Startup installs a real provider chain —
+**OpenAlex (primary), then Crossref** — into `app.state.bibliography_lookup`;
+`EXTERNAL_LOOKUP_NOT_CONFIGURED` remains only as the `lookup is None` fallback.
 A reference carries two descriptions of itself — the structured fields a parser
 filled in, and its raw text — and which one is complete depends on how the paper was
 loaded. The searchability guard, the lookup and the field comparison therefore all
 read the same one, through `reference_query_for`, so the audit cannot search on one
-description and compare against another.
-See [backend Audit contract and handoff](backend-audit-handoff.md) for boundaries,
-team dependencies, and the frontend migration still required.
+description and compare against another. This is not a tidiness rule: when the guard
+read the structured title and the comparison read the raw text, every one of the 174
+PDF references was bounced before lookup ever ran.
+See [the Audit contract](audit-contract.md) for the full v2 schema, the lookup rules
+and the measured limits.
 
 ---
 
@@ -151,12 +162,16 @@ team dependencies, and the frontend migration still required.
 | `/health` | GET | 健康检查 |
 | `/api/parse` | POST | 上传 PDF / .bib，返回 `paper_id` |
 | `/api/parse/bib` | POST | 重新解析并返回已保存的 BibTeX 条目 |
-| `/api/parse/{id}` | GET | 查询解析状态 |
+| `/api/parse/{paper_id}` | GET | 查询解析状态 |
+| `/api/parse/{paper_id}` | PUT | 覆盖已同步 BibTeX 的内容，保留同一 Library 记录 |
 | `/api/papers` | GET | 列出论文库 |
-| `/api/papers/{id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
-| `/api/verify` | POST | 验证单条 claim |
-| `/api/audit` | POST | 批量审计 |
-| `/api/verify/bib` | POST | 交叉校验 bib 元数据 |
+| `/api/papers/{paper_id}` | DELETE | 永久删除一条 Library 记录及其产物（204 / 202 / 404 / 500） |
+| `/api/papers/{paper_id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
+| `/api/verify` | POST | 旧版单条 claim 验证；**仓库内已无调用方** |
+| `/api/verify/citation` | POST | 单条 claim 验证 + 引用定位（网页 Review 页实际调用） |
+| `/api/verify/bib` | POST | 本地交叉校验 bib 元数据 × 用户上传的 PDF（不联网） |
+| `/api/audit` | POST | 文献元数据核对（Audit v2，`contract_version: 2`） |
+| `/api/audit/{audit_id}` | GET | 读取已保存的 Audit 结果 |
 
 ### POST /api/parse
 
@@ -217,8 +232,10 @@ Response: {
 Source PDFs are not required. Results distinguish `VERIFIED`,
 `METADATA_MISMATCH`, `NEEDS_REVIEW`, `NOT_FOUND`, and `LOOKUP_FAILED`.
 `NOT_FOUND` does not prove fabrication. `GET /api/audit/{audit_id}` reads stored
-results. See `backend/src/audit_models.py` and the handoff for the full v2 schema.
-The existing Audit frontend has not yet migrated to this breaking contract.
+results. See `backend/src/audit_models.py` and
+[the Audit contract](audit-contract.md) for the full v2 schema and the lookup rules.
+The web frontend has migrated: `AuditPage` renders all five states, and
+`frontend/src/api/client.ts` rejects any response whose `contract_version` is not 2.
 
 ### GET /api/papers/{id}/claims
 
@@ -293,13 +310,47 @@ Response: {
 
 ---
 
-## 6. 当前缺口（截至 v0.2）
+## 6. 当前缺口（截至 v0.3，逐行对代码复核）
 
 | 缺口 | 影响 | 归属 |
 |------|------|------|
-| `ParsedPaper` 首页元数据未填充 | bib 验证暂时只能返回 `PDF_MISSING` | Parser 队 |
-| 前端默认 mock（`VITE_USE_MOCK_API=true`） | 端到端未完全串真实后端 | Frontend |
-| Audit 外部记录查询未实现 | 返回查询未配置，不能完成真实性核实 | Backend / 待确定查询模块负责人 |
-| Audit 前端仍使用旧语义契约 | 需要保留布局并迁移到元数据字段差异及五类状态 | Frontend |
-| PDF 参考文献抽取仅返回原始文本 | 完整字段比对需要结构化条目 | Parser / Engine |
-| markdown converter 测试产物误提交 | git 卫生问题（暂不处理） | 全员 |
+| `ParsedPaper` 首页 `title` / `authors` 从不填充（`parser/parser/pdf_parser.py:38` 有字段，`:231` 构造时不传），且**根本没有** `year` / `venue` / `doi` 字段 | 元数据实际由 `parser_adapter.py` 的一页文本兜底提供，该兜底无人负责确认或替换 | **Parser** |
+| `frontend/src/api/client.ts:88` 的 `deletePaper` 只接受 204 | 202 `cleanup_pending` 时抛「无法确认删除」，而记录其实已删除；用户看到条目仍在 | **Frontend** |
+| 引用列表只识别到 174 条中 1 条的结构化 `title` | Audit 因此读 raw text，并需要「raw text 恢复值不指控」这条规则 | **Parser** |
+| Parser 拒绝只有一条引用的 reference section（需 ≥ 2 条） | 单条引用的样例 PDF 返回空列表 + 警告，属既定边界 | **Parser** |
+| Verify / Audit 均不接受手动指定来源 PDF，候选记录仅供参考 | 歧义来源只能停在不判定状态 | **Backend + Frontend** |
+| 成功指标 4（Parser Recall@5 ≥ 0.80）与 5（Entailment accuracy ≥ 85%） | 仪表已建好，`claim_passages.json` 仍为空——缺的是标注而非工具 | **Parser / Engine**，见 [team.md](team.md) §2 |
+
+### v0.3 已关闭（原 §6 的记录是错的）
+
+本节原先列出 6 行缺口，其中 4 行**在写下时就已经关闭**。记录在此，避免同样的说法回流：
+
+| 原说法 | 实际 |
+|------|------|
+| 前端默认 mock（`VITE_USE_MOCK_API=true`） | `client.ts` 判的是 `=== "true"`，`.env.example` 是 `false`——未设置即走真实后端，这个前提从来不成立 |
+| Audit 外部记录查询未实现 | `backend/src/main.py` 启动时装载 `ProviderChainLookup`（OpenAlex → Crossref）；`EXTERNAL_LOOKUP_NOT_CONFIGURED` 只剩 `lookup is None` 的兜底 |
+| Audit 前端仍使用旧语义契约 | `AuditPage` 五状态齐全，`client.ts:204` 硬拒非 v2 响应 |
+| PDF 参考文献抽取仅返回原始文本 | 结构化字段已由 Parser 产出，问题是它们在该语料上近乎全空（174 条中 1 条）——解决方式因此是读 raw text，而不是补字段 |
+| markdown converter 测试产物误提交 | 已删除产物并加入 `.gitignore`；注意 `markdown_converter.py` 每次运行都会清空该目录，产物本就无法长期留存 |
+
+### User Story → 架构元素映射
+
+编号对应 [docs/user-research/user-stories.md](user-research/user-stories.md)。US-05 已按现行
+Audit（文献核对）而非已删除的语义批量审计修订。
+
+| User Story | Context 涉及 | Container 路径 | Component 路径 |
+|-----------|-------------|---------------|---------------|
+| US-01 上传解析 PDF | 研究者 → ClaimTrace | Dashboard → API → Parser 包 → Storage | Routes → Pipeline → Parser Adapter → Storage |
+| US-02 hover 验证 | 研究者 → Overleaf → ClaimTrace | Extension → Overleaf / API → Engine | Routes → Verify Svc → Engine Adapter |
+| US-03 claim 判定 | ClaimTrace → 外部 LLM | API → Engine 包 → LLM | Routes → Verify Svc → Engine Adapter → LLM |
+| US-04 bib 本地校验 | 研究者 → ClaimTrace | API → Engine 包 | Routes → Bib Svc / Bib Verify Svc → Engine Adapter |
+| US-05 文献元数据核对 | 研究者 → ClaimTrace → OpenAlex / Crossref | Dashboard → API → 外部文献库 → Engine 包 | Routes → Audit Svc → Lookup Adapter（provider 链）→ Engine comparator |
+| US-06 看证据 | — | Engine 包（retriever）；Audit 侧为外部记录 URL | Engine Adapter → Engine 包；Audit 为 matched_record |
+| US-07 论文库 | 研究者 → ClaimTrace | Dashboard → API → Storage | Routes → Storage |
+| US-08 审稿人核查 | 审稿人 → ClaimTrace | Dashboard → API → Parser/Engine | 复用 US-01 + US-05 |
+| US-09 导出报告 | 研究者 → ClaimTrace | Dashboard（前端生成） | — |
+| US-10 团队共享 | — | Storage（多用户，**P2 未实现**） | — |
+
+信任边界在 C4 语义下体现为：Context 层的「ClaimTrace ↔ 外部 LLM」与
+「ClaimTrace ↔ 外部文献库」，Container 层的「客户端 ↔ 后端（网络）」与「后端 ↔ 文件系统（本地）」。
+粒度到 Component 层即可，不再下探到代码层。

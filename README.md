@@ -17,45 +17,43 @@ question: *"Does the cited paper actually say what you claim it says?"*
   different.
 - **Overleaf Hover Audit**: Hover over `\cite{...}` in Overleaf to instantly
   see the matched source text, without leaving your writing flow.
-- **Batch Audit Dashboard**: Upload your manuscript + all cited PDFs and get a
-  risk-ranked report of which citations need human review.
+- **Bibliography Audit**: Upload a manuscript or a `.bib` and have every
+  reference checked against real publication records (OpenAlex, then Crossref) —
+  no source PDFs required.
 
 ---
 
 ## Team
 
-| Role | Member | Team |
-|------|--------|------|
-| Tech Lead / Engine Architecture | — | Engine Team |
-| PDF Parser & Element Extraction | — | Engine Team |
-| Embedding & Retrieval | — | Engine Team |
-| Entailment Verification | — | Engine Team |
-| Backend API | — | Backend Team |
-| Backend Pipeline & DevOps | — | Backend Team |
-| Frontend + Chrome Extension | — | Frontend (Solo) |
+Seven people in four groups. See [claimtrace/docs/team.md](claimtrace/docs/team.md)
+for ownership, success criteria and process.
+
+| Group | Members | GitHub | Owns |
+|-------|---------|--------|------|
+| Backend | Hongyang Chen, Siyuan Sun | `chy1145141919810`, `Archieee-coderr` | `claimtrace/backend/` |
+| Frontend | Jun Li, Sam | `Li-Jun-Li0577`, `Sam20051512` | `claimtrace/frontend/`, `claimtrace/extension/` |
+| Parser | Yi Jiang, Zheng Fu | `johnnyjiangyi01-code`, `Fzddx` | `claimtrace/parser/` |
+| Engine | Sichen Liu | `owen-49` | `claimtrace/engine/` |
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Tech Lead (Engine)                       │
-│                                                             │
-│  统筹 Engine 流水线 (parser → retriever → verifier)          │
-│  跨队接口对齐 · Benchmark 维护 · 架构决策                     │
-└──────────────────┬──────────────────────────────────────────┘
-                   │
-    ┌──────────────┼──────────────┐
-    │              │              │
-    ▼              ▼              ▼
-┌────────┐  ┌──────────┐  ┌──────────┐
-│Engine  │  │ Backend  │  │ Frontend │
-│Team    │  │ Team     │  │ (Solo)   │
-│(4人)   │  │ (2人)    │  │ (1人)    │
-└───┬────┘  └────┬─────┘  └────┬─────┘
-    │            │             │
-    │  Python    │  FastAPI    │  React + Chrome Ext
-    │  module    │  service    │  REST consumer
-    └────────────┼─────────────┘
-                 │
-        Python import       REST API boundary
+        ┌──────────────────────────────────────────────┐
+        │      Four groups, four directories           │
+        │  each owns its package end to end            │
+        └───────────────────┬──────────────────────────┘
+                            │
+   ┌──────────┬─────────────┼─────────────┬──────────┐
+   ▼          ▼             ▼             ▼          │
+┌────────┐┌────────┐  ┌──────────┐  ┌──────────┐    │
+│Parser  ││Engine  │  │ Backend  │  │Frontend  │    │
+│(2)     ││(1)     │  │ (2)      │  │ (2)      │    │
+└───┬────┘└───┬────┘  └────┬─────┘  └────┬─────┘    │
+    │         │            │             │          │
+    │  Python import (in-process)         │          │
+    └─────────┴────────────┘             │          │
+                            │  REST /api/*│          │
+                            └─────────────┘          │
+                                                     │
+   Ownership maps to directories, not to layers ─────┘
 ```
 
 ---
@@ -64,53 +62,51 @@ question: *"Does the cited paper actually say what you claim it says?"*
 
 ```
 claimtrace/
-├── parser/          # PDF → clean structured text
-│   ├── src/
-│   │   ├── pdf_parser.py          # Text extraction, 2-col reorder, paragraphs
-│   │   ├── element_extractor.py   # Formula, table, figure detection
-│   │   └── reference_extractor.py # Bibliography parsing
-│   └── tests/
+├── parser/          # PDF → structured text + reference list
+│   └── parser/                    # the package is flat: parser/parser/
+│       ├── pdf_parser.py          # Text extraction, 2-col reorder, paragraphs
+│       ├── element_extractor.py   # Text blocks + bounding boxes
+│       ├── reference_extractor.py
+│       ├── reference_json_extractor.py  # current reference-list extractor
+│       └── markdown_converter.py
 │
 ├── engine/          # claim → matched source passage + verdict
-│   ├── src/
-│   │   ├── embedder.py            # sentence-transformers wrapper
-│   │   ├── retriever.py           # FAISS index + two-stage retrieval
-│   │   └── verifier.py            # LLM entailment: SUPPORT/PARTIAL/CONTRADICT/NOT_FOUND
-│   └── tests/
+│   └── engine/                    # flat too: engine/engine/
+│       ├── embedder.py            # sentence-transformers wrapper
+│       ├── retriever.py           # FAISS index + two-stage retrieval
+│       ├── verifier.py            # LLM entailment
+│       ├── bib_verifier.py        # bib × PDF metadata comparison
+│       ├── identity.py            # structural record identity
+│       ├── openalex_lookup.py / crossref_lookup.py
+│       └── llm_client.py          # provider-agnostic
 │
 ├── backend/         # FastAPI orchestration layer
 │   └── src/
-│       ├── main.py                # App entry, CORS, router mounting
+│       ├── main.py                # App entry, CORS, router mounting, lookup wiring
 │       ├── models.py              # Shared Pydantic models (API contract)
-│       └── routes/
-│           ├── parse.py           # POST /api/parse, GET /api/parse/{id}
-│           ├── verify.py          # POST /api/verify
-│           └── audit.py           # POST /api/audit
+│       ├── audit_models.py        # Audit v2 response models
+│       ├── routes/                # audit, bib, health, papers, parse, verify
+│       └── services/              # parser_adapter, provider_chain_lookup, ...
 │
-├── frontend/        # Web Audit Dashboard (React + Vite + TypeScript)
-│   └── src/pages/
-│       ├── UploadPage.tsx         # Multi-PDF upload + parse status
-│       ├── VerifyPage.tsx         # Single claim verification
-│       └── AuditPage.tsx          # Batch audit report
+├── frontend/        # Web dashboard (React + Vite + TypeScript)
+│   └── src/pages/                 # AuditPage, VerifyPage, ExtensionSetupPage, DocsPage
 │
 ├── extension/       # Overleaf Chrome Extension (Manifest V3)
-│   └── src/
-│       ├── content.js             # DOM injection + hover detection
-│       └── popup.html             # Extension popup
+│   └── src/                       # content.js, background.js, sidepanel.js
 │
-└── docs/
-    ├── team-charter.md
-    ├── architecture.md
-    ├── spike-reports/
-    └── user-research/
+└── docs/            # current contracts only — see docs/README.md
 ```
+
+`parser/` and `engine/` are flat: the package is the inner directory, not `src/`.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Prerequisites: Python 3.11+, Node.js 20+, Docker
+# Prerequisites: Python 3.11+, Node.js 20+, Docker, and a Java 11+ runtime
+# (OpenDataLoader, used by the PDF Parser, is Java-based; on Java 8 it fails
+# with a class-version error — see claimtrace/docs/audit-live-acceptance/).
 
 # Clone and start all services
 git clone <repo-url>
@@ -118,11 +114,15 @@ cd claimtrace
 docker compose up
 
 # Or run individually
-cd parser && pip install -e ".[dev]" && pytest
-cd engine && pip install -e ".[dev]" && pytest
+cd parser  && pip install -e ".[dev]" && pytest
+cd engine  && pip install -e ".[dev]" && pytest
 cd backend && pip install -e ".[dev]" && uvicorn src.main:app --reload
 cd frontend && npm install && npm run dev
 ```
+
+The backend serves `http://localhost:8000`; the web app `http://localhost:3000`.
+Copy `claimtrace/.env.example` to `.env` for the backend and
+`frontend/.env.example` to `frontend/.env.local` for the web app.
 
 ---
 
@@ -133,16 +133,15 @@ cd frontend && npm install && npm run dev
 ```
 main ─────────────────────────────────────────────
   │
-  ├── engine/parser-core        ← Engine Team
-  ├── engine/retrieval          ← Engine Team
-  ├── engine/verification       ← Engine Team
-  ├── backend/api               ← Backend Team
-  ├── frontend/ui               ← Frontend Solo
-  └── frontend/extension        ← Frontend Solo
+  ├── engine/…                  ← Engine group
+  ├── backend/…                 ← Backend group
+  ├── frontend/…                ← Frontend group
+  └── parser/…                  ← Parser group
 ```
 
-- Feature branches live ≤ 1 week. Merge to `main` every Friday.
-- `main` is always deployable (at minimum, it doesn't crash).
+Branch names are `<area>/<what>`, prefixed by the owning directory. Feature branches
+live ≤ 1 week and merge to `main` every Friday. `main` is always deployable (at minimum,
+it doesn't crash).
 
 ### Daily Routine
 
@@ -160,7 +159,7 @@ git commit -m "frontend: add upload progress bar"
 
 # 3. Push + open PR
 git push origin your-branch
-# PR → CI must pass → ≥1 approve → Squash merge
+# PR → CI must pass → ≥1 approve → merge commit
 ```
 
 ### Conflict Prevention
@@ -177,8 +176,13 @@ git push origin your-branch
 
 1. CI must pass (lint + tests for all four modules)
 2. At least 1 approval required
-3. Squash merge to `main` (keep history linear and clean)
+3. Merge via a merge commit (`--no-ff`). The published history is a chain of
+   `Merge pull request #N` commits, so a squash would diverge from it.
 4. If you're unsure → open a **Draft PR** first, ask for early feedback
+
+**The PR description is where this project keeps its reasoning** — scope, what was
+deliberately *not* changed, and the validation performed. There is no issue tracker
+in use. See [claimtrace/docs/team.md](claimtrace/docs/team.md) §3.
 
 ### Git Configuration (everyone, once)
 
@@ -221,10 +225,13 @@ Frontend Sprint Plan:
 | Day | Meeting | Who | Duration |
 |-----|---------|-----|----------|
 | Monday | Standup | All 7 | 15 min |
-| Wednesday | Engine Team deep sync | Engine Team | 30 min |
-| Thursday | Cross-team alignment | Tech Lead + Backend lead + Frontend | 20 min |
+| Wednesday | Group deep sync | per group | 30 min |
+| Thursday | Cross-group alignment (API contracts) | one from each group | 20 min |
 | Friday | Sprint Review + Retro + Planning | All 7 | 75 min |
 | Friday | Workshop | All 7 | 3 hours |
+
+Cross-group decisions are the ones about a **contract** — an API shape, a response
+status, a boundary. Those get a document in `claimtrace/docs/` updated in the same PR.
 
 ---
 
@@ -248,13 +255,23 @@ Backend → Frontend/Extension is REST:
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/health` | GET | Service health check |
-| `/api/parse` | POST | Upload & parse a PDF |
-| `/api/parse/{id}` | GET | Get parse status |
-| `/api/verify` | POST | Verify a single claim against source |
-| `/api/audit` | POST | Batch audit all citations in a manuscript |
-| `/api/audit/{id}` | GET | Get audit results |
+| `/api/parse` | POST | Upload & parse a PDF or `.bib` |
+| `/api/parse/{paper_id}` | GET | Get parse status |
+| `/api/parse/{paper_id}` | PUT | Replace a synchronised `.bib` in place |
+| `/api/parse/bib` | POST | Re-parse and return stored BibTeX entries |
+| `/api/papers` | GET | List the paper library |
+| `/api/papers/{paper_id}` | DELETE | Permanently delete a library record |
+| `/api/papers/{paper_id}/claims` | GET | Extract claims and citation markers |
+| `/api/verify/citation` | POST | Verify one claim against its source |
+| `/api/verify/bib` | POST | Local bib × uploaded-PDF metadata check |
+| `/api/audit` | POST | Bibliography audit (external publication records) |
+| `/api/audit/{audit_id}` | GET | Get stored audit results |
 
-Full schema: `backend/src/models.py` | Interactive docs: `http://localhost:8000/docs`
+Full schema: `backend/src/models.py`, `backend/src/audit_models.py` |
+Interactive docs: `http://localhost:8000/docs` |
+Contracts: [audit](claimtrace/docs/audit-contract.md) ·
+[engine](claimtrace/docs/engine-verify-contract.zh-CN.md) ·
+[citation comparison](claimtrace/docs/citation-comparison.zh-CN.md)
 
 ---
 
@@ -262,15 +279,43 @@ Full schema: `backend/src/models.py` | Interactive docs: `http://localhost:8000/
 
 | Layer | Tech | Owner |
 |-------|------|-------|
-| PDF Parsing | PyMuPDF, pdfplumber | Engine |
-| Formula OCR | Nougat / Pix2Text (W3) | Engine |
-| Embeddings | sentence-transformers (all-MiniLM-L6-v2) | Engine |
-| Vector Index | FAISS | Engine |
-| LLM Verification | GPT-4o / Gemini 2.0 Flash | Engine |
+| PDF Parsing | OpenDataLoader (needs a Java runtime), PyMuPDF, pdfplumber | Parser |
+| Reference Extraction | `reference_json_extractor` (APA 7, standard IEEE) | Parser |
+| Embeddings | sentence-transformers (`all-MiniLM-L6-v2`) | Engine |
+| Vector Index | FAISS (`faiss-cpu`) | Engine |
+| LLM | Provider-agnostic (`engine/engine/llm_client.py`): OpenAI (`gpt-4o-mini`, default), DeepSeek (`deepseek-chat`), Gemini, Anthropic, Ollama | Engine |
+| Publication Records | OpenAlex (primary) → Crossref (fallback), keyless REST | Backend |
 | Backend | FastAPI + Uvicorn | Backend |
 | Frontend | React 18 + Vite + TypeScript | Frontend |
 | Extension | Chrome Manifest V3 | Frontend |
-| CI/CD | GitHub Actions | Backend |
+| CI/CD | GitHub Actions | all four |
+
+Formula OCR (Nougat / Pix2Text) was planned in W3 and **is not implemented** — it appears
+in no dependency file.
+
+---
+
+## Repository layout note: course deliverables vs. maintained docs
+
+The files below are **course deliverables** — assessment artifacts submitted for
+41129 Software Innovation Studio. They are kept as submitted and are **not**
+maintained against the code. Do not treat anything in them as current, and do not
+update them to match the implementation.
+
+| File | What it is |
+|------|-----------|
+| `41129_PROJECT_IDEA_SHORTLIST.md` | A1 planning artifact |
+| `Project pitch.pptx` | A1 pitch slides |
+| `Project pitch8.21.pdf` | A1 pitch, exported |
+| `Template of Project Pitch.pdf` | UTS-provided template |
+| `Week 1 - Introduction.pdf` | UTS-provided course material |
+| `team-charter.pdf` | UTS-provided charter template, **unfilled** |
+| `ClaimTrace-Pitch-Script-and-QA.md` | Pitch script and Q&A prep |
+| `ClaimTrace-Preparation-Plan.md` | The W1–W3 preparation plan. Its metric commitments are the origin of the benchmark bars in `claimtrace/engine/tests/benchmarks/CLAIM_PASSAGES.md`. |
+
+Everything under `claimtrace/docs/` is the opposite: current, code-verified, and
+expected to change with the code. Start at
+[claimtrace/docs/README.md](claimtrace/docs/README.md).
 
 ---
 

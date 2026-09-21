@@ -303,7 +303,7 @@ class ComparisonStatus(str, Enum):
     distinction matters because ``NOT_FOUND`` is itself a verdict (the source
     exists and does not state the claim), so collapsing a lookup failure into
     ``judgement.verdict = NOT_FOUND`` would report a fabricated finding. This
-    mirrors the Audit contract in ``docs/backend-audit-handoff.md``.
+    mirrors the Audit contract in ``docs/audit-contract.md``.
     """
 
     COMPARED = "COMPARED"

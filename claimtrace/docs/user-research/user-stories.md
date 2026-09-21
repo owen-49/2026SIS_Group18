@@ -1,177 +1,193 @@
 # User Stories
 
-> 关联画像：见 [personas.md](personas.md)。  
-> 优先级定义：**P0** = MVP 必须有（12 周 demo 的核心闭环）；**P1** = 重要、尽量做；**P2** = 锦上添花、可延后。
+> Related personas: see [personas.md](personas.md).  
+> Priority: **P0** = MVP must-have (core loop for the 12-week demo); **P1** = important, ship if possible; **P2** = nice-to-have, deferrable.
 
 ---
 
-## 功能分组总览
+## Feature Groups Overview
 
 ```
-A. 文档摄入        B. 引用验证        C. 元数据校验      D. 批量审计
-   ├ US-01 上传PDF    ├ US-02 hover     ├ US-04 上传bib    ├ US-05 全篇审计
-   │                 ├ US-03 判定       │                  │
-   └ US-07 论文库    └ US-06 看证据     └                  └ US-09 导出报告
+A. Document Ingestion   B. Citation Verification   C. Metadata Check   D. Bibliography Audit
+   ├ US-01 Upload PDF      ├ US-02 hover             ├ US-04 local bib     ├ US-05 audit
+   │                       ├ US-03 verdict           │   × PDF check       │
+   └ US-07 library         └ US-06 evidence          └                     └ US-09 export report
 ```
+
+> Revised 2026-09-21. The original US-05 described a semantic *batch* audit that ranked
+> claims by risk. That flow was removed from the backend; Audit is now a bibliography
+> check. US-04 and US-06 were adjusted for the same reason. Numbering is unchanged —
+> `extension/src/content.js` and `extension/hover-card.test.cjs` cite US-02 by number.
 
 ---
 
-## P0 — MVP 核心（必须交付）
+## P0 — MVP Core (must ship)
 
-### US-01 · 上传并解析源论文 PDF
+### US-01 · Upload and parse a source paper PDF
 
-> **As a** 研究者（P1），**I want** 上传一篇源论文 PDF 并让它被解析成结构化段落，**so that** 系统能针对它做后续的引用验证。
+> **As a** researcher (P1), **I want** to upload a source paper PDF and have it parsed into structured paragraphs, **so that** the system can run citation verification against it.
 
 - **Priority**: P0
-- **Persona**: P1 博士生（主要）、P2 导师
+- **Persona**: P1 PhD student (primary), P2 supervisor
 - **Acceptance Criteria**:
-  - [ ] 接受 ≤50MB 的 PDF 上传，非 PDF 返回明确错误而非 500
-  - [ ] 解析返回 `paper_id` + 段落数 + 页数
-  - [ ] 正确恢复双栏 PDF 的阅读顺序（不混栏）
-  - [ ] 修复跨行断字符（`repre-\nsentation` → `representation`）
-  - [ ] 解析结果可通过 `paper_id` 查询状态
+  - [ ] Accept PDFs up to 50MB; return a clear error (not a 500) for non-PDF files
+  - [ ] Return `paper_id`, paragraph count, and page count after parsing
+  - [ ] Correctly recover two-column reading order (no column mixing)
+  - [ ] Repair cross-line hyphenation (`repre-\nsentation` → `representation`)
+  - [ ] Parse status queryable by `paper_id`
 - **Story Points**: 8
 
 ---
 
-### US-02 · 在 Overleaf 中 hover 引用查看原文
+### US-02 · Hover a citation in Overleaf to see the source passage
 
-> **As a** 研究者（P1），**I want** 在 Overleaf 里把鼠标悬停在 `\cite{...}` 上就能看到它指向的源原文段落，**so that** 我不离开写作流就能核对引用。
+> **As a** researcher (P1), **I want** to hover over `\cite{...}` in Overleaf and see the original passage it points to, **so that** I can verify a citation without leaving my writing flow.
 
 - **Priority**: P0
-- **Persona**: P1 博士生（核心）
+- **Persona**: P1 PhD student (core)
 - **Acceptance Criteria**:
-  - [ ] 浏览器扩展能识别 `\cite{key}` 并捕获 hover 事件
-  - [ ] hover 时弹窗展示源 PDF 中匹配的原文段落（高亮）
-  - [ ] 弹窗显示判定标签（🟢/🟡/🔴）
-  - [ ] 端到端延迟 < 1s（在已索引的论文上）
+  - [ ] The browser extension identifies `\cite{key}` and captures the hover event
+  - [ ] The popup shows the matched source passage (highlighted) on hover
+  - [ ] The popup displays a verdict badge (🟢/🟡/🔴)
+  - [ ] End-to-end latency < 1s (on an already-indexed paper)
 - **Story Points**: 13
 
 ---
 
-### US-03 · 验证一条 claim 是否被源文献支撑
+### US-03 · Verify whether a claim is supported by its cited source
 
-> **As a** 研究者（P1），**I want** 输入/选定一句论文声明并得到「被支撑 / 部分支撑 / 相矛盾 / 未找到」的判定，**so that** 我知道这个引用是准确、夸大还是曲解。
+> **As a** researcher (P1), **I want** to submit a paper claim and get a verdict of supported / partially supported / contradicted / not found, **so that** I know whether the citation is accurate, overstated, or misquoted.
 
 - **Priority**: P0
-- **Persona**: P1 博士生、P3 审稿人
+- **Persona**: P1 PhD student, P3 reviewer
 - **Acceptance Criteria**:
-  - [ ] 返回四分类判定：`SUPPORT` / `PARTIAL` / `CONTRADICT` / `NOT_FOUND`
-  - [ ] 每个判定附带置信度 + 匹配到的原文段落
-  - [ ] 语义匹配能处理 paraphrase（措辞不同但含义一致）
-  - [ ] 判定附带人类可读的 rationale
+  - [ ] Return a four-way verdict: `SUPPORT` / `PARTIAL` / `CONTRADICT` / `NOT_FOUND`
+  - [ ] Each verdict includes a confidence score and the matched source passage
+  - [ ] Semantic matching handles paraphrase (different wording, same meaning)
+  - [ ] The verdict includes a human-readable rationale
 - **Story Points**: 13
 
 ---
 
-### US-04 · 上传 .bib 文件并校验元数据
+### US-04 · Upload a .bib file and validate its metadata
 
-> **As a** 研究者（P1），**I want** 上传 `.bib` 文件并与源 PDF 的真实信息交叉比对，**so that** 我能发现参考文献条目里的年份错、标题乱码、DOI 指错论文这类错误。
+> **As a** researcher (P1), **I want** to upload a `.bib` file and cross-check it against the real information printed on the source PDFs, **so that** I can catch wrong years, garbled titles, and DOIs pointing to the wrong paper in my bibliography.
 
 - **Priority**: P0
-- **Persona**: P1 博士生
+- **Persona**: P1 PhD student
 - **Acceptance Criteria**:
-  - [ ] 解析 `.bib` 文件得到结构化条目（title/authors/year/venue/DOI）
-  - [ ] 逐字段返回 `MATCH` / `MISMATCH` / `BIB_MISSING` / `PDF_MISSING`
-  - [ ] 支持常见 BibTeX 特性（`@string` 宏、`#` 拼接、LaTeX 转义、作者名归一化）
-  - [ ] 缺失源 PDF 时优雅降级（返回 `PDF_MISSING` 而非崩溃）
+  - [ ] Parse the `.bib` file into structured entries (title/authors/year/venue/DOI)
+  - [ ] Return per-field `MATCH` / `MISMATCH` / `BIB_MISSING` / `PDF_MISSING`
+  - [ ] Support common BibTeX features (`@string` macros, `#` concatenation, LaTeX escapes, author-name normalization)
+  - [ ] Degrade gracefully when a source PDF is missing (return `PDF_MISSING`, not a crash)
+- **Story Points**: 8
+
+> This checks the `.bib` against **a PDF the user supplied** — it never contacts an
+> external service. It is therefore *not* existence proof: a wrong year that the cited
+> PDF also prints still matches. US-05 is the external check. Keep the two distinct in
+> the UI so a `MATCH` here is not read as "this reference is real".
+
+---
+
+## P1 — Important (ship if possible)
+
+### US-05 · Check a manuscript's bibliography against external publication records
+
+> **As a** researcher (P1), **I want** to upload or select a bibliography — a manuscript's reference list or a `.bib` — and have every entry checked against real publication records, **so that** I catch fabricated, misattributed or garbled references before submission without hunting down each cited PDF myself.
+
+- **Priority**: P1
+- **Persona**: P1 PhD student, P2 supervisor
+- **Acceptance Criteria**:
+  - [ ] Accept either an uploaded `.bib` or a manuscript PDF; **no source PDFs required**
+  - [ ] Return a per-entry state: `VERIFIED` / `METADATA_MISMATCH` / `NEEDS_REVIEW` / `NOT_FOUND` / `LOOKUP_FAILED`
+  - [ ] Show both values for each field difference, and link the matched record
+  - [ ] Report `LOOKUP_FAILED` as "not checked" — never as "does not exist"
+  - [ ] An entry with nothing found is reported as not found, **not** as fabricated
 - **Story Points**: 8
 
 ---
 
-## P1 — 重要（尽量交付）
+### US-06 · See the source evidence behind every verdict
 
-### US-05 · 一键批量审计整篇论文的引用
-
-> **As a** 研究者（P1），**I want** 上传论文草稿 + 所有引用 PDF 后一键运行全量审计，**so that** 交稿前能系统性地而不是凭感觉检查所有引用。
+> **As a** researcher (P1/P3), **I want** every result to come with its evidence, **so that** I can judge whether the tool got it right rather than trusting the label blindly.
 
 - **Priority**: P1
-- **Persona**: P1 博士生、P2 导师
+- **Persona**: All (this is the foundation of trust)
 - **Acceptance Criteria**:
-  - [ ] 返回总引用数、supported/partial/contradicted/not_found 计数
-  - [ ] 结果按风险等级排序，红色标出最该人工复核的引用
-  - [ ] 每个条目可展开查看判定依据
-- **Story Points**: 8
-
----
-
-### US-06 · 查看每条判定的原文证据
-
-> **As a** 研究者（P1/P3），**I want** 每条判定都附带它匹配到的原文段落和引用来源，**so that** 我自己能判断 AI 判得对不对，而不是盲信结论。
-
-- **Priority**: P1
-- **Persona**: 全部（这是「信任」的核心）
-- **Acceptance Criteria**:
-  - [ ] 判定结果旁展示原文段落（而非只有标签）
-  - [ ] 段落标注来源（页码 / section / 引用 key）
-  - [ ] 用户能一键跳转到源 PDF 对应位置
+  - [ ] **Verify (US-03)**: show the matched source passage beside the verdict, not just the label
+  - [ ] Annotate the passage with its location (page / section / citation key)
+  - [ ] Let the user jump to the corresponding location in the source PDF
+  - [ ] **Audit (US-05)**: the evidence is the retrieved record — its URL, provider and query time — plus the field differences. Audit has no source passage and must not show one.
 - **Story Points**: 5
 
 ---
 
-### US-07 · 管理论文库（复用已解析论文）
+### US-07 · Manage a paper library (reuse parsed papers)
 
-> **As a** 研究者（P1），**I want** 上传过的论文能保存在库中、下次复用而不必重新上传，**so that** 多篇论文引用同一文献时不用重复处理。
+> **As a** researcher (P1), **I want** uploaded papers to be saved in a library and reused without re-uploading, **so that** citing the same source across multiple manuscripts doesn't require re-processing.
 
 - **Priority**: P1
-- **Persona**: P1 博士生、P2 导师
+- **Persona**: P1 PhD student, P2 supervisor
 - **Acceptance Criteria**:
-  - [ ] 已解析的论文持久化（重启后仍在）
-  - [ ] 论文库支持列出/查询已上传论文
-  - [ ] 同一篇论文可被多次验证复用
+  - [ ] Parsed papers persist across restarts
+  - [ ] The library supports listing and querying uploaded papers
+  - [ ] A paper can be reused for multiple verifications
 - **Story Points**: 5
 
 ---
 
-## P2 — 锦上添花（可延后）
+## P2 — Nice-to-have (deferrable)
 
-### US-08 · 审稿人快速核查投稿
+### US-08 · Reviewer fast-checks a submission
 
-> **As a** 审稿人（P3），**I want** 对一篇投稿的核心主张快速核查其引用是否准确，**so that** 我能在 review 里给出有据可依的评审意见。
+> **As a** reviewer (P3), **I want** to quickly check whether a submission's core claims cite their sources accurately, **so that** I can write evidence-backed review comments.
 
 - **Priority**: P2
 - **Acceptance Criteria**:
-  - [ ] 支持导入投稿 PDF + 自动提取其引用列表
-  - [ ] 批量比对投稿 claim 与引用原文
+  - [ ] Support importing a submission PDF and auto-extracting its reference list
+  - [ ] Run a bibliography check (US-05) over the whole reference list without needing the cited PDFs
+  - [ ] Report identity and metadata outcomes per entry; do not present "not found" as evidence of fabrication
+  - [ ] Optionally run single-claim Verify (US-03) on selected claims
 - **Story Points**: 8
 
 ---
 
-### US-09 · 导出审计报告
+### US-09 · Export an audit report
 
-> **As a** 研究者（P1/P2），**I want** 导出审计结果为可分享的报告（Markdown/PDF），**so that** 我能发给合著者或导师沟通修改。
+> **As a** researcher (P1/P2), **I want** to export the audit result as a shareable report (Markdown/PDF), **so that** I can send it to co-authors or my supervisor for discussion.
 
 - **Priority**: P2
 - **Acceptance Criteria**:
-  - [ ] 导出包含风险排序 + 证据的报告
-  - [ ] 报告含针对每个问题的修改建议
+  - [ ] Export the bibliography outcomes with the field differences and record links behind them
+  - [ ] Include a suggested correction for each metadata difference
+  - [ ] State clearly that "not found" is not an accusation
 - **Story Points**: 3
 
 ---
 
-### US-10 · 团队共享论文库
+### US-10 · Share a team paper library
 
-> **As a** 合著团队（P1），**I want** 团队共享一个论文库，**so that** 合著者之间的引用验证结果可以复用、避免重复劳动。
+> **As a** co-authoring team (P1), **I want** to share a paper library among the team, **so that** citation-verification results can be reused and duplicated effort avoided.
 
 - **Priority**: P2
 - **Acceptance Criteria**:
-  - [ ] 多用户可访问同一论文库
-  - [ ] 验证结果可共享给团队成员
+  - [ ] Multiple users can access the same library
+  - [ ] Verification results can be shared with teammates
 - **Story Points**: 8
 
 ---
 
-## 优先级矩阵（价值 × 成本）
+## Priority Matrix (value × cost)
 
-| Story | 价值 | 成本 | 结论 |
-|-------|:---:|:---:|------|
-| US-01 上传解析 PDF | 高 | 中 | **P0 必做** |
-| US-02 hover 验证 | 极高 | 高 | **P0 必做**（差异化核心） |
-| US-03 claim 判定 | 极高 | 高 | **P0 必做**（核心价值） |
-| US-04 bib 校验 | 高 | 低 | **P0 必做**（成本低收益好） |
-| US-05 批量审计 | 高 | 中 | P1 优先做 |
-| US-06 看证据 | 极高 | 低 | P1 优先做（信任基石） |
-| US-07 论文库 | 中 | 低 | P1 优先做 |
-| US-08 审稿人场景 | 中 | 高 | P2 可延后 |
-| US-09 导出报告 | 中 | 低 | P2 可延后 |
-| US-10 团队共享 | 中 | 高 | P2 可延后 |
+| Story | Value | Cost | Decision |
+|-------|:---:|:---:|----------|
+| US-01 Upload & parse PDF | High | Med | **P0 ship** |
+| US-02 Hover verify | Very high | High | **P0 ship** (core differentiator) |
+| US-03 Claim verdict | Very high | High | **P0 ship** (core value) |
+| US-04 Local bib × PDF check | High | Low | **P0 ship** (low cost, high payoff) |
+| US-05 Bibliography audit | High | Med | **P0 ship** (needs no source PDFs) |
+| US-06 Evidence view | Very high | Low | P1 prioritize (trust foundation) |
+| US-07 Paper library | Med | Low | P1 prioritize |
+| US-08 Reviewer scenario | Med | High | P2 defer |
+| US-09 Export report | Med | Low | P2 defer |
+| US-10 Team sharing | Med | High | P2 defer |
