@@ -9,7 +9,10 @@ npm install
 npm run dev
 ```
 
-The app opens at `http://localhost:3000` and uses deterministic demo data by default, so the complete interface works without the backend.
+The app opens at `http://localhost:3000` and talks to the backend at
+`VITE_API_URL` (default `http://localhost:8000`). Demo data is **not** the default:
+`usingMockApi` is true only when `VITE_USE_MOCK_API` is exactly `"true"`. Setting it to
+`true` runs the whole interface offline against deterministic data.
 
 ## Connect the API
 
@@ -29,12 +32,37 @@ npm run build
 
 ## Main routes
 
-- `/` — workspace overview
-- `/library` — uploaded manuscript library with an in-page upload window
-- `/upload` — redirects to the Paper Library upload window for compatibility
-- `/verify` — manuscript claim and database citation review
-- `/audit` — batch citation audit
+- `/` — redirects to `/audit`
+- `/library` — redirects to `/audit`
+- `/upload` — redirects to `/audit`
+- `/audit` — the citation audit workspace (library, upload and results are panels here)
+- `/verify` — manuscript claim and source review
+- `/extension-setup` — Chrome extension setup instructions
+- `/docs` — in-app documentation
 
-In real API mode, `/library` loads persisted PDF and BibTeX records from `GET /api/papers`. It uploads either format through `POST /api/parse`, refreshes pending processing state through `GET /api/parse/{paper_id}`, and displays backend error messages for failed requests and records. Completed BibTeX records can be checked against completed source PDFs through `POST /api/verify/bib`; `PDF_MISSING` is shown as unavailable PDF metadata, not as an API failure. Academic-database articles used for citation comparison are shown in review results, never mixed into Paper Library.
+Only `/audit` and `/verify` are pages. The library and the upload window are panels
+inside the Audit workspace, which is why `/`, `/library` and `/upload` redirect rather
+than render. There is no separate Library or Upload page.
 
-The `/verify` screen is analysis-driven: it selects an uploaded manuscript, shows its extracted text on the left, loads claim-and-citation pairs from `GET /api/papers/{paper_id}/claims`, and shows persisted BibTeX/source-PDF resolution on the right. An identified cited source is automatic; a missing citation may return optional `similar_sources` candidates that the user can choose for comparison without treating the candidate as the original citation. The `/audit` screen in this branch still uses the previous semantic response types. The backend now provides bibliography Audit v2 (publication existence and metadata differences, without requiring source PDFs); the Audit frontend and mocks need coordinated migration while preserving the display layout. See [the backend handoff](../docs/backend-audit-handoff.md). Real API mode for Single Verify shows an explicit unavailable or pending state when persisted analysis data is not ready.
+In real API mode the Audit workspace loads persisted PDF and BibTeX records from
+`GET /api/papers`. It uploads either format through `POST /api/parse` (or
+`PUT /api/parse/{paper_id}` to replace a synchronised `.bib`), refreshes pending state
+through `GET /api/parse/{paper_id}`, and surfaces backend error messages. Completed
+BibTeX records can be checked against completed source PDFs through `POST /api/verify/bib`;
+`PDF_MISSING` means the PDF metadata is unavailable, not that the API failed.
+External records used for citation comparison appear in review results and are never
+mixed into the paper library.
+
+The `/verify` screen selects an uploaded manuscript, shows its extracted text on the left,
+loads claim-and-citation pairs from `GET /api/papers/{paper_id}/claims`, and shows
+persisted BibTeX / source-PDF resolution on the right. An identified cited source is
+automatic; a missing citation may return optional `similar_sources` candidates the user
+can choose without treating a candidate as the original citation. Analysis runs through
+`POST /api/verify/citation`, and a status other than `COMPARED` renders the backend's
+message and evidence **without** a verdict. Real API mode shows an explicit unavailable
+or pending state when persisted analysis data is not ready.
+
+The `/audit` screen speaks the bibliography Audit v2 contract: it rejects any response
+whose `contract_version` is not 2 and renders all five outcome states. See
+[docs/audit-contract.md](../docs/audit-contract.md) for the contract and
+[docs/frontend-handoff.md](../docs/frontend-handoff.md) for the frontend's own.

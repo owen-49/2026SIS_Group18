@@ -1,8 +1,8 @@
 """Resolve a citation marker to the parsed paper it points at.
 
-This is the backend half of the Engine's ``SourceResolver`` contract, described
-in ``docs/engine-source-resolver-handoff.md`` (Part 1). ``SourceResolver`` is
-deliberately storage-agnostic — the caller injects ``locate`` and ``parse`` —
+This is the backend half of the Engine's ``SourceResolver`` contract. That
+contract is deliberately storage-agnostic — the caller injects ``locate`` and
+``parse`` —
 and this module supplies those two callables from persisted Parser output:
 
     CitationLookup --> locate_source() --> SourcePaper --> parse_source() --> [passage, ...]

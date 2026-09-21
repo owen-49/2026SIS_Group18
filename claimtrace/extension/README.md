@@ -97,7 +97,7 @@ The search box filters local entries. In Papers, **Search title on Google
 Scholar** opens an external search page for the entered text; entries without a
 URL offer the same title-search fallback. This is not a backend search API or
 proof of publication identity. Backend alignment and current live-check limits
-are recorded in [BACKEND_ALIGNMENT.zh-CN.md](BACKEND_ALIGNMENT.zh-CN.md).
+are recorded in [docs/frontend-handoff.md](../docs/frontend-handoff.md) §3.
 
 
 ## Reading and reviewing

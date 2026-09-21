@@ -45,9 +45,11 @@ jobs:
         # The engine package is flat: code lives in engine/engine/, not src/.
         run: ruff check engine/ tests/
       - name: Test
-        # PYTHONPATH=.. makes the ClaimTrace application root importable, which
-        # tests/test_google_scholar_lookup.py needs for `backend.src.audit_models`.
-        run: PYTHONPATH=.. pytest --cov=engine --cov-report=term
+        # Every engine test imports only `engine.*`; the two benchmark harnesses
+        # put the repo root on sys.path themselves. No PYTHONPATH is needed, and
+        # none is set, so a test that reaches into `backend.*` or `parser.*`
+        # fails here rather than passing by accident.
+        run: pytest --cov=engine --cov-report=term
 
   backend:
     name: Backend Tests

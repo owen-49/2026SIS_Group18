@@ -34,8 +34,15 @@ uploads/
 parser/tests/test_data/*.pdf
 !parser/tests/test_data/.gitkeep
 
-# Archify visual-check evidence (screenshots + receipt + contact sheet)
+# Archify visual-check evidence (screenshots + receipt + contact sheet).
+# The tracked diagram lives in docs/diagrams/, so ignore the pattern in both places.
 docs/*.visual-check.*
+docs/diagrams/*.visual-check.*
+
+# markdown_converter empties and repopulates this directory on every run, so its
+# contents cannot be tracked meaningfully.
+generated_markdown/*
+!generated_markdown/.gitkeep
 
 # Docker
 docker-compose.override.yml
