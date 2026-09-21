@@ -244,6 +244,41 @@ goes stale, because the script's assertions check live output rather than the sn
 
 ## 7. Known limits
 
+### Venue-abbreviation measurement (2026-09-21)
+
+The proposed relaxation was measured without changing the production comparator.  It
+keeps the current exact/fuzzy rule and additionally accepts a short venue acronym only
+when it equals a conservative whole-name initialism.  Edge wrappers such as
+`Proceedings`, a year, `Annual Meeting`, `Volume` and `Long Papers` may be removed;
+words inside the name may not.  Consequently `ACL` agrees with *Proceedings of the 57th
+Annual Meeting of the Association for Computational Linguistics*, while `ACL` does not
+agree with a NAACL venue merely because that longer name contains the ACL organisation.
+
+Reproduce it with:
+
+```sh
+python backend/scripts/venue_abbreviation_measurement.py \
+  backend/uploads/parsed/audits \
+  --output /tmp/venue-abbreviation-measurement.json
+```
+
+The tool holds each matched record fixed, reports every venue difference the proposal
+would admit, and projects the resulting Audit status.  It also checks all recorded
+candidates in `reference_identity_fixture.json`, counting explicitly forbidden
+candidates separately from acceptable and unlabelled candidates.
+
+The corpus previously quoted as 24 Audit files / 91 matched records is local,
+gitignored data and is not present in this checkout.  The available 2026-09-21 corpus
+contains 18 Audit files and 8 unique matched records: current and proposed counts are
+`1 VERIFIED / 4 METADATA_MISMATCH / 3 NEEDS_REVIEW`; the proposal adds **0 VERIFIED**
+and admits **0 venue differences**.  The identity fixture contains 13 cases and 148
+recorded candidate pairs; it adds **0 acceptable**, **0 forbidden**, and **0 unlabelled**
+candidate venue agreements.  This smaller corpus contains no abbreviation case, so the
+zero is not evidence that the relaxation improves nothing.  It is evidence that there
+is not yet enough checked-in data to justify changing production.  The production rule
+therefore remains unchanged; rerun the command over the original 24-file corpus before
+considering the relaxation.
+
 - **The venue rule costs coverage.** A reference whose only candidates carry no venue
   reports `NOT_FOUND` where Scholar would have returned a hit. This is the
   anti-fabrication rule working, and it is a real cost rather than a bug. Do not "fix" it
