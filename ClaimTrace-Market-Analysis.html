@@ -1,0 +1,711 @@
+<title>ClaimTrace Market Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F5F6F8; --surface:#FFFFFF; --ink:#12161C; --ink-soft:#4A535F;
+  --ink-faint:#79828F; --rule:#DFE3E9; --rule-soft:#EDEFF3;
+  --blue:#0F4BEB; --blue-soft:#E9EEFD; --red:#C42B14; --red-soft:#FBEBE7;
+  --amber:#8A5200; --amber-soft:#FAF0DC; --shadow:0 1px 2px rgba(18,22,28,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1116; --surface:#161A21; --ink:#E8EBF0; --ink-soft:#A8B1BD;
+    --ink-faint:#79828F; --rule:#262C35; --rule-soft:#1D222A;
+    --blue:#7C9EFF; --blue-soft:#18233D; --red:#FF8873; --red-soft:#331A15;
+    --amber:#E3A94E; --amber-soft:#2C2314; --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1116; --surface:#161A21; --ink:#E8EBF0; --ink-soft:#A8B1BD;
+  --ink-faint:#79828F; --rule:#262C35; --rule-soft:#1D222A;
+  --blue:#7C9EFF; --blue-soft:#18233D; --red:#FF8873; --red-soft:#331A15;
+  --amber:#E3A94E; --amber-soft:#2C2314; --shadow:none; color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px; margin:0 auto; padding-inline:20px; padding-block:0 96px}
+h1,h2,h3{font-family:Newsreader,Georgia,"Times New Roman",serif; text-wrap:balance; margin:0}
+p{margin:0}
+a{color:var(--blue)}
+
+/* ---------- masthead ---------- */
+header.mast{
+  border-bottom:1px solid var(--rule); background:var(--surface);
+  padding-block:52px 34px; margin-bottom:52px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint);
+}
+header.mast .eyebrow{margin-bottom:18px}
+h1{font-size:clamp(34px,6vw,52px); font-weight:500; line-height:1.08; letter-spacing:-.015em}
+.standfirst{
+  margin-top:20px; max-width:60ch; font-size:18px; color:var(--ink-soft); line-height:1.55;
+}
+.byline{
+  margin-top:26px; display:flex; flex-wrap:wrap; gap:8px 22px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12.5px; color:var(--ink-faint);
+}
+
+/* ---------- the rule ---------- */
+.rulebox{
+  margin-top:38px; padding:22px 24px; background:var(--blue-soft);
+  border-left:3px solid var(--blue);
+}
+.rulebox p{font-family:Newsreader,Georgia,serif; font-size:21px; line-height:1.4; font-weight:500}
+.rulebox .why{margin-top:12px; font-family:"IBM Plex Sans",sans-serif; font-size:14.5px;
+  color:var(--ink-soft); line-height:1.6}
+
+/* ---------- sections ---------- */
+section{margin-top:64px; scroll-margin-top:20px}
+h2{font-size:clamp(25px,3.6vw,31px); font-weight:500; letter-spacing:-.01em; line-height:1.2}
+h2 .num{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px; font-weight:400;
+  color:var(--blue); display:block; margin-bottom:9px; letter-spacing:.06em;
+}
+h3{font-size:19px; font-weight:600; margin-top:34px; margin-bottom:10px}
+.lede{margin-top:16px; font-size:17px; color:var(--ink-soft); max-width:66ch}
+section p{margin-top:14px; max-width:66ch}
+section p.tight{margin-top:9px}
+ul{margin:14px 0 0; padding-left:20px; max-width:66ch}
+li{margin-top:9px}
+li::marker{color:var(--ink-faint)}
+strong{font-weight:600}
+em.term{font-style:normal; font-weight:600; color:var(--blue)}
+
+/* ---------- stat strip ---------- */
+.stats{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  margin-top:30px;
+}
+.stat{background:var(--surface); padding:20px 18px}
+.stat .v{
+  font-family:Newsreader,Georgia,serif; font-size:36px; font-weight:600;
+  line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+}
+.stat .v.b{color:var(--blue)} .stat .v.r{color:var(--red)} .stat .v.a{color:var(--amber)}
+.stat .k{margin-top:9px; font-size:13px; color:var(--ink-soft); line-height:1.45}
+.stat .s{
+  margin-top:8px; font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:10.5px; color:var(--ink-faint); line-height:1.4;
+}
+
+/* ---------- tables ---------- */
+.tblwrap{overflow-x:auto; margin-top:24px; border:1px solid var(--rule); background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px}
+caption{
+  caption-side:top; text-align:left; padding:16px 18px 14px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+  border-bottom:1px solid var(--rule);
+}
+th,td{padding:12px 16px; text-align:left; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+thead th{
+  font-size:11.5px; font-weight:500; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-faint); background:var(--rule-soft); white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.n,th.n{font-variant-numeric:tabular-nums; white-space:nowrap; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13.5px}
+tr.hi td{background:var(--blue-soft)}
+tr.warn td{background:var(--red-soft)}
+.src{display:block; margin-top:4px; font-size:12px; color:var(--ink-faint)}
+
+/* ---------- gap matrix ---------- */
+.mark{display:inline-block; width:15px; height:15px; border-radius:50%; vertical-align:-2px}
+.mark.y{background:var(--blue)} .mark.p{background:var(--blue); opacity:.34}
+.mark.n{background:transparent; border:1.5px solid var(--rule)}
+td.cell{text-align:center; padding:12px 8px}
+th.cell{text-align:center; padding:12px 8px; white-space:normal; min-width:96px}
+tr.claimtrace td{background:var(--blue-soft); font-weight:600}
+tr.claimtrace td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px; font-size:13px; color:var(--ink-soft)}
+.legend span{display:flex; align-items:center; gap:7px}
+
+/* ---------- chart ---------- */
+figure{margin:30px 0 0; border:1px solid var(--rule); background:var(--surface); padding:22px 20px 16px}
+figure svg{display:block; width:100%; height:auto; max-width:100%}
+figcaption{margin-top:14px; font-size:13px; color:var(--ink-soft); line-height:1.55}
+figcaption .src{margin-top:6px}
+.bar-lbl{font-family:"IBM Plex Sans",sans-serif; font-size:12.5px; fill:var(--ink-soft)}
+.bar-val{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500}
+.axis-t{font-family:"IBM Plex Mono",monospace; font-size:10.5px; fill:var(--ink-faint)}
+.g-line{stroke:var(--rule); stroke-width:1}
+.ax-line{stroke:var(--ink-faint); stroke-width:1}
+.br-red{stroke:var(--red); stroke-width:1.6; fill:none}
+.b-soft{fill:var(--ink-faint)} .b-amber{fill:var(--amber)} .b-blue{fill:var(--blue)}
+.spread{font-family:"IBM Plex Sans",sans-serif; font-size:11.5px; font-weight:600; fill:var(--red)}
+
+/* ---------- corrections ---------- */
+.fix{display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule); margin-top:26px}
+.fixrow{background:var(--surface); padding:18px 20px}
+.fixrow .said{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:13px; color:var(--red);
+  text-decoration:line-through; text-decoration-thickness:1px;
+}
+.fixrow .why{margin-top:8px; font-size:14px; color:var(--ink-soft); max-width:70ch}
+.fixrow .now{margin-top:10px; font-size:14.5px}
+.fixrow .now b{color:var(--blue)}
+
+footer{margin-top:72px; padding-top:26px; border-top:1px solid var(--rule);
+  font-size:13px; color:var(--ink-faint)}
+footer p{max-width:70ch; margin-top:10px}
+@media (max-width:520px){
+  header.mast{padding-block:36px 26px; margin-bottom:38px}
+  .stat .v{font-size:30px}
+  section{margin-top:48px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="wrap" style="padding-inline:0">
+    <div class="eyebrow">Group 18 · Software Innovation Studio · 41129</div>
+    <h1>ClaimTrace Market Analysis</h1>
+    <p class="standfirst">
+      Who already checks citations, how large the market for that actually is, and where the
+      unoccupied position sits. Every figure was re-checked on 24 September 2026.
+    </p>
+    <div class="byline">
+      <span>Sichen Liu · Hongyang Chen · Siyuan Sun · Jun Li</span>
+      <span>Yi Jiang · Zheng Fu · Sam</span>
+      <span>22 Oct 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="rulebox">
+  <p>Quote a report, its scope and its CAGR — or quote nothing.</p>
+  <p class="why">
+    The A1 pitch circulated numbers that did not survive checking. This analysis replaces them.
+    Scope is stated every time, because “reference-management software” and “scholarly publishing”
+    differ by two orders of magnitude. A vendor's own figure is used, but labelled as theirs and
+    never presented as audited. Where sources conflict, the conflict is reported rather than
+    resolved by picking the flattering number.
+  </p>
+</div>
+
+<section>
+  <h2><span class="num">01 — The problem</span>Citations do not say what authors think they say</h2>
+  <p class="lede">
+    The best available estimate pools 46 studies and roughly 32,000 quotations. It is not a
+    comfortable number, and it has not moved in four decades.
+  </p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="v b">16.9%</div>
+      <div class="k">of quotations are incorrect</div>
+      <div class="s">95% CI 14.1–20.0</div>
+    </div>
+    <div class="stat">
+      <div class="v b">8.0%</div>
+      <div class="k">are major errors — the source says something else entirely</div>
+      <div class="s">95% CI 6.4–10.0</div>
+    </div>
+    <div class="stat">
+      <div class="v a">40 yrs</div>
+      <div class="k">with no improvement: meta-regression slope −0.002, p = 0.85</div>
+      <div class="s">46 studies · ~32,074 quotations</div>
+    </div>
+  </div>
+  <p class="tight" style="margin-top:16px; font-size:13.5px; color:var(--ink-faint)">
+    Baethge &amp; Jergas 2025, <em>Research Integrity and Peer Review</em> 10(1):13. The earlier
+    pooled estimate (Jergas &amp; Baethge 2015, <em>PeerJ</em> 3:e1364) gives 25.4% total / 11.9%
+    major across 28 studies.
+  </p>
+
+  <h3>Nobody downstream is catching it</h3>
+  <ul>
+    <li>Reviewers missed <strong>two-thirds of major errors</strong> in a fictitious-manuscript
+      experiment with 203 reviewers (Baxt et al., <em>Ann Emerg Med</em> 1998).</li>
+    <li>Reviewers found a mean of <strong>3 of 9</strong> planted errors across 607 <em>BMJ</em>
+      reviewers. Training barely helped (Schroter et al., <em>J R Soc Med</em> 2008).</li>
+    <li>A <em>BMJ</em> 2023 analysis states responsibility for auditing cited literature
+      “rests with those who selected it, not reviewers”, and proposes <strong>AI tools integrated
+      into submission portals to confirm cited works exist and flag likely mis-citations</strong>
+      (<em>BMJ</em> 2023;383:e076441).</li>
+  </ul>
+  <p>
+    That last item is ClaimTrace's value proposition, already published in a medical journal. It is
+    the most useful citation this project has.
+  </p>
+
+  <h3>Retracted work keeps being cited</h3>
+  <p>
+    Across independent samples from 1990 to 2026, roughly <strong>70–94% of retracted papers
+    continue to be cited after retraction</strong>, most of those citations neutral or positive, and
+    typically only <strong>4–18% of citing articles mention the retraction</strong>.
+  </p>
+  <ul>
+    <li>93.9% of 994 retracted Nature Index articles kept receiving citations — 21,047
+      post-retraction citations, <strong>39.79% of them positive</strong>
+      (<em>J Inf Sci</em> 2026).</li>
+    <li>The retracted Wakefield autism paper has been cited <strong>1,154 times after retraction
+      versus 643 before</strong> — it is cited more after retraction than before.</li>
+    <li>52.5% of the 200 most recent citing articles inappropriately cited the retracted
+      Surgisphere COVID papers (<em>Science</em>, Jan 2021).</li>
+  </ul>
+  <p>
+    The infrastructure to detect this is free and already public: on 12 September 2023
+    <strong>Crossref acquired the Retraction Watch database and released it CC0</strong> — about
+    43,000 records, plus Crossref's own 14,000.
+  </p>
+
+  <h3>AI has made it acute, and dated</h3>
+  <p>
+    Fabricated citations rose more than <strong>12-fold in three years</strong>, from 1 in 2,828
+    papers in 2023 to about 1 in 277 in the first seven weeks of 2026 — and
+    <strong>98.4% of affected papers saw no publisher action</strong>. That comes from auditing
+    2,471,758 PMC articles and 125.6M references (<em>Lancet</em> 2026).
+  </p>
+  <p>
+    Separately, GPT-4o produced wholly fabricated references in <strong>19.9%</strong> of cases and
+    erred in <strong>45.4%</strong> of the genuine ones (<em>JMIR Mental Health</em> 2025,
+    n = 176 — treat the exact rate as indicative). GPT-3.5 fabricated
+    <strong>55%</strong> and erred in <strong>43%</strong> (Walters &amp; Wilder,
+    <em>Sci Rep</em> 2023, 636 citations).
+  </p>
+</section>
+
+<section>
+  <h2><span class="num">02 — Market size</span>Growing demand, a small market measured badly</h2>
+  <p class="lede">
+    The demand side is unambiguous. The tooling market that serves it is a different story: the
+    vendors sizing it disagree by a factor of three, for the same category in the same year.
+  </p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="v b">5.7M</div>
+      <div class="k">papers published in 2024, up from 3.9M in 2019</div>
+      <div class="s">+46% · Dimensions via STM, Jan 2026</div>
+    </div>
+    <div class="stat">
+      <div class="v r">3×</div>
+      <div class="k">spread between vendor estimates of the same market</div>
+      <div class="s">$371M vs $1,150M, both “2024”</div>
+    </div>
+    <div class="stat">
+      <div class="v a">$1,266.0M</div>
+      <div class="k">Clarivate Academia &amp; Government segment, FY2025 — the only audited figure</div>
+      <div class="s">SEC Form 10-K</div>
+    </div>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 740 300" role="img" aria-labelledby="chT chD">
+      <title id="chT">Four estimates of the scholarly tooling market</title>
+      <desc id="chD">Three commercial vendors size reference-management software at 371, 385 and
+        1150 million US dollars for 2024 — a threefold spread. Clarivate's audited Academia and
+        Government segment revenue for FY2025 is 1266 million dollars.</desc>
+
+      <!-- gridlines: 0.35 px per $M, x0 = 210 -->
+      <g class="g-line">
+        <line x1="210" y1="34" x2="210" y2="232"/>
+        <line x1="332.5" y1="34" x2="332.5" y2="232"/>
+        <line x1="455" y1="34" x2="455" y2="232"/>
+        <line x1="577.5" y1="34" x2="577.5" y2="232"/>
+        <line x1="700" y1="34" x2="700" y2="232"/>
+      </g>
+      <g class="axis-t" text-anchor="middle">
+        <text x="210" y="252">$0</text>
+        <text x="332.5" y="252">$350M</text>
+        <text x="455" y="252">$700M</text>
+        <text x="577.5" y="252">$1,050M</text>
+        <text x="700" y="252">$1,400M</text>
+      </g>
+
+      <g>
+        <rect class="b-soft"  x="210" y="46"  width="129.9" height="24"/>
+        <rect class="b-soft"  x="210" y="92"  width="134.8" height="24"/>
+        <rect class="b-amber" x="210" y="138" width="402.5" height="24"/>
+        <rect class="b-blue"  x="210" y="184" width="443.1" height="24"/>
+      </g>
+      <g text-anchor="end" class="bar-lbl">
+        <text x="198" y="62">Global Info Research</text>
+        <text x="198" y="108">YH Research</text>
+        <text x="198" y="154">WiseGuyReports</text>
+        <text x="198" y="200" fill="var(--ink)" font-weight="600">Clarivate · SEC 10-K</text>
+      </g>
+      <g class="bar-val">
+        <text x="349" y="62" fill="var(--ink-soft)">$371M</text>
+        <text x="354" y="108" fill="var(--ink-soft)">$385M</text>
+        <text x="622" y="154" fill="var(--amber)">$1,150M</text>
+        <text x="663" y="200" fill="var(--blue)">$1,266M</text>
+      </g>
+
+      <!-- bracket spans the two extreme vendor estimates: $371M to $1,150M -->
+      <g class="br-red">
+        <line x1="339.9" y1="22" x2="612.5" y2="22"/>
+        <line x1="339.9" y1="17" x2="339.9" y2="27"/>
+        <line x1="612.5" y1="17" x2="612.5" y2="27"/>
+      </g>
+      <text class="spread" x="476" y="14" text-anchor="middle">3× apart</text>
+
+      <line class="ax-line" x1="210" y1="232" x2="700" y2="232"/>
+    </svg>
+    <figcaption>
+      Reference-management software, 2024, as four organisations size it. The three commercial
+      estimates are not audited and their stated scope differs, which is the whole point — so we
+      show the spread and quote the one figure that has been through an audit: Clarivate's
+      <em>Academia &amp; Government</em> segment, which contains Web of Science and EndNote.
+      <span class="src">
+        Sources checked 2026-09-24 · globalinforesearch.com · yhresearch · wiseguyreports.com ·
+        Clarivate SEC Form 10-K FY2025 (FY2024 $1,326.4M; FY2023 $1,323.3M).
+      </span>
+    </figcaption>
+  </figure>
+
+  <p style="margin-top:22px">
+    The temptation is to quote “$619M by 2032” or a 7.6% CAGR because it sounds like a market and
+    it is the number already in the pitch. We cannot defend the point estimate. A tutor who checks
+    will find the same disagreement, so the spread is what the slide shows.
+  </p>
+
+  <h3>The gap in the price list</h3>
+  <p>
+    Nobody sells the thing ClaimTrace does. Everything actually purchasable today buys one of three
+    other things:
+  </p>
+  <div class="tblwrap">
+    <table>
+      <caption>What a buyer can actually purchase, at list price</caption>
+      <thead>
+        <tr><th>Vendor</th><th class="n">Price</th><th>What it checks</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>iThenticate (direct)</td><td class="n">$125</td>
+            <td>Text similarity, one manuscript ≤25,000 words</td></tr>
+        <tr><td>EditVerse</td><td class="n">$175</td>
+            <td>Reference list verification — metadata and existence only</td></tr>
+        <tr><td>Enago</td><td class="n">$18</td><td>Reference formatting</td></tr>
+        <tr><td>Crossref Similarity Check</td><td class="n">$0.75</td>
+            <td>Similarity matching, per document (first 100 free)</td></tr>
+        <tr><td>Harbin Institute of Technology Library</td><td class="n">CNY 10</td>
+            <td>Per citation: confirms a paper exists and is indexed</td></tr>
+        <tr class="hi"><td><strong>Claim-support verification</strong></td><td class="n">—</td>
+            <td><strong>Not sold by anyone</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">03 — Competitive landscape</span>Four classes of incumbent, and one empty column</h2>
+
+  <h3>The incumbents</h3>
+  <p class="tight"><strong>Reference managers</strong> — Zotero, Mendeley, EndNote. Store and format
+    metadata. Zotero alone has <strong>14.4M users</strong> in 2024, up 25% year on year. They do
+    not read the cited paper.</p>
+  <p class="tight"><strong>Similarity checkers</strong> — Turnitin, iThenticate. Match text, and in
+    their own words nothing more. Turnitin's help centre: “<strong>Turnitin does not check for
+    plagiarism.</strong>” iThenticate's user guide: “its primary function is to highlight matching
+    content from other sources.” A US Naval Postgraduate School guide lists what iThenticate does
+    <em>not</em> identify, including “information or language attributed to the wrong source.”</p>
+  <p class="tight"><strong>Reference checkers</strong> — ReciteWorks, Edifix, CiteTrue, Paperpile,
+    SciSpace. Confirm the record exists. Asked whether it checks that quoted text appears in the
+    cited source, <strong>ReciteWorks' own FAQ answers “No, not currently.”</strong></p>
+  <p class="tight"><strong>Citation-intent platforms</strong> — scite.ai, Semantic Scholar.
+    Classify how <em>other people</em> cited a paper. Semantic Scholar's intent is purpose
+    (background / method / result), not stance, and in a live API test only about 12% of citations
+    carried any intent at all.</p>
+
+  <div class="tblwrap" style="margin-top:30px">
+    <table>
+      <caption>Thirteen products against four questions</caption>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="cell">Reference exists,<br>metadata matches</th>
+          <th class="cell">How <em>others</em><br>cited this paper</th>
+          <th class="cell">Does <em>your</em> source support<br><em>your</em> sentence?</th>
+          <th class="cell">Inside the<br>writing flow</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Zotero / Mendeley</td>
+          <td class="cell"><span class="mark p" title="partial"></span></td>
+          <td class="cell"><span class="mark n" title="no"></span></td>
+          <td class="cell"><span class="mark n" title="no"></span></td>
+          <td class="cell"><span class="mark y" title="yes"></span></td></tr>
+        <tr><td>Turnitin / iThenticate</td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>ReciteWorks</td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>Edifix / CiteTrue / Paperpile</td>
+          <td class="cell"><span class="mark y"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>SciSpace Reference Checker</td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>Writefull for Overleaf</td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark y"></span></td></tr>
+        <tr><td>Paperpal</td>
+          <td class="cell"><span class="mark y"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark p"></span></td></tr>
+        <tr><td>Semantic Scholar</td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark y"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>scite.ai (Smart Citations)</td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark y"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>Elicit / Consensus</td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>ChatGPT / LLMs</td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark n"></span></td><td class="cell"><span class="mark n"></span></td></tr>
+        <tr><td>Grounded AI / sci2sci</td>
+          <td class="cell"><span class="mark y"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark p"></span></td><td class="cell"><span class="mark p"></span></td></tr>
+        <tr class="claimtrace"><td>ClaimTrace</td>
+          <td class="cell"><span class="mark y"></span></td><td class="cell"><span class="mark n"></span></td>
+          <td class="cell"><span class="mark y"></span></td><td class="cell"><span class="mark y"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><span class="mark y"></span> documents the capability</span>
+    <span><span class="mark p"></span> adjacent capability, or a vendor claim with no independent evaluation</span>
+    <span><span class="mark n"></span> does not do it</span>
+  </div>
+
+  <p style="margin-top:22px">
+    <strong>The fourth column is owned by no established product.</strong> Two qualifications, both
+    of which strengthen the claim rather than weaken it:
+  </p>
+  <ul>
+    <li><strong>The column is unoccupied, not empty.</strong> Prototypes and small vendors are
+      attempting it — RefVerifier (<strong>71% end-to-end accuracy</strong>, arXiv 2609.07652,
+      September 2026), Grounded AI, sci2sci (€1.2M pre-seed, September 2026), plus RefCheckAI,
+      CiteVahti, CiteGuard and a University of Pittsburgh HSLS service. Claiming nobody is trying
+      would be false.</li>
+    <li><strong>The “partial” marks are deliberate.</strong> Paperpal claims a citation-relevance
+      check with no independent evaluation. The matrix distinguishes “documents this” from
+      “claims this”.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">04 — Case study</span>scite.ai, the strongest competitor</h2>
+  <p class="lede">
+    Chosen because it is the biggest competitor, the one a reviewer names first, and the only one
+    with a comparable data pipeline.
+  </p>
+
+  <div class="stats">
+    <div class="stat"><div class="v b">1.6B+</div>
+      <div class="k">Smart Citations across 317M+ articles and 44+ publisher partners</div>
+      <div class="s">scite.ai/features</div></div>
+    <div class="stat"><div class="v b">≈$29M</div>
+      <div class="k">acquired by Research Solutions (NASDAQ: RSSS), Dec 2023</div>
+      <div class="s">$21.1M initial + $15.4M earn-out</div></div>
+    <div class="stat"><div class="v a">21,000</div>
+      <div class="k">paying B2C subscribers at acquisition</div>
+      <div class="s">$3.6M annualised subscription revenue</div></div>
+  </div>
+
+  <p style="margin-top:22px">
+    <strong>Be precise if asked about the price.</strong> The pitch says “$20.9M”, which is the
+    initial consideration net of cash acquired. The FY2025 10-K puts initial consideration at about
+    $21.1M, and the earn-out was finalised at <strong>$15.4M in July 2025</strong> — all-in roughly
+    $29M.
+  </p>
+
+  <h3>Its accuracy, from its own peer-reviewed paper</h3>
+  <div class="tblwrap">
+    <table>
+      <caption>Nicholson et al. 2021, Quantitative Science Studies 2(3):882–898</caption>
+      <thead><tr><th>Measure</th><th class="n">Value</th><th>Reading</th></tr></thead>
+      <tbody>
+        <tr><td>F-score, mentioning</td><td class="n">96.3</td><td>Strong</td></tr>
+        <tr class="warn"><td>F-score, supporting</td><td class="n">55.3</td>
+            <td>Weak exactly where the scientific signal lives</td></tr>
+        <tr class="warn"><td>F-score, disputing</td><td class="n">20.5</td>
+            <td>Later improved to 58.97 F at 85.19 precision — still low</td></tr>
+        <tr><td>Real-world distribution</td><td class="n">92.6 / 6.5 / 0.8</td>
+            <td>mentioning / supporting / disputing — the classes that matter are the rarest</td></tr>
+        <tr><td>Ingestion limit, their own words</td><td class="n">~30%</td>
+            <td>“fails to identify approximately 30% of citation statements/references in PDF files”</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>An independent audit found worse</h3>
+  <p>
+    Bakker, Theis-Mahon &amp; Brown (2023), <em>Hypothesis</em> 35(2), examined 324 citations of
+    retracted works. scite classified 98 of them; no full text was available for 118.
+  </p>
+  <div class="tblwrap">
+    <table>
+      <caption>same 98 citations, classified twice</caption>
+      <thead><tr><th>Assessor</th><th class="n">Supporting</th><th class="n">Mentioning</th><th class="n">Contrasting</th></tr></thead>
+      <tbody>
+        <tr><td>scite</td><td class="n">2</td><td class="n">96</td><td class="n">0</td></tr>
+        <tr class="hi"><td><strong>Human assessors</strong></td><td class="n">42</td><td class="n">39</td><td class="n"><strong>17</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    F-measures ranged 0.0–0.58. Human assessors found <strong>17 contrasting citations where the
+    product showed none</strong> — in a study of <em>retracted</em> papers, the one context where a
+    contrasting signal matters most.
+  </p>
+  <p class="tight" style="font-size:14px; color:var(--ink-soft)">
+    If asked: scite-affiliated authors published a reply in 2025 disputing the method. Acknowledge
+    it and note the dispute is unresolved — do not present the critique as settled.
+  </p>
+
+  <h3>Function 2: Reference Check</h3>
+  <p>
+    scite's second relevant feature takes a manuscript PDF and reports, per reference, how it has
+    been cited by others — retractions, editorial notices, contrasting findings. Pricing: $20/mo
+    Basic, $50/mo Pro, both billed yearly; no institutional price published.
+  </p>
+  <p>
+    <strong>Where it stops.</strong> The unit of analysis is still the cited paper, and the
+    evidence is still what third parties did with it. It tells you reference #12 has been retracted.
+    It cannot tell you that your sentence about #12 is wrong — and to its credit, it does not claim
+    to. There is also no published accuracy figure for Reference Check; Smart Citations has a
+    peer-reviewed evaluation and this feature does not.
+  </p>
+</section>
+
+<section>
+  <h2><span class="num">05 — Position</span>Two layers, and a rule about failure</h2>
+  <p class="tight"><strong>Audit — the record.</strong> Does the reference exist, and do title,
+    authors, year and venue agree? OpenAlex first, Crossref as fallback, both keyless.</p>
+  <p class="tight"><strong>Verify — the meaning.</strong> Does the cited source actually support the
+    sentence it is attached to? The supporting or contradicting passage is <strong>shown</strong>,
+    not reduced to a label.</p>
+  <p class="tight"><strong>The failure rule — the genuinely unique part.</strong> A failed lookup
+    stays <span class="term">LOOKUP_FAILED</span>. <span class="term">NOT_FOUND</span> means the
+    search <em>completed</em> and found nothing; it is never converted into a claim that a reference
+    was fabricated (<em>audit-contract.md</em> §2, §4).</p>
+  <p>
+    No competitor documents this distinction. It matters because the most damaging output this class
+    of tool can produce is not a wrong label — it is a <strong>reassuring</strong> one. A product
+    that turns a timeout into “looks fabricated”, or an ingestion miss into a clean bill of health,
+    is worse than no product.
+  </p>
+</section>
+
+<section>
+  <h2><span class="num">06 — Corrections</span>What changed from the A1 pitch, and why</h2>
+  <p class="lede">
+    Four figures in the A1 deck should not be repeated. Replacing them is the main analytical output
+    of this exercise.
+  </p>
+
+  <div class="fix">
+    <div class="fixrow">
+      <div class="said">“12,402 papers, 7.1%”</div>
+      <p class="why">A fused citation. 12,402 / 7.1% comes from an unrefereed vendor blog analysis
+        (June 2026, 54 biomedical journals, severity subset only 1.4%); the adjacent “375 retracted /
+        76%” is a UFPE doctoral thesis on Latin American retractions 2002–2022. The “9,662” appears
+        in neither.</p>
+      <p class="now">Now: <b>16.9% of quotations incorrect, 8.0% major</b> across 46 studies and
+        32,074 quotations — Baethge &amp; Jergas 2025.</p>
+    </div>
+    <div class="fixrow">
+      <div class="said">“Reference-management market $371M → $617M, 7.6% CAGR”</div>
+      <p class="why">Traceable to a commercial vendor, but other vendors size the same market three
+        times higher. Not defensible as a point estimate.</p>
+      <p class="now">Now: vendors shown <b>3× apart ($371M–$1,150M)</b>, plus Clarivate's audited
+        <b>$1,266.0M</b> SEC figure.</p>
+    </div>
+    <div class="fixrow">
+      <div class="said">“GhostCite: 76.7% of reviewers…” presented as a survey</div>
+      <p class="why">Not a survey. It is arXiv:2602.06718 (preprint) plus an IEEE S&amp;P 2026
+        poster, and 76.7% is roughly 25 of 32 reviewers inside a 94-respondent AI/security
+        subset.</p>
+      <p class="now">Removed. The <b>BMJ 2023</b> analysis and the reviewer-error experiments carry
+        the point on better evidence.</p>
+    </div>
+    <div class="fixrow">
+      <div class="said">“scite acquired for $20.9M, 2M+ users”</div>
+      <p class="why">$20.9M is the initial consideration net of cash acquired; the earn-out took the
+        total higher.</p>
+      <p class="now">Now: <b>≈$29M all-in</b>, with the $21.1M initial / $15.4M earn-out breakdown
+        given if asked.</p>
+    </div>
+    <div class="fixrow">
+      <div class="said">“Overleaf 25M+ / 30M users”</div>
+      <p class="why">Overleaf's own about page says “20 million+ users” and also “over 30 million
+        people trust Overleaf” — internally inconsistent.</p>
+      <p class="now">Now: <b>20M+</b>, quoting the smaller explicit figure and saying which one.</p>
+    </div>
+    <div class="fixrow">
+      <div class="said" style="text-decoration:none; color:var(--blue)">Retained unchanged: GPT-4o 19.9% / 45.4%, GPT-3.5 55% / 43%</div>
+      <p class="why" style="margin-top:8px">These hold up and are used above.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07 — Sources</span>Everything, in one place</h2>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>Citation accuracy.</strong> Baethge &amp; Jergas 2025, <em>Res Integr Peer Rev</em>
+    10(1):13 · Jergas &amp; Baethge 2015, <em>PeerJ</em> 3:e1364 · Mogull 2017,
+    <em>PLOS ONE</em> 12(9):e0184727 · George &amp; Robbins 1994, <em>J Am Acad Dermatol</em>
+    31(1):61–64 · Lukic et al. 2026, <em>Front Anesthesiol</em> · Buijze et al. 2012 ·
+    Greenberg 2009, <em>BMJ</em> 339:b2680 · Tatsioni et al. 2007, <em>JAMA</em>.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>Peer review's limits.</strong> Baxt et al. 1998, <em>Ann Emerg Med</em> · Schroter et al.
+    2008, <em>J R Soc Med</em> · <em>BMJ</em> 2023;383:e076441.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>Retractions.</strong> Retraction Watch database + Crossref announcement 12 Sep 2023 ·
+    <em>J Inf Sci</em> 2026 · <em>JAMA Netw Open</em> 2024 · <em>JAMA Netw Open</em> 2019 ·
+    <em>Science</em> Jan 2021 · <em>Scientometrics</em> 2022.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>AI-fabricated references.</strong> <em>Lancet</em> 2026 (2,471,758 PMC articles /
+    125.6M references), reported in <em>Nature</em> · Linardon et al. 2025, <em>JMIR Ment Health</em>
+    12:e80371 · Walters &amp; Wilder 2023, <em>Sci Rep</em>.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>Market and demand.</strong> STM &amp; Research Consulting 13 Jan 2026 (Dimensions data) ·
+    STM Global Brief 2021 (Outsell; UNESCO) · Clarivate SEC Form 10-K FY2025 · Global Info Research ·
+    YH Research · WiseGuyReports · Corporation for Digital Scholarship Annual Report 2024 ·
+    overleaf.com/about.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>Competitors.</strong> scite.ai/features · scite.ai/pricing · Nicholson et al. 2021,
+    <em>Quant Sci Stud</em> 2(3):882–898 · Bakker, Theis-Mahon &amp; Brown 2023, <em>Hypothesis</em>
+    35(2) · Research Solutions press release 27 Nov 2023 and SEC filings · Turnitin help centre and
+    guides · iThenticate user guide and pricing · ReciteWorks FAQ · US Naval Postgraduate School
+    plagiarism guide · arXiv 2609.07652 (RefVerifier) · EditVerse pricing.
+  </p>
+  <p class="tight" style="font-size:14.5px; color:var(--ink-soft)">
+    <strong>ClaimTrace.</strong> <em>claimtrace/docs/audit-contract.md</em> §2, §4 ·
+    <em>claimtrace/docs/engine-contract.zh-CN.md</em>.
+  </p>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink)">The three sentences to remember.</strong></p>
+  <p>One in six quotations is wrong, half of them seriously, and it has not improved in forty
+    years.</p>
+  <p>Every tool on the market checks the paper; none checks the sentence.</p>
+  <p>We never turn a failed lookup into a verdict — because the dangerous output is not a wrong
+    answer, it is a reassuring one.</p>
+</footer>
+
+</div>
