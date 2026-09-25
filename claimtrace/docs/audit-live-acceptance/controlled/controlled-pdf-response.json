@@ -1,22 +1,22 @@
 {
   "contract_version": 2,
-  "audit_id": "17bf635d-1fa5-4c68-83cc-344df649edfd",
-  "input_paper_id": "addd0378-d09b-40c2-b5d9-f871feacdc08",
+  "audit_id": "0c46d63b-0ee1-42e4-b5fb-fa5f83903bdc",
+  "input_paper_id": "bd0ac7e5-4ebb-40a7-85e4-7dd383f5ead6",
   "input_type": "pdf",
-  "checked_at": "2026-09-14T05:51:01.922788Z",
+  "checked_at": "2026-09-21T02:01:07.441952Z",
   "status": "completed",
   "total_entries": 2,
   "counts": {
-    "VERIFIED": 0,
-    "METADATA_MISMATCH": 1,
-    "NEEDS_REVIEW": 1,
-    "NOT_FOUND": 0,
+    "VERIFIED": 1,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 0,
+    "NOT_FOUND": 1,
     "LOOKUP_FAILED": 0
   },
   "results": [
     {
       "entry": {
-        "entry_id": "d10ae224-da11-55af-9b8d-ee1a65c81241",
+        "entry_id": "48f453e0-0350-57ef-8c07-f0e22168bd68",
         "metadata": {
           "key": "1",
           "entry_type": "misc",
@@ -38,8 +38,8 @@
         "page_start": 2,
         "page_end": 2
       },
-      "status": "NEEDS_REVIEW",
-      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "status": "VERIFIED",
+      "reason": "External record identified; required metadata agrees.",
       "field_checks": [
         {
           "field_name": "title",
@@ -72,16 +72,16 @@
         {
           "field_name": "doi",
           "input_value": "",
-          "source_value": "",
-          "status": "NOT_CHECKED",
-          "detail": "Neither input nor external record supplies this field."
+          "source_value": "10.48550/arxiv.1706.03762",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
         }
       ],
       "matched_record": {
-        "provider": "google_scholar",
-        "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
+        "provider": "openalex",
+        "record_id": "openalex:W2963403868",
         "url": "https://arxiv.org/abs/1706.03762",
-        "retrieved_at": "2026-09-14T05:50:59.358046Z",
+        "retrieved_at": "2026-09-21T02:01:07.441549Z",
         "metadata": {
           "title": "Attention Is All You Need",
           "authors": [
@@ -89,22 +89,22 @@
           ],
           "year": 2017,
           "venue": "NeurIPS",
-          "doi": ""
+          "doi": "10.48550/arxiv.1706.03762"
         }
       },
       "candidates": [],
       "lookup_attempts": [
         {
-          "provider": "google_scholar",
+          "provider": "openalex",
           "outcome": "found",
           "error_code": null,
-          "detail": "Google Scholar returned a publication candidate."
+          "detail": "exactly one record's title matches the reference exactly"
         }
       ]
     },
     {
       "entry": {
-        "entry_id": "4f799569-e1eb-599f-ba17-7de29b21486c",
+        "entry_id": "6007654a-e2a2-5708-afa4-61d113f1e9c0",
         "metadata": {
           "key": "2",
           "entry_type": "misc",
@@ -126,67 +126,23 @@
         "page_start": 2,
         "page_end": 2
       },
-      "status": "METADATA_MISMATCH",
-      "reason": "Identified record has field differences.",
-      "field_checks": [
-        {
-          "field_name": "title",
-          "input_value": "Attention Is All You Need",
-          "source_value": "Attention Is All You Need",
-          "status": "MATCH",
-          "detail": "The existing Engine metadata comparator reports a match."
-        },
-        {
-          "field_name": "year",
-          "input_value": "2020",
-          "source_value": "2017",
-          "status": "MISMATCH",
-          "detail": "The reference field differs from the retrieved external record."
-        },
-        {
-          "field_name": "authors",
-          "input_value": "A. Vaswani",
-          "source_value": "Vaswani, A.",
-          "status": "MATCH",
-          "detail": "The existing Engine metadata comparator reports a match."
-        },
-        {
-          "field_name": "venue",
-          "input_value": "NeurIPS",
-          "source_value": "NeurIPS",
-          "status": "MATCH",
-          "detail": "The existing Engine metadata comparator reports a match."
-        },
-        {
-          "field_name": "doi",
-          "input_value": "",
-          "source_value": "",
-          "status": "NOT_CHECKED",
-          "detail": "Neither input nor external record supplies this field."
-        }
-      ],
-      "matched_record": {
-        "provider": "google_scholar",
-        "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
-        "url": "https://arxiv.org/abs/1706.03762",
-        "retrieved_at": "2026-09-14T05:51:01.825315Z",
-        "metadata": {
-          "title": "Attention Is All You Need",
-          "authors": [
-            "Vaswani, A."
-          ],
-          "year": 2017,
-          "venue": "NeurIPS",
-          "doi": ""
-        }
-      },
+      "status": "NOT_FOUND",
+      "reason": "2 of 2 records were ineligible (2 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
       "candidates": [],
       "lookup_attempts": [
         {
-          "provider": "google_scholar",
-          "outcome": "found",
+          "provider": "openalex",
+          "outcome": "not_found",
           "error_code": null,
-          "detail": "Google Scholar returned a publication candidate."
+          "detail": "1 of 1 records were ineligible (1 year disagrees)"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "2 of 2 records were ineligible (2 year disagrees)"
         }
       ]
     }
