@@ -13,6 +13,7 @@ from backend.src.config import get_settings
 from backend.src.models import (
     BibEntryRecord,
     PaperRecord,
+    PaperScope,
     ParsedBibDocument,
     ParsedDocument,
     ParsedParagraph,
@@ -191,6 +192,41 @@ def post(client, **overrides):
     return client.post("/api/verify/citation", json=payload)
 
 
+def add_verify_source():
+    now = datetime.now(UTC)
+    passages = [
+        "The manually selected source contains the evidence for this claim.",
+        "This passage is available only to the Verify claim comparison.",
+    ]
+    document = ParsedDocument(
+        paper_id="manual-source",
+        title="Manually selected source",
+        authors=["Source Author"],
+        year=2025,
+        pages=1,
+        paragraphs=[
+            ParsedParagraph(text=chunk, page_start=1, page_end=1) for chunk in passages
+        ],
+    )
+    create_paper(
+        PaperRecord(
+            paper_id="manual-source",
+            original_filename="manual-source.pdf",
+            stored_filename="manual-source.pdf",
+            file_path="/uploads/verify-sources/manual-source.pdf",
+            parsed_result_path=str(save_parsed_document(document)),
+            file_type="pdf",
+            scope=PaperScope.VERIFY_SOURCE,
+            file_size=10,
+            status=ParseStatus.COMPLETED,
+            pages=1,
+            created_at=now,
+            updated_at=now,
+        )
+    )
+    return passages
+
+
 # ── Happy path ---------------------------------------------------
 
 
@@ -226,6 +262,29 @@ def test_retriever_indexes_the_source_paper_passages(client, seeded, wired):
 
     assert wired.retriever.passages == PASSAGES
     assert wired.retriever.queries == [CLAIM]
+
+
+def test_manual_verify_source_overrides_automatic_resolution(client, seeded, wired):
+    passages = add_verify_source()
+
+    response = post(client, source_paper_id="manual-source")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "COMPARED"
+    assert body["source_paper_id"] == "manual-source"
+    assert body["cited_source"]["database"] == "Verify source PDF"
+    assert wired.retriever.passages == passages
+
+
+def test_manual_source_must_come_from_verify_source_storage(client, seeded, wired):
+    response = post(client, source_paper_id="pdf-1")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "MANUAL_SOURCE_INVALID"
+    assert body["judgement"] is None
+    assert wired.retriever.passages == []
 
 
 def test_claim_and_source_text_reach_the_prompt(client, seeded, wired):

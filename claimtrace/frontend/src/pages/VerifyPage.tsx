@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getPaperClaims, listPapers, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
+import { getPaperClaims, listPapers, listVerifySources, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
 import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
 import { CitationComparisonResult } from "../components/CitationComparisonResult";
@@ -49,6 +49,10 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [selectionError, setSelectionError] = useState("");
   const [bibPaperId, setBibPaperId] = useState("");
   const [bibliographies, setBibliographies] = useState<PaperRecord[]>([]);
+  const [verifySources, setVerifySources] = useState<PaperRecord[]>([]);
+  const [verifySourcesLoading, setVerifySourcesLoading] = useState(true);
+  const [verifySourcesError, setVerifySourcesError] = useState<string | null>(null);
+  const [selectedSourcePaperId, setSelectedSourcePaperId] = useState("");
   const [singleMarker, setSingleMarker] = useState("");
   const verifyController = useRef<AbortController | null>(null);
   const verifyVersion = useRef(0);
@@ -93,6 +97,26 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     }
   }, [requestedPaperId, example]);
 
+  const loadVerifySources = useCallback(async (signal?: AbortSignal) => {
+    if (example) {
+      setVerifySources([]);
+      setVerifySourcesLoading(false);
+      return;
+    }
+    setVerifySourcesLoading(true);
+    setVerifySourcesError(null);
+    try {
+      const response = await listVerifySources(signal);
+      if (signal?.aborted) return;
+      setVerifySources(response.papers.filter((paper) => paper.scope === "verify_source"));
+    } catch (error) {
+      if (signal?.aborted) return;
+      setVerifySourcesError(error instanceof Error ? error.message : "Unable to load Verify source PDFs.");
+    } finally {
+      if (!signal?.aborted) setVerifySourcesLoading(false);
+    }
+  }, [example]);
+
   const loadAnalysis = useCallback(async (paper: PaperRecord, signal?: AbortSignal) => {
     verifyVersion.current += 1; verifyController.current?.abort();
     setSelectedText(""); setMatchedClaimIds([]); setSingleMarker(""); setVerifyError(null);
@@ -127,8 +151,9 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   useEffect(() => {
     const controller = new AbortController();
     void loadPapers(controller.signal);
+    void loadVerifySources(controller.signal);
     return () => controller.abort();
-  }, [loadPapers]);
+  }, [loadPapers, loadVerifySources]);
 
   const selectedPaper = papers.find((paper) => paper.paper_id === selectedPaperId) || null;
 
@@ -162,8 +187,20 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const needsCitationChoice = multipleSources && !selectedClaim;
   const markerOptions = selectedClaim ? singleReferenceMarkers(selectedClaim.citation_marker) : [];
   const citationMarker = markerOptions.length > 1 ? singleMarker : selectedClaim?.citation_marker || "";
-  const displayedSource = result ? result.cited_source : selectedClaim?.cited_source;
-  const displayedDocument = result ? result.source_document : selectedClaim?.source_document;
+  const selectedManualSource = verifySources.find((paper) => paper.paper_id === selectedSourcePaperId) || null;
+  const manualSource: IdentifiedSource | null = selectedManualSource ? {
+    source_paper_id: selectedManualSource.paper_id,
+    citation_key: citationMarker || "manual-source",
+    title: selectedManualSource.title || selectedManualSource.original_filename,
+    authors: [],
+    venue: null,
+    year: null,
+    doi: null,
+    url: null,
+    database: "Verify source PDF",
+  } : null;
+  const displayedSource = result ? result.cited_source : manualSource || selectedClaim?.cited_source;
+  const displayedDocument = result ? result.source_document : selectedSourcePaperId ? null : selectedClaim?.source_document;
   const previewReason = [paperPreviewReason, analysisPreviewReason].filter(Boolean).join(" ");
   const verifyDisabledReason = analysisLoading ? "Loading citation information…"
     : !selectedText ? "Highlight a cited sentence in the manuscript first."
@@ -177,7 +214,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const reviewStatus = analysis?.status || selectedPaper?.status;
   const isProcessing = reviewStatus === "pending" || reviewStatus === "processing";
   const isFailed = reviewStatus === "failed";
-  const isSearching = !result && selectedClaim?.resolution_status === "searching";
+  const isSearching = !result && !selectedSourcePaperId && selectedClaim?.resolution_status === "searching";
 
   const scrollToManuscriptMatch = useCallback(() => {
     const container = manuscriptDocumentRef.current;
@@ -246,7 +283,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setVerifying(true); setVerifyError(null); setResult(null);
     try {
       const request = { claim: selectedText, citation_marker: citationMarker, manuscript_id: selectedPaperId,
-        claim_id: selectedClaim.claim_id, ...(bibPaperId ? { bib_paper_id: bibPaperId } : {}) };
+        claim_id: selectedClaim.claim_id, ...(bibPaperId ? { bib_paper_id: bibPaperId } : {}),
+        ...(selectedSourcePaperId ? { source_paper_id: selectedSourcePaperId } : {}) };
       const response = example ? demoCitationComparison(request) : await verifyCitation(request, controller.signal);
       if (version === verifyVersion.current) setResult(response);
     } catch (error) {
@@ -271,6 +309,15 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             setPapersError(null);
             setPaperPreviewReason(null);
             setSelectedPaperId(paper.paper_id);
+            setExample(false);
+          }} />
+          <UploadFilesButton pdfOnly purpose="verify_source" disabled={verifying} onReady={async (paper) => {
+            const response = await listVerifySources();
+            setVerifySources(response.papers.filter((entry) => entry.scope === "verify_source"));
+            setSelectedSourcePaperId(paper.paper_id);
+            setVerifySourcesError(null);
+            setResult(null);
+            setVerifyError(null);
             setExample(false);
           }} />
 
@@ -372,10 +419,16 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             {selectedText && multipleSources && <label className="field claim-picker-field"><span>Cited source</span><select aria-label="Cited source" value={selectedClaimId} disabled={verifying} onChange={(event) => { setSelectedClaimId(event.target.value); setSingleMarker(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose which citation to analyze…</option>{matchedClaims.map((claim) => <option value={claim.claim_id} key={claim.claim_id}>{claim.citation_marker} · {claim.cited_source?.title || "Source not identified"}</option>)}</select><small>This selection contains multiple citations. Choose one to analyze.</small></label>}
             {selectedClaim && markerOptions.length > 1 && <label className="field claim-picker-field"><span>Reference in citation</span><select aria-label="Reference in citation" value={singleMarker} disabled={verifying} onChange={(event) => { setSingleMarker(event.target.value); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose one reference…</option>{markerOptions.map((marker) => <option key={marker} value={marker}>{marker}</option>)}</select></label>}
             {selectedText && !selectedClaim && !needsCitationChoice && <p className="selection-source-unlinked" role="status">This selection is not linked to an extracted citation. Highlight the cited sentence and its marker.</p>}
+            {selectedClaim && <section className="manual-source-picker">
+              <label className="field claim-picker-field"><span>Source PDF for this claim · optional</span><select aria-label="Source PDF for claim" value={selectedSourcePaperId} disabled={verifying || verifySourcesLoading} onChange={(event) => { setSelectedSourcePaperId(event.target.value); setResult(null); setVerifyError(null); }}>
+                <option value="">Automatic source resolution</option>
+                {verifySources.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.title || paper.original_filename}{paper.status !== "completed" ? ` · ${paper.status}` : ""}</option>)}
+              </select><small>{verifySourcesError || (verifySources.length ? "A selected source is used only for this claim comparison." : "Upload a source PDF above to compare this claim against its own text.")}</small></label>
+            </section>}
             {selectedClaim && !result && <>
-              <section className={`citation-existence ${isSearching ? "searching" : displayedSource ? "exists" : "missing"}`} role="status"><span><Icon name={displayedSource ? "document" : "search"} size={18} /></span><div><strong>{displayedSource ? "Associated reference" : "Source resolution pending"}</strong><p>{selectedClaim.resolution_message || "Analyze this citation to resolve its source and attempt a comparison. No judgement has been made yet."}</p></div></section>
+              <section className={`citation-existence ${isSearching ? "searching" : displayedSource ? "exists" : "missing"}`} role="status"><span><Icon name={displayedSource ? "document" : "search"} size={18} /></span><div><strong>{displayedSource ? (selectedSourcePaperId ? "Selected source PDF" : "Associated reference") : "Source resolution pending"}</strong><p>{selectedSourcePaperId ? "The selected Verify source PDF will be used for this claim comparison." : selectedClaim.resolution_message || "Analyze this citation to resolve its source and attempt a comparison. No judgement has been made yet."}</p></div></section>
               {displayedSource && <section className="database-source-card interactive-source-card" role="button" tabIndex={0} title="Open this article's original text" onClick={revealCitedArticle} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); revealCitedArticle(); } }}><div className="automatic-field-label"><span>Cited source</span><small>Click to open original text</small></div><strong>{displayedSource.title}</strong><p>{sourceMeta(displayedSource)}</p><footer><code>{displayedSource.citation_key}</code>{displayedSource.url && <a href={displayedSource.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Open record <Icon name="external" size={14} /></a>}</footer></section>}
-              {Boolean(selectedClaim.similar_sources?.length) && <section className="similar-source-section"><h3>Possible sources</h3><p>These candidates are unconfirmed. Citation analysis resolves the source; manual source overrides are not supported.</p>{selectedClaim.similar_sources?.map((source) => <div className="database-source-card" key={source.citation_key}><strong>{source.title}</strong><p>{sourceMeta(source)}</p>{source.url && <a href={source.url} target="_blank" rel="noreferrer">Open candidate record</a>}</div>)}</section>}
+              {Boolean(selectedClaim.similar_sources?.length) && <section className="similar-source-section"><h3>Possible sources</h3><p>These candidates are unconfirmed. Choose a Verify source PDF above when you want to compare against an uploaded document.</p>{selectedClaim.similar_sources?.map((source) => <div className="database-source-card" key={source.citation_key}><strong>{source.title}</strong><p>{sourceMeta(source)}</p>{source.url && <a href={source.url} target="_blank" rel="noreferrer">Open candidate record</a>}</div>)}</section>}
             </>}
 
             {verifyError && <div className="inline-error" role="alert">{verifyError}</div>}

@@ -7,7 +7,7 @@ from pathlib import Path
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from ..config import get_settings
-from ..models import PaperRecord, ParseResponse
+from ..models import PaperRecord, PaperScope, ParseResponse
 from ..services.bib_service import (
     BibPaperNotFoundError,
     BibProcessingError,
@@ -84,6 +84,7 @@ def _to_parse_response(record: PaperRecord) -> ParseResponse:
         paper_id=record.paper_id,
         status=record.status,
         file_type=record.file_type,
+        scope=record.scope,
         pages=record.pages,
         paragraph_count=record.paragraph_count,
         entry_count=record.entry_count,
@@ -91,18 +92,25 @@ def _to_parse_response(record: PaperRecord) -> ParseResponse:
     )
 
 
-@router.post("/parse", response_model=ParseResponse)
-async def parse_pdf(file: UploadFile = File(...)):
-    """Validate and persist an uploaded PDF or BibTeX file."""
+async def _persist_upload(
+    file: UploadFile,
+    *,
+    upload_dir: Path,
+    scope: PaperScope,
+    pdf_only: bool = False,
+) -> ParseResponse:
+    """Validate, persist and parse one upload in its feature-scoped directory."""
     original_filename, file_type = _validate_filename(file.filename)
+    if pdf_only and file_type != "pdf":
+        raise HTTPException(status_code=415, detail="Only PDF files are accepted here.")
     paper_id = str(uuid.uuid4())
     stored_filename = f"{paper_id}.{file_type}"
 
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    temporary_dir = UPLOAD_DIR / ".tmp"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    temporary_dir = upload_dir / ".tmp"
     temporary_dir.mkdir(parents=True, exist_ok=True)
     temporary_path = temporary_dir / f"{paper_id}.part"
-    final_path = UPLOAD_DIR / stored_filename
+    final_path = upload_dir / stored_filename
 
     try:
         file_size, header = await _write_upload_to_temporary_file(file, temporary_path)
@@ -119,6 +127,7 @@ async def parse_pdf(file: UploadFile = File(...)):
             stored_filename=stored_filename,
             file_path=str(final_path),
             file_type=file_type,
+            scope=scope,
             file_size=file_size,
             title=Path(original_filename).stem,
             created_at=timestamp,
@@ -163,6 +172,16 @@ async def parse_pdf(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Unable to save the uploaded file.") from exc
     finally:
         await file.close()
+
+
+@router.post("/parse", response_model=ParseResponse)
+async def parse_pdf(file: UploadFile = File(...)):
+    """Validate and persist an uploaded PDF or BibTeX file for the library."""
+    return await _persist_upload(
+        file,
+        upload_dir=UPLOAD_DIR,
+        scope=PaperScope.LIBRARY,
+    )
 
 
 @router.put("/parse/{paper_id}", response_model=ParseResponse)

@@ -269,6 +269,11 @@ goes stale, because the script's assertions check live output rather than the sn
   manual end-to-end record over the real plugin and backend.
 - **The frontend accepts no manual source-PDF override for Audit.** Candidates remain
   informational.
+- **Verify-only source PDFs are a separate workflow.** `POST /api/verify/sources` stores a
+  user-selected source PDF under the Verify source directory, and `GET /api/verify/sources`
+  lists only those files. They are excluded from `/api/papers`, Audit, the legacy
+  `/api/verify`, BibTeX verification, and automatic citation matching. The claim comparison
+  endpoint may receive `source_paper_id` to use one of these PDFs directly.
 - **Extraction damage is not detected.** `"Jan Šediv\`y"` against `"Ján Šedivý"` and a
   record whose author is a different person (`"Cordelia Schmid"` against
   `"Calvin F. Schmid"`) both surface as `NEEDS_REVIEW`, not as an error.

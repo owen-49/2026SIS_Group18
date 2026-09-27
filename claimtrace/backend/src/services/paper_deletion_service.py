@@ -247,6 +247,19 @@ def _artifact_paths(record: PaperRecord) -> list[Path]:
     ]
     if record.parsed_result_path:
         candidates.append((Path(record.parsed_result_path), (parsed_root, bib_root)))
+        parsed_parent = Path(record.parsed_result_path).parent
+        candidates.extend(
+            [
+                (
+                    parsed_parent / "markdown" / f"{storage_stem}.md",
+                    (parsed_root,),
+                ),
+                (
+                    parsed_parent / "markdown" / f"{storage_stem}_images",
+                    (parsed_root,),
+                ),
+            ]
+        )
 
     artifacts: list[Path] = []
     seen: set[Path] = set()

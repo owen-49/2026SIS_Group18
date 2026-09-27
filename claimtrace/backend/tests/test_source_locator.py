@@ -13,6 +13,7 @@ from backend.src.models import (
     BibEntryRecord,
     ComparisonStatus,
     PaperRecord,
+    PaperScope,
     ParsedBibDocument,
     ParsedDocument,
     ParsedParagraph,
@@ -37,7 +38,13 @@ PASSAGES = [
 ]
 
 
-def _record(paper_id: str, file_type: str, *, parsed_path: Path | None = None) -> PaperRecord:
+def _record(
+    paper_id: str,
+    file_type: str,
+    *,
+    parsed_path: Path | None = None,
+    scope: PaperScope = PaperScope.LIBRARY,
+) -> PaperRecord:
     now = datetime.now(UTC)
     suffix = "bib" if file_type == "bib" else "pdf"
     return PaperRecord(
@@ -47,6 +54,7 @@ def _record(paper_id: str, file_type: str, *, parsed_path: Path | None = None) -
         file_path=f"/uploads/{paper_id}",
         parsed_result_path=str(parsed_path) if parsed_path else None,
         file_type=file_type,
+        scope=scope,
         file_size=100,
         status=ParseStatus.COMPLETED,
         pages=1,
@@ -63,6 +71,7 @@ def _add_source_pdf(
     text=None,
     authors=("Smith, Jane",),
     year: int | None = 2024,
+    scope: PaperScope = PaperScope.LIBRARY,
 ) -> str:
     """Persist one completed parsed source PDF and return its paper ID."""
     document = ParsedDocument(
@@ -79,7 +88,7 @@ def _add_source_pdf(
         ],
     )
     path = save_parsed_document(document)
-    create_paper(_record(paper_id, "pdf", parsed_path=path))
+    create_paper(_record(paper_id, "pdf", parsed_path=path, scope=scope))
     return paper_id
 
 
@@ -123,6 +132,21 @@ def test_latex_marker_resolves_to_the_parsed_pdf(library):
     assert lookup.source.record.paper_id == "pdf-1"
     assert lookup.cited_source.source_paper_id == "pdf-1"
     assert lookup.cited_source.title == "Retrieval with citations"
+
+
+def test_verify_only_source_is_not_in_automatic_catalog(storage_paths):
+    _add_source_pdf(
+        "verify-source",
+        title="Retrieval with citations",
+        doi="10.1234/example",
+        scope=PaperScope.VERIFY_SOURCE,
+    )
+    _add_bibliography([_entry("smith2024", title="Retrieval with citations")])
+
+    lookup = look_up_citation("\\cite{smith2024}")
+
+    assert lookup.outcome is ComparisonStatus.SOURCE_NOT_AVAILABLE
+    assert lookup.source is None
 
 
 def test_bare_key_is_equivalent_to_the_latex_marker(library):

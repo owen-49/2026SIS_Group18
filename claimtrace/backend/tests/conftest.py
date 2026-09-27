@@ -14,6 +14,7 @@ os.environ["CLAIMTRACE_ENV_FILE"] = os.devnull
 from backend.src.config import get_settings  # noqa: E402
 from backend.src.main import app  # noqa: E402
 from backend.src.routes import parse as parse_route  # noqa: E402
+from backend.src.routes import verify_sources as verify_sources_route  # noqa: E402
 from backend.src.services import engine_adapter, paper_deletion_service  # noqa: E402
 from backend.src.storage import (  # noqa: E402
     bib_document_store,
@@ -74,6 +75,7 @@ def storage_paths(tmp_path, monkeypatch):
     bib_parsed_dir = parsed_dir / "bib"
 
     monkeypatch.setattr(parse_route, "UPLOAD_DIR", upload_dir)
+    monkeypatch.setattr(verify_sources_route, "SOURCE_UPLOAD_DIR", upload_dir / "verify-sources")
     monkeypatch.setattr(paper_deletion_service, "UPLOAD_DIR", upload_dir)
     monkeypatch.setattr(paper_store, "PAPERS_FILE", papers_file)
     monkeypatch.setattr(parsed_document_store, "PARSED_DIR", parsed_dir)

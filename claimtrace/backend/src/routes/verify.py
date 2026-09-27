@@ -67,11 +67,11 @@ async def verify_claim(request: VerifyRequest):
 def verify_citation_comparison(request: CitationComparisonRequest):
     """Compare one claim against the paper its citation marker points at.
 
-    Unlike POST /api/verify, which takes an explicit ``source_paper_id``, this
-    endpoint resolves the cited paper from the claim's own citation marker
-    (``\\cite{wei2022emergent}``, ``(Wei, 2022)``, ...) against the uploaded
-    bibliography, then semantically retrieves the relevant passages and asks the
-    LLM whether they support the claim.
+    By default this endpoint resolves the cited paper from the claim's own
+    citation marker (``\\cite{wei2022emergent}``, ``(Wei, 2022)``, ...) against
+    the uploaded bibliography. When ``source_paper_id`` is supplied, it must
+    identify a Verify-only source PDF and that PDF is compared directly,
+    without automatic source resolution.
 
     Failures that still carry useful information — an unresolvable marker, a
     reference with no parsed PDF, a model error — are returned as HTTP 200 with
@@ -89,6 +89,7 @@ def verify_citation_comparison(request: CitationComparisonRequest):
             citation_marker=request.citation_marker,
             manuscript_id=request.manuscript_id,
             bib_paper_id=request.bib_paper_id,
+            source_paper_id=request.source_paper_id,
             claim_id=request.claim_id,
             k=request.k,
         )

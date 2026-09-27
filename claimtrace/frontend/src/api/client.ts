@@ -33,13 +33,16 @@ function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-export async function uploadPaper(file: File): Promise<ParsedPaper> {
+export type UploadPurpose = "library" | "verify_source";
+
+export async function uploadPaper(file: File, purpose: UploadPurpose = "library"): Promise<ParsedPaper> {
   if (usingMockApi) {
     await wait(700);
     const fileType = file.name.toLowerCase().endsWith(".bib") ? "bib" : "pdf";
     return {
       paper_id: crypto.randomUUID().slice(0, 8),
       status: "completed",
+      scope: purpose,
       file_type: fileType,
       pages: fileType === "pdf" ? Math.max(4, Math.round(file.size / 45_000)) : 0,
       paragraph_count: fileType === "pdf" ? Math.max(24, Math.round(file.size / 4_000)) : 0,
@@ -51,17 +54,19 @@ export async function uploadPaper(file: File): Promise<ParsedPaper> {
 
   const formData = new FormData();
   formData.append("file", file);
-  const response = await fetch(apiUrl("/api/parse"), { method: "POST", body: formData });
+  const endpoint = purpose === "verify_source" ? "/api/verify/sources" : "/api/parse";
+  const response = await fetch(apiUrl(endpoint), { method: "POST", body: formData });
   return { ...(await readResponse<ParsedPaper>(response)), file_name: file.name };
 }
 
 export async function listPapers(signal?: AbortSignal): Promise<PaperListResponse> {
   if (usingMockApi) {
     await wait(350);
-    const papers = getWorkspacePapers().map((paper, index) => ({
+    const papers = getWorkspacePapers().filter((paper) => (paper.scope || "library") === "library").map((paper, index) => ({
       paper_id: paper.paperId,
       original_filename: paper.fileName,
       file_type: paper.fileType || "pdf",
+      scope: paper.scope || "library",
       file_size: paper.fileSize ?? 1_640_000 + index * 120_000,
       status: paper.status || "completed",
       pages: paper.pages ?? (paper.fileType === "bib" ? 0 : 12 + index * 2),
@@ -82,6 +87,35 @@ export async function listPapers(signal?: AbortSignal): Promise<PaperListRespons
   const response = await fetch(apiUrl("/api/papers"), { signal });
   const result = await readResponse<PaperListResponse>(response);
   if (!Array.isArray(result.papers)) throw new Error("The paper library response is invalid.");
+  return result;
+}
+
+export async function listVerifySources(signal?: AbortSignal): Promise<PaperListResponse> {
+  if (usingMockApi) {
+    await wait(250);
+    const papers = getWorkspacePapers()
+      .filter((paper) => paper.scope === "verify_source")
+      .map((paper) => ({
+        paper_id: paper.paperId,
+        original_filename: paper.fileName,
+        file_type: "pdf" as const,
+        scope: "verify_source" as const,
+        file_size: paper.fileSize ?? 1_640_000,
+        status: paper.status || "completed",
+        pages: paper.pages ?? 1,
+        paragraph_count: paper.paragraphCount ?? 1,
+        entry_count: 0,
+        title: paper.fileName.replace(/\.pdf$/i, ""),
+        error_message: null,
+        created_at: paper.uploadedAt ? new Date(paper.uploadedAt).toISOString() : "",
+        updated_at: paper.uploadedAt ? new Date(paper.uploadedAt).toISOString() : "",
+      }));
+    return { total: papers.length, papers };
+  }
+
+  const response = await fetch(apiUrl("/api/verify/sources"), { signal });
+  const result = await readResponse<PaperListResponse>(response);
+  if (!Array.isArray(result.papers)) throw new Error("The Verify source response is invalid.");
   return result;
 }
 
@@ -108,6 +142,7 @@ export async function getParseStatus(paperId: string, signal?: AbortSignal): Pro
     return {
       paper_id: paper.paperId,
       status: paper.status || "completed",
+      scope: paper.scope || "library",
       file_type: paper.fileType || "pdf",
       pages: paper.pages || 0,
       paragraph_count: paper.paragraphCount || 0,
