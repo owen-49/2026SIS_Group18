@@ -160,6 +160,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   useEffect(() => {
     verifyVersion.current += 1;
     setSelectedText(""); setSelectionError(""); setSingleMarker(""); setMatchedClaimIds([]);
+    // A manual PDF belongs to the current manuscript and bibliography only.
+    setSelectedSourcePaperId("");
     setAnalysis(null);
     setReaderView("manuscript");
     setSelectedClaimId("");
@@ -260,6 +262,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     const end = elementFor(range.endContainer)?.closest<HTMLElement>("[data-selectable-paragraph]");
     if (!start || !manuscriptDocumentRef.current?.contains(start)) return;
     verifyVersion.current += 1;
+    setSelectedSourcePaperId("");
     setResult(null); setVerifyError(null); setSelectedClaimId(""); setSingleMarker(""); setMatchedClaimIds([]);
     const text = selection.toString().trim();
     if (start !== end || text.length > 4000) {
@@ -416,8 +419,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             <div className="citation-resolution-heading"><div><h2>Selected citation</h2><p>Drag over a cited sentence in the manuscript, then click Analyze selection.</p></div></div>
             <div className="selected-citation-text" role="status">{selectedText ? <blockquote>{selectedText}</blockquote> : <p>No text selected yet. Include the citation marker when highlighting a sentence.</p>}</div>
             {selectionError && <p className="inline-error" role="alert">{selectionError}</p>}
-            {selectedText && multipleSources && <label className="field claim-picker-field"><span>Cited source</span><select aria-label="Cited source" value={selectedClaimId} disabled={verifying} onChange={(event) => { setSelectedClaimId(event.target.value); setSingleMarker(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose which citation to analyze…</option>{matchedClaims.map((claim) => <option value={claim.claim_id} key={claim.claim_id}>{claim.citation_marker} · {claim.cited_source?.title || "Source not identified"}</option>)}</select><small>This selection contains multiple citations. Choose one to analyze.</small></label>}
-            {selectedClaim && markerOptions.length > 1 && <label className="field claim-picker-field"><span>Reference in citation</span><select aria-label="Reference in citation" value={singleMarker} disabled={verifying} onChange={(event) => { setSingleMarker(event.target.value); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose one reference…</option>{markerOptions.map((marker) => <option key={marker} value={marker}>{marker}</option>)}</select></label>}
+            {selectedText && multipleSources && <label className="field claim-picker-field"><span>Cited source</span><select aria-label="Cited source" value={selectedClaimId} disabled={verifying} onChange={(event) => { setSelectedClaimId(event.target.value); setSelectedSourcePaperId(""); setSingleMarker(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose which citation to analyze…</option>{matchedClaims.map((claim) => <option value={claim.claim_id} key={claim.claim_id}>{claim.citation_marker} · {claim.cited_source?.title || "Source not identified"}</option>)}</select><small>This selection contains multiple citations. Choose one to analyze.</small></label>}
+            {selectedClaim && markerOptions.length > 1 && <label className="field claim-picker-field"><span>Reference in citation</span><select aria-label="Reference in citation" value={singleMarker} disabled={verifying} onChange={(event) => { setSingleMarker(event.target.value); setSelectedSourcePaperId(""); setResult(null); setVerifyError(null); }}><option value="" disabled>Choose one reference…</option>{markerOptions.map((marker) => <option key={marker} value={marker}>{marker}</option>)}</select></label>}
             {selectedText && !selectedClaim && !needsCitationChoice && <p className="selection-source-unlinked" role="status">This selection is not linked to an extracted citation. Highlight the cited sentence and its marker.</p>}
             {selectedClaim && <section className="manual-source-picker">
               <label className="field claim-picker-field"><span>Source PDF for this claim · optional</span><select aria-label="Source PDF for claim" value={selectedSourcePaperId} disabled={verifying || verifySourcesLoading} onChange={(event) => { setSelectedSourcePaperId(event.target.value); setResult(null); setVerifyError(null); }}>
