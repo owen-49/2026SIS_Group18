@@ -76,7 +76,10 @@ for (const verdict of ['SUPPORT', 'PARTIAL', 'CONTRADICT', 'NOT_FOUND']) {
 test('bibliography is passed to discovery and Verify; changing it clears the old judgement', async ({ page }) => {
   const { requests, discoveries } = await setup(page);
   await page.getByText('Reference settings', { exact: true }).click();
+  const refreshedClaims = page.waitForResponse(response => response.url().includes('/claims?bib_paper_id=bib-b'));
   await page.getByLabel('Bibliography', { exact: true }).selectOption('bib-b');
+  await (await refreshedClaims).finished();
+  await expect(page.getByText('Loading citation information…', { exact: true })).toHaveCount(0);
   await expect.poll(() => discoveries.at(-1)).toContain('bib_paper_id=bib-b');
   await highlight(page); await analyze(page).click();
   await expect(output(page)).toBeVisible();
