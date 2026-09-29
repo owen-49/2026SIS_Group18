@@ -1,11 +1,11 @@
 {
   "mode": "controlled",
-  "started_at": "2026-09-21T02:01:04.548354+00:00",
+  "started_at": "2026-09-14T05:50:16.924842+00:00",
   "cases": [
     {
       "input": "references.bib",
       "parse": {
-        "paper_id": "a802208a-b2e0-478f-a404-fd748e186c72",
+        "paper_id": "05801c57-fcb4-4908-a48d-06d6ca25b02a",
         "status": "completed",
         "file_type": "bib",
         "pages": 0,
@@ -14,27 +14,27 @@
         "title": "references"
       },
       "audit_request": {
-        "bib_paper_id": "a802208a-b2e0-478f-a404-fd748e186c72"
+        "bib_paper_id": "05801c57-fcb4-4908-a48d-06d6ca25b02a"
       },
       "audit": {
         "contract_version": 2,
-        "audit_id": "e18f4538-ca24-4d70-93bc-0dfe7ace27a4",
-        "input_paper_id": "a802208a-b2e0-478f-a404-fd748e186c72",
+        "audit_id": "5d5db756-62e1-4bf8-a106-6ada5bc1a147",
+        "input_paper_id": "05801c57-fcb4-4908-a48d-06d6ca25b02a",
         "input_type": "bib",
-        "checked_at": "2026-09-21T02:01:06.890859Z",
+        "checked_at": "2026-09-14T05:50:39.671922Z",
         "status": "completed_with_errors",
         "total_entries": 6,
         "counts": {
           "VERIFIED": 1,
-          "METADATA_MISMATCH": 0,
+          "METADATA_MISMATCH": 1,
           "NEEDS_REVIEW": 0,
-          "NOT_FOUND": 2,
+          "NOT_FOUND": 1,
           "LOOKUP_FAILED": 3
         },
         "results": [
           {
             "entry": {
-              "entry_id": "a39b8136-b24d-5a97-b139-aa4d033e4c62",
+              "entry_id": "297e963f-83de-54a4-b0c3-5e7fbc59af8d",
               "metadata": {
                 "key": "correct",
                 "entry_type": "inproceedings",
@@ -90,16 +90,16 @@
               {
                 "field_name": "doi",
                 "input_value": "",
-                "source_value": "10.48550/arxiv.1706.03762",
-                "status": "INPUT_MISSING",
-                "detail": "This field is missing from the input reference."
+                "source_value": "",
+                "status": "NOT_CHECKED",
+                "detail": "Neither input nor external record supplies this field."
               }
             ],
             "matched_record": {
-              "provider": "openalex",
-              "record_id": "openalex:W2963403868",
+              "provider": "google_scholar",
+              "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
               "url": "https://arxiv.org/abs/1706.03762",
-              "retrieved_at": "2026-09-21T02:01:06.890286Z",
+              "retrieved_at": "2026-09-14T05:50:29.386711Z",
               "metadata": {
                 "title": "Attention Is All You Need",
                 "authors": [
@@ -107,22 +107,22 @@
                 ],
                 "year": 2017,
                 "venue": "NeurIPS",
-                "doi": "10.48550/arxiv.1706.03762"
+                "doi": ""
               }
             },
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "found",
                 "error_code": null,
-                "detail": "exactly one record's title matches the reference exactly"
+                "detail": "Google Scholar returned a publication candidate."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "9cea5a73-0ccb-526c-b11d-cdf4d500d11b",
+              "entry_id": "aca8d98d-8e22-5e6d-9ea7-49865fbac9d8",
               "metadata": {
                 "key": "wrong_year",
                 "entry_type": "inproceedings",
@@ -144,29 +144,73 @@
               "page_start": null,
               "page_end": null
             },
-            "status": "NOT_FOUND",
-            "reason": "2 of 2 records were ineligible (2 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
-            "field_checks": [],
-            "matched_record": null,
+            "status": "METADATA_MISMATCH",
+            "reason": "Identified record has field differences.",
+            "field_checks": [
+              {
+                "field_name": "title",
+                "input_value": "Attention Is All You Need",
+                "source_value": "Attention Is All You Need",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "year",
+                "input_value": "2020",
+                "source_value": "2017",
+                "status": "MISMATCH",
+                "detail": "The reference field differs from the retrieved external record."
+              },
+              {
+                "field_name": "authors",
+                "input_value": "Vaswani, A.",
+                "source_value": "Vaswani, A.",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "venue",
+                "input_value": "NeurIPS",
+                "source_value": "NeurIPS",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "doi",
+                "input_value": "",
+                "source_value": "",
+                "status": "NOT_CHECKED",
+                "detail": "Neither input nor external record supplies this field."
+              }
+            ],
+            "matched_record": {
+              "provider": "google_scholar",
+              "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
+              "url": "https://arxiv.org/abs/1706.03762",
+              "retrieved_at": "2026-09-14T05:50:31.938137Z",
+              "metadata": {
+                "title": "Attention Is All You Need",
+                "authors": [
+                  "Vaswani, A."
+                ],
+                "year": 2017,
+                "venue": "NeurIPS",
+                "doi": ""
+              }
+            },
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
-                "outcome": "not_found",
+                "provider": "google_scholar",
+                "outcome": "found",
                 "error_code": null,
-                "detail": "1 of 1 records were ineligible (1 year disagrees)"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "not_found",
-                "error_code": null,
-                "detail": "2 of 2 records were ineligible (2 year disagrees)"
+                "detail": "Google Scholar returned a publication candidate."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "94a4d511-bf37-550e-8609-96243d255176",
+              "entry_id": "bfcb0b4a-56ab-590a-b4ae-376cc7773476",
               "metadata": {
                 "key": "absent",
                 "entry_type": "inproceedings",
@@ -189,28 +233,22 @@
               "page_end": null
             },
             "status": "NOT_FOUND",
-            "reason": "the providers returned no records for this reference No acceptable record in the queried sources; this does not prove fabrication.",
+            "reason": "No publication candidate was returned for this query. No acceptable record in the queried sources; this does not prove fabrication.",
             "field_checks": [],
             "matched_record": null,
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "not_found",
                 "error_code": null,
-                "detail": "the providers returned no records for this reference"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "not_found",
-                "error_code": null,
-                "detail": "the providers returned no records for this reference"
+                "detail": "No publication candidate was returned for this query."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "0d855495-2795-5b3c-817f-b772a1364dbd",
+              "entry_id": "f2d00771-1619-5768-bf2c-a9fbaccdf3ac",
               "metadata": {
                 "key": "timeout",
                 "entry_type": "inproceedings",
@@ -233,34 +271,22 @@
               "page_end": null
             },
             "status": "LOOKUP_FAILED",
-            "reason": "2 provider(s) did not complete, so the search is inconclusive (2 failed; some sources were not searched)",
+            "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
             "field_checks": [],
             "matched_record": null,
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "failed",
-                "error_code": "OPENALEX_TRANSPORT",
-                "detail": "request failed: timed out"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "failed",
-                "error_code": "CROSSREF_TRANSPORT",
-                "detail": "request failed: timed out"
-              },
-              {
-                "provider": "metadata_providers",
-                "outcome": "failed",
-                "error_code": "OPENALEX_TRANSPORT",
-                "detail": "2 provider(s) did not complete, so the search is inconclusive (2 failed; some sources were not searched)"
+                "error_code": "SCHOLAR_TIMEOUT",
+                "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "ccafeb05-8b99-5c08-8924-5675d207740e",
+              "entry_id": "18e686b8-5154-557e-830d-c457f2192b92",
               "metadata": {
                 "key": "failure",
                 "entry_type": "inproceedings",
@@ -283,34 +309,22 @@
               "page_end": null
             },
             "status": "LOOKUP_FAILED",
-            "reason": "2 provider(s) did not complete, so the search is inconclusive (2 failed; some sources were not searched)",
+            "reason": "Google Scholar lookup could not complete. Check backend dependencies and logs.",
             "field_checks": [],
             "matched_record": null,
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "failed",
-                "error_code": "OPENALEX_HTTP_500",
-                "detail": "HTTP 500 Internal Server Error"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "failed",
-                "error_code": "CROSSREF_HTTP_500",
-                "detail": "HTTP 500 Internal Server Error"
-              },
-              {
-                "provider": "metadata_providers",
-                "outcome": "failed",
-                "error_code": "OPENALEX_HTTP_500",
-                "detail": "2 provider(s) did not complete, so the search is inconclusive (2 failed; some sources were not searched)"
+                "error_code": "SCHOLAR_WORKER_FAILED",
+                "detail": "Google Scholar lookup could not complete. Check backend dependencies and logs."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "1951cbfd-91f5-5c83-bfbe-16240e363c0b",
+              "entry_id": "ee094034-c5dc-512f-865d-1b97fc2037e2",
               "metadata": {
                 "key": "rate_limit",
                 "entry_type": "inproceedings",
@@ -333,40 +347,28 @@
               "page_end": null
             },
             "status": "LOOKUP_FAILED",
-            "reason": "Every provider refused the request (2 was rate-limited; some sources were not searched)",
+            "reason": "Google Scholar rate-limited the search: controlled acceptance rate limit Retry later or reduce the number of lookups per audit; publication existence remains unchecked.",
             "field_checks": [],
             "matched_record": null,
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "failed",
-                "error_code": "OPENALEX_RATE_LIMITED",
-                "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "failed",
-                "error_code": "CROSSREF_RATE_LIMITED",
-                "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
-              },
-              {
-                "provider": "metadata_providers",
-                "outcome": "failed",
-                "error_code": "OPENALEX_RATE_LIMITED",
-                "detail": "Every provider refused the request (2 was rate-limited; some sources were not searched)"
+                "error_code": "SCHOLAR_RATE_LIMITED",
+                "detail": "Google Scholar rate-limited the search: controlled acceptance rate limit"
               }
             ]
           }
         ],
         "warnings": []
       },
-      "elapsed_seconds": 0.01
+      "elapsed_seconds": 13.02
     },
     {
       "input": "manuscript.pdf",
       "parse": {
-        "paper_id": "bd0ac7e5-4ebb-40a7-85e4-7dd383f5ead6",
+        "paper_id": "addd0378-d09b-40c2-b5d9-f871feacdc08",
         "status": "completed",
         "file_type": "pdf",
         "pages": 2,
@@ -375,27 +377,27 @@
         "title": "Audit acceptance manuscript fixture"
       },
       "audit_request": {
-        "manuscript_id": "bd0ac7e5-4ebb-40a7-85e4-7dd383f5ead6"
+        "manuscript_id": "addd0378-d09b-40c2-b5d9-f871feacdc08"
       },
       "audit": {
         "contract_version": 2,
-        "audit_id": "0c46d63b-0ee1-42e4-b5fb-fa5f83903bdc",
-        "input_paper_id": "bd0ac7e5-4ebb-40a7-85e4-7dd383f5ead6",
+        "audit_id": "17bf635d-1fa5-4c68-83cc-344df649edfd",
+        "input_paper_id": "addd0378-d09b-40c2-b5d9-f871feacdc08",
         "input_type": "pdf",
-        "checked_at": "2026-09-21T02:01:07.441952Z",
+        "checked_at": "2026-09-14T05:51:01.922788Z",
         "status": "completed",
         "total_entries": 2,
         "counts": {
-          "VERIFIED": 1,
-          "METADATA_MISMATCH": 0,
-          "NEEDS_REVIEW": 0,
-          "NOT_FOUND": 1,
+          "VERIFIED": 0,
+          "METADATA_MISMATCH": 1,
+          "NEEDS_REVIEW": 1,
+          "NOT_FOUND": 0,
           "LOOKUP_FAILED": 0
         },
         "results": [
           {
             "entry": {
-              "entry_id": "48f453e0-0350-57ef-8c07-f0e22168bd68",
+              "entry_id": "d10ae224-da11-55af-9b8d-ee1a65c81241",
               "metadata": {
                 "key": "1",
                 "entry_type": "misc",
@@ -417,8 +419,8 @@
               "page_start": 2,
               "page_end": 2
             },
-            "status": "VERIFIED",
-            "reason": "External record identified; required metadata agrees.",
+            "status": "NEEDS_REVIEW",
+            "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
             "field_checks": [
               {
                 "field_name": "title",
@@ -451,16 +453,16 @@
               {
                 "field_name": "doi",
                 "input_value": "",
-                "source_value": "10.48550/arxiv.1706.03762",
-                "status": "INPUT_MISSING",
-                "detail": "This field is missing from the input reference."
+                "source_value": "",
+                "status": "NOT_CHECKED",
+                "detail": "Neither input nor external record supplies this field."
               }
             ],
             "matched_record": {
-              "provider": "openalex",
-              "record_id": "openalex:W2963403868",
+              "provider": "google_scholar",
+              "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
               "url": "https://arxiv.org/abs/1706.03762",
-              "retrieved_at": "2026-09-21T02:01:07.441549Z",
+              "retrieved_at": "2026-09-14T05:50:59.358046Z",
               "metadata": {
                 "title": "Attention Is All You Need",
                 "authors": [
@@ -468,22 +470,22 @@
                 ],
                 "year": 2017,
                 "venue": "NeurIPS",
-                "doi": "10.48550/arxiv.1706.03762"
+                "doi": ""
               }
             },
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
+                "provider": "google_scholar",
                 "outcome": "found",
                 "error_code": null,
-                "detail": "exactly one record's title matches the reference exactly"
+                "detail": "Google Scholar returned a publication candidate."
               }
             ]
           },
           {
             "entry": {
-              "entry_id": "6007654a-e2a2-5708-afa4-61d113f1e9c0",
+              "entry_id": "4f799569-e1eb-599f-ba17-7de29b21486c",
               "metadata": {
                 "key": "2",
                 "entry_type": "misc",
@@ -505,30 +507,74 @@
               "page_start": 2,
               "page_end": 2
             },
-            "status": "NOT_FOUND",
-            "reason": "2 of 2 records were ineligible (2 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
-            "field_checks": [],
-            "matched_record": null,
+            "status": "METADATA_MISMATCH",
+            "reason": "Identified record has field differences.",
+            "field_checks": [
+              {
+                "field_name": "title",
+                "input_value": "Attention Is All You Need",
+                "source_value": "Attention Is All You Need",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "year",
+                "input_value": "2020",
+                "source_value": "2017",
+                "status": "MISMATCH",
+                "detail": "The reference field differs from the retrieved external record."
+              },
+              {
+                "field_name": "authors",
+                "input_value": "A. Vaswani",
+                "source_value": "Vaswani, A.",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "venue",
+                "input_value": "NeurIPS",
+                "source_value": "NeurIPS",
+                "status": "MATCH",
+                "detail": "The existing Engine metadata comparator reports a match."
+              },
+              {
+                "field_name": "doi",
+                "input_value": "",
+                "source_value": "",
+                "status": "NOT_CHECKED",
+                "detail": "Neither input nor external record supplies this field."
+              }
+            ],
+            "matched_record": {
+              "provider": "google_scholar",
+              "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
+              "url": "https://arxiv.org/abs/1706.03762",
+              "retrieved_at": "2026-09-14T05:51:01.825315Z",
+              "metadata": {
+                "title": "Attention Is All You Need",
+                "authors": [
+                  "Vaswani, A."
+                ],
+                "year": 2017,
+                "venue": "NeurIPS",
+                "doi": ""
+              }
+            },
             "candidates": [],
             "lookup_attempts": [
               {
-                "provider": "openalex",
-                "outcome": "not_found",
+                "provider": "google_scholar",
+                "outcome": "found",
                 "error_code": null,
-                "detail": "1 of 1 records were ineligible (1 year disagrees)"
-              },
-              {
-                "provider": "crossref",
-                "outcome": "not_found",
-                "error_code": null,
-                "detail": "2 of 2 records were ineligible (2 year disagrees)"
+                "detail": "Google Scholar returned a publication candidate."
               }
             ]
           }
         ],
         "warnings": []
       },
-      "elapsed_seconds": 0.55
+      "elapsed_seconds": 22.26
     }
   ],
   "startup": "passed: fresh nested upload directory",
@@ -539,5 +585,5 @@
   },
   "retrieval_after_lifespan_restart": true,
   "retrieval_after_process_restart_over_http": true,
-  "expected_statuses_and_year_rejection": "passed"
+  "expected_statuses_and_year_difference": "passed"
 }

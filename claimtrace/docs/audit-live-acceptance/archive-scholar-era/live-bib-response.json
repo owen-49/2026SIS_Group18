@@ -1,22 +1,22 @@
 {
   "contract_version": 2,
-  "audit_id": "5d0d1f21-0e24-4951-b707-6a8f3149f129",
-  "input_paper_id": "a16d93eb-7d9e-4224-bc11-1da69d12588b",
+  "audit_id": "01f2900a-7cf3-4810-8674-1b036955b558",
+  "input_paper_id": "f69cefaa-921f-4a47-8f9a-50006b14d0d2",
   "input_type": "bib",
-  "checked_at": "2026-09-21T02:01:31.020028Z",
-  "status": "completed",
+  "checked_at": "2026-09-14T05:51:21.576196Z",
+  "status": "completed_with_errors",
   "total_entries": 1,
   "counts": {
     "VERIFIED": 0,
     "METADATA_MISMATCH": 0,
     "NEEDS_REVIEW": 0,
-    "NOT_FOUND": 1,
-    "LOOKUP_FAILED": 0
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 1
   },
   "results": [
     {
       "entry": {
-        "entry_id": "1cc013e7-9d90-5337-be6d-731888cfd8cf",
+        "entry_id": "8f449bb1-46e6-599e-8872-df54ac6eccdd",
         "metadata": {
           "key": "correct",
           "entry_type": "inproceedings",
@@ -38,23 +38,17 @@
         "page_start": null,
         "page_end": null
       },
-      "status": "NOT_FOUND",
-      "reason": "20 of 20 records were ineligible (10 no venue, 10 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
+      "status": "LOOKUP_FAILED",
+      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
       "field_checks": [],
       "matched_record": null,
       "candidates": [],
       "lookup_attempts": [
         {
-          "provider": "openalex",
-          "outcome": "not_found",
-          "error_code": null,
-          "detail": "10 of 10 records were ineligible (9 year disagrees, 1 no venue)"
-        },
-        {
-          "provider": "crossref",
-          "outcome": "not_found",
-          "error_code": null,
-          "detail": "20 of 20 records were ineligible (10 no venue, 10 year disagrees)"
+          "provider": "google_scholar",
+          "outcome": "failed",
+          "error_code": "SCHOLAR_TIMEOUT",
+          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
         }
       ]
     }

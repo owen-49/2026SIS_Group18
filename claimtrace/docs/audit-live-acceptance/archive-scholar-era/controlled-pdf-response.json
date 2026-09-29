@@ -1,0 +1,195 @@
+{
+  "contract_version": 2,
+  "audit_id": "17bf635d-1fa5-4c68-83cc-344df649edfd",
+  "input_paper_id": "addd0378-d09b-40c2-b5d9-f871feacdc08",
+  "input_type": "pdf",
+  "checked_at": "2026-09-14T05:51:01.922788Z",
+  "status": "completed",
+  "total_entries": 2,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 1,
+    "NEEDS_REVIEW": 1,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 0
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "d10ae224-da11-55af-9b8d-ee1a65c81241",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "Attention Is All You Need",
+          "authors": [
+            "A. Vaswani"
+          ],
+          "year": 2017,
+          "venue": "NeurIPS",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] A. Vaswani, \"Attention Is All You Need,\" NeurIPS, 2017."
+        },
+        "number": 1,
+        "page_start": 2,
+        "page_end": 2
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "Attention Is All You Need",
+          "source_value": "Attention Is All You Need",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "year",
+          "input_value": "2017",
+          "source_value": "2017",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "A. Vaswani",
+          "source_value": "Vaswani, A.",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "NeurIPS",
+          "source_value": "NeurIPS",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "google_scholar",
+        "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
+        "url": "https://arxiv.org/abs/1706.03762",
+        "retrieved_at": "2026-09-14T05:50:59.358046Z",
+        "metadata": {
+          "title": "Attention Is All You Need",
+          "authors": [
+            "Vaswani, A."
+          ],
+          "year": 2017,
+          "venue": "NeurIPS",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "Google Scholar returned a publication candidate."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "4f799569-e1eb-599f-ba17-7de29b21486c",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "Attention Is All You Need",
+          "authors": [
+            "A. Vaswani"
+          ],
+          "year": 2020,
+          "venue": "NeurIPS",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] A. Vaswani, \"Attention Is All You Need,\" NeurIPS, 2020."
+        },
+        "number": 2,
+        "page_start": 2,
+        "page_end": 2
+      },
+      "status": "METADATA_MISMATCH",
+      "reason": "Identified record has field differences.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "Attention Is All You Need",
+          "source_value": "Attention Is All You Need",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "year",
+          "input_value": "2020",
+          "source_value": "2017",
+          "status": "MISMATCH",
+          "detail": "The reference field differs from the retrieved external record."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "A. Vaswani",
+          "source_value": "Vaswani, A.",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "NeurIPS",
+          "source_value": "NeurIPS",
+          "status": "MATCH",
+          "detail": "The existing Engine metadata comparator reports a match."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "google_scholar",
+        "record_id": "scholar:a7468c68516526913141989e07fcccd64bf51644bd7287e30a432b7a17265e59",
+        "url": "https://arxiv.org/abs/1706.03762",
+        "retrieved_at": "2026-09-14T05:51:01.825315Z",
+        "metadata": {
+          "title": "Attention Is All You Need",
+          "authors": [
+            "Vaswani, A."
+          ],
+          "year": 2017,
+          "venue": "NeurIPS",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "Google Scholar returned a publication candidate."
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}
