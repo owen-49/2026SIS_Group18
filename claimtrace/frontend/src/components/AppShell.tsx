@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { Icon, type IconName } from "./Icon";
 
 const navigation: { to: string; label: string; icon: IconName; end?: boolean }[] = [
-  { to: "/audit", label: "Batch audit", icon: "audit" },
+  { to: "/audit", label: "Batch verify", icon: "audit" },
   { to: "/verify", label: "Review claims", icon: "verify" },
 ];
 

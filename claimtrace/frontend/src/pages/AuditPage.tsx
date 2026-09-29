@@ -112,7 +112,7 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
   return <div className="page-stack audit-review-page">
     <section className="page-heading heading-row">
       <div className="workspace-intro">
-        <div className="workspace-intro-copy"><h1>Batch audit</h1><p>Check references and metadata.</p></div>
+        <div className="workspace-intro-copy"><h1>Batch verify</h1><p>Check references and metadata.</p></div>
       </div>
     </section>
 
