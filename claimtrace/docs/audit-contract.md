@@ -252,7 +252,7 @@ goes stale, because the script's assertions check live output rather than the sn
 
 ## 7. Known limits
 
-### Venue-abbreviation measurement (2026-09-21)
+### Venue-abbreviation measurement (updated 2026-09-29)
 
 The proposed relaxation was measured without changing the production comparator.  It
 keeps the current exact/fuzzy rule and additionally accepts a short venue acronym only
@@ -266,7 +266,7 @@ Reproduce it with:
 
 ```sh
 python backend/scripts/venue_abbreviation_measurement.py \
-  backend/uploads/parsed/audits \
+  ../venue-handoff/audits \
   --output /tmp/venue-abbreviation-measurement.json
 ```
 
@@ -275,17 +275,30 @@ would admit, and projects the resulting Audit status.  It also checks all record
 candidates in `reference_identity_fixture.json`, counting explicitly forbidden
 candidates separately from acceptable and unlabelled candidates.
 
-The initial 2026-09-21 run used the smaller corpus that was available before the current
-venue handoff was checked in.  It contains 18 Audit files and 8 unique matched records:
-current and proposed counts are
-`1 VERIFIED / 4 METADATA_MISMATCH / 3 NEEDS_REVIEW`; the proposal adds **0 VERIFIED**
-and admits **0 venue differences**.  The identity fixture contains 13 cases and 148
-recorded candidate pairs; it adds **0 acceptable**, **0 forbidden**, and **0 unlabelled**
-candidate venue agreements.  This smaller corpus contains no abbreviation case, so the
-zero is not evidence that the relaxation improves nothing.  It is evidence that there
-was not enough checked-in data to justify changing production.  The latest handoff is
-now available in `venue-handoff/` and `ClaimTrace-audits-export.zip`; production remains
-unchanged until the measurement is rerun against that corpus.
+The 2026-09-29 handoff contains 24 Audit files and 117 raw matched rows.  Repeated Audit
+runs reduce this to **90 unique external record IDs** and **88 unique normalised
+DOI/provider identifiers**; only five Audit files contain matches, covering three input
+manuscripts.  The input structured
+venue is empty in every row, so the measurement deliberately uses the venue recovered
+from each reference's `raw_text`.
+
+Against those 90 records, the current comparator produces `18 VERIFIED / 72
+NEEDS_REVIEW`; the proposal produces `19 VERIFIED / 71 NEEDS_REVIEW`.  It admits **six
+record-level venue differences** representing **three venue-pair patterns**: `AAAI`
+against the full AAAI proceedings name, `ACL` against the full ACL proceedings name,
+and `ArXiv` against `arXiv (Cornell University)`.  Manual inspection found all six
+source publications to use legitimate venue variants and found no observed false
+agreement; four of the six publications use the arXiv pattern.  One arXiv record is
+promoted to `VERIFIED`; the other admitted differences remain `NEEDS_REVIEW` because
+other evidence is incomplete or fuzzy.
+
+The identity fixture still contains 13 cases and 148 recorded candidate pairs and adds
+**0 acceptable**, **0 forbidden**, and **0 unlabelled** candidate agreements.  It does
+not contain an abbreviation case, so it neither confirms nor contradicts the live
+cases.  The six admitted records are six distinct source publications, but they cover
+only three venue-pair patterns and three input manuscripts.  The result is evidence of
+a small coverage gain without an observed false match, not enough evidence to change
+the production comparator.  Production therefore remains unchanged.
 
 - **Coverage is lost before the rules run, and then to the rules.** A reference whose
   candidates are other papers reports `NOT_FOUND` where Scholar would have returned a hit.
@@ -308,7 +321,7 @@ unchanged until the measurement is rerun against that corpus.
   matches with a page size of 10. And `NOT_FOUND` here is not a claim that the paper does
   not exist — it is the report declining to verify against records it cannot trust, which is
   the same choice the venue rule makes. `live/` now records this case, so it is reproducible
-   rather than asserted.
+  rather than asserted.
 - **The identity rules decide before any field comparison, and they are strict.** A
   wrong-year citation is rejected as *ineligible* rather than reported as a field
   difference, so there are **no field checks at all** for that entry. The rejection is

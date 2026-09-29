@@ -66,6 +66,9 @@ _ABBREVIATION_ALIASES = {"neurips": "nips"}
 class AuditChange:
     paper_id: str
     entry_id: str
+    record_id: str
+    doi: str
+    identity_key: str
     current_status: str
     proposed_status: str
     input_venue: str
@@ -120,7 +123,10 @@ def _initialism_variants(value: str) -> set[str]:
 def current_venues_agree(left: str, right: str) -> bool:
     """Reproduce the Engine comparator's current venue decision."""
     def normalise(value: str) -> str:
-        return re.sub(r"[^a-z0-9\s]", "", (value or "").casefold()).strip()
+        # Keep this byte-for-byte equivalent to ``engine.bib_verifier``.  Using
+        # ``casefold`` here also expands ligatures such as ``ﬁ`` and would count
+        # Unicode normalisation as a benefit of the abbreviation proposal.
+        return re.sub(r"[^a-z0-9\s]", "", (value or "").lower()).strip()
 
     left_normalised = normalise(left)
     right_normalised = normalise(right)
@@ -179,8 +185,14 @@ def _project_status(entry: ReferenceEntry, record: ExternalRecord) -> tuple[Audi
 
 
 def _audit_rows(directory: Path):
-    """Yield unique matched records and retain their paper identifiers."""
+    """Yield the first occurrence of each external record.
+
+    The handoff contains repeated runs of the same manuscript.  Its documented
+    primary denominator is unique ``matched_record.record_id`` (90 records), not
+    manuscript/entry pairs (92) or raw matched rows (117).
+    """
     rows = {}
+    raw_matched_rows = 0
     audit_files = sorted(directory.glob("*.json"))
     for path in audit_files:
         audit = json.loads(path.read_text(encoding="utf-8"))
@@ -188,20 +200,28 @@ def _audit_rows(directory: Path):
         for result in audit.get("results", []):
             if not result.get("matched_record"):
                 continue
-            key = (paper_id, result["entry"]["entry_id"])
-            rows.setdefault(key, result)
-    return audit_files, rows
+            raw_matched_rows += 1
+            record_id = result["matched_record"].get("record_id")
+            key = record_id or f"{paper_id}:{result['entry']['entry_id']}"
+            rows.setdefault(key, (paper_id, result))
+    return audit_files, raw_matched_rows, rows
 
 
 def measure_audits(directory: Path) -> dict:
     """Measure projected Audit status changes over persisted results."""
-    audit_files, rows = _audit_rows(directory)
+    audit_files, raw_matched_rows, rows = _audit_rows(directory)
     current_counts: Counter[str] = Counter()
     proposed_counts: Counter[str] = Counter()
+    unique_identity_keys: set[str] = set()
     changes: list[AuditChange] = []
-    for (paper_id, entry_id), result in sorted(rows.items()):
+    for _record_id, (paper_id, result) in sorted(rows.items()):
+        entry_id = result["entry"]["entry_id"]
         entry = ReferenceEntry.model_validate(result["entry"])
         record = ExternalRecord.model_validate(result["matched_record"])
+        doi = normalize_doi(record.metadata.doi)
+        identity_key = doi or record.record_id.partition(":")[2].casefold()
+        if identity_key:
+            unique_identity_keys.add(identity_key)
         current, _, _ = compare_external_metadata(entry, record)
         proposed, admitted = _project_status(entry, record)
         current_counts[current.value] += 1
@@ -212,6 +232,9 @@ def measure_audits(directory: Path) -> dict:
                 AuditChange(
                     paper_id=paper_id,
                     entry_id=entry_id,
+                    record_id=record.record_id,
+                    doi=doi,
+                    identity_key=identity_key,
                     current_status=current.value,
                     proposed_status=proposed.value,
                     input_venue=query.venue,
@@ -221,7 +244,9 @@ def measure_audits(directory: Path) -> dict:
             )
     return {
         "audit_files": len(audit_files),
+        "raw_matched_rows": raw_matched_rows,
         "matched_records": len(rows),
+        "unique_doi_or_provider_ids": len(unique_identity_keys),
         "current_counts": dict(current_counts),
         "proposed_counts": dict(proposed_counts),
         "new_verified": sum(
@@ -230,6 +255,9 @@ def measure_audits(directory: Path) -> dict:
             for change in changes
         ),
         "admitted_venue_differences": len(changes),
+        "admitted_unique_ids": len(
+            {change.identity_key for change in changes if change.identity_key}
+        ),
         "changes": [asdict(change) for change in changes],
     }
 
@@ -292,11 +320,14 @@ def measure_identity_fixture(fixture: Path, recordings: Path) -> dict:
 
 def _print_report(audits: dict, identity: dict) -> None:
     print(f"Audit files: {audits['audit_files']}")
+    print(f"Raw matched rows: {audits['raw_matched_rows']}")
     print(f"Matched records: {audits['matched_records']}")
+    print(f"Unique DOI/provider IDs: {audits['unique_doi_or_provider_ids']}")
     print(f"Current statuses: {audits['current_counts']}")
     print(f"Proposed statuses: {audits['proposed_counts']}")
     print(f"New VERIFIED: {audits['new_verified']}")
     print(f"Admitted venue differences: {audits['admitted_venue_differences']}")
+    print(f"Admitted unique IDs: {audits['admitted_unique_ids']}")
     for change in audits["changes"]:
         print(
             f"  {change['entry_id']}: {change['input_venue']!r} -> "
@@ -319,6 +350,8 @@ def _print_report(audits: dict, identity: dict) -> None:
 
 
 def main(argv=None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("directory", type=Path, help="Directory containing persisted audit JSON")
     parser.add_argument("--fixture", type=Path, default=DEFAULT_FIXTURE)
