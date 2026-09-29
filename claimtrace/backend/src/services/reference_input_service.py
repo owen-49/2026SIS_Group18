@@ -5,7 +5,7 @@ from threading import Lock
 from uuid import NAMESPACE_URL, uuid5
 
 from ..audit_models import ReferenceEntry
-from ..models import AuditRequest, BibEntryRecord, PaperRecord, ParseStatus
+from ..models import AuditRequest, BibEntryRecord, PaperRecord, PaperScope, ParseStatus
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
 from ..storage.paper_store import PaperStoreError, get_paper
 from ..storage.reference_store import (
@@ -136,6 +136,12 @@ def load_audit_references(
         raise AuditInputError(404, "INPUT_NOT_FOUND", "Audit input was not found.")
     if record.file_type != expected_type:
         raise AuditInputError(422, "INPUT_TYPE_MISMATCH", f"Expected a {expected_type} upload.")
+    if record.scope is PaperScope.VERIFY_SOURCE:
+        raise AuditInputError(
+            422,
+            "INPUT_SCOPE_MISMATCH",
+            "Verify-only source PDFs cannot be used as Audit inputs.",
+        )
     if record.status != ParseStatus.COMPLETED:
         raise AuditInputError(409, "INPUT_NOT_READY", "The uploaded input is not ready.")
 

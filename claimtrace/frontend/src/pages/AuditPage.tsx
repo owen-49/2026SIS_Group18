@@ -37,8 +37,8 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
   const usingMockApi = example || configuredMockApi;
   const location = useLocation();
   const locationState = location.state as AuditLocationState | null;
-  const demoPapers = useMemo<PaperRecord[]>(() => example ? [demoManuscript] : getWorkspacePapers().map((paper) => ({
-    paper_id: paper.paperId, original_filename: paper.fileName, file_type: paper.fileType || "pdf",
+  const demoPapers = useMemo<PaperRecord[]>(() => example ? [demoManuscript] : getWorkspacePapers().filter((paper) => (paper.scope || "library") === "library").map((paper) => ({
+    paper_id: paper.paperId, original_filename: paper.fileName, file_type: paper.fileType || "pdf", scope: paper.scope || "library",
     file_size: paper.fileSize || 0, status: paper.status || "completed", pages: paper.pages || 0,
     paragraph_count: paper.paragraphCount || 0, entry_count: paper.entryCount || 0,
     title: paper.fileName.replace(/\.(pdf|bib)$/i, ""), error_message: null,

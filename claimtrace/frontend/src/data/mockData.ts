@@ -4,6 +4,7 @@ export const demoManuscript: PaperRecord = {
   paper_id: "paper-manuscript",
   original_filename: "transformer-literature-review.pdf",
   file_type: "pdf",
+  scope: "library",
   file_size: 1_640_000,
   status: "completed",
   pages: 12,

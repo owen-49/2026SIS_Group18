@@ -31,8 +31,15 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover - annotations only
     from engine.source_resolver import SourcePaper
 
-from ..models import AuditRequest, ComparisonStatus, IdentifiedSource, PaperRecord, ParseStatus
-from ..storage.paper_store import PaperStoreError, list_papers
+from ..models import (
+    AuditRequest,
+    ComparisonStatus,
+    IdentifiedSource,
+    PaperRecord,
+    PaperScope,
+    ParseStatus,
+)
+from ..storage.paper_store import PaperStoreError, get_paper, list_papers
 from .analysis_service import (
     _NUMERIC_CITATION_RE,
     _YEAR_RE,
@@ -47,6 +54,7 @@ from .analysis_service import (
     _match_pdf_to_bib_entry,
     _normalise_text,
     _source_from_bib,
+    _source_from_pdf,
     _tokens,
 )
 from .paper_lifecycle import paper_lifecycle_lock
@@ -311,12 +319,13 @@ def _load_source_catalog(
     only when that raises is the catalog rebuilt record by record, skipping the
     unreadable ones so the caller can report them instead of failing outright.
     """
+    library_records = [record for record in records if record.scope is PaperScope.LIBRARY]
     try:
-        return _load_completed_pdf_catalog(records, exclude_paper_id=exclude_paper_id), 0
+        return _load_completed_pdf_catalog(library_records, exclude_paper_id=exclude_paper_id), 0
     except AnalysisServiceError:
         catalog: list[_LoadedPdf] = []
         skipped = 0
-        for record in records:
+        for record in library_records:
             if (
                 record.file_type != "pdf"
                 or record.paper_id == exclude_paper_id
@@ -329,6 +338,68 @@ def _load_source_catalog(
             except AnalysisServiceError:
                 skipped += 1
         return catalog, skipped
+
+
+def look_up_manual_source(source_paper_id: str, *, citation_marker: str) -> CitationLookup:
+    """Resolve one Verify-only source PDF selected explicitly by the caller.
+
+    Manual sources are deliberately not resolved through the normal paper
+    catalog. This keeps them out of automatic citation matching, Audit, the
+    legacy Verify endpoint and BibTeX verification.
+    """
+    try:
+        record = get_paper(source_paper_id)
+    except PaperStoreError as exc:
+        raise SourceLocatorError("Unable to read source PDF metadata.") from exc
+
+    if record is None:
+        return CitationLookup(
+            marker=citation_marker,
+            outcome=ComparisonStatus.MANUAL_SOURCE_NOT_FOUND,
+            message="The selected Verify source PDF was not found.",
+        )
+    if record.scope is not PaperScope.VERIFY_SOURCE or record.file_type != "pdf":
+        return CitationLookup(
+            marker=citation_marker,
+            outcome=ComparisonStatus.MANUAL_SOURCE_INVALID,
+            message=(
+                "The selected file is not a Verify-only source PDF. Upload it through "
+                "the Verify source uploader before selecting it."
+            ),
+        )
+    if record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
+        return CitationLookup(
+            marker=citation_marker,
+            outcome=ComparisonStatus.MANUAL_SOURCE_NOT_READY,
+            message="The selected Verify source PDF is still being processed.",
+        )
+    if record.status is ParseStatus.FAILED or not record.parsed_result_path:
+        return CitationLookup(
+            marker=citation_marker,
+            outcome=ComparisonStatus.MANUAL_SOURCE_INVALID,
+            message=record.error_message or "The selected Verify source PDF could not be parsed.",
+        )
+
+    try:
+        loaded = _load_completed_pdf(record)
+    except AnalysisServiceError:
+        return CitationLookup(
+            marker=citation_marker,
+            outcome=ComparisonStatus.MANUAL_SOURCE_INVALID,
+            message="The selected Verify source PDF has no usable parsed text.",
+        )
+
+    citation_key = citation_marker.strip("()[]【】 ") or citation_marker
+    cited_source = _source_from_pdf(loaded, citation_key)
+    cited_source.database = "Verify source PDF"
+    return CitationLookup(
+        marker=citation_marker,
+        outcome=ComparisonStatus.COMPARED,
+        message="Using the manually selected Verify source PDF.",
+        citation_key=citation_key,
+        cited_source=cited_source,
+        source=loaded,
+    )
 
 
 def look_up_citation(

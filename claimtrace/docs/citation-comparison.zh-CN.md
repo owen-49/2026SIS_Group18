@@ -80,6 +80,7 @@ Content-Type: application/json
   "citation_marker": "\\cite{vaswani2017attention}",
   "manuscript_id": "paper-abc123",
   "claim_id": "claim-9f3c1a2b",
+  "source_paper_id": "verify-source-abc123",
   "k": 5
 }
 ```
@@ -90,6 +91,7 @@ Content-Type: application/json
 | `citation_marker` | ✅ | **原样**取自 `GET /api/papers/{id}/claims` 的 `ExtractedClaim.citation_marker` |
 | `manuscript_id` | ❌ | 手稿自身的 paper_id；传入后它会被排除出源论文目录，**避免拿自己当自己的证据** |
 | `claim_id` | ❌ | 原样回显，方便批量循环时对账 |
+| `source_paper_id` | ❌ | 可选的 Verify 专用源 PDF。由 `POST /api/verify/sources` 上传；传入后直接使用该 PDF，不走自动源解析 |
 | `k` | ❌ | 取回几段证据，`1..10`，默认 5 |
 
 请求体 `extra="forbid"`：多传字段 ⇒ 422。
@@ -164,7 +166,7 @@ if (body.status === "COMPARED") {
 
 ---
 
-## 3. 八个 `status` 判定表
+## 3. 十一个 `status` 判定表
 
 | `status` | HTTP | 含义 | 前端建议文案 |
 |---|---|---|---|
@@ -176,6 +178,9 @@ if (body.status === "COMPARED") {
 | `SOURCE_NOT_AVAILABLE` | 200 | 找到了文献，但库里没有匹配的**已解析 PDF** | "请上传并解析被引论文的 PDF" |
 | `SOURCE_EMPTY` | 200 | 定位成功，但源论文解析出零段落 | "被引论文没有可用正文" |
 | `LLM_FAILED` | 200 | LLM 报错或返回了无法使用的标签 | "模型未能给出判定，请重试" |
+| `MANUAL_SOURCE_NOT_FOUND` | 200 | 选择的 Verify 专用源 PDF 不存在 | "请重新选择源 PDF" |
+| `MANUAL_SOURCE_NOT_READY` | 200 | 选择的源 PDF仍在解析 | "请等待源 PDF解析完成" |
+| `MANUAL_SOURCE_INVALID` | 200 | 选择的文件不是可用的 Verify 专用源 PDF | "请重新上传源 PDF" |
 
 > **`LLM_FAILED` 与 `SOURCE_EMPTY` 仍会返回 `evidence` 和 `source_document`**
 > （只要它们已经拿到）。先例是 audit 把查询失败映射成报告内的 `LOOKUP_FAILED` 状态而不是

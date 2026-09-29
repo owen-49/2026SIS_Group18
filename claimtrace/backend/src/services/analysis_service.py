@@ -18,6 +18,7 @@ from ..models import (
     IdentifiedSource,
     PaperClaimsResponse,
     PaperRecord,
+    PaperScope,
     ParsedBibDocument,
     ParsedDocument,
     ParseStatus,
@@ -530,6 +531,10 @@ def get_paper_claims(paper_id: str, bib_paper_id: str | None = None) -> PaperCla
         raise AnalysisPaperNotFoundError("Paper not found.")
     if record.file_type != "pdf":
         raise InvalidAnalysisPaperError("Only parsed PDF files have manuscript claims.")
+    if record.scope is PaperScope.VERIFY_SOURCE:
+        raise InvalidAnalysisPaperError(
+            "Verify-only source PDFs cannot be used as manuscripts for claim discovery."
+        )
     if record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
         return PaperClaimsResponse(
             manuscript_id=paper_id,
