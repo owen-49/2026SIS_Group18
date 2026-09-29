@@ -1,0 +1,1411 @@
+{
+  "contract_version": 2,
+  "audit_id": "d6db6492-1ea7-482b-b14c-897f71324ee7",
+  "input_paper_id": "f940bcbf-fe2e-44ec-8022-c0786133ebf5",
+  "input_type": "pdf",
+  "checked_at": "2026-09-18T08:08:19.709197Z",
+  "status": "completed",
+  "total_entries": 48,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 48,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 0
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "f7e2a49a-df6a-5d5e-b659-e18307493ac5",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] Artem Babenko and Victor Lempitsky. The inverted multi-index. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014."
+        },
+        "number": 1,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "43093db2-67cf-5357-b424-13f346f7f4b4",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] Alexei Baevski and Michael Auli. Adaptive input representations for neural language modeling. In International Conference on Representation Learning, 2019."
+        },
+        "number": 2,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "a5a47baa-d93f-5a0a-8589-47de1344e3e4",
+        "metadata": {
+          "key": "3",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[3] Yoshua Bengio, Nicholas L´eonard, and Aaron C. Courville. Estimating or propagating gradients through stochastic neurons for conditional computation. CoRR, abs/1308.3432, 2013."
+        },
+        "number": 3,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "69ab9ad0-ce37-5449-8e73-c81e76668992",
+        "metadata": {
+          "key": "4",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[4] Ciprian Chelba, Tomas Mikolov, Mike Schuster, Qi Ge, Thorsten Brants, Phillipp Koehn, and Tony Robinson. One billion word benchmark for measuring progress in statistical language modeling. Conference of the International Speech Communication Association, 2014."
+        },
+        "number": 4,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "54598708-ee59-5f14-a0dc-fdfbb5767c92",
+        "metadata": {
+          "key": "5",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[5] Bo Chen and Jeffrey M. Gilbert. The on-device visual intelligence challenge. https:// ai.googleblog.com/2018/04/introducing-cvpr-2018-on-device-visual.html,"
+        },
+        "number": 5,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "2e7fc557-6cbc-5e14-bb1e-a7d990ad3aec",
+        "metadata": {
+          "key": "6",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[6] Kyunghyun Cho and Yoshua Bengio. Exponentially increasing the capacity-to-computation ratio for conditional computation in deep learning. CoRR, abs/1406.7362, 2014."
+        },
+        "number": 6,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "20badb85-cd1c-5bdc-a27f-da1cf79fc53d",
+        "metadata": {
+          "key": "7",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[7] Matthieu Courbariaux and Yoshua Bengio. Binarynet: Training deep neural networks with weights and activations constrained to +1 or -1. CoRR, 2016."
+        },
+        "number": 7,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "0d7fe9e7-38f4-5a19-85ef-015ace1caa2d",
+        "metadata": {
+          "key": "8",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[8] Matthieu Courbariaux, Yoshua Bengio, and Jean-Pierre David. Binaryconnect: Training deep neural networks with binary weights during propagations. Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 8,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "fcb7ba5e-ecbb-50e0-8c55-0197b679791d",
+        "metadata": {
+          "key": "9",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[9] Zihang Dai, Zhilin Yang, Yiming Yang, William W Cohen, Jaime Carbonell, Quoc V Le, and Ruslan Salakhutdinov. Transformer-xl: Attentive language models beyond a ﬁxed-length context. In Conference of the Association for Computational Linguistics, 2019."
+        },
+        "number": 9,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "f7bf3297-da9f-51bb-8028-73a972011609",
+        "metadata": {
+          "key": "10",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[10] Ludovic Denoyer and Patrick Gallinari. Deep sequential neural network. CoRR, abs/1410.0510, 2014."
+        },
+        "number": 10,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "e040b33c-f0ba-5306-bacb-bf5ada886931",
+        "metadata": {
+          "key": "11",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[11] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. In Conference of the North American Chapter of the Association for Computational Linguistic, 2018."
+        },
+        "number": 11,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "011be883-aabc-5e77-a650-0f17ea5be961",
+        "metadata": {
+          "key": "12",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[12] D. Eigen, I. Sutskever, and M. Ranzato. Learning factored representations in a deep mixture of experts. In Workshop at the International Conference on Learning Representations, 2014."
+        },
+        "number": 12,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d4543d46-4ef6-5646-9f98-879ca6fe75e7",
+        "metadata": {
+          "key": "13",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[13] Thomas Gerald, Nicolas Baskiotis, and Ludovic Denoyer. Binary stochastic representations for large multi-class classiﬁcation. In International Conference on Neural Information Processing, 2017."
+        },
+        "number": 13,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1570056c-a0d8-5ea3-b8b3-db0c39cce003",
+        "metadata": {
+          "key": "14",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[14] Edouard Grave, Moustapha M Cisse, and Armand Joulin. Unbounded cache model for online language modeling with open vocabulary. In Advances in Neural Information Processing Systems, 2017."
+        },
+        "number": 14,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "102edf67-4ec7-5c43-aed5-743db40f30cb",
+        "metadata": {
+          "key": "15",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[15] Edouard Grave, Armand Joulin, and Nicolas Usunier. Improving neural language models with a continuous cache. In International Conference on Representation Learning, 2017."
+        },
+        "number": 15,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "8d8cb255-3d2a-5d8d-b804-1ef501fa734a",
+        "metadata": {
+          "key": "16",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[16] Alex Graves, Abdel-rahman Mohamed, and Geoffrey Hinton. Speech recognition with deep recurrent neural networks. In International Conference on Acoustics, Speech, and Signal Processing, 2013."
+        },
+        "number": 16,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "2ad5465d-d190-53d0-a542-355f7aac6884",
+        "metadata": {
+          "key": "17",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[17] Alex Graves, Greg Wayne, and Ivo Danihelka. Neural turing machines. CoRR, abs/1410.5401, 2014."
+        },
+        "number": 17,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "9b5cec88-8b85-5e62-9928-095d67377355",
+        "metadata": {
+          "key": "18",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[18] Sam Gross, Marc’Aurelio Ranzato, and Arthur Szlam. Hard mixtures of experts for large scale weakly supervised vision. In Conference on Computer Vision and Pattern Recognition, 2017."
+        },
+        "number": 18,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4b742703-b709-573e-8d38-e07e0782b91b",
+        "metadata": {
+          "key": "19",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[19] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Conference on Computer Vision and Pattern Recognition, 2016."
+        },
+        "number": 19,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "68938a68-1b0b-597f-949d-0dda67707dce",
+        "metadata": {
+          "key": "20",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[20] Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen. Gpipe: Efﬁcient training of giant neural networks using pipeline parallelism. CoRR, abs/1811.06965, 2018."
+        },
+        "number": 20,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "55ce70d0-7ee0-53df-b655-1cf3bf291ee5",
+        "metadata": {
+          "key": "21",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[21] Herv´e J´egou, Matthijs Douze, and Cordelia Schmid. Product Quantization for Nearest Neighbor Search. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2011."
+        },
+        "number": 21,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "85c4171b-c28e-575e-b20c-d9c81685722f",
+        "metadata": {
+          "key": "22",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[22] Jeff Johnson, Matthijs Douze, and Herv´e J´egou. Billion-scale similarity search with gpus. IEEE Transactions on Big Data, 2017."
+        },
+        "number": 22,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1898d564-5d3d-5d56-b43c-d1e5b03da780",
+        "metadata": {
+          "key": "23",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[23] Armand Joulin and Tomas Mikolov. Inferring algorithmic patterns with stack-augmented recurrent nets. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 23,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "19afb465-058b-584d-9030-c8cc58eaf2d6",
+        "metadata": {
+          "key": "24",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[24] Koray Kavukcuoglu, Marc’Aurelio Ranzato, and Yann LeCun. Fast inference in sparse coding algorithms with applications to object recognition. CoRR, abs/1010.3467, 2010. URL http: //arxiv.org/abs/1010.3467."
+        },
+        "number": 24,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "ae87af00-fa36-50b1-b537-74e2ead3b783",
+        "metadata": {
+          "key": "25",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[25] Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In International Conference on Representation Learning, 2015."
+        },
+        "number": 25,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "28c35b51-e1dc-5dcb-9e85-1caf45897583",
+        "metadata": {
+          "key": "26",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[26] Philipp Koehn, Hieu Hoang, Alexandra Birch, Chris Callison-Burch, Marcello Federico, Nicola Bertoldi, Brooke Cowan, Wade Shen, Christine Moran, Richard Zens, et al. Moses: Open source toolkit for statistical machine translation. In Conference of the Association for Computational Linguistics, 2007."
+        },
+        "number": 26,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "8730122d-ffd5-5340-b182-1a867a465c66",
+        "metadata": {
+          "key": "27",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[27] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. Imagenet classiﬁcation with deep convolutional neural networks. In Advances in Neural Information Processing Systems, 2012."
+        },
+        "number": 27,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "a4e4d805-2901-5bdc-90de-abb174c05341",
+        "metadata": {
+          "key": "28",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[28] Guillaume Lample and Alexis Conneau. Cross-lingual language model pretraining. In Advances in Neural Information Processing Systems, 2019."
+        },
+        "number": 28,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "00c402a3-3b0f-52b7-9c31-b6ac900ee6ff",
+        "metadata": {
+          "key": "29",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[29] Dhruv Mahajan, Ross B. Girshick, Vignesh Ramanathan, Kaiming He, Manohar Paluri, Yixuan Li, Ashwin Bharambe, and Laurens van der Maaten. Exploring the limits of weakly supervised pretraining. In European Conference on Computer Vision, 2018."
+        },
+        "number": 29,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "cb17cf38-8342-580a-89a5-bbbc4f5801ca",
+        "metadata": {
+          "key": "30",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[30] Alireza Makhzani and Brendan Frey. K-sparse autoencoders. In International Conference on Representation Learning, 2014."
+        },
+        "number": 30,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1bff2afc-d59b-5f65-8632-b677ac9af4b2",
+        "metadata": {
+          "key": "31",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[31] Alireza Makhzani and Brendan J Frey. Winner-take-all autoencoders. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 31,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "2d3e3996-edba-5b3a-8b76-0bd40f0d6c67",
+        "metadata": {
+          "key": "32",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[32] Marius Muja and David G. Lowe. Scalable nearest neighbor algorithms for high dimensional data. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014."
+        },
+        "number": 32,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "f1735e09-11d1-568f-85fa-1247e6393b85",
+        "metadata": {
+          "key": "33",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[33] Behnam Neyshabur, Zhiyuan Li, Srinadh Bhojanapalli, Yann LeCun, and Nathan Srebro. Towards understanding the role of over-parametrization in generalization of neural networks. In International Conference on Representation Learning, 2019."
+        },
+        "number": 33,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "ea42dc0a-d8b7-5a7c-9890-3255655f7047",
+        "metadata": {
+          "key": "34",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[34] Bruno A. Olshausen and David J. Field. Sparse coding with an overcomplete basis set, a strategy employed by v1? Vision Research, 1997."
+        },
+        "number": 34,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "bb35cf3d-dcd8-5e7c-9018-4369418b7de4",
+        "metadata": {
+          "key": "35",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[35] Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer. Automatic differentiation in pytorch. In Neurips Autodiff Workshop, 2017."
+        },
+        "number": 35,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "414fc495-5914-5d10-9653-f24da40ae07b",
+        "metadata": {
+          "key": "36",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[36] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners, 2019."
+        },
+        "number": 36,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "f97c4a90-7b38-535d-9dfa-c0d9c5ff0fc0",
+        "metadata": {
+          "key": "37",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[37] Jack Rae, Jonathan J Hunt, Ivo Danihelka, Timothy Harley, Andrew W Senior, Gregory Wayne, Alex Graves, and Timothy Lillicrap. Scaling memory-augmented neural networks with sparse reads and writes. In Advances in Neural Information Processing Systems, 2016."
+        },
+        "number": 37,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "3cc952ae-591c-5efc-ae7c-42ab2710997e",
+        "metadata": {
+          "key": "38",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[38] Mohammad Rastegari, Vicente Ordonez, Joseph Redmon, and Ali Farhadi. Xnor-net: Imagenet classiﬁcation using binary convolutional neural networks. In European Conference on Computer Vision, 2016."
+        },
+        "number": 38,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "0c9e6b78-e66e-5eaa-95d4-e7191ae7f0af",
+        "metadata": {
+          "key": "39",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[39] Rico Sennrich, Barry Haddow, and Alexandra Birch. Neural machine translation of rare words with subword units. In Conference of the Association for Computational Linguistics, 2015."
+        },
+        "number": 39,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d2f7fc2f-c623-519d-b567-d50aafa07c10",
+        "metadata": {
+          "key": "40",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[40] Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc V. Le, Geoffrey E. Hinton, and Jeff Dean. Outrageously large neural networks: The sparsely-gated mixture-ofexperts layer. In International Conference on Representation Learning, 2017."
+        },
+        "number": 40,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "e86a0eb5-8861-511c-97a4-5c8496952adb",
+        "metadata": {
+          "key": "41",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[41] Stefano Spigler, Mario Geiger, St´ephane d’Ascoli, Levent Sagun, Giulio Biroli, and Matthieu Wyart. A jamming transition from under- to over-parametrization affects loss landscape and generalization. CoRR, abs/1810.09665, 2018."
+        },
+        "number": 41,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "bb2b990b-d0de-52fa-ab56-5f0ab243fef6",
+        "metadata": {
+          "key": "42",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[42] Sainbayar Sukhbaatar, arthur szlam, Jason Weston, and Rob Fergus. End-to-end memory networks. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 42,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d94b7789-79af-512d-af63-6b7695061903",
+        "metadata": {
+          "key": "43",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[43] Ilya Sutskever, Oriol Vinyals, and Quoc V Le. Sequence to sequence learning with neural networks. In Advances in Neural Information Processing Systems, 2014."
+        },
+        "number": 43,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "22183158-0b9d-5b63-90ad-044c221917d5",
+        "metadata": {
+          "key": "44",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[44] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Advances in Neural Information Processing Systems, 2017."
+        },
+        "number": 44,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "8aa0579e-8827-5c5a-88d1-83418cfd5a42",
+        "metadata": {
+          "key": "45",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[45] Sudheendra Vijayanarasimhan, Jonathon Shlens, Rajat Monga, and Jay Yagnik. Deep networks with large output spaces. In Workshop at the International Conference on Learning Representations, 2015."
+        },
+        "number": 45,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "fc5cb285-ed0b-5934-91fd-25feb12e17d7",
+        "metadata": {
+          "key": "46",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[46] Alex Wang, Amapreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel R Bowman. Glue: A multi-task benchmark and analysis platform for natural language understanding. In International Conference on Representation Learning, 2018."
+        },
+        "number": 46,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "0240b96d-54b1-5695-a283-5c60bf5a0f52",
+        "metadata": {
+          "key": "47",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[47] Jason Weston, Sumit Chopra, and Antoine Bordes. Memory networks. In International Conference on Representation Learning, 2015."
+        },
+        "number": 47,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "12ec334f-2ba7-5560-94a0-aee7add2fc68",
+        "metadata": {
+          "key": "48",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[48] Jason Weston, Antoine Bordes, Sumit Chopra, and Tomas Mikolov. Towards ai-complete question answering: A set of prerequisite toy tasks. In International Conference on Representation Learning, 2016."
+        },
+        "number": 48,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    }
+  ],
+  "warnings": []
+}

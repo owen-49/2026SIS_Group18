@@ -1,0 +1,1652 @@
+{
+  "contract_version": 2,
+  "audit_id": "083cab62-d5e2-43bb-bc90-11fe584e7e1e",
+  "input_paper_id": "2a589653-896c-43ae-b33c-d125e52eb14e",
+  "input_type": "pdf",
+  "checked_at": "2026-09-18T10:03:04.268448Z",
+  "status": "completed_with_errors",
+  "total_entries": 19,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 17,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 2
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "6e7f8b54-2f55-5449-ade2-8746cdbceefe",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] Bastian Epping, Alexandre René, Moritz Helias, and Michael T. Schaub. 2024. Graph Neural Networks Do Not Always Oversmooth. In Advances in Neural Information Processing Systems (NeurIPS), Vol. 37. 48164–48188."
+        },
+        "number": 1,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Graph Neural Networks Do Not Always Oversmooth",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2024",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Epping, Bastian; René, Alexandre; Helias, Moritz; Schaub, Michael",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Advances in Neural Information Processing Systems 37",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.52202/079017-1526",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.52202/079017-1526",
+        "url": "https://doi.org/10.52202/079017-1526",
+        "retrieved_at": "2026-09-18T10:02:19.428646Z",
+        "metadata": {
+          "title": "Graph Neural Networks Do Not Always Oversmooth",
+          "authors": [
+            "Epping, Bastian",
+            "René, Alexandre",
+            "Helias, Moritz",
+            "Schaub, Michael"
+          ],
+          "year": 2024,
+          "venue": "Advances in Neural Information Processing Systems 37",
+          "doi": "10.52202/079017-1526"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "3b170f72-c889-5e62-b2ea-6e3e4d1364cc",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] Deepanway Ghosal et al. 2019. DialogueGCN: A Graph Convolutional Neural Network for ERC. In EMNLP-IJCNLP."
+        },
+        "number": 2,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "Every provider refused the request (2 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "failed",
+          "error_code": "CROSSREF_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "metadata_providers",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "Every provider refused the request (2 was rate-limited; some sources were not searched)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1617b214-74e0-51f2-b23d-a93dd999f6e6",
+        "metadata": {
+          "key": "3",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[3] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and Roger Zimmermann. 2018. Icon: Interactive conversational memory network for multimodal emotion detection. In Proceedings of the 2018 conference on empirical methods in natural language processing. 2594–2604."
+        },
+        "number": 3,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2018",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Hazarika, Devamanyu; Poria, Soujanya; Mihalcea, Rada; Cambria, Erik; Zimmermann, Roger",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/d18-1280",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/d18-1280",
+        "url": "https://doi.org/10.18653/v1/d18-1280",
+        "retrieved_at": "2026-09-18T10:02:23.605953Z",
+        "metadata": {
+          "title": "ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection",
+          "authors": [
+            "Hazarika, Devamanyu",
+            "Poria, Soujanya",
+            "Mihalcea, Rada",
+            "Cambria, Erik",
+            "Zimmermann, Roger"
+          ],
+          "year": 2018,
+          "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+          "doi": "10.18653/v1/d18-1280"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "30fdf974-1281-5e28-a4e2-1f47bc23eef0",
+        "metadata": {
+          "key": "4",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[4] Guiyang Hou et al. 2023. Enhancing ERC via Multi-view Feature Alignment and Memorization. In Findings of EMNLP."
+        },
+        "number": 4,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 1 share part of it and none of them is established (1 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.18653/v1/2023.findings-emnlp.842",
+          "url": "https://doi.org/10.18653/v1/2023.findings-emnlp.842",
+          "retrieved_at": "2026-09-18T10:02:25.432881Z",
+          "metadata": {
+            "title": "Enhancing Emotion Recognition in Conversation via Multi-view Feature Alignment and Memorization",
+            "authors": [
+              "Hou, Guiyang",
+              "Shen, Yongliang",
+              "Zhang, Wenqi",
+              "Xue, Wei",
+              "Lu, Weiming"
+            ],
+            "year": 2023,
+            "venue": "Findings of the Association for Computational Linguistics: EMNLP 2023",
+            "doi": "10.18653/v1/2023.findings-emnlp.842"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 1 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1f3b7bf7-4181-567f-a308-29968e93c8fb",
+        "metadata": {
+          "key": "5",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[5] Haigen Hu, Xiaoyuan Wang, Yan Zhang, Qi Chen, and Qiu Guan. 2024. A comprehensive survey on contrastive learning. Neurocomputing 610"
+        },
+        "number": 5,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "A comprehensive survey on contrastive learning",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2024",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Hu, Haigen; Wang, Xiaoyuan; Zhang, Yan; Chen, Qi; Guan, Qiu",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Neurocomputing",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1016/j.neucom.2024.128645",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1016/j.neucom.2024.128645",
+        "url": "https://doi.org/10.1016/j.neucom.2024.128645",
+        "retrieved_at": "2026-09-18T10:02:28.779550Z",
+        "metadata": {
+          "title": "A comprehensive survey on contrastive learning",
+          "authors": [
+            "Hu, Haigen",
+            "Wang, Xiaoyuan",
+            "Zhang, Yan",
+            "Chen, Qi",
+            "Guan, Qiu"
+          ],
+          "year": 2024,
+          "venue": "Neurocomputing",
+          "doi": "10.1016/j.neucom.2024.128645"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1c0b5909-0b39-5412-8f17-594a4a15b889",
+        "metadata": {
+          "key": "6",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[6] Xin Li et al. 2024. Do LLMs Feel? Teaching Emotion Recognition with Prompts, Retrieval, and Curriculum Learning. In Proceedings of the AAAI Conference on Artificial Intelligence."
+        },
+        "number": 6,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 3 share part of it and none of them is established (1 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1109/aicps66617.2025.11513483",
+          "url": "https://doi.org/10.1109/aicps66617.2025.11513483",
+          "retrieved_at": "2026-09-18T10:02:31.599149Z",
+          "metadata": {
+            "title": "Do LLMs Grasp Emotion or Just Keywords? A Benchmark for Implicit Emotion Recognition",
+            "authors": [
+              "Boutouta, Hanane",
+              "Lakhfif, Abdelaziz",
+              "Senator, Ferial",
+              "Mediani, Chahrazed"
+            ],
+            "year": 2025,
+            "venue": "2025 1st International Conference on Artificial Intelligence and Cyber Physical Systems (AICPS)",
+            "doi": "10.1109/aicps66617.2025.11513483"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.3390/app14125146",
+          "url": "https://doi.org/10.3390/app14125146",
+          "retrieved_at": "2026-09-18T10:02:31.599149Z",
+          "metadata": {
+            "title": "Multi-Modal Emotion Recognition for Online Education Using Emoji Prompts",
+            "authors": [
+              "Qin, Xingguo",
+              "Zhou, Ya",
+              "Li, Jun"
+            ],
+            "year": 2024,
+            "venue": "Applied Sciences",
+            "doi": "10.3390/app14125146"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1145/3731715.3733388",
+          "url": "https://doi.org/10.1145/3731715.3733388",
+          "retrieved_at": "2026-09-18T10:02:31.599149Z",
+          "metadata": {
+            "title": "MIMCL: Multilayer Interaction Module with Contrastive Learning for Speech Emotion Recognition",
+            "authors": [
+              "Li, Feng",
+              "Liu, Rongsheng",
+              "Wang, Bing"
+            ],
+            "year": 2025,
+            "venue": "Proceedings of the 2025 International Conference on Multimedia Retrieval",
+            "doi": "10.1145/3731715.3733388"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 3 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "c31141a0-964e-5e58-a6dd-ad99c3b50c12",
+        "metadata": {
+          "key": "7",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[7] Xinyi Li et al. 2024. Oversmoothing Alleviation in Graph Neural Networks: A Survey and Unified View. arXiv preprint arXiv:2405.01663 (2024)."
+        },
+        "number": 7,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Oversmoothing alleviation in graph neural networks: a survey and unified view",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2025",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Jin, Yufei; Zhu, Xingquan",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Knowledge and Information Systems",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1007/s10115-025-02548-6",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1007/s10115-025-02548-6",
+        "url": "https://doi.org/10.1007/s10115-025-02548-6",
+        "retrieved_at": "2026-09-18T10:02:34.448204Z",
+        "metadata": {
+          "title": "Oversmoothing alleviation in graph neural networks: a survey and unified view",
+          "authors": [
+            "Jin, Yufei",
+            "Zhu, Xingquan"
+          ],
+          "year": 2025,
+          "venue": "Knowledge and Information Systems",
+          "doi": "10.1007/s10115-025-02548-6"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "42b71ba4-5b8b-5d3a-9d01-b059a155bf00",
+        "metadata": {
+          "key": "8",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[8] Xinran Li, Xiujuan Xu, and Jiaqi Qiao. 2025. Long-Short Distance Graph Neural Networks and Improved Curriculum Learning for Emotion Recognition in Conversation. arXiv preprint arXiv:2507.15205 (2025)."
+        },
+        "number": 8,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Long-Short Distance Graph Neural Networks and Improved Curriculum Learning for Emotion Recognition in Conversation",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2025",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Li, Xinran; Xu, Xiujuan; Qiao, Jiaqi",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Frontiers in Artificial Intelligence and Applications",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.3233/faia251292",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.3233/faia251292",
+        "url": "https://doi.org/10.3233/faia251292",
+        "retrieved_at": "2026-09-18T10:02:36.549811Z",
+        "metadata": {
+          "title": "Long-Short Distance Graph Neural Networks and Improved Curriculum Learning for Emotion Recognition in Conversation",
+          "authors": [
+            "Li, Xinran",
+            "Xu, Xiujuan",
+            "Qiao, Jiaqi"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in Artificial Intelligence and Applications",
+          "doi": "10.3233/faia251292"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "409f2b75-79b8-54ca-a08c-f8626f94a4e7",
+        "metadata": {
+          "key": "9",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[9] Navonil Majumder et al. 2019. DialogueRNN: An attentive RNN for emotion detection in conversations. In AAAI."
+        },
+        "number": 9,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "Every provider refused the request (2 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "failed",
+          "error_code": "CROSSREF_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "metadata_providers",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "Every provider refused the request (2 was rate-limited; some sources were not searched)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "5d854e37-65c5-59c0-85b4-e6f9a9d5d3bc",
+        "metadata": {
+          "key": "10",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[10] Soujanya Poria et al. 2017. Context-dependent sentiment analysis in user-generated videos. In ACL."
+        },
+        "number": 10,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Context-Dependent Sentiment Analysis in User-Generated Videos",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2017",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Poria, Soujanya; Cambria, Erik; Hazarika, Devamanyu; Majumder, Navonil; Zadeh, Amir; Morency, Louis-Philippe",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 55th Annual Meeting of the Association for\n          Computational Linguistics (Volume 1: Long Papers)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/p17-1081",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/p17-1081",
+        "url": "https://doi.org/10.18653/v1/p17-1081",
+        "retrieved_at": "2026-09-18T10:02:40.590174Z",
+        "metadata": {
+          "title": "Context-Dependent Sentiment Analysis in User-Generated Videos",
+          "authors": [
+            "Poria, Soujanya",
+            "Cambria, Erik",
+            "Hazarika, Devamanyu",
+            "Majumder, Navonil",
+            "Zadeh, Amir",
+            "Morency, Louis-Philippe"
+          ],
+          "year": 2017,
+          "venue": "Proceedings of the 55th Annual Meeting of the Association for\n          Computational Linguistics (Volume 1: Long Papers)",
+          "doi": "10.18653/v1/p17-1081"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "a5337664-0595-5b39-a45c-8aa228663ea7",
+        "metadata": {
+          "key": "11",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[11] Soujanya Poria et al. 2020. COSMIC: COmmonSense knowledge for eMotion Identification in Conversations. In Findings of EMNLP."
+        },
+        "number": 11,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "COSMIC: COmmonSense knowledge for eMotion Identification in Conversations",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2020",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Ghosal, Deepanway; Majumder, Navonil; Gelbukh, Alexander; Mihalcea, Rada; Poria, Soujanya",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Findings of the Association for Computational Linguistics: EMNLP 2020",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/2020.findings-emnlp.224",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/2020.findings-emnlp.224",
+        "url": "https://doi.org/10.18653/v1/2020.findings-emnlp.224",
+        "retrieved_at": "2026-09-18T10:02:43.131478Z",
+        "metadata": {
+          "title": "COSMIC: COmmonSense knowledge for eMotion Identification in Conversations",
+          "authors": [
+            "Ghosal, Deepanway",
+            "Majumder, Navonil",
+            "Gelbukh, Alexander",
+            "Mihalcea, Rada",
+            "Poria, Soujanya"
+          ],
+          "year": 2020,
+          "venue": "Findings of the Association for Computational Linguistics: EMNLP 2020",
+          "doi": "10.18653/v1/2020.findings-emnlp.224"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "bc5e995e-189b-5881-9727-72ede4900943",
+        "metadata": {
+          "key": "12",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[12] TBA Rakib et al. 2026. Who You Are, What You Say: Intra- and Inter-Context Personality for Emotion Recognition in Conversation. In Findings of the Behavioral and Social Sciences: EACL 2026."
+        },
+        "number": 12,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 1 share part of it and none of them is established (1 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.18653/v1/2026.findings-eacl.172",
+          "url": "https://doi.org/10.18653/v1/2026.findings-eacl.172",
+          "retrieved_at": "2026-09-18T10:02:45.642801Z",
+          "metadata": {
+            "title": "Who You Are, What You Say: Intra- and Inter- Context Personality for Emotion Recognition in Conversation",
+            "authors": [
+              "Abdur Rakib, Tazeek Bin",
+              "Soon, Lay-Ki",
+              "Lim, Wern Han"
+            ],
+            "year": 2026,
+            "venue": "Findings of the Association for Computational Linguistics: EACL 2026",
+            "doi": "10.18653/v1/2026.findings-eacl.172"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 1 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "8e32d765-1e74-5f16-a349-7808e96899b6",
+        "metadata": {
+          "key": "13",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[13] Weizhou Shen et al. 2021. Directed acyclic graph network for conversational emotion recognition. In ACL."
+        },
+        "number": 13,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2021",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Shen, Weizhou; Wu, Siyue; Yang, Yunyi; Quan, Xiaojun",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/2021.acl-long.123",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/2021.acl-long.123",
+        "url": "https://doi.org/10.18653/v1/2021.acl-long.123",
+        "retrieved_at": "2026-09-18T10:02:49.079726Z",
+        "metadata": {
+          "title": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+          "authors": [
+            "Shen, Weizhou",
+            "Wu, Siyue",
+            "Yang, Yunyi",
+            "Quan, Xiaojun"
+          ],
+          "year": 2021,
+          "venue": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+          "doi": "10.18653/v1/2021.acl-long.123"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1a0d67c9-0b20-5159-8498-df4a4b204786",
+        "metadata": {
+          "key": "14",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[14] Geng Tu et al. 2024. Adaptive Graph Learning for Multimodal Conversational Emotion Detection. In Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 38."
+        },
+        "number": 14,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Adaptive Graph Learning for Multimodal Conversational Emotion Detection",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2024",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Tu, Geng; Xie, Tian; Liang, Bin; Wang, Hongpeng; Xu, Ruifeng",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1609/aaai.v38i17.29876",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1609/aaai.v38i17.29876",
+        "url": "https://doi.org/10.1609/aaai.v38i17.29876",
+        "retrieved_at": "2026-09-18T10:02:50.528772Z",
+        "metadata": {
+          "title": "Adaptive Graph Learning for Multimodal Conversational Emotion Detection",
+          "authors": [
+            "Tu, Geng",
+            "Xie, Tian",
+            "Liang, Bin",
+            "Wang, Hongpeng",
+            "Xu, Ruifeng"
+          ],
+          "year": 2024,
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "doi": "10.1609/aaai.v38i17.29876"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "bf07ca42-0121-5d83-bee5-c7b64f386d51",
+        "metadata": {
+          "key": "15",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[15] X. Wu, Zhengdao Chen, W. Wang, and A. Jadbabaie. 2022. A Non-Asymptotic Analysis of Oversmoothing in Graph Neural Networks. ArXiv abs/2212.10701 (2022). doi:10.48550/arxiv.2212.10701"
+        },
+        "number": 15,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 2 share part of it and none of them is established (1 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.52202/075280-1524",
+          "url": "https://doi.org/10.52202/075280-1524",
+          "retrieved_at": "2026-09-18T10:02:52.767725Z",
+          "metadata": {
+            "title": "Demystifying Oversmoothing in Attention-Based Graph Neural Networks",
+            "authors": [
+              "Wu, Xinyi",
+              "Ajorlou, Amir",
+              "Wu, Zihui",
+              "Jadbabaie, Ali"
+            ],
+            "year": 2023,
+            "venue": "Advances in Neural Information Processing Systems 36",
+            "doi": "10.52202/075280-1524"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1007/978-981-16-6054-2_13",
+          "url": "https://doi.org/10.1007/978-981-16-6054-2_13",
+          "retrieved_at": "2026-09-18T10:02:52.767725Z",
+          "metadata": {
+            "title": "Graph Neural Networks: Graph Matching",
+            "authors": [
+              "Ling, Xiang",
+              "Wu, Lingfei",
+              "Wu, Chunming",
+              "Ji, Shouling"
+            ],
+            "year": 2022,
+            "venue": "Graph Neural Networks: Foundations, Frontiers, and Applications",
+            "doi": "10.1007/978-981-16-6054-2_13"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 2 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "815cb723-75b4-54cc-80dc-a60ac277c7b4",
+        "metadata": {
+          "key": "16",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[16] Fangxu Yu, Junjie Guo, Zhen Wu, and Xinyu Dai. 2024. Emotion-Anchored Contrastive Learning Framework for Emotion Recognition in Conversation. In Findings of the Association for Computational Linguistics: NAACL 2024. Association for Computational Linguistics, 4521–4534."
+        },
+        "number": 16,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Emotion-Anchored Contrastive Learning Framework for Emotion Recognition in Conversation",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2024",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Yu, Fangxu; Guo, Junjie; Wu, Zhen; Dai, Xinyu",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Findings of the Association for Computational Linguistics: NAACL 2024",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/2024.findings-naacl.282",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/2024.findings-naacl.282",
+        "url": "https://doi.org/10.18653/v1/2024.findings-naacl.282",
+        "retrieved_at": "2026-09-18T10:02:54.355289Z",
+        "metadata": {
+          "title": "Emotion-Anchored Contrastive Learning Framework for Emotion Recognition in Conversation",
+          "authors": [
+            "Yu, Fangxu",
+            "Guo, Junjie",
+            "Wu, Zhen",
+            "Dai, Xinyu"
+          ],
+          "year": 2024,
+          "venue": "Findings of the Association for Computational Linguistics: NAACL 2024",
+          "doi": "10.18653/v1/2024.findings-naacl.282"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1d1a2279-7395-5443-95cf-d6df4285bac2",
+        "metadata": {
+          "key": "17",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[17] Dong Zhang, Liangqing Wu, Changlong Sun, Shoushan Li, Qiaoming Zhu, and Guodong Zhou. 2019. Modeling both context-and speaker-sensitive dependence for emotion detection in multi-speaker conversations.. In IJCAI. Macao, 5415–5421."
+        },
+        "number": 17,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 4 share part of it and none of them is established (1 was rate-limited; some sources were not searched)",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.24963/ijcai.2019/752",
+          "url": "https://doi.org/10.24963/ijcai.2019/752",
+          "retrieved_at": "2026-09-18T10:02:57.142811Z",
+          "metadata": {
+            "title": "Modeling both Context- and Speaker-Sensitive Dependence for Emotion Detection in Multi-speaker Conversations",
+            "authors": [
+              "Zhang, Dong",
+              "Wu, Liangqing",
+              "Sun, Changlong",
+              "Li, Shoushan",
+              "Zhu, Qiaoming",
+              "Zhou, Guodong"
+            ],
+            "year": 2019,
+            "venue": "Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelligence",
+            "doi": "10.24963/ijcai.2019/752"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1007/978-3-030-60450-9_9",
+          "url": "https://doi.org/10.1007/978-3-030-60450-9_9",
+          "retrieved_at": "2026-09-18T10:02:57.142811Z",
+          "metadata": {
+            "title": "DVDGCN: Modeling Both Context-Static and Speaker-Dynamic Graph for Emotion Recognition in Multi-speaker Conversations",
+            "authors": [
+              "Zhao, Shuofeng",
+              "Liu, Pengyuan"
+            ],
+            "year": 2020,
+            "venue": "Lecture Notes in Computer Science",
+            "doi": "10.1007/978-3-030-60450-9_9"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.18653/v1/2020.coling-main.370",
+          "url": "https://doi.org/10.18653/v1/2020.coling-main.370",
+          "retrieved_at": "2026-09-18T10:02:57.142811Z",
+          "metadata": {
+            "title": "HiTrans: A Transformer-Based Context- and Speaker-Sensitive Model for Emotion Detection in Conversations",
+            "authors": [
+              "Li, Jingye",
+              "Ji, Donghong",
+              "Li, Fei",
+              "Zhang, Meishan",
+              "Liu, Yijiang"
+            ],
+            "year": 2020,
+            "venue": "Proceedings of the 28th International Conference on Computational Linguistics",
+            "doi": "10.18653/v1/2020.coling-main.370"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 4 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "3cd31847-ca1f-5fc1-b186-0580c5de6a99",
+        "metadata": {
+          "key": "18",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[18] Q. Zhang et al. 2025. Context-Aware Directed Acyclic Graph Network for Conversational Aspect-Based Sentiment Quadruple Analysis. IEEE Access 13 (2025)."
+        },
+        "number": 18,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Context-Aware Directed Acyclic Graph Network for Conversational Aspect-Based Sentiment Quadruple Analysis",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2025",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Zhang, Qiang; Zeng, Jie; Zhang, Runze; Cui, Dong",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "IEEE Access",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/access.2025.3605729",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1109/access.2025.3605729",
+        "url": "https://doi.org/10.1109/access.2025.3605729",
+        "retrieved_at": "2026-09-18T10:02:59.732094Z",
+        "metadata": {
+          "title": "Context-Aware Directed Acyclic Graph Network for Conversational Aspect-Based Sentiment Quadruple Analysis",
+          "authors": [
+            "Zhang, Qiang",
+            "Zeng, Jie",
+            "Zhang, Runze",
+            "Cui, Dong"
+          ],
+          "year": 2025,
+          "venue": "IEEE Access",
+          "doi": "10.1109/access.2025.3605729"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "390be525-1043-5da3-a0ac-2c1c886173b3",
+        "metadata": {
+          "key": "19",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[19] Weixiang Zhao, Yanyan Zhao, Zhuojun Li, and Bing Qin. 2023. Knowledge-bridged causal interaction network for causal emotion entailment. In Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 37. 14020–14028."
+        },
+        "number": 19,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Knowledge-Bridged Causal Interaction Network for Causal Emotion Entailment",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2023",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Zhao, Weixiang; Zhao, Yanyan; Li, Zhuojun; Qin, Bing",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1609/aaai.v37i11.26641",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1609/aaai.v37i11.26641",
+        "url": "https://doi.org/10.1609/aaai.v37i11.26641",
+        "retrieved_at": "2026-09-18T10:03:04.267904Z",
+        "metadata": {
+          "title": "Knowledge-Bridged Causal Interaction Network for Causal Emotion Entailment",
+          "authors": [
+            "Zhao, Weixiang",
+            "Zhao, Yanyan",
+            "Li, Zhuojun",
+            "Qin, Bing"
+          ],
+          "year": 2023,
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "doi": "10.1609/aaai.v37i11.26641"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_RATE_LIMITED",
+          "detail": "The provider rate-limited the request; retry later. HTTP 429 Too Many Requests"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

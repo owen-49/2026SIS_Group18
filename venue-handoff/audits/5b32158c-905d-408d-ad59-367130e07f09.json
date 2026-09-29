@@ -1,0 +1,3976 @@
+{
+  "contract_version": 2,
+  "audit_id": "5b32158c-905d-408d-ad59-367130e07f09",
+  "input_paper_id": "f940bcbf-fe2e-44ec-8022-c0786133ebf5",
+  "input_type": "pdf",
+  "checked_at": "2026-09-19T09:25:55.198075Z",
+  "status": "completed",
+  "total_entries": 48,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 42,
+    "NOT_FOUND": 6,
+    "LOOKUP_FAILED": 0
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "f7e2a49a-df6a-5d5e-b659-e18307493ac5",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] Artem Babenko and Victor Lempitsky. The inverted multi-index. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014."
+        },
+        "number": 1,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "The Inverted Multi-Index",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Artem Babenko; Victor Lempitsky",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/tpami.2014.2361319",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2171572695",
+        "url": "https://doi.org/10.1109/tpami.2014.2361319",
+        "retrieved_at": "2026-09-19T09:25:01.377723Z",
+        "metadata": {
+          "title": "The Inverted Multi-Index",
+          "authors": [
+            "Artem Babenko",
+            "Victor Lempitsky"
+          ],
+          "year": 2014,
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "doi": "10.1109/tpami.2014.2361319"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "43093db2-67cf-5357-b424-13f346f7f4b4",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] Alexei Baevski and Michael Auli. Adaptive input representations for neural language modeling. In International Conference on Representation Learning, 2019."
+        },
+        "number": 2,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Adaptive Input Representations for Neural Language Modeling",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2018",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alexei Baevski; Michael Auli",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1809.10853",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2894175714",
+        "url": "http://arxiv.org/abs/1809.10853",
+        "retrieved_at": "2026-09-19T09:25:01.936062Z",
+        "metadata": {
+          "title": "Adaptive Input Representations for Neural Language Modeling",
+          "authors": [
+            "Alexei Baevski",
+            "Michael Auli"
+          ],
+          "year": 2018,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1809.10853"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "a5a47baa-d93f-5a0a-8589-47de1344e3e4",
+        "metadata": {
+          "key": "3",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[3] Yoshua Bengio, Nicholas L´eonard, and Aaron C. Courville. Estimating or propagating gradients through stochastic neurons for conditional computation. CoRR, abs/1308.3432, 2013."
+        },
+        "number": 3,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2013",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Yoshua Bengio; Nicholas Léonard; Aaron Courville",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1308.3432",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2242818861",
+        "url": "http://arxiv.org/abs/1308.3432",
+        "retrieved_at": "2026-09-19T09:25:02.646150Z",
+        "metadata": {
+          "title": "Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation",
+          "authors": [
+            "Yoshua Bengio",
+            "Nicholas Léonard",
+            "Aaron Courville"
+          ],
+          "year": 2013,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1308.3432"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's arxiv identifies this record exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "69ab9ad0-ce37-5449-8e73-c81e76668992",
+        "metadata": {
+          "key": "4",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[4] Ciprian Chelba, Tomas Mikolov, Mike Schuster, Qi Ge, Thorsten Brants, Phillipp Koehn, and Tony Robinson. One billion word benchmark for measuring progress in statistical language modeling. Conference of the International Speech Communication Association, 2014."
+        },
+        "number": 4,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "One billion word benchmark for measuring progress in statistical language modeling",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Ciprian Chelba; Tomáš Mikolov; Mike Schuster; Qi Ge; Thorsten Brants; Phillipp Koehn; Tony Robinson",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Interspeech 2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.21437/interspeech.2014-564",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1539309091",
+        "url": "https://doi.org/10.21437/interspeech.2014-564",
+        "retrieved_at": "2026-09-19T09:25:03.304865Z",
+        "metadata": {
+          "title": "One billion word benchmark for measuring progress in statistical language modeling",
+          "authors": [
+            "Ciprian Chelba",
+            "Tomáš Mikolov",
+            "Mike Schuster",
+            "Qi Ge",
+            "Thorsten Brants",
+            "Phillipp Koehn",
+            "Tony Robinson"
+          ],
+          "year": 2014,
+          "venue": "Interspeech 2014",
+          "doi": "10.21437/interspeech.2014-564"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "54598708-ee59-5f14-a0dc-fdfbb5767c92",
+        "metadata": {
+          "key": "5",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[5] Bo Chen and Jeffrey M. Gilbert. The on-device visual intelligence challenge. https:// ai.googleblog.com/2018/04/introducing-cvpr-2018-on-device-visual.html,"
+        },
+        "number": 5,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NOT_FOUND",
+      "reason": "10 of 10 records were ineligible (8 year disagrees, 1 no venue, 1 not a publication type) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (8 year disagrees, 1 no venue, 1 not a publication type)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "2e7fc557-6cbc-5e14-bb1e-a7d990ad3aec",
+        "metadata": {
+          "key": "6",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[6] Kyunghyun Cho and Yoshua Bengio. Exponentially increasing the capacity-to-computation ratio for conditional computation in deep learning. CoRR, abs/1406.7362, 2014."
+        },
+        "number": 6,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Exponentially Increasing the Capacity-to-Computation Ratio for Conditional Computation in Deep Learning",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Kyunghyun Cho; Yoshua Bengio",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1406.7362",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2405210557",
+        "url": "http://arxiv.org/abs/1406.7362",
+        "retrieved_at": "2026-09-19T09:25:06.688035Z",
+        "metadata": {
+          "title": "Exponentially Increasing the Capacity-to-Computation Ratio for Conditional Computation in Deep Learning",
+          "authors": [
+            "Kyunghyun Cho",
+            "Yoshua Bengio"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1406.7362"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's arxiv identifies this record exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "20badb85-cd1c-5bdc-a27f-da1cf79fc53d",
+        "metadata": {
+          "key": "7",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[7] Matthieu Courbariaux and Yoshua Bengio. Binarynet: Training deep neural networks with weights and activations constrained to +1 or -1. CoRR, 2016."
+        },
+        "number": 7,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Matthieu Courbariaux; Yoshua Bengio",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2260663238",
+        "url": "https://arxiv.org/abs/1602.02830",
+        "retrieved_at": "2026-09-19T09:25:07.215673Z",
+        "metadata": {
+          "title": "BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1",
+          "authors": [
+            "Matthieu Courbariaux",
+            "Yoshua Bengio"
+          ],
+          "year": 2016,
+          "venue": "arXiv (Cornell University)",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "0d7fe9e7-38f4-5a19-85ef-015ace1caa2d",
+        "metadata": {
+          "key": "8",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[8] Matthieu Courbariaux, Yoshua Bengio, and Jean-Pierre David. Binaryconnect: Training deep neural networks with binary weights during propagations. Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 8,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "BinaryConnect: Training Deep Neural Networks with binary weights during propagations",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2015",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Matthieu Courbariaux; Yoshua Bengio; Jean‐Pierre David",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "PolyPublie (École Polytechnique de Montréal)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1511.00363",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1902934009",
+        "url": "https://publications.polymtl.ca/34092/",
+        "retrieved_at": "2026-09-19T09:25:07.755868Z",
+        "metadata": {
+          "title": "BinaryConnect: Training Deep Neural Networks with binary weights during propagations",
+          "authors": [
+            "Matthieu Courbariaux",
+            "Yoshua Bengio",
+            "Jean‐Pierre David"
+          ],
+          "year": 2015,
+          "venue": "PolyPublie (École Polytechnique de Montréal)",
+          "doi": "10.48550/arxiv.1511.00363"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "fcb7ba5e-ecbb-50e0-8c55-0197b679791d",
+        "metadata": {
+          "key": "9",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[9] Zihang Dai, Zhilin Yang, Yiming Yang, William W Cohen, Jaime Carbonell, Quoc V Le, and Ruslan Salakhutdinov. Transformer-xl: Attentive language models beyond a ﬁxed-length context. In Conference of the Association for Computational Linguistics, 2019."
+        },
+        "number": 9,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2019",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Dai, Zihang; Yang, Zhilin; Yang, Yiming; Carbonell, Jaime; Le, Quoc; Salakhutdinov, Ruslan",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/p19-1285",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.18653/v1/p19-1285",
+        "url": "https://doi.org/10.18653/v1/p19-1285",
+        "retrieved_at": "2026-09-19T09:25:09.714127Z",
+        "metadata": {
+          "title": "Transformer-XL: Attentive Language Models beyond a Fixed-Length Context",
+          "authors": [
+            "Dai, Zihang",
+            "Yang, Zhilin",
+            "Yang, Yiming",
+            "Carbonell, Jaime",
+            "Le, Quoc",
+            "Salakhutdinov, Ruslan"
+          ],
+          "year": 2019,
+          "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+          "doi": "10.18653/v1/p19-1285"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "f7bf3297-da9f-51bb-8028-73a972011609",
+        "metadata": {
+          "key": "10",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[10] Ludovic Denoyer and Patrick Gallinari. Deep sequential neural network. CoRR, abs/1410.0510, 2014."
+        },
+        "number": 10,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Deep Sequential Neural Network",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Ludovic Denoyer; Patrick Gallinari",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1410.0510",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2165141262",
+        "url": "http://arxiv.org/abs/1410.0510",
+        "retrieved_at": "2026-09-19T09:25:10.766169Z",
+        "metadata": {
+          "title": "Deep Sequential Neural Network",
+          "authors": [
+            "Ludovic Denoyer",
+            "Patrick Gallinari"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1410.0510"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's arxiv identifies this record exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "e040b33c-f0ba-5306-bacb-bf5ada886931",
+        "metadata": {
+          "key": "11",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[11] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. In Conference of the North American Chapter of the Association for Computational Linguistic, 2018."
+        },
+        "number": 11,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2019",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Jacob Devlin; Ming‐Wei Chang; Kenton Lee; Kristina Toutanova",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/n19-1423",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2963341956",
+        "url": "https://doi.org/10.18653/v1/n19-1423",
+        "retrieved_at": "2026-09-19T09:25:11.346540Z",
+        "metadata": {
+          "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+          "authors": [
+            "Jacob Devlin",
+            "Ming‐Wei Chang",
+            "Kenton Lee",
+            "Kristina Toutanova"
+          ],
+          "year": 2019,
+          "venue": "Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+          "doi": "10.18653/v1/n19-1423"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "011be883-aabc-5e77-a650-0f17ea5be961",
+        "metadata": {
+          "key": "12",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[12] D. Eigen, I. Sutskever, and M. Ranzato. Learning factored representations in a deep mixture of experts. In Workshop at the International Conference on Learning Representations, 2014."
+        },
+        "number": 12,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Learning Factored Representations in a Deep Mixture of Experts",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2013",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "David Eigen; Marc’Aurelio Ranzato; Ilya Sutskever",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1312.4314",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1593114658",
+        "url": "http://arxiv.org/abs/1312.4314",
+        "retrieved_at": "2026-09-19T09:25:11.898879Z",
+        "metadata": {
+          "title": "Learning Factored Representations in a Deep Mixture of Experts",
+          "authors": [
+            "David Eigen",
+            "Marc’Aurelio Ranzato",
+            "Ilya Sutskever"
+          ],
+          "year": 2013,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1312.4314"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "d4543d46-4ef6-5646-9f98-879ca6fe75e7",
+        "metadata": {
+          "key": "13",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[13] Thomas Gerald, Nicolas Baskiotis, and Ludovic Denoyer. Binary stochastic representations for large multi-class classiﬁcation. In International Conference on Neural Information Processing, 2017."
+        },
+        "number": 13,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Binary Stochastic Representations for Large Multi-class Classification",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2017",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Gerald, Thomas; Baskiotis, Nicolas; Denoyer, Ludovic",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Lecture Notes in Computer Science",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1007/978-3-319-70087-8_17",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1007/978-3-319-70087-8_17",
+        "url": "https://doi.org/10.1007/978-3-319-70087-8_17",
+        "retrieved_at": "2026-09-19T09:25:13.293710Z",
+        "metadata": {
+          "title": "Binary Stochastic Representations for Large Multi-class Classification",
+          "authors": [
+            "Gerald, Thomas",
+            "Baskiotis, Nicolas",
+            "Denoyer, Ludovic"
+          ],
+          "year": 2017,
+          "venue": "Lecture Notes in Computer Science",
+          "doi": "10.1007/978-3-319-70087-8_17"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1570056c-a0d8-5ea3-b8b3-db0c39cce003",
+        "metadata": {
+          "key": "14",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[14] Edouard Grave, Moustapha M Cisse, and Armand Joulin. Unbounded cache model for online language modeling with open vocabulary. In Advances in Neural Information Processing Systems, 2017."
+        },
+        "number": 14,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Unbounded cache model for online language modeling with open vocabulary",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2017",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Édouard Grave; Moustapha Cissé; Armand Joulin",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1711.02604",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2752497102",
+        "url": "http://arxiv.org/abs/1711.02604",
+        "retrieved_at": "2026-09-19T09:25:13.895124Z",
+        "metadata": {
+          "title": "Unbounded cache model for online language modeling with open vocabulary",
+          "authors": [
+            "Édouard Grave",
+            "Moustapha Cissé",
+            "Armand Joulin"
+          ],
+          "year": 2017,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1711.02604"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "102edf67-4ec7-5c43-aed5-743db40f30cb",
+        "metadata": {
+          "key": "15",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[15] Edouard Grave, Armand Joulin, and Nicolas Usunier. Improving neural language models with a continuous cache. In International Conference on Representation Learning, 2017."
+        },
+        "number": 15,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Improving Neural Language Models with a Continuous Cache",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Édouard Grave; Armand Joulin; Nicolas Usunier",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1612.04426",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2571859396",
+        "url": "http://arxiv.org/abs/1612.04426",
+        "retrieved_at": "2026-09-19T09:25:14.432855Z",
+        "metadata": {
+          "title": "Improving Neural Language Models with a Continuous Cache",
+          "authors": [
+            "Édouard Grave",
+            "Armand Joulin",
+            "Nicolas Usunier"
+          ],
+          "year": 2016,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1612.04426"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "8d8cb255-3d2a-5d8d-b804-1ef501fa734a",
+        "metadata": {
+          "key": "16",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[16] Alex Graves, Abdel-rahman Mohamed, and Geoffrey Hinton. Speech recognition with deep recurrent neural networks. In International Conference on Acoustics, Speech, and Signal Processing, 2013."
+        },
+        "number": 16,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Speech recognition with deep recurrent neural networks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2013",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alex Graves; Abdelrahman Mohamed; Geoffrey E. Hinton",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "2013 IEEE International Conference on Acoustics, Speech and Signal Processing",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/icassp.2013.6638947",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2143612262",
+        "url": "https://doi.org/10.1109/icassp.2013.6638947",
+        "retrieved_at": "2026-09-19T09:25:15.533442Z",
+        "metadata": {
+          "title": "Speech recognition with deep recurrent neural networks",
+          "authors": [
+            "Alex Graves",
+            "Abdelrahman Mohamed",
+            "Geoffrey E. Hinton"
+          ],
+          "year": 2013,
+          "venue": "2013 IEEE International Conference on Acoustics, Speech and Signal Processing",
+          "doi": "10.1109/icassp.2013.6638947"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "2 records match the title exactly and describe one work (same first author and year); one of them was kept"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "2ad5465d-d190-53d0-a542-355f7aac6884",
+        "metadata": {
+          "key": "17",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[17] Alex Graves, Greg Wayne, and Ivo Danihelka. Neural turing machines. CoRR, abs/1410.5401, 2014."
+        },
+        "number": 17,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Neural Turing Machines",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alex Graves; Greg Wayne; Ivo Danihelka",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1410.5401",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2167839676",
+        "url": "http://arxiv.org/abs/1410.5401",
+        "retrieved_at": "2026-09-19T09:25:16.601496Z",
+        "metadata": {
+          "title": "Neural Turing Machines",
+          "authors": [
+            "Alex Graves",
+            "Greg Wayne",
+            "Ivo Danihelka"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1410.5401"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's arxiv identifies this record exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "9b5cec88-8b85-5e62-9928-095d67377355",
+        "metadata": {
+          "key": "18",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[18] Sam Gross, Marc’Aurelio Ranzato, and Arthur Szlam. Hard mixtures of experts for large scale weakly supervised vision. In Conference on Computer Vision and Pattern Recognition, 2017."
+        },
+        "number": 18,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Hard Mixtures of Experts for Large Scale Weakly Supervised Vision",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2017",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Sam Gross; Marc’Aurelio Ranzato; Arthur Szlam",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/cvpr.2017.540",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2963254338",
+        "url": "https://doi.org/10.1109/cvpr.2017.540",
+        "retrieved_at": "2026-09-19T09:25:17.172344Z",
+        "metadata": {
+          "title": "Hard Mixtures of Experts for Large Scale Weakly Supervised Vision",
+          "authors": [
+            "Sam Gross",
+            "Marc’Aurelio Ranzato",
+            "Arthur Szlam"
+          ],
+          "year": 2017,
+          "venue": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "doi": "10.1109/cvpr.2017.540"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "2 records match the title exactly and describe one work (same first author and year); one of them was kept"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "4b742703-b709-573e-8d38-e07e0782b91b",
+        "metadata": {
+          "key": "19",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[19] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Conference on Computer Vision and Pattern Recognition, 2016."
+        },
+        "number": 19,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Deep Residual Learning for Image Recognition",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Kaiming He; Xiangyu Zhang; Shaoqing Ren; Jian Sun",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/cvpr.2016.90",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2194775991",
+        "url": "https://doi.org/10.1109/cvpr.2016.90",
+        "retrieved_at": "2026-09-19T09:25:18.233913Z",
+        "metadata": {
+          "title": "Deep Residual Learning for Image Recognition",
+          "authors": [
+            "Kaiming He",
+            "Xiangyu Zhang",
+            "Shaoqing Ren",
+            "Jian Sun"
+          ],
+          "year": 2016,
+          "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "doi": "10.1109/cvpr.2016.90"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's venue selects one of the exactly-matching records"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "68938a68-1b0b-597f-949d-0dda67707dce",
+        "metadata": {
+          "key": "20",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[20] Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen. Gpipe: Efﬁcient training of giant neural networks using pipeline parallelism. CoRR, abs/1811.06965, 2018."
+        },
+        "number": 20,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NOT_FOUND",
+      "reason": "10 of 10 records were ineligible (8 year disagrees, 2 no venue) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (8 year disagrees, 2 no venue)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "55ce70d0-7ee0-53df-b655-1cf3bf291ee5",
+        "metadata": {
+          "key": "21",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[21] Herv´e J´egou, Matthijs Douze, and Cordelia Schmid. Product Quantization for Nearest Neighbor Search. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2011."
+        },
+        "number": 21,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Product Quantization for Nearest Neighbor Search",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2010",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "H. Jegou; Matthijs Douze; Calvin F. Schmid",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/tpami.2010.57",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2124509324",
+        "url": "https://doi.org/10.1109/tpami.2010.57",
+        "retrieved_at": "2026-09-19T09:25:20.762385Z",
+        "metadata": {
+          "title": "Product Quantization for Nearest Neighbor Search",
+          "authors": [
+            "H. Jegou",
+            "Matthijs Douze",
+            "Calvin F. Schmid"
+          ],
+          "year": 2010,
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "doi": "10.1109/tpami.2010.57"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "85c4171b-c28e-575e-b20c-d9c81685722f",
+        "metadata": {
+          "key": "22",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[22] Jeff Johnson, Matthijs Douze, and Herv´e J´egou. Billion-scale similarity search with gpus. IEEE Transactions on Big Data, 2017."
+        },
+        "number": 22,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NOT_FOUND",
+      "reason": "13 of 13 records were ineligible (10 year disagrees, 3 no venue) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "3 of 3 records were ineligible (3 year disagrees)"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "13 of 13 records were ineligible (10 year disagrees, 3 no venue)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1898d564-5d3d-5d56-b43c-d1e5b03da780",
+        "metadata": {
+          "key": "23",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[23] Armand Joulin and Tomas Mikolov. Inferring algorithmic patterns with stack-augmented recurrent nets. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 23,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Inferring Algorithmic Patterns with Stack-Augmented Recurrent Nets",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2015",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Armand Joulin; Tomáš Mikolov",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1503.01007",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1732222442",
+        "url": "http://arxiv.org/abs/1503.01007",
+        "retrieved_at": "2026-09-19T09:25:23.747422Z",
+        "metadata": {
+          "title": "Inferring Algorithmic Patterns with Stack-Augmented Recurrent Nets",
+          "authors": [
+            "Armand Joulin",
+            "Tomáš Mikolov"
+          ],
+          "year": 2015,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1503.01007"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "19afb465-058b-584d-9030-c8cc58eaf2d6",
+        "metadata": {
+          "key": "24",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[24] Koray Kavukcuoglu, Marc’Aurelio Ranzato, and Yann LeCun. Fast inference in sparse coding algorithms with applications to object recognition. CoRR, abs/1010.3467, 2010. URL http: //arxiv.org/abs/1010.3467."
+        },
+        "number": 24,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Fast Inference in Sparse Coding Algorithms with Applications to Object Recognition",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2010",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Koray Kavukcuoglu; Marc’Aurelio Ranzato; Yann LeCun",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1010.3467",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2171490498",
+        "url": "http://arxiv.org/abs/1010.3467",
+        "retrieved_at": "2026-09-19T09:25:24.291164Z",
+        "metadata": {
+          "title": "Fast Inference in Sparse Coding Algorithms with Applications to Object Recognition",
+          "authors": [
+            "Koray Kavukcuoglu",
+            "Marc’Aurelio Ranzato",
+            "Yann LeCun"
+          ],
+          "year": 2010,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1010.3467"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "2 records carry the reference's arxiv; they are one work"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "ae87af00-fa36-50b1-b537-74e2ead3b783",
+        "metadata": {
+          "key": "25",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[25] Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In International Conference on Representation Learning, 2015."
+        },
+        "number": 25,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "2 distinct works match the title exactly and the reference does not separate them",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W1522301498",
+          "url": "http://arxiv.org/abs/1412.6980",
+          "retrieved_at": "2026-09-19T09:25:27.027336Z",
+          "metadata": {
+            "title": "Adam: A Method for Stochastic Optimization",
+            "authors": [
+              "Diederik P. Kingma",
+              "Jimmy Ba"
+            ],
+            "year": 2014,
+            "venue": "arXiv (Cornell University)",
+            "doi": "10.48550/arxiv.1412.6980"
+          }
+        },
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W2964121744",
+          "url": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.DNA.28.4",
+          "retrieved_at": "2026-09-19T09:25:27.027336Z",
+          "metadata": {
+            "title": "Adam: A Method for Stochastic Optimization",
+            "authors": [
+              "Mandi, Jayanta",
+              "Canoy, Rocsildes",
+              "Bucarey, Víctor",
+              "Guns, Tias"
+            ],
+            "year": 2015,
+            "venue": "DROPS (Schloss Dagstuhl – Leibniz Center for Informatics)",
+            "doi": "10.4230/lipics.cp.2021.42"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "2 distinct works match the title exactly and the reference does not separate them"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "2 distinct works match the title exactly and the reference does not separate them"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "28c35b51-e1dc-5dcb-9e85-1caf45897583",
+        "metadata": {
+          "key": "26",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[26] Philipp Koehn, Hieu Hoang, Alexandra Birch, Chris Callison-Burch, Marcello Federico, Nicola Bertoldi, Brooke Cowan, Wade Shen, Christine Moran, Richard Zens, et al. Moses: Open source toolkit for statistical machine translation. In Conference of the Association for Computational Linguistics, 2007."
+        },
+        "number": 26,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Moses : open source toolkit for statistical machine translation",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2007",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Philipp Koehn; Hieu Hoang; Alexandra Birch; Chris Callison-Burch; Marcello Federico; Nicola Bertoldi; Cowan, Brooke; Wade Shen; Christine Moran; Richard Zens; Chris Dyer; Ondřej Bojar; Alexandra Constantin; Evan Herbst",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Edinburgh Research Explorer (University of Edinburgh)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2595715041",
+        "url": "https://hdl.handle.net/20.500.11820/22636f47-d217-4cd0-87ef-4042ce0cfd64",
+        "retrieved_at": "2026-09-19T09:25:28.267523Z",
+        "metadata": {
+          "title": "Moses : open source toolkit for statistical machine translation",
+          "authors": [
+            "Philipp Koehn",
+            "Hieu Hoang",
+            "Alexandra Birch",
+            "Chris Callison-Burch",
+            "Marcello Federico",
+            "Nicola Bertoldi",
+            "Cowan, Brooke",
+            "Wade Shen",
+            "Christine Moran",
+            "Richard Zens",
+            "Chris Dyer",
+            "Ondřej Bojar",
+            "Alexandra Constantin",
+            "Evan Herbst"
+          ],
+          "year": 2007,
+          "venue": "Edinburgh Research Explorer (University of Edinburgh)",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "8730122d-ffd5-5340-b182-1a867a465c66",
+        "metadata": {
+          "key": "27",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[27] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. Imagenet classiﬁcation with deep convolutional neural networks. In Advances in Neural Information Processing Systems, 2012."
+        },
+        "number": 27,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NOT_FOUND",
+      "reason": "10 of 10 records were ineligible (9 year disagrees, 1 no venue) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (9 year disagrees, 1 no venue)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "a4e4d805-2901-5bdc-90de-abb174c05341",
+        "metadata": {
+          "key": "28",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[28] Guillaume Lample and Alexis Conneau. Cross-lingual language model pretraining. In Advances in Neural Information Processing Systems, 2019."
+        },
+        "number": 28,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Cross-lingual Language Model Pretraining",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2019",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alexis Conneau; Guillaume Lample",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Neural Information Processing Systems",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2970049541",
+        "url": "https://papers.nips.cc/paper/8928-cross-lingual-language-model-pretraining.pdf",
+        "retrieved_at": "2026-09-19T09:25:31.262645Z",
+        "metadata": {
+          "title": "Cross-lingual Language Model Pretraining",
+          "authors": [
+            "Alexis Conneau",
+            "Guillaume Lample"
+          ],
+          "year": 2019,
+          "venue": "Neural Information Processing Systems",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "the reference's venue selects one of the exactly-matching records"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "00c402a3-3b0f-52b7-9c31-b6ac900ee6ff",
+        "metadata": {
+          "key": "29",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[29] Dhruv Mahajan, Ross B. Girshick, Vignesh Ramanathan, Kaiming He, Manohar Paluri, Yixuan Li, Ashwin Bharambe, and Laurens van der Maaten. Exploring the limits of weakly supervised pretraining. In European Conference on Computer Vision, 2018."
+        },
+        "number": 29,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Exploring the Limits of Weakly Supervised Pretraining",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2018",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Dhruv Mahajan; Ross Girshick; Vignesh Ramanathan; Kaiming He; Manohar Paluri; Yixuan Li; Ashwin Bharambe; Laurens van der Maaten",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Lecture notes in computer science",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1007/978-3-030-01216-8_12",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2799269579",
+        "url": "https://doi.org/10.1007/978-3-030-01216-8_12",
+        "retrieved_at": "2026-09-19T09:25:31.886136Z",
+        "metadata": {
+          "title": "Exploring the Limits of Weakly Supervised Pretraining",
+          "authors": [
+            "Dhruv Mahajan",
+            "Ross Girshick",
+            "Vignesh Ramanathan",
+            "Kaiming He",
+            "Manohar Paluri",
+            "Yixuan Li",
+            "Ashwin Bharambe",
+            "Laurens van der Maaten"
+          ],
+          "year": 2018,
+          "venue": "Lecture notes in computer science",
+          "doi": "10.1007/978-3-030-01216-8_12"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "cb17cf38-8342-580a-89a5-bbbc4f5801ca",
+        "metadata": {
+          "key": "30",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[30] Alireza Makhzani and Brendan Frey. K-sparse autoencoders. In International Conference on Representation Learning, 2014."
+        },
+        "number": 30,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "k-Sparse Autoencoders",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2013",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alireza Makhzani; Brendan J. Frey",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1312.5663",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1853900790",
+        "url": "http://arxiv.org/abs/1312.5663",
+        "retrieved_at": "2026-09-19T09:25:32.740409Z",
+        "metadata": {
+          "title": "k-Sparse Autoencoders",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "year": 2013,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1312.5663"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "1bff2afc-d59b-5f65-8632-b677ac9af4b2",
+        "metadata": {
+          "key": "31",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[31] Alireza Makhzani and Brendan J Frey. Winner-take-all autoencoders. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 31,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Winner-Take-All Autoencoders",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alireza Makhzani; Brendan J. Frey",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1409.2752",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1531103298",
+        "url": "http://arxiv.org/abs/1409.2752",
+        "retrieved_at": "2026-09-19T09:25:33.571535Z",
+        "metadata": {
+          "title": "Winner-Take-All Autoencoders",
+          "authors": [
+            "Alireza Makhzani",
+            "Brendan J. Frey"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1409.2752"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "2 records match the title exactly and describe one work (same first author and year); one of them was kept"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "2d3e3996-edba-5b3a-8b76-0bd40f0d6c67",
+        "metadata": {
+          "key": "32",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[32] Marius Muja and David G. Lowe. Scalable nearest neighbor algorithms for high dimensional data. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014."
+        },
+        "number": 32,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Marius Muja; David Lowe",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1109/tpami.2014.2321376",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2086504823",
+        "url": "https://doi.org/10.1109/tpami.2014.2321376",
+        "retrieved_at": "2026-09-19T09:25:34.111899Z",
+        "metadata": {
+          "title": "Scalable Nearest Neighbor Algorithms for High Dimensional Data",
+          "authors": [
+            "Marius Muja",
+            "David Lowe"
+          ],
+          "year": 2014,
+          "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "doi": "10.1109/tpami.2014.2321376"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "f1735e09-11d1-568f-85fa-1247e6393b85",
+        "metadata": {
+          "key": "33",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[33] Behnam Neyshabur, Zhiyuan Li, Srinadh Bhojanapalli, Yann LeCun, and Nathan Srebro. Towards understanding the role of over-parametrization in generalization of neural networks. In International Conference on Representation Learning, 2019."
+        },
+        "number": 33,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Towards Understanding the Role of Over-Parametrization in Generalization of Neural Networks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2018",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Behnam Neyshabur; Zhiyuan Li; Srinadh Bhojanapalli; Yann LeCun; Nathan Srebro",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1805.12076",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2807299122",
+        "url": "http://arxiv.org/abs/1805.12076",
+        "retrieved_at": "2026-09-19T09:25:34.655037Z",
+        "metadata": {
+          "title": "Towards Understanding the Role of Over-Parametrization in Generalization of Neural Networks",
+          "authors": [
+            "Behnam Neyshabur",
+            "Zhiyuan Li",
+            "Srinadh Bhojanapalli",
+            "Yann LeCun",
+            "Nathan Srebro"
+          ],
+          "year": 2018,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1805.12076"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "ea42dc0a-d8b7-5a7c-9890-3255655f7047",
+        "metadata": {
+          "key": "34",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[34] Bruno A. Olshausen and David J. Field. Sparse coding with an overcomplete basis set, a strategy employed by v1? Vision Research, 1997."
+        },
+        "number": 34,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Sparse coding with an overcomplete basis set: A strategy employed by V1?",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "1997",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Olshausen, Bruno A.; Field, David J.",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Vision Research",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1016/s0042-6989(97)00169-7",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1016/s0042-6989(97)00169-7",
+        "url": "https://doi.org/10.1016/s0042-6989(97)00169-7",
+        "retrieved_at": "2026-09-19T09:25:36.058940Z",
+        "metadata": {
+          "title": "Sparse coding with an overcomplete basis set: A strategy employed by V1?",
+          "authors": [
+            "Olshausen, Bruno A.",
+            "Field, David J."
+          ],
+          "year": 1997,
+          "venue": "Vision Research",
+          "doi": "10.1016/s0042-6989(97)00169-7"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "failed",
+          "error_code": "OPENALEX_HTTP_400",
+          "detail": "HTTP 400 Bad Request"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "bb35cf3d-dcd8-5e7c-9018-4369418b7de4",
+        "metadata": {
+          "key": "35",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[35] Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer. Automatic differentiation in pytorch. In Neurips Autodiff Workshop, 2017."
+        },
+        "number": 35,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 2 share part of it and none of them is established",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.2139/ssrn.2995695",
+          "url": "https://doi.org/10.2139/ssrn.2995695",
+          "retrieved_at": "2026-09-19T09:25:38.130276Z",
+          "metadata": {
+            "title": "Stochastic Automatic Differentiation: Automatic Differentiation for Monte-Carlo Simulations",
+            "authors": [
+              "Fries, Christian P."
+            ],
+            "year": 2017,
+            "venue": "SSRN Electronic Journal",
+            "doi": "10.2139/ssrn.2995695"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.4203/ccc.8.9.3",
+          "url": "https://doi.org/10.4203/ccc.8.9.3",
+          "retrieved_at": "2026-09-19T09:25:38.130276Z",
+          "metadata": {
+            "title": "Automatic Differentiation in PyTorch as a Tool for Robust Implementation of Elasto-Plastic Constitutive Model",
+            "authors": [
+              "Janda, T.",
+              "Šejnoha, M.",
+              "Zemanová, A.",
+              "Žalská, T."
+            ],
+            "year": null,
+            "venue": "Civil-Comp Conferences",
+            "doi": "10.4203/ccc.8.9.3"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "8 of 8 records were ineligible (7 year disagrees, 1 no venue)"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 2 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "414fc495-5914-5d10-9653-f24da40ae07b",
+        "metadata": {
+          "key": "36",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[36] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners, 2019."
+        },
+        "number": 36,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NOT_FOUND",
+      "reason": "10 of 10 records were ineligible (5 no venue, 4 year disagrees, 1 not a publication type) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (5 no venue, 4 year disagrees, 1 not a publication type)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "f97c4a90-7b38-535d-9dfa-c0d9c5ff0fc0",
+        "metadata": {
+          "key": "37",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[37] Jack Rae, Jonathan J Hunt, Ivo Danihelka, Timothy Harley, Andrew W Senior, Gregory Wayne, Alex Graves, and Timothy Lillicrap. Scaling memory-augmented neural networks with sparse reads and writes. In Advances in Neural Information Processing Systems, 2016."
+        },
+        "number": 37,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Scaling Memory-Augmented Neural Networks with Sparse Reads and Writes",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Jack W. Rae; Jonathan J. Hunt; Tim Harley; Ivo Danihelka; Andrew Senior; Greg Wayne; Alex Graves; Timothy Lillicrap",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1610.09027",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2540419089",
+        "url": "http://arxiv.org/abs/1610.09027",
+        "retrieved_at": "2026-09-19T09:25:40.267382Z",
+        "metadata": {
+          "title": "Scaling Memory-Augmented Neural Networks with Sparse Reads and Writes",
+          "authors": [
+            "Jack W. Rae",
+            "Jonathan J. Hunt",
+            "Tim Harley",
+            "Ivo Danihelka",
+            "Andrew Senior",
+            "Greg Wayne",
+            "Alex Graves",
+            "Timothy Lillicrap"
+          ],
+          "year": 2016,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1610.09027"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "3cc952ae-591c-5efc-ae7c-42ab2710997e",
+        "metadata": {
+          "key": "38",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[38] Mohammad Rastegari, Vicente Ordonez, Joseph Redmon, and Ali Farhadi. Xnor-net: Imagenet classiﬁcation using binary convolutional neural networks. In European Conference on Computer Vision, 2016."
+        },
+        "number": 38,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "XNOR-Net: ImageNet Classification Using Binary Convolutional Neural Networks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Rastegari, Mohammad; Ordonez, Vicente; Redmon, Joseph; Farhadi, Ali",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Lecture Notes in Computer Science",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.1007/978-3-319-46493-0_32",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "crossref",
+        "record_id": "crossref:10.1007/978-3-319-46493-0_32",
+        "url": "https://doi.org/10.1007/978-3-319-46493-0_32",
+        "retrieved_at": "2026-09-19T09:25:42.369118Z",
+        "metadata": {
+          "title": "XNOR-Net: ImageNet Classification Using Binary Convolutional Neural Networks",
+          "authors": [
+            "Rastegari, Mohammad",
+            "Ordonez, Vicente",
+            "Redmon, Joseph",
+            "Farhadi, Ali"
+          ],
+          "year": 2016,
+          "venue": "Lecture Notes in Computer Science",
+          "doi": "10.1007/978-3-319-46493-0_32"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "0c9e6b78-e66e-5eaa-95d4-e7191ae7f0af",
+        "metadata": {
+          "key": "39",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[39] Rico Sennrich, Barry Haddow, and Alexandra Birch. Neural machine translation of rare words with subword units. In Conference of the Association for Computational Linguistics, 2015."
+        },
+        "number": 39,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Neural Machine Translation of Rare Words with Subword Units",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Rico Sennrich; Barry Haddow; Alexandra Birch",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/p16-1162",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1816313093",
+        "url": "https://doi.org/10.18653/v1/p16-1162",
+        "retrieved_at": "2026-09-19T09:25:42.937962Z",
+        "metadata": {
+          "title": "Neural Machine Translation of Rare Words with Subword Units",
+          "authors": [
+            "Rico Sennrich",
+            "Barry Haddow",
+            "Alexandra Birch"
+          ],
+          "year": 2016,
+          "venue": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+          "doi": "10.18653/v1/p16-1162"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "d2f7fc2f-c623-519d-b567-d50aafa07c10",
+        "metadata": {
+          "key": "40",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[40] Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc V. Le, Geoffrey E. Hinton, and Jeff Dean. Outrageously large neural networks: The sparsely-gated mixture-ofexperts layer. In International Conference on Representation Learning, 2017."
+        },
+        "number": 40,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 1 share part of it and none of them is established",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1109/icnn.1991.163328",
+          "url": "https://doi.org/10.1109/icnn.1991.163328",
+          "retrieved_at": "2026-09-19T09:25:44.222712Z",
+          "metadata": {
+            "title": "Minehunting with multi-layer perceptrons",
+            "authors": [
+              "Shazeer, D.J.",
+              "Bello, M.G."
+            ],
+            "year": null,
+            "venue": "[1991 Proceedings] IEEE Conference on Neural Networks for Ocean Engineering",
+            "doi": "10.1109/icnn.1991.163328"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 1 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "e86a0eb5-8861-511c-97a4-5c8496952adb",
+        "metadata": {
+          "key": "41",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[41] Stefano Spigler, Mario Geiger, St´ephane d’Ascoli, Levent Sagun, Giulio Biroli, and Matthieu Wyart. A jamming transition from under- to over-parametrization affects loss landscape and generalization. CoRR, abs/1810.09665, 2018."
+        },
+        "number": 41,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 2 share part of it and none of them is established",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1088/1751-8121/ab4c8b",
+          "url": "https://doi.org/10.1088/1751-8121/ab4c8b",
+          "retrieved_at": "2026-09-19T09:25:45.918562Z",
+          "metadata": {
+            "title": "A jamming transition from under- to over-parametrization affects generalization in deep learning",
+            "authors": [
+              "Spigler, S",
+              "Geiger, M",
+              "d’Ascoli, S",
+              "Sagun, L",
+              "Biroli, G",
+              "Wyart, M"
+            ],
+            "year": 2019,
+            "venue": "Journal of Physics A: Mathematical and Theoretical",
+            "doi": "10.1088/1751-8121/ab4c8b"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.1103/physreve.100.012115",
+          "url": "https://doi.org/10.1103/physreve.100.012115",
+          "retrieved_at": "2026-09-19T09:25:45.918562Z",
+          "metadata": {
+            "title": "Jamming transition as a paradigm to understand the loss landscape of deep neural networks",
+            "authors": [
+              "Geiger, Mario",
+              "Spigler, Stefano",
+              "d'Ascoli, Stéphane",
+              "Sagun, Levent",
+              "Baity-Jesi, Marco",
+              "Biroli, Giulio",
+              "Wyart, Matthieu"
+            ],
+            "year": 2019,
+            "venue": "Physical Review E",
+            "doi": "10.1103/physreve.100.012115"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "the providers returned no records for this reference"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 2 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "bb2b990b-d0de-52fa-ab56-5f0ab243fef6",
+        "metadata": {
+          "key": "42",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[42] Sainbayar Sukhbaatar, arthur szlam, Jason Weston, and Rob Fergus. End-to-end memory networks. In Advances in Neural Information Processing Systems, 2015."
+        },
+        "number": 42,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "End-To-End Memory Networks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2015",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Sainbayar Sukhbaatar; Arthur Szlam; Jason Weston; Rob Fergus",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1503.08895",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1793121960",
+        "url": "http://arxiv.org/abs/1503.08895",
+        "retrieved_at": "2026-09-19T09:25:47.000454Z",
+        "metadata": {
+          "title": "End-To-End Memory Networks",
+          "authors": [
+            "Sainbayar Sukhbaatar",
+            "Arthur Szlam",
+            "Jason Weston",
+            "Rob Fergus"
+          ],
+          "year": 2015,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1503.08895"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "d94b7789-79af-512d-af63-6b7695061903",
+        "metadata": {
+          "key": "43",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[43] Ilya Sutskever, Oriol Vinyals, and Quoc V Le. Sequence to sequence learning with neural networks. In Advances in Neural Information Processing Systems, 2014."
+        },
+        "number": 43,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Sequence to Sequence Learning with Neural Networks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Ilya Sutskever; Oriol Vinyals; Quoc V. Le",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1409.3215",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2130942839",
+        "url": "http://arxiv.org/abs/1409.3215",
+        "retrieved_at": "2026-09-19T09:25:48.056330Z",
+        "metadata": {
+          "title": "Sequence to Sequence Learning with Neural Networks",
+          "authors": [
+            "Ilya Sutskever",
+            "Oriol Vinyals",
+            "Quoc V. Le"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1409.3215"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "2 records match the title exactly and describe one work (same first author and year); one of them was kept"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "22183158-0b9d-5b63-90ad-044c221917d5",
+        "metadata": {
+          "key": "44",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[44] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Advances in Neural Information Processing Systems, 2017."
+        },
+        "number": 44,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NOT_FOUND",
+      "reason": "20 of 20 records were ineligible (10 no venue, 10 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (9 year disagrees, 1 no venue)"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "20 of 20 records were ineligible (10 no venue, 10 year disagrees)"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "8aa0579e-8827-5c5a-88d1-83418cfd5a42",
+        "metadata": {
+          "key": "45",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[45] Sudheendra Vijayanarasimhan, Jonathon Shlens, Rajat Monga, and Jay Yagnik. Deep networks with large output spaces. In Workshop at the International Conference on Learning Representations, 2015."
+        },
+        "number": 45,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Deep Networks With Large Output Spaces",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2014",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Sudheendra Vijayanarasimhan; Jonathon Shlens; Rajat Monga; Jay Yagnik",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "arXiv (Cornell University)",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.48550/arxiv.1412.7479",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W1723811852",
+        "url": "http://arxiv.org/abs/1412.7479",
+        "retrieved_at": "2026-09-19T09:25:51.575686Z",
+        "metadata": {
+          "title": "Deep Networks With Large Output Spaces",
+          "authors": [
+            "Sudheendra Vijayanarasimhan",
+            "Jonathon Shlens",
+            "Rajat Monga",
+            "Jay Yagnik"
+          ],
+          "year": 2014,
+          "venue": "arXiv (Cornell University)",
+          "doi": "10.48550/arxiv.1412.7479"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "fc5cb285-ed0b-5934-91fd-25feb12e17d7",
+        "metadata": {
+          "key": "46",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[46] Alex Wang, Amapreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel R Bowman. Glue: A multi-task benchmark and analysis platform for natural language understanding. In International Conference on Representation Learning, 2018."
+        },
+        "number": 46,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2018",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Alex Wang; Amanpreet Singh; Julian Michael; Felix Hill; Omer Levy; Samuel Bowman",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "Proceedings of the 2018 EMNLP Workshop BlackboxNLP: Analyzing and Interpreting Neural Networks for NLP",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "10.18653/v1/w18-5446",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2923014074",
+        "url": "https://doi.org/10.18653/v1/w18-5446",
+        "retrieved_at": "2026-09-19T09:25:52.348535Z",
+        "metadata": {
+          "title": "GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding",
+          "authors": [
+            "Alex Wang",
+            "Amanpreet Singh",
+            "Julian Michael",
+            "Felix Hill",
+            "Omer Levy",
+            "Samuel Bowman"
+          ],
+          "year": 2018,
+          "venue": "Proceedings of the 2018 EMNLP Workshop BlackboxNLP: Analyzing and Interpreting Neural Networks for NLP",
+          "doi": "10.18653/v1/w18-5446"
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "3 records match the title exactly and describe one work (same first author and year); one of them was kept"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "0240b96d-54b1-5695-a283-5c60bf5a0f52",
+        "metadata": {
+          "key": "47",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[47] Jason Weston, Sumit Chopra, and Antoine Bordes. Memory networks. In International Conference on Representation Learning, 2015."
+        },
+        "number": 47,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 8 share part of it and none of them is established",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W1793121960",
+          "url": "http://arxiv.org/abs/1503.08895",
+          "retrieved_at": "2026-09-19T09:25:54.646722Z",
+          "metadata": {
+            "title": "End-To-End Memory Networks",
+            "authors": [
+              "Sainbayar Sukhbaatar",
+              "Arthur Szlam",
+              "Jason Weston",
+              "Rob Fergus"
+            ],
+            "year": 2015,
+            "venue": "arXiv (Cornell University)",
+            "doi": "10.48550/arxiv.1503.08895"
+          }
+        },
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W2267186426",
+          "url": "https://doi.org/10.18653/v1/d16-1053",
+          "retrieved_at": "2026-09-19T09:25:54.646722Z",
+          "metadata": {
+            "title": "Long Short-Term Memory-Networks for Machine Reading",
+            "authors": [
+              "Jianpeng Cheng",
+              "Li Dong",
+              "Mirella Lapata"
+            ],
+            "year": 2016,
+            "venue": "Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing",
+            "doi": "10.18653/v1/d16-1053"
+          }
+        },
+        {
+          "provider": "crossref",
+          "record_id": "crossref:10.18653/v1/d16-1147",
+          "url": "https://doi.org/10.18653/v1/d16-1147",
+          "retrieved_at": "2026-09-19T09:25:54.646722Z",
+          "metadata": {
+            "title": "Key-Value Memory Networks for Directly Reading Documents",
+            "authors": [
+              "Miller, Alexander",
+              "Fisch, Adam",
+              "Dodge, Jesse",
+              "Karimi, Amir-Hossein",
+              "Bordes, Antoine",
+              "Weston, Jason"
+            ],
+            "year": 2016,
+            "venue": "Proceedings of the 2016 Conference on Empirical Methods in Natural\n          Language Processing",
+            "doi": "10.18653/v1/d16-1147"
+          }
+        }
+      ],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 5 share part of it and none of them is established"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 8 share part of it and none of them is established"
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "12ec334f-2ba7-5560-94a0-aee7add2fc68",
+        "metadata": {
+          "key": "48",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[48] Jason Weston, Antoine Bordes, Sumit Chopra, and Tomas Mikolov. Towards ai-complete question answering: A set of prerequisite toy tasks. In International Conference on Representation Learning, 2016."
+        },
+        "number": 48,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "External record found, but missing fields or fuzzy metadata agreement need human review.",
+      "field_checks": [
+        {
+          "field_name": "title",
+          "input_value": "",
+          "source_value": "Towards AI-Complete Question Answering: A Set of Prerequisite Toy Tasks",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "year",
+          "input_value": "",
+          "source_value": "2016",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "authors",
+          "input_value": "",
+          "source_value": "Jason Weston; Antoine Bordes; Sumit Chopra; Alexander M. Rush; Bart van Merriënboer; Armand Joulin; Tomáš Mikolov",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "venue",
+          "input_value": "",
+          "source_value": "International Conference on Learning Representations",
+          "status": "INPUT_MISSING",
+          "detail": "This field is missing from the input reference."
+        },
+        {
+          "field_name": "doi",
+          "input_value": "",
+          "source_value": "",
+          "status": "NOT_CHECKED",
+          "detail": "Neither input nor external record supplies this field."
+        }
+      ],
+      "matched_record": {
+        "provider": "openalex",
+        "record_id": "openalex:W2962790689",
+        "url": "http://dblp.uni-trier.de/db/conf/iclr/iclr2016.html#WestonBCM15",
+        "retrieved_at": "2026-09-19T09:25:55.196613Z",
+        "metadata": {
+          "title": "Towards AI-Complete Question Answering: A Set of Prerequisite Toy Tasks",
+          "authors": [
+            "Jason Weston",
+            "Antoine Bordes",
+            "Sumit Chopra",
+            "Alexander M. Rush",
+            "Bart van Merriënboer",
+            "Armand Joulin",
+            "Tomáš Mikolov"
+          ],
+          "year": 2016,
+          "venue": "International Conference on Learning Representations",
+          "doi": ""
+        }
+      },
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "openalex",
+          "outcome": "found",
+          "error_code": null,
+          "detail": "exactly one record's title matches the reference exactly"
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}
