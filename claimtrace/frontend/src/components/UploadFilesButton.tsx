@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { getParseStatus, uploadPaper, usingMockApi, type UploadPurpose } from "../api/client";
 import { saveWorkspacePaper } from "../data/workspacePapers";
 import type { ParsedPaper } from "../types/api";
@@ -14,6 +14,7 @@ interface Props {
 
 export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabled = false, onReady, onSettled }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const active = useRef(true);
   const busyRef = useRef(false);
   const [busy, setBusy] = useState(false);
@@ -64,8 +65,8 @@ export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabl
 
   return <>
     <button className="button button-secondary upload-trigger" type="button" disabled={disabled} onClick={() => dialog.current?.showModal()}><Icon name="upload" size={17} /> {verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</button>
-    <dialog className="direct-upload-dialog" aria-labelledby="direct-upload-title" ref={dialog} onCancel={(event) => { if (busy) event.preventDefault(); }}>
-      <header><div className="upload-heading"><span className="upload-heading-icon"><Icon name="upload" size={24} /></span><div><h2 id="direct-upload-title">{verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</h2></div></div><button className="icon-button" type="button" aria-label="Close upload window" disabled={busy} onClick={() => dialog.current?.close()}><Icon name="x" /></button></header>
+    <dialog className="direct-upload-dialog" aria-labelledby={titleId} ref={dialog} onCancel={(event) => { if (busy) event.preventDefault(); }}>
+      <header><div className="upload-heading"><span className="upload-heading-icon"><Icon name="upload" size={24} /></span><div><h2 id={titleId}>{verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</h2></div></div><button className="icon-button" type="button" aria-label="Close upload window" disabled={busy} onClick={() => dialog.current?.close()}><Icon name="x" /></button></header>
       <p className="upload-description">{verifySourceOnly ? "This PDF is stored separately and can only be used for the selected claim comparison." : pdfOnly ? "Add a manuscript to start reviewing its claims." : "Add a manuscript or bibliography to check your references."}</p>
       {usingMockApi && <p>Demo mode: files are simulated and are not saved to the backend.</p>}
       <label className={`direct-upload-input${dragging ? " is-dragging" : ""}${busy ? " is-busy" : ""}`} onDragOver={(event) => { event.preventDefault(); if (!busy) setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => {

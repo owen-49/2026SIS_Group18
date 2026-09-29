@@ -425,7 +425,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             {selectedClaim && <section className="manual-source-picker">
               <label className="field claim-picker-field"><span>Source PDF for this claim · optional</span><select aria-label="Source PDF for claim" value={selectedSourcePaperId} disabled={verifying || verifySourcesLoading} onChange={(event) => { setSelectedSourcePaperId(event.target.value); setResult(null); setVerifyError(null); }}>
                 <option value="">Automatic source resolution</option>
-                {verifySources.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.title || paper.original_filename}{paper.status !== "completed" ? ` · ${paper.status}` : ""}</option>)}
+                {verifySources.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename || paper.title}{paper.status !== "completed" ? ` · ${paper.status}` : ""}</option>)}
               </select><small>{verifySourcesError || (verifySources.length ? "A selected source is used only for this claim comparison." : "Upload a PDF in Manage source PDFs to compare this claim against its text.")}</small></label>
             </section>}
             {selectedClaim && !result && <>
