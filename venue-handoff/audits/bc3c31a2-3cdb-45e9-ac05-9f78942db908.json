@@ -1,0 +1,2090 @@
+{
+  "contract_version": 2,
+  "audit_id": "bc3c31a2-3cdb-45e9-ac05-9f78942db908",
+  "input_paper_id": "92574678-2554-4a1c-83b7-7a24822e060f",
+  "input_type": "pdf",
+  "checked_at": "2026-09-16T04:56:19.893373Z",
+  "status": "completed",
+  "total_entries": 69,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 68,
+    "NOT_FOUND": 1,
+    "LOOKUP_FAILED": 0
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "e3c85f2e-dee8-50df-9961-d59db3db74ec",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] Payal Bajaj, Daniel Campos, Nick Craswell, Li Deng, Jianfeng Gao, Xiaodong Liu, Rangan Majumder, Andrew McNamara, Bhaskar Mitra, Tri Nguyen, Mir Rosenberg, Xia Song, Alina Stoica, Saurabh Tiwary, and Tong Wang. MS MARCO: A Human Generated MAchine Reading COmprehension Dataset. arXiv:1611.09268 [cs], November 2016. URL http: //arxiv.org/abs/1611.09268. arXiv: 1611.09268."
+        },
+        "number": 1,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "9ffe55dd-af05-55af-9b9d-f4e209d6e15c",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] Petr Baudiš and Jan Šediv`y. Modeling of the question answering task in the yodaqa system. In International Conference of the Cross-Language Evaluation Forum for European Languages, pages 222–228. Springer, 2015. URL https://link.springer.com/chapter/10.1007% 2F978-3-319-24027-5_20."
+        },
+        "number": 2,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4983effc-b498-59ad-8cf7-c1d111101431",
+        "metadata": {
+          "key": "3",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[3] Jonathan Berant, Andrew Chou, Roy Frostig, and Percy Liang. Semantic Parsing on Freebase from Question-Answer Pairs. In Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing, pages 1533–1544, Seattle, Washington, USA, October 2013. Association for Computational Linguistics. URL http://www.aclweb.org/anthology/ D13-1160."
+        },
+        "number": 3,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4fd5e555-a750-56aa-a30e-1e66819fca68",
+        "metadata": {
+          "key": "4",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[4] Bin Bi, Chenliang Li, Chen Wu, Ming Yan, and Wei Wang. Palm: Pre-training an autoencoding&autoregressive language model for context-conditioned generation. ArXiv, abs/2004.07159,"
+        },
+        "number": 4,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "a4713140-c785-5b59-9554-c8d0377d0f35",
+        "metadata": {
+          "key": "5",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[5] Danqi Chen, Adam Fisch, Jason Weston, and Antoine Bordes. Reading Wikipedia to Answer Open-Domain Questions. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1870–1879, Vancouver, Canada, July 2017. Association for Computational Linguistics. doi: 10.18653/v1/P17-1171. URL https://www.aclweb.org/anthology/P17-1171."
+        },
+        "number": 5,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "27a65d2f-577c-53f6-baea-1e5cbe4dbf88",
+        "metadata": {
+          "key": "6",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[6] Eunsol Choi, Daniel Hewlett, Jakob Uszkoreit, Illia Polosukhin, Alexandre Lacoste, and Jonathan Berant. Coarse-to-ﬁne question answering for long documents. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 209–220, Vancouver, Canada, July 2017. Association for Computational Linguistics. doi: 10.18653/v1/P17-1020. URL https://www.aclweb.org/anthology/P17-1020."
+        },
+        "number": 6,
+        "page_start": 10,
+        "page_end": 10
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "7b4f9303-31bf-53d4-8b87-79ae8819d0b7",
+        "metadata": {
+          "key": "7",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[7] Christopher Clark and Matt Gardner. Simple and Effective Multi-Paragraph Reading Comprehension. arXiv:1710.10723 [cs], October 2017. URL http://arxiv.org/abs/1710.10723. arXiv: 1710.10723."
+        },
+        "number": 7,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "8037ff55-aa2b-589f-8f86-7e04ba9038bb",
+        "metadata": {
+          "key": "8",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[8] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pages 4171–4186, Minneapolis, Minnesota, June 2019. Association for Computational Linguistics. doi: 10.18653/v1/N19-1423. URL https://www.aclweb.org/anthology/N19-1423."
+        },
+        "number": 8,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "bc4c9d11-40b8-53fa-88ab-6fffa6e9eed9",
+        "metadata": {
+          "key": "9",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[9] Emily Dinan, Stephen Roller, Kurt Shuster, Angela Fan, Michael Auli, and Jason Weston. Wizard of wikipedia: Knowledge-powered conversational agents. In International Conference on Learning Representations, 2019. URL https://openreview.net/forum?id=r1l73iRqKm."
+        },
+        "number": 9,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "5f2f6666-737e-565b-b624-73986c777dd8",
+        "metadata": {
+          "key": "10",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[10] Matthew Dunn, Levent Sagun, Mike Higgins, V. Ugur Guney, Volkan Cirik, and Kyunghyun Cho. SearchQA: A New Q&A Dataset Augmented with Context from a Search Engine. arXiv:1704.05179 [cs], April 2017. URL http://arxiv.org/abs/1704.05179. arXiv: 1704.05179."
+        },
+        "number": 10,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "bcb13184-ae4d-58ca-bf5c-e0994b8c99e9",
+        "metadata": {
+          "key": "11",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[11] Angela Fan, Mike Lewis, and Yann Dauphin. Hierarchical neural story generation. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 889–898, Melbourne, Australia, July 2018. Association for Computational Linguistics. doi: 10.18653/v1/P18-1082. URL https://www.aclweb.org/anthology/ P18-1082."
+        },
+        "number": 11,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "dabac73e-e712-50d9-91b1-eee2b7991bf5",
+        "metadata": {
+          "key": "12",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[12] Angela Fan, Yacine Jernite, Ethan Perez, David Grangier, Jason Weston, and Michael Auli. ELI5: Long form question answering. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 3558–3567, Florence, Italy, July 2019. Association for Computational Linguistics. doi: 10.18653/v1/P19-1346. URL https://www.aclweb.org/ anthology/P19-1346."
+        },
+        "number": 12,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "00c9641c-ab02-5a81-897c-3e190b90e34c",
+        "metadata": {
+          "key": "13",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[13] Angela Fan, Claire Gardent, Chloe Braud, and Antoine Bordes. Augmenting transformers with KNN-based composite memory, 2020. URL https://openreview.net/forum?id= H1gx1CNKPH."
+        },
+        "number": 13,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "b0b125f4-26a7-5ea4-9bda-6cae59323d44",
+        "metadata": {
+          "key": "14",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[14] Thibault Févry, Livio Baldini Soares, Nicholas FitzGerald, Eunsol Choi, and Tom Kwiatkowski. Entities as experts: Sparse memory access with entity supervision. ArXiv, abs/2004.07202,"
+        },
+        "number": 14,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "526e2ccb-47af-58ce-9087-c84cbb20dfbc",
+        "metadata": {
+          "key": "15",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[15] Marjan Ghazvininejad, Chris Brockett, Ming-Wei Chang, Bill Dolan, Jianfeng Gao, Wen tau Yih, and Michel Galley. A knowledge-grounded neural conversation model. In AAAI Conference on Artiﬁcial Intelligence, 2018. URL https://www.aaai.org/ocs/index.php/ AAAI/AAAI18/paper/view/16710."
+        },
+        "number": 15,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "2e0f898e-48cf-5afc-a1d0-1b63c2e00ea1",
+        "metadata": {
+          "key": "16",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[16] Katja Grace, John Salvatier, Allan Dafoe, Baobao Zhang, and Owain Evans. When will AI exceed human performance? evidence from AI experts. CoRR, abs/1705.08807, 2017. URL http://arxiv.org/abs/1705.08807."
+        },
+        "number": 16,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "abe8e506-00a0-5ff3-b58e-4c4180875b10",
+        "metadata": {
+          "key": "17",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[17] Jiatao Gu, Yong Wang, Kyunghyun Cho, and Victor O.K. Li. Search engine guided neural machine translation. In AAAI Conference on Artiﬁcial Intelligence, 2018. URL https: //www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/view/17282."
+        },
+        "number": 17,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "01bcc1c2-22bc-5470-8eb5-d2f627149295",
+        "metadata": {
+          "key": "18",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[18] Jiatao Gu, Yong Wang, Kyunghyun Cho, and Victor O.K. Li. Search engine guided neural machine translation. In 32nd AAAI Conference on Artiﬁcial Intelligence, AAAI 2018, 32nd AAAI Conference on Artiﬁcial Intelligence, AAAI 2018, pages 5133–5140. AAAI press, 2018. 32nd AAAI Conference on Artiﬁcial Intelligence, AAAI 2018 ; Conference date: 02-02-2018 Through 07-02-2018."
+        },
+        "number": 18,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "78b84459-026f-5b08-b5a4-3b292651ba05",
+        "metadata": {
+          "key": "19",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[19] Kelvin Guu, Tatsunori B. Hashimoto, Yonatan Oren, and Percy Liang. Generating sentences by editing prototypes. Transactions of the Association for Computational Linguistics, 6:437–450,"
+        },
+        "number": 19,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "6deafe77-dd35-5dbf-990b-27f3c608858f",
+        "metadata": {
+          "key": "2018",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "2018. doi: 10.1162/tacl_a_00030. URL https://www.aclweb.org/anthology/Q18-1031."
+        },
+        "number": 2018,
+        "page_start": 11,
+        "page_end": 11
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "bfa6b9d4-4043-518b-8a19-bc1b32715162",
+        "metadata": {
+          "key": "20",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[20] Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasupat, and Ming-Wei Chang. REALM: Retrieval-augmented language model pre-training. ArXiv, abs/2002.08909, 2020. URL https: //arxiv.org/abs/2002.08909."
+        },
+        "number": 20,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "f4769d81-a41f-5d7f-ac9a-70e8e7f738e1",
+        "metadata": {
+          "key": "21",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[21] Tatsunori B Hashimoto, Kelvin Guu, Yonatan Oren, and Percy S Liang. A retrieve-and-edit framework for predicting structured outputs. In S. Bengio, H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett, editors, Advances in Neural Information Processing Systems 31, pages 10052–"
+        },
+        "number": 21,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "90da5bed-59ec-5b84-a112-8cc570623a38",
+        "metadata": {
+          "key": "22",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[22] Nabil Hossain, Marjan Ghazvininejad, and Luke Zettlemoyer. Simple and effective retrieveedit-rerank text generation. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 2532–2538, Online, July 2020. Association for Computational Linguistics. doi: 10.18653/v1/2020.acl-main.228. URL https://www.aclweb.org/ anthology/2020.acl-main.228."
+        },
+        "number": 22,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "630352df-7cf2-5c2b-9e52-7da2db8f8396",
+        "metadata": {
+          "key": "23",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[23] Jeff Johnson, Matthijs Douze, and Hervé Jégou. Billion-scale similarity search with gpus. arXiv preprint arXiv:1702.08734, 2017. URL https://arxiv.org/abs/1702.08734."
+        },
+        "number": 23,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "111b62e7-e7e9-5665-a4b5-84c1660b0051",
+        "metadata": {
+          "key": "24",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[24] Mandar Joshi, Eunsol Choi, Daniel Weld, and Luke Zettlemoyer. TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1601–1611, Vancouver, Canada, July 2017. Association for Computational Linguistics. doi: 10.18653/v1/P17-1147. URL https://www.aclweb.org/anthology/P17-1147."
+        },
+        "number": 24,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "092b77ff-0841-5fd2-8049-fab1d4a52372",
+        "metadata": {
+          "key": "25",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[25] Armand Joulin and Tomas Mikolov. Inferring algorithmic patterns with stackaugmented recurrent nets. In Proceedings of the 28th International Conference on Neural Information Processing Systems - Volume 1, NIPS’15, page 190–198, Cambridge, MA, USA, 2015. MIT Press. URL https://papers.nips.cc/paper/ 5857-inferring-algorithmic-patterns-with-stack-augmented-recurrent-nets."
+        },
+        "number": 25,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "213aac27-3968-5cb9-9ced-c20a35f90852",
+        "metadata": {
+          "key": "26",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[26] Vladimir Karpukhin, Barlas Oguz, Sewon Min, Ledell Wu, Sergey Edunov, Danqi Chen, and Wen-tau Yih. Dense passage retrieval for open-domain question answering. arXiv preprint arXiv:2004.04906, 2020. URL https://arxiv.org/abs/2004.04906."
+        },
+        "number": 26,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "05cfafc2-11d9-5877-9016-33f42bd19d38",
+        "metadata": {
+          "key": "27",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[27] Urvashi Khandelwal, Omer Levy, Dan Jurafsky, Luke Zettlemoyer, and Mike Lewis. Generalization through memorization: Nearest neighbor language models. In International Conference on Learning Representations, 2020. URL https://openreview.net/forum?id=HklBjCEKvH."
+        },
+        "number": 27,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "8a4075f2-f07c-5f3e-b3fe-c137870455a6",
+        "metadata": {
+          "key": "28",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[28] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings, 2015. URL http://arxiv.org/abs/1412.6980."
+        },
+        "number": 28,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "578432e7-ad48-5109-8953-fc7c84a7fa5d",
+        "metadata": {
+          "key": "29",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[29] Tom Kwiatkowski, Jennimaria Palomaki, Olivia Redﬁeld, Michael Collins, Ankur Parikh, Chris Alberti, Danielle Epstein, Illia Polosukhin, Matthew Kelcey, Jacob Devlin, Kenton Lee, Kristina N. Toutanova, Llion Jones, Ming-Wei Chang, Andrew Dai, Jakob Uszkoreit, Quoc Le, and Slav Petrov. Natural Questions: a Benchmark for Question Answering Research. Transactions of the Association of Computational Linguistics, 2019. URL https://tomkwiat.users.x20web.corp.google.com/papers/ natural-questions/main-1455-kwiatkowski.pdf."
+        },
+        "number": 29,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "825b151d-ca8d-5a1e-8f5e-1fd26c2f5354",
+        "metadata": {
+          "key": "30",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[30] Guillaume Lample, Alexandre Sablayrolles, Marc’ Aurelio Ranzato, Ludovic Denoyer, and Herve Jegou. Large memory layers with product keys. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d’ Alché-Buc, E. Fox, and R. Garnett, editors, Advances in Neural Information Processing Systems 32, pages 8548–8559. Curran Associates, Inc., 2019. URL http: //papers.nips.cc/paper/9061-large-memory-layers-with-product-keys.pdf."
+        },
+        "number": 30,
+        "page_start": 12,
+        "page_end": 12
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "aac793d7-9111-58e2-aaa6-5b0e183ca6b3",
+        "metadata": {
+          "key": "31",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[31] Kenton Lee, Ming-Wei Chang, and Kristina Toutanova. Latent retrieval for weakly supervised open domain question answering. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 6086–6096, Florence, Italy, July 2019. Association for Computational Linguistics. doi: 10.18653/v1/P19-1612. URL https://www.aclweb.org/ anthology/P19-1612."
+        },
+        "number": 31,
+        "page_start": 12,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "eb66dce4-26af-5763-9973-1f39c723ce89",
+        "metadata": {
+          "key": "32",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[32] Mike Lewis, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Veselin Stoyanov, and Luke Zettlemoyer. BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension. arXiv preprint arXiv:1910.13461, 2019. URL https://arxiv.org/abs/1910.13461."
+        },
+        "number": 32,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "38e362cb-995d-554b-b666-b6bf63e6fa43",
+        "metadata": {
+          "key": "33",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[33] Jiwei Li, Michel Galley, Chris Brockett, Jianfeng Gao, and Bill Dolan. A diversity-promoting objective function for neural conversation models. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 110–119, San Diego, California, June 2016. Association for Computational Linguistics. doi: 10.18653/v1/N16-1014. URL https://www.aclweb.org/anthology/ N16-1014."
+        },
+        "number": 33,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "917f7daa-b451-54ce-8e9e-f4e8e68b4d80",
+        "metadata": {
+          "key": "34",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[34] Margaret Li, Jason Weston, and Stephen Roller. Acute-eval: Improved dialogue evaluation with optimized questions and multi-turn comparisons. ArXiv, abs/1909.03087, 2019. URL https://arxiv.org/abs/1909.03087."
+        },
+        "number": 34,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "223127d7-ffb3-57c4-89bb-1ee94d9eed22",
+        "metadata": {
+          "key": "35",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[35] Hairong Liu, Mingbo Ma, Liang Huang, Hao Xiong, and Zhongjun He. Robust neural machine translation with joint textual and phonetic embedding. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 3044–3049, Florence, Italy, July 2019. Association for Computational Linguistics. doi: 10.18653/v1/P19-1291. URL https://www.aclweb.org/anthology/P19-1291."
+        },
+        "number": 35,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "ef541b1e-3538-55b0-b3ae-a0de00b26ba2",
+        "metadata": {
+          "key": "36",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[36] Peter J. Liu*, Mohammad Saleh*, Etienne Pot, Ben Goodrich, Ryan Sepassi, Lukasz Kaiser, and Noam Shazeer. Generating wikipedia by summarizing long sequences. In International Conference on Learning Representations, 2018. URL https://openreview.net/forum? id=Hyg0vbWC-."
+        },
+        "number": 36,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "0fe45502-40dc-599e-b33e-dd8ae172a5d2",
+        "metadata": {
+          "key": "37",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[37] Yury A. Malkov and D. A. Yashunin. Efﬁcient and robust approximate nearest neighbor search using hierarchical navigable small world graphs. IEEE Transactions on Pattern Analysis and Machine Intelligence, 42:824–836, 2016. URL https://arxiv.org/abs/1603.09320."
+        },
+        "number": 37,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4213069b-4838-5a9f-9c02-e26cba6de9bf",
+        "metadata": {
+          "key": "38",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[38] Gary Marcus. The next decade in ai: four steps towards robust artiﬁcial intelligence. arXiv preprint arXiv:2002.06177, 2020. URL https://arxiv.org/abs/2002.06177."
+        },
+        "number": 38,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "e8e7061e-1eef-5c36-a537-15227bb81899",
+        "metadata": {
+          "key": "39",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[39] Luca Massarelli, Fabio Petroni, Aleksandra Piktus, Myle Ott, Tim Rocktäschel, Vassilis Plachouras, Fabrizio Silvestri, and Sebastian Riedel. How decoding strategies affect the veriﬁability of generated text. arXiv preprint arXiv:1911.03587, 2019. URL https: //arxiv.org/abs/1911.03587."
+        },
+        "number": 39,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "15f5d233-086f-54ad-b789-6f1246615464",
+        "metadata": {
+          "key": "40",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[40] Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu. Mixed precision training. In ICLR, 2018. URL https://openreview.net/forum?id=r1gs9JgRZ."
+        },
+        "number": 40,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "aa282b5b-a5a9-5e17-becf-0eeecfeca88d",
+        "metadata": {
+          "key": "41",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[41] Nikita Moghe, Siddhartha Arora, Suman Banerjee, and Mitesh M. Khapra. Towards exploiting background knowledge for building conversation systems. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 2322–2332, Brussels, Belgium, October-November 2018. Association for Computational Linguistics. doi: 10.18653/v1/D18-1255. URL https://www.aclweb.org/anthology/D18-1255."
+        },
+        "number": 41,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "c020827f-5ba3-5d6c-adc3-b59b98a1797f",
+        "metadata": {
+          "key": "42",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[42] Preksha Nema and Mitesh M. Khapra. Towards a better metric for evaluating question generation systems. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 3950–3959, Brussels, Belgium, October-November 2018. Association for Computational Linguistics. doi: 10.18653/v1/D18-1429. URL https://www.aclweb.org/ anthology/D18-1429."
+        },
+        "number": 42,
+        "page_start": 13,
+        "page_end": 13
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "325a213f-87fd-5472-8e9b-f533a29f84c1",
+        "metadata": {
+          "key": "43",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[43] Tri Nguyen, Mir Rosenberg, Xia Song, Jianfeng Gao, Saurabh Tiwary, Rangan Majumder, and Li Deng. MS MARCO: A human generated machine reading comprehension dataset. In Tarek Richard Besold, Antoine Bordes, Artur S. d’Avila Garcez, and Greg Wayne, editors, Proceedings of the Workshop on Cognitive Computation: Integrating neural and symbolic approaches 2016 co-located with the 30th Annual Conference on Neural Information Processing Systems (NIPS 2016), Barcelona, Spain, December 9, 2016, volume 1773 of CEUR Workshop Proceedings. CEUR-WS.org, 2016. URL http://ceur-ws.org/Vol-1773/CoCoNIPS_ 2016_paper9.pdf."
+        },
+        "number": 43,
+        "page_start": 13,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "aa10b670-2cf9-5c1a-9384-99e37c75db11",
+        "metadata": {
+          "key": "44",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[44] Rodrigo Nogueira and Kyunghyun Cho. Passage re-ranking with BERT. arXiv preprint arXiv:1901.04085, 2019. URL https://arxiv.org/abs/1901.04085."
+        },
+        "number": 44,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "6aeafaa8-3629-574a-9741-bd6c73b3ba42",
+        "metadata": {
+          "key": "45",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[45] Myle Ott, Sergey Edunov, Alexei Baevski, Angela Fan, Sam Gross, Nathan Ng, David Grangier, and Michael Auli. fairseq: A fast, extensible toolkit for sequence modeling. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics (Demonstrations), pages 48–53, Minneapolis, Minnesota, June 2019. Association for Computational Linguistics. doi: 10.18653/v1/N19-4009. URL https://www.aclweb. org/anthology/N19-4009."
+        },
+        "number": 45,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "3c5c2293-7c7e-5021-8e45-a637027116a7",
+        "metadata": {
+          "key": "46",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[46] Ethan Perez, Siddharth Karamcheti, Rob Fergus, Jason Weston, Douwe Kiela, and Kyunghyun Cho. Finding generalizable evidence by learning to convince q&a models. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2402–2411, Hong Kong, China, November 2019. Association for Computational Linguistics. doi: 10.18653/v1/D19-1244. URL https://www.aclweb.org/anthology/D19-1244."
+        },
+        "number": 46,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4e70f10d-dc30-5938-9bad-4b03f837340b",
+        "metadata": {
+          "key": "47",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[47] Fabio Petroni, Tim Rocktäschel, Sebastian Riedel, Patrick Lewis, Anton Bakhtin, Yuxiang Wu, and Alexander Miller. Language models as knowledge bases? In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2463–2473, Hong Kong, China, November 2019. Association for Computational Linguistics. doi: 10.18653/v1/ D19-1250. URL https://www.aclweb.org/anthology/D19-1250."
+        },
+        "number": 47,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "ba805cc2-9f83-5c9d-8048-e56db5c89ebf",
+        "metadata": {
+          "key": "48",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[48] Fabio Petroni, Patrick Lewis, Aleksandra Piktus, Tim Rocktäschel, Yuxiang Wu, Alexander H. Miller, and Sebastian Riedel. How context affects language models’ factual predictions. In Automated Knowledge Base Construction, 2020. URL https://openreview.net/forum? id=025X0zPfn."
+        },
+        "number": 48,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "9d03a6db-0cb5-5a8e-9da0-c4d0f6b11434",
+        "metadata": {
+          "key": "49",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[49] Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. Improving Language Understanding by Generative Pre-Training, 2018. URL https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/ language-unsupervised/language_understanding_paper.pdf."
+        },
+        "number": 49,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4567ce54-0f56-5a3c-b98c-4fced22bbaf7",
+        "metadata": {
+          "key": "50",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[50] Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners, 2019. URL https://d4mucfpksywv.cloudfront.net/better-language-models/language_ models_are_unsupervised_multitask_learners.pdf."
+        },
+        "number": 50,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "42e76460-3f88-517d-bd05-d601848d6a9e",
+        "metadata": {
+          "key": "51",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[51] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learning with a uniﬁed text-to-text transformer. arXiv e-prints, 2019. URL https://arxiv.org/abs/1910.10683."
+        },
+        "number": 51,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1a63bec9-3b76-5f97-86b3-dc8bafb1aca6",
+        "metadata": {
+          "key": "52",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[52] Adam Roberts, Colin Raffel, and Noam Shazeer. How much knowledge can you pack into the parameters of a language model? arXiv e-prints, 2020. URL https://arxiv.org/abs/ 2002.08910."
+        },
+        "number": 52,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "b6745737-1fa3-5a93-8bbe-61f5c6c5b9a2",
+        "metadata": {
+          "key": "53",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[53] Stephen Robertson and Hugo Zaragoza. The probabilistic relevance framework: Bm25 and beyond. Found. Trends Inf. Retr., 3(4):333–389, April 2009. ISSN 1554-0669. doi: 10.1561/"
+        },
+        "number": 53,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1de43b5b-4101-5ed7-977e-05343ec00849",
+        "metadata": {
+          "key": "54",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[54] Irene Solaiman, Miles Brundage, Jack Clark, Amanda Askell, Ariel Herbert-Voss, Jeff Wu, Alec Radford, and Jian-Bing Wang. Release strategies and the social impacts of language models. ArXiv, abs/1908.09203, 2019."
+        },
+        "number": 54,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "dd167ecd-12af-5e68-b184-712053ab205d",
+        "metadata": {
+          "key": "55",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[55] Sainbayar Sukhbaatar, Arthur Szlam, Jason Weston, and Rob Fergus. End-to-end memory networks. In C. Cortes, N. D. Lawrence, D. D. Lee, M. Sugiyama, and R. Garnett, editors, Advances in Neural Information Processing Systems 28, pages 2440–2448. Curran Associates, Inc., 2015. URL http://papers.nips.cc/paper/5846-end-to-end-memory-networks.pdf."
+        },
+        "number": 55,
+        "page_start": 14,
+        "page_end": 14
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "44d43e10-e274-5209-9ed5-31a0967b9af4",
+        "metadata": {
+          "key": "56",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[56] James Thorne, Andreas Vlachos, Christos Christodoulopoulos, and Arpit Mittal. FEVER: a large-scale dataset for fact extraction and VERiﬁcation. In Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers), pages 809–819, New Orleans, Louisiana, June 2018. Association for Computational Linguistics. doi: 10.18653/v1/N18-1074. URL https://www.aclweb.org/anthology/N18-1074."
+        },
+        "number": 56,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d597a906-381a-5e00-9ca1-27f3ba07e67e",
+        "metadata": {
+          "key": "57",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[57] James H. Thorne and Andreas Vlachos. Avoiding catastrophic forgetting in mitigating model biases in sentence-pair classiﬁcation with elastic weight consolidation. ArXiv, abs/2004.14366,"
+        },
+        "number": 57,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "56135550-804e-55a1-9bb0-b6af0ba3bc52",
+        "metadata": {
+          "key": "58",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[58] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems 30, pages 5998–6008. Curran Associates, Inc., 2017. URL http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf."
+        },
+        "number": 58,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "dbfe1b69-2689-5244-b7e8-ca3b08988c5a",
+        "metadata": {
+          "key": "59",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[59] Ashwin Vijayakumar, Michael Cogswell, Ramprasaath Selvaraju, Qing Sun, Stefan Lee, David Crandall, and Dhruv Batra. Diverse beam search for improved description of complex scenes. AAAI Conference on Artiﬁcial Intelligence, 2018. URL https://www.aaai.org/ocs/index. php/AAAI/AAAI18/paper/view/17329."
+        },
+        "number": 59,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "0e913313-92ff-5943-a246-86a67e2f3690",
+        "metadata": {
+          "key": "60",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[60] Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel Bowman. GLUE: A multi-task benchmark and analysis platform for natural language understanding. In Proceedings of the 2018 EMNLP Workshop BlackboxNLP: Analyzing and Interpreting Neural Networks for NLP, pages 353–355, Brussels, Belgium, November 2018. Association for Computational Linguistics. doi: 10.18653/v1/W18-5446. URL https://www.aclweb.org/ anthology/W18-5446."
+        },
+        "number": 60,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "dd0d31cb-1b7e-5307-9cb3-95aaff90c21e",
+        "metadata": {
+          "key": "61",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[61] Alex Wang, Yada Pruksachatkun, Nikita Nangia, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel Bowman. SuperGLUE: A Stickier Benchmark for GeneralPurpose Language Understanding Systems. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d\\textquotesingle Alché-Buc, E. Fox, and R. Garnett, editors, Advances in Neural Information Processing Systems 32, pages 3261–3275. Curran Associates, Inc., 2019. URL https:// arxiv.org/abs/1905.00537."
+        },
+        "number": 61,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4db86b0f-5f4a-5b69-aa74-f592c1db30e1",
+        "metadata": {
+          "key": "62",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[62] Shuohang Wang, Mo Yu, Xiaoxiao Guo, Zhiguo Wang, Tim Klinger, Wei Zhang, Shiyu Chang,"
+        },
+        "number": 62,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "2112e4f7-693f-5053-afec-7b4ad45296ee",
+        "metadata": {
+          "key": "63",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[63] Shuohang Wang, Mo Yu, Jing Jiang, Wei Zhang, Xiaoxiao Guo, Shiyu Chang, Zhiguo Wang, Tim Klinger, Gerald Tesauro, and Murray Campbell. Evidence aggregation for answer reranking in open-domain question answering. In ICLR, 2018. URL https://openreview. net/forum?id=rJl3yM-Ab."
+        },
+        "number": 63,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "78807b02-de9c-56ec-b257-b1789d6b4133",
+        "metadata": {
+          "key": "64",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[64] Jason Weston, Sumit Chopra, and Antoine Bordes. Memory networks. In Yoshua Bengio and Yann LeCun, editors, 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings, 2015. URL http://arxiv.org/abs/1410.3916."
+        },
+        "number": 64,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "56b9e839-ab28-500f-828e-f7fbed63168d",
+        "metadata": {
+          "key": "65",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[65] Jason Weston, Emily Dinan, and Alexander Miller. Retrieve and reﬁne: Improved sequence generation models for dialogue. In Proceedings of the 2018 EMNLP Workshop SCAI: The 2nd International Workshop on Search-Oriented Conversational AI, pages 87–92, Brussels, Belgium, October 2018. Association for Computational Linguistics. doi: 10.18653/v1/W18-5713. URL https://www.aclweb.org/anthology/W18-5713."
+        },
+        "number": 65,
+        "page_start": 15,
+        "page_end": 15
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "db748eda-ba5d-534b-a5fa-a81f8b5e0401",
+        "metadata": {
+          "key": "66",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[66] Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, Joe Davison, Sam Shleifer, Patrick von Platen, Clara Ma, Yacine Jernite, Julien Plu, Canwen Xu, Teven Le Scao, Sylvain Gugger, Mariama Drame, Quentin Lhoest, and Alexander M. Rush. Huggingface’s transformers: State-of-the-art natural language processing. ArXiv, abs/1910.03771, 2019."
+        },
+        "number": 66,
+        "page_start": 16,
+        "page_end": 16
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "e9c7ecb4-0d32-5305-a96f-5651d498adab",
+        "metadata": {
+          "key": "67",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[67] Shiyue Zhang and Mohit Bansal. Addressing semantic drift in question generation for semisupervised question answering. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2495–2509, Hong Kong, China, November 2019. Association for Computational Linguistics. doi: 10.18653/v1/D19-1253. URL https://www.aclweb.org/anthology/D19-1253."
+        },
+        "number": 67,
+        "page_start": 16,
+        "page_end": 16
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4c59dcfb-e6b0-5faa-813c-0fab02a9814c",
+        "metadata": {
+          "key": "68",
+          "entry_type": "misc",
+          "title": "Refuted",
+          "authors": [
+            "Wanjun Zhong",
+            "Jingjing Xu",
+            "Duyu Tang",
+            "Zenan Xu",
+            "Nan Duan",
+            "Ming Zhou",
+            "Jiahai Wang",
+            "Jian Yin. Reasoning over semantic-level graph for fact checking. ArXiv",
+            "abs/1909.03745",
+            "2019. URL https://arxiv.org/abs/1909.03745. Appendices for Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks A Implementation Details For Open-domain QA we report test numbers using 15 retrieved documents for RAG-Token models. For RAG-Sequence models",
+            "we report test results using 50 retrieved documents",
+            "we use the Thorough Decoding approach since answers are generally short. We use greedy decoding for QA as we did not ﬁnd beam search improved results. For Open-MSMarco",
+            "Jeopardy question generation",
+            "we report test numbers using ten retrieved documents for both RAG-Token",
+            "RAG-Sequence",
+            "we also train a BART-large model as a baseline. We use a beam size of four",
+            "use the Fast Decoding approach for RAG-Sequence models",
+            "as Thorough Decoding did not improve performance. B Human Evaluation Figure 4: Annotation interface for human evaluation of factuality. A pop-out for detailed instructions",
+            "a worked example appear when clicking \"view tool guide\". Figure 4 shows the user interface for human evaluation. To avoid any biases for screen position",
+            "which model corresponded to sentence A",
+            "sentence B was randomly selected for each example. Annotators were encouraged to research the topic using the internet",
+            "were given detailed instructions",
+            "worked examples in a full instructions tab. We included some gold sentences in order to assess the accuracy of the annotators. Two annotators did not perform well on these examples",
+            "their annotations were removed from the results. C Training setup Details We train all RAG models",
+            "BART baselines using Fairseq [45].2 We train with mixed precision ﬂoating point arithmetic [40]",
+            "distributing training across 8",
+            "32GB NVIDIA V100 GPUs",
+            "though training",
+            "inference can be run on one GPU. We ﬁnd that doing Maximum Inner Product Search with FAISS is sufﬁciently fast on CPU",
+            "so we store document index vectors on CPU",
+            "requiring ∼ 100 GB of CPU memory for all of Wikipedia. After submission",
+            "We have ported our code to HuggingFace Transformers [66]3",
+            "which achieves equivalent performance to the previous version but is a cleaner",
+            "easier to use implementation. This version is also open-sourced. We also compress the document index using FAISS’s compression tools",
+            "reducing the CPU memory requirement to 36GB. Scripts to run experiments with RAG can be found at https://github.com/huggingface/transformers/ blob/master/examples/rag/README.md",
+            "an interactive demo of a RAG model can be found at https://huggingface.co/rag/ 2https://github.com/pytorch/fairseq 3https://github.com/huggingface/transformers D Further Details on Open-Domain QA For open-domain QA",
+            "multiple answer annotations are often available for a given question. These answer annotations are exploited by extractive models during training as typically all the answer annotations are used to ﬁnd matches within documents when preparing training data. For RAG",
+            "we also make use of multiple annotation examples for Natural Questions",
+            "WebQuestions by training the model with each (q",
+            "a) pair separately",
+            "leading to a small increase in accuracy. For TriviaQA",
+            "there are often many valid answers to a given question",
+            "some of which are not suitable training targets",
+            "such as emoji or spelling variants. For TriviaQA",
+            "we ﬁlter out answer candidates if they do not occur in top 1000 documents for the query. CuratedTrec preprocessing The answers for CuratedTrec are given in the form of regular expressions",
+            "which has been suggested as a reason why it is unsuitable for answer-generation models [20]. To overcome this",
+            "we use a pre-processing step where we ﬁrst retrieve the top 1000 documents for each query",
+            "use the answer that most frequently matches the regex pattern as the supervision target. If no matches are found",
+            "we resort to a simple heuristic: generate all possible permutations for each regex",
+            "replacing non-deterministic symbols in the regex nested tree structure with a whitespace. TriviaQA Evaluation setups The open-domain QA community customarily uses public development datasets as test datasets",
+            "as test data for QA datasets is often restricted",
+            "dedicated to reading compehension purposes. We report our results using the datasets splits used in DPR [26]",
+            "which are consistent with common practice in Open-domain QA. For TriviaQA",
+            "this test dataset is the public TriviaQA Web Development split. Roberts et al. [52] used the TriviaQA ofﬁcial Wikipedia test set instead. Févry et al. [14] follow this convention in order to compare with Roberts et al. [52] (See appendix of [14]). We report results on both test sets to enable fair comparison to both approaches. We ﬁnd that our performance is much higher using the ofﬁcial Wiki test set",
+            "rather than the more conventional open-domain test set",
+            "which we attribute to the ofﬁcial Wiki test set questions being simpler to answer from Wikipedia. E Further Details on FEVER For FEVER classiﬁcation",
+            "we follow the practice from [32]",
+            "ﬁrst re-generate the claim",
+            "then classify using the representation of the ﬁnal hidden state",
+            "before ﬁnally marginalizing across documents to obtain the class probabilities. The FEVER task traditionally has two sub-tasks. The ﬁrst is to classify the claim as either \"Supported"
+          ],
+          "year": 2033,
+          "venue": "or \"Not Enough Info\", which is the task we explore in the main paper. FEVER’s other sub-task involves extracting sentences from Wikipedia as evidence supporting the classiﬁcation prediction. As FEVER uses a different Wikipedia dump to us, directly tackling this task is not straightforward. We hope to address this in future work. F Null Document Probabilities We experimented with adding \"Null document\" mechanism to RAG, similar to REALM [20] in order to model cases where no useful information could be retrieved for a given input. Here, if k documents were retrieved, we would additionally \"retrieve\" an empty document and predict a logit for the null document, before marginalizing over k + 1 predictions. We explored modelling this null document logit by learning (i) a document embedding for the null document, (ii) a static learnt bias term, or (iii) a neural network to predict the logit. We did not ﬁnd that these improved performance, so in the interests of simplicity, we omit them. For Open MS-MARCO, where useful retrieved documents cannot always be retrieved, we observe that the model learns to always retrieve a particular set of documents for questions that are less likely to beneﬁt from retrieval, suggesting that null document mechanisms may not be necessary for RAG. G Parameters Our RAG models contain the trainable parameters for the BERT-base query and document encoder of DPR, with 110M parameters each (although we do not train the document encoder ourselves) and 406M trainable parameters from BART-large, 406M parameters, making a total of 626M trainable Table 7: Number of instances in the datasets used. *A hidden subset of this data is used for evaluation parameters. The best performing \"closed-book\" (parametric only) open-domain QA model is T5-11B with 11 Billion trainable parameters. The T5 model with the closest number of parameters to our models is T5-large (770M parameters), which achieves a score of 28.9 EM on Natural Questions [52], substantially below the 44.5 that RAG-Sequence achieves, indicating that hybrid parametric/nonparametric models require far fewer trainable parameters for strong open-domain QA performance. The non-parametric memory index does not consist of trainable parameters, but does consists of 21M 728 dimensional vectors, consisting of 15.3B values. These can be easily be stored at 8-bit ﬂoating point precision to manage memory and disk footprints. H Retrieval Collapse In preliminary experiments, we observed that for some tasks such as story generation [11], the retrieval component would “collapse” and learn to retrieve the same documents regardless of the input. In these cases, once retrieval had collapsed, the generator would learn to ignore the documents, and the RAG model would perform equivalently to BART. The collapse could be due to a less-explicit requirement for factual knowledge in some tasks, or the longer target sequences, which could result in less informative gradients for the retriever. Perez et al. [46] also found spurious retrieval results when optimizing a retrieval component in order to improve performance on downstream tasks. I Number of instances per dataset The number of training, development and test datapoints in each of our datasets is shown in Table 7. Task Train Development Test Natural Questions 79169 8758 3611 TriviaQA 78786 8838 11314 WebQuestions 3418 362 2033 CuratedTrec 635 134 635 Jeopardy Question Generation 97392 13714 26849 MS-MARCO 153726 12468 101093* FEVER-3-way 145450 10000 10000 FEVER-2-way 96966 6666 6666",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[68] Wanjun Zhong, Jingjing Xu, Duyu Tang, Zenan Xu, Nan Duan, Ming Zhou, Jiahai Wang, and Jian Yin. Reasoning over semantic-level graph for fact checking. ArXiv, abs/1909.03745, 2019. URL https://arxiv.org/abs/1909.03745. Appendices for Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks A Implementation Details For Open-domain QA we report test numbers using 15 retrieved documents for RAG-Token models. For RAG-Sequence models, we report test results using 50 retrieved documents, and we use the Thorough Decoding approach since answers are generally short. We use greedy decoding for QA as we did not ﬁnd beam search improved results. For Open-MSMarco and Jeopardy question generation, we report test numbers using ten retrieved documents for both RAG-Token and RAG-Sequence, and we also train a BART-large model as a baseline. We use a beam size of four, and use the Fast Decoding approach for RAG-Sequence models, as Thorough Decoding did not improve performance. B Human Evaluation Figure 4: Annotation interface for human evaluation of factuality. A pop-out for detailed instructions and a worked example appear when clicking \"view tool guide\". Figure 4 shows the user interface for human evaluation. To avoid any biases for screen position, which model corresponded to sentence A and sentence B was randomly selected for each example. Annotators were encouraged to research the topic using the internet, and were given detailed instructions and worked examples in a full instructions tab. We included some gold sentences in order to assess the accuracy of the annotators. Two annotators did not perform well on these examples and their annotations were removed from the results. C Training setup Details We train all RAG models and BART baselines using Fairseq [45].2 We train with mixed precision ﬂoating point arithmetic [40], distributing training across 8, 32GB NVIDIA V100 GPUs, though training and inference can be run on one GPU. We ﬁnd that doing Maximum Inner Product Search with FAISS is sufﬁciently fast on CPU, so we store document index vectors on CPU, requiring ∼ 100 GB of CPU memory for all of Wikipedia. After submission, We have ported our code to HuggingFace Transformers [66]3, which achieves equivalent performance to the previous version but is a cleaner and easier to use implementation. This version is also open-sourced. We also compress the document index using FAISS’s compression tools, reducing the CPU memory requirement to 36GB. Scripts to run experiments with RAG can be found at https://github.com/huggingface/transformers/ blob/master/examples/rag/README.md and an interactive demo of a RAG model can be found at https://huggingface.co/rag/ 2https://github.com/pytorch/fairseq 3https://github.com/huggingface/transformers D Further Details on Open-Domain QA For open-domain QA, multiple answer annotations are often available for a given question. These answer annotations are exploited by extractive models during training as typically all the answer annotations are used to ﬁnd matches within documents when preparing training data. For RAG, we also make use of multiple annotation examples for Natural Questions and WebQuestions by training the model with each (q,a) pair separately, leading to a small increase in accuracy. For TriviaQA, there are often many valid answers to a given question, some of which are not suitable training targets, such as emoji or spelling variants. For TriviaQA, we ﬁlter out answer candidates if they do not occur in top 1000 documents for the query. CuratedTrec preprocessing The answers for CuratedTrec are given in the form of regular expressions, which has been suggested as a reason why it is unsuitable for answer-generation models [20]. To overcome this, we use a pre-processing step where we ﬁrst retrieve the top 1000 documents for each query, and use the answer that most frequently matches the regex pattern as the supervision target. If no matches are found, we resort to a simple heuristic: generate all possible permutations for each regex, replacing non-deterministic symbols in the regex nested tree structure with a whitespace. TriviaQA Evaluation setups The open-domain QA community customarily uses public development datasets as test datasets, as test data for QA datasets is often restricted and dedicated to reading compehension purposes. We report our results using the datasets splits used in DPR [26], which are consistent with common practice in Open-domain QA. For TriviaQA, this test dataset is the public TriviaQA Web Development split. Roberts et al. [52] used the TriviaQA ofﬁcial Wikipedia test set instead. Févry et al. [14] follow this convention in order to compare with Roberts et al. [52] (See appendix of [14]). We report results on both test sets to enable fair comparison to both approaches. We ﬁnd that our performance is much higher using the ofﬁcial Wiki test set, rather than the more conventional open-domain test set, which we attribute to the ofﬁcial Wiki test set questions being simpler to answer from Wikipedia. E Further Details on FEVER For FEVER classiﬁcation, we follow the practice from [32], and ﬁrst re-generate the claim, and then classify using the representation of the ﬁnal hidden state, before ﬁnally marginalizing across documents to obtain the class probabilities. The FEVER task traditionally has two sub-tasks. The ﬁrst is to classify the claim as either \"Supported\", \"Refuted\" or \"Not Enough Info\", which is the task we explore in the main paper. FEVER’s other sub-task involves extracting sentences from Wikipedia as evidence supporting the classiﬁcation prediction. As FEVER uses a different Wikipedia dump to us, directly tackling this task is not straightforward. We hope to address this in future work. F Null Document Probabilities We experimented with adding \"Null document\" mechanism to RAG, similar to REALM [20] in order to model cases where no useful information could be retrieved for a given input. Here, if k documents were retrieved, we would additionally \"retrieve\" an empty document and predict a logit for the null document, before marginalizing over k + 1 predictions. We explored modelling this null document logit by learning (i) a document embedding for the null document, (ii) a static learnt bias term, or (iii) a neural network to predict the logit. We did not ﬁnd that these improved performance, so in the interests of simplicity, we omit them. For Open MS-MARCO, where useful retrieved documents cannot always be retrieved, we observe that the model learns to always retrieve a particular set of documents for questions that are less likely to beneﬁt from retrieval, suggesting that null document mechanisms may not be necessary for RAG. G Parameters Our RAG models contain the trainable parameters for the BERT-base query and document encoder of DPR, with 110M parameters each (although we do not train the document encoder ourselves) and 406M trainable parameters from BART-large, 406M parameters, making a total of 626M trainable Table 7: Number of instances in the datasets used. *A hidden subset of this data is used for evaluation parameters. The best performing \"closed-book\" (parametric only) open-domain QA model is T5-11B with 11 Billion trainable parameters. The T5 model with the closest number of parameters to our models is T5-large (770M parameters), which achieves a score of 28.9 EM on Natural Questions [52], substantially below the 44.5 that RAG-Sequence achieves, indicating that hybrid parametric/nonparametric models require far fewer trainable parameters for strong open-domain QA performance. The non-parametric memory index does not consist of trainable parameters, but does consists of 21M 728 dimensional vectors, consisting of 15.3B values. These can be easily be stored at 8-bit ﬂoating point precision to manage memory and disk footprints. H Retrieval Collapse In preliminary experiments, we observed that for some tasks such as story generation [11], the retrieval component would “collapse” and learn to retrieve the same documents regardless of the input. In these cases, once retrieval had collapsed, the generator would learn to ignore the documents, and the RAG model would perform equivalently to BART. The collapse could be due to a less-explicit requirement for factual knowledge in some tasks, or the longer target sequences, which could result in less informative gradients for the retriever. Perez et al. [46] also found spurious retrieval results when optimizing a retrieval component in order to improve performance on downstream tasks. I Number of instances per dataset The number of training, development and test datapoints in each of our datasets is shown in Table 7. Task Train Development Test Natural Questions 79169 8758 3611 TriviaQA 78786 8838 11314 WebQuestions 3418 362 2033 CuratedTrec 635 134 635 Jeopardy Question Generation 97392 13714 26849 MS-MARCO 153726 12468 101093* FEVER-3-way 145450 10000 10000 FEVER-2-way 96966 6666 6666"
+        },
+        "number": 68,
+        "page_start": 16,
+        "page_end": 19
+      },
+      "status": "NOT_FOUND",
+      "reason": "No publication candidate was returned for this query. No acceptable record in the queried sources; this does not prove fabrication.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "No publication candidate was returned for this query."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "Reference numbering is discontinuous (missing 20-2017; duplicate or out-of-order numbers)."
+  ]
+}

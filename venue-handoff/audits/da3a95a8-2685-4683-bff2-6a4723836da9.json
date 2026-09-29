@@ -1,0 +1,570 @@
+{
+  "contract_version": 2,
+  "audit_id": "da3a95a8-2685-4683-bff2-6a4723836da9",
+  "input_paper_id": "7bc83abf-48ed-431f-a6cc-eb3701aaa431",
+  "input_type": "pdf",
+  "checked_at": "2026-09-18T08:08:33.201515Z",
+  "status": "completed",
+  "total_entries": 19,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 19,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 0
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "d2d42466-c3a0-53c0-be64-f08c54685d89",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] Bastian Epping, Alexandre René, Moritz Helias, and Michael T. Schaub. 2024. Graph Neural Networks Do Not Always Oversmooth. In Advances in Neural Information Processing Systems (NeurIPS), Vol. 37. 48164–48188."
+        },
+        "number": 1,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4dfa389a-27a2-56e4-a06b-10d3c337c707",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] Deepanway Ghosal et al. 2019. DialogueGCN: A Graph Convolutional Neural Network for ERC. In EMNLP-IJCNLP."
+        },
+        "number": 2,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "4fe8b378-3332-5454-a3bc-f1968d654339",
+        "metadata": {
+          "key": "3",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[3] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and Roger Zimmermann. 2018. Icon: Interactive conversational memory network for multimodal emotion detection. In Proceedings of the 2018 conference on empirical methods in natural language processing. 2594–2604."
+        },
+        "number": 3,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "f2375e0f-91b7-5141-8de7-3832aedf55e0",
+        "metadata": {
+          "key": "4",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[4] Guiyang Hou et al. 2023. Enhancing ERC via Multi-view Feature Alignment and Memorization. In Findings of EMNLP."
+        },
+        "number": 4,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "ebba20d6-13a7-5ee5-bb4e-fc22d060c924",
+        "metadata": {
+          "key": "5",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[5] Haigen Hu, Xiaoyuan Wang, Yan Zhang, Qi Chen, and Qiu Guan. 2024. A comprehensive survey on contrastive learning. Neurocomputing 610"
+        },
+        "number": 5,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "19b3c451-1c65-58f5-b631-caed9109fa93",
+        "metadata": {
+          "key": "6",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[6] Xin Li et al. 2024. Do LLMs Feel? Teaching Emotion Recognition with Prompts, Retrieval, and Curriculum Learning. In Proceedings of the AAAI Conference on Artificial Intelligence."
+        },
+        "number": 6,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "7f5ecd69-4167-53d9-8214-3e30f6b75184",
+        "metadata": {
+          "key": "7",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[7] Xinyi Li et al. 2024. Oversmoothing Alleviation in Graph Neural Networks: A Survey and Unified View. arXiv preprint arXiv:2405.01663 (2024)."
+        },
+        "number": 7,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "44f51bc2-6dfc-576c-a6f5-5c6ae8e2be0c",
+        "metadata": {
+          "key": "8",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[8] Xinran Li, Xiujuan Xu, and Jiaqi Qiao. 2025. Long-Short Distance Graph Neural Networks and Improved Curriculum Learning for Emotion Recognition in Conversation. arXiv preprint arXiv:2507.15205 (2025)."
+        },
+        "number": 8,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "11435cd1-d0b0-54cb-b11e-001292d52877",
+        "metadata": {
+          "key": "9",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[9] Navonil Majumder et al. 2019. DialogueRNN: An attentive RNN for emotion detection in conversations. In AAAI."
+        },
+        "number": 9,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "677d6246-6d34-5188-b5d1-68bed2433164",
+        "metadata": {
+          "key": "10",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[10] Soujanya Poria et al. 2017. Context-dependent sentiment analysis in user-generated videos. In ACL."
+        },
+        "number": 10,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "1bc46175-5a08-5d5e-8dc5-9c471be5dffe",
+        "metadata": {
+          "key": "11",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[11] Soujanya Poria et al. 2020. COSMIC: COmmonSense knowledge for eMotion Identification in Conversations. In Findings of EMNLP."
+        },
+        "number": 11,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "a7418bb8-222a-512e-9818-faead63f3b6f",
+        "metadata": {
+          "key": "12",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[12] TBA Rakib et al. 2026. Who You Are, What You Say: Intra- and Inter-Context Personality for Emotion Recognition in Conversation. In Findings of the Behavioral and Social Sciences: EACL 2026."
+        },
+        "number": 12,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "453e458a-97e5-5829-92cb-f06934d22dbe",
+        "metadata": {
+          "key": "13",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[13] Weizhou Shen et al. 2021. Directed acyclic graph network for conversational emotion recognition. In ACL."
+        },
+        "number": 13,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "827d4961-7966-5097-a5fb-40e3447ba8b7",
+        "metadata": {
+          "key": "14",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[14] Geng Tu et al. 2024. Adaptive Graph Learning for Multimodal Conversational Emotion Detection. In Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 38."
+        },
+        "number": 14,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "7b64fefd-1b40-50dc-8832-efc77f793d45",
+        "metadata": {
+          "key": "15",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[15] X. Wu, Zhengdao Chen, W. Wang, and A. Jadbabaie. 2022. A Non-Asymptotic Analysis of Oversmoothing in Graph Neural Networks. ArXiv abs/2212.10701 (2022). doi:10.48550/arxiv.2212.10701"
+        },
+        "number": 15,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "aa55e334-d82f-5a6c-b439-1b7fb73227cd",
+        "metadata": {
+          "key": "16",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[16] Fangxu Yu, Junjie Guo, Zhen Wu, and Xinyu Dai. 2024. Emotion-Anchored Contrastive Learning Framework for Emotion Recognition in Conversation. In Findings of the Association for Computational Linguistics: NAACL 2024. Association for Computational Linguistics, 4521–4534."
+        },
+        "number": 16,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d3387127-1bbb-51a0-80b6-be93a37ccd79",
+        "metadata": {
+          "key": "17",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[17] Dong Zhang, Liangqing Wu, Changlong Sun, Shoushan Li, Qiaoming Zhu, and Guodong Zhou. 2019. Modeling both context-and speaker-sensitive dependence for emotion detection in multi-speaker conversations.. In IJCAI. Macao, 5415–5421."
+        },
+        "number": 17,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "550f061f-8730-556c-92c5-8f2cd4258c57",
+        "metadata": {
+          "key": "18",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[18] Q. Zhang et al. 2025. Context-Aware Directed Acyclic Graph Network for Conversational Aspect-Based Sentiment Quadruple Analysis. IEEE Access 13 (2025)."
+        },
+        "number": 18,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    },
+    {
+      "entry": {
+        "entry_id": "d5419962-d494-52f4-9fde-16b51c58e082",
+        "metadata": {
+          "key": "19",
+          "entry_type": "misc",
+          "title": "",
+          "authors": [],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[19] Weixiang Zhao, Yanyan Zhao, Zhuojun Li, and Bing Qin. 2023. Knowledge-bridged causal interaction network for causal emotion entailment. In Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 37. 14020–14028."
+        },
+        "number": 19,
+        "page_start": 8,
+        "page_end": 8
+      },
+      "status": "NEEDS_REVIEW",
+      "reason": "No searchable title was extracted. Review the original reference; publication existence has not been checked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": []
+    }
+  ],
+  "warnings": []
+}

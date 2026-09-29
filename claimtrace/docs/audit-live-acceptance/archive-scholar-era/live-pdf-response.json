@@ -1,0 +1,95 @@
+{
+  "contract_version": 2,
+  "audit_id": "9312a649-88fb-4544-9b2e-13a470914033",
+  "input_paper_id": "77983d9d-a2b4-46be-afbc-e7a6c253d703",
+  "input_type": "pdf",
+  "checked_at": "2026-09-14T05:52:23.137954Z",
+  "status": "completed_with_errors",
+  "total_entries": 2,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 0,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 2
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "588b2441-c574-5248-8cff-bd1799286919",
+        "metadata": {
+          "key": "1",
+          "entry_type": "misc",
+          "title": "Attention Is All You Need",
+          "authors": [
+            "A. Vaswani"
+          ],
+          "year": 2017,
+          "venue": "NeurIPS",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[1] A. Vaswani, \"Attention Is All You Need,\" NeurIPS, 2017."
+        },
+        "number": 1,
+        "page_start": 2,
+        "page_end": 2
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "failed",
+          "error_code": "SCHOLAR_TIMEOUT",
+          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "8962025e-cd82-5091-b8d1-863bff599e50",
+        "metadata": {
+          "key": "2",
+          "entry_type": "misc",
+          "title": "Attention Is All You Need",
+          "authors": [
+            "A. Vaswani"
+          ],
+          "year": 2020,
+          "venue": "NeurIPS",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "[2] A. Vaswani, \"Attention Is All You Need,\" NeurIPS, 2020."
+        },
+        "number": 2,
+        "page_start": 2,
+        "page_end": 2
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "google_scholar",
+          "outcome": "failed",
+          "error_code": "SCHOLAR_TIMEOUT",
+          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

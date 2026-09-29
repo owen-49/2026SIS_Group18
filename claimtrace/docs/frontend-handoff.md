@@ -50,6 +50,11 @@ preserve the user's selected text and echo the returned `claim_id`, `manuscript_
 single `citation_marker`. A selected bibliography is passed as `bib_paper_id` to both
 endpoints.
 
+The page also supports a manual source PDF for the selected claim. The file is uploaded
+with `POST /api/verify/sources`, listed with `GET /api/verify/sources`, and sent as
+`source_paper_id` to `POST /api/verify/citation`. Verify-only source PDFs are stored in a
+separate directory and are never included in the Audit or ordinary uploaded-paper lists.
+
 **Forward-compatibility rule.** Only `status == COMPARED` with a valid judgement renders a
 verdict. Every other status — including a status the frontend does not know — retains the
 backend's message, source information and evidence, and shows no verdict. Adding a status

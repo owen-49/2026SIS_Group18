@@ -169,6 +169,7 @@ and the measured limits.
 | `/api/papers/{paper_id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
 | `/api/verify` | POST | 旧版单条 claim 验证；**仓库内已无调用方** |
 | `/api/verify/citation` | POST | 单条 claim 验证 + 引用定位（网页 Review 页实际调用） |
+| `/api/verify/sources` | POST / GET | 上传和列出仅用于 Verify claim 对比的源 PDF |
 | `/api/verify/bib` | POST | 本地交叉校验 bib 元数据 × 用户上传的 PDF（不联网） |
 | `/api/audit` | POST | 文献元数据核对（Audit v2，`contract_version: 2`） |
 | `/api/audit/{audit_id}` | GET | 读取已保存的 Audit 结果 |
@@ -216,6 +217,12 @@ for that outcome in the response above, and `NOT_FOUND` is itself a verdict, so 
 one would invent a finding. The only 200 response without an LLM is the announced lexical
 baseline, which is used when no client is configured at all. See
 `engine-verify-contract.zh-CN.md` §6.2.
+
+`POST /api/verify/citation` may also receive `source_paper_id`. This ID must belong to a
+PDF uploaded through `/api/verify/sources`; when present, the comparison uses that PDF
+directly and does not use automatic bibliography matching. Verify-only PDFs are stored
+under a separate source directory and are rejected as Audit inputs, ordinary Verify
+inputs, BibTeX verification sources, and automatic citation candidates.
 
 ### POST /api/audit
 
@@ -318,7 +325,7 @@ Response: {
 | `frontend/src/api/client.ts:88` 的 `deletePaper` 只接受 204 | 202 `cleanup_pending` 时抛「无法确认删除」，而记录其实已删除；用户看到条目仍在 | **Frontend** |
 | 引用列表只识别到 174 条中 1 条的结构化 `title` | Audit 因此读 raw text，并需要「raw text 恢复值不指控」这条规则 | **Parser** |
 | Parser 拒绝只有一条引用的 reference section（需 ≥ 2 条） | 单条引用的样例 PDF 返回空列表 + 警告，属既定边界 | **Parser** |
-| Verify / Audit 均不接受手动指定来源 PDF，候选记录仅供参考 | 歧义来源只能停在不判定状态 | **Backend + Frontend** |
+| Audit 不接受手动指定来源 PDF；Verify 通过独立目录支持手动源 PDF 与 claim 对比，候选记录仍仅供参考 | Audit 保持外部元数据契约，Verify 可在来源有歧义时继续比较 | **Backend + Frontend** |
 | 成功指标 4（Parser Recall@5 ≥ 0.80）与 5（Entailment accuracy ≥ 85%） | 仪表已建好，`claim_passages.json` 仍为空——缺的是标注而非工具 | **Parser / Engine**，见 [team.md](team.md) §2 |
 
 ### v0.3 已关闭（原 §6 的记录是错的）

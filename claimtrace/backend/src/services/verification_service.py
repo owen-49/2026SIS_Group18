@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ..models import ParseStatus, VerifyResponse
+from ..models import PaperScope, ParseStatus, VerifyResponse
 from ..storage.paper_store import PaperStoreError, get_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
@@ -38,6 +38,10 @@ def verify_paper_claim(paper_id: str, claim: str) -> VerifyResponse:
         raise PaperNotFoundError("Paper not found.")
     if record.file_type != "pdf":
         raise InvalidPaperError("Only parsed PDF files can be verified.")
+    if record.scope is PaperScope.VERIFY_SOURCE:
+        raise InvalidPaperError(
+            "Verify-only source PDFs can only be used for citation comparison."
+        )
     if record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
         raise PaperNotReadyError("Paper parsing has not completed.")
     if record.status == ParseStatus.FAILED:

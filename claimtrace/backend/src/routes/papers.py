@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 
-from ..models import PaperClaimsResponse, PaperListItem, PaperListResponse
+from ..models import PaperClaimsResponse, PaperListItem, PaperListResponse, PaperScope
 from ..services.analysis_service import (
     AnalysisPaperNotFoundError,
     AnalysisServiceError,
@@ -27,7 +27,7 @@ _INTERNAL_FIELDS = {"stored_filename", "file_path", "parsed_result_path"}
 async def get_papers():
     """Return uploaded papers ordered from newest to oldest."""
     try:
-        records = list_papers()
+        records = [record for record in list_papers() if record.scope is PaperScope.LIBRARY]
     except PaperStoreError as exc:
         raise HTTPException(status_code=500, detail="Unable to read paper metadata.") from exc
 

@@ -21,6 +21,13 @@ class ParseStatus(str, Enum):
     FAILED = "failed"
 
 
+class PaperScope(str, Enum):
+    """Storage and feature boundary for an uploaded file."""
+
+    LIBRARY = "library"
+    VERIFY_SOURCE = "verify_source"
+
+
 class BibFieldStatusEnum(str, Enum):
     MATCH = "MATCH"
     MISMATCH = "MISMATCH"
@@ -103,6 +110,7 @@ class PaperRecord(BaseModel):
     file_path: str
     parsed_result_path: str | None = None
     file_type: Literal["pdf", "bib"]
+    scope: PaperScope = PaperScope.LIBRARY
     file_size: int = Field(..., ge=0)
     status: ParseStatus = ParseStatus.PENDING
     pages: int = Field(default=0, ge=0)
@@ -139,6 +147,7 @@ class ParseResponse(BaseModel):
     paper_id: str
     status: ParseStatus
     file_type: str = "pdf"  # "pdf" | "bib"
+    scope: PaperScope = PaperScope.LIBRARY
     pages: int = 0
     paragraph_count: int = 0
     entry_count: int = 0  # number of bib entries parsed
@@ -158,6 +167,7 @@ class PaperListItem(BaseModel):
     paper_id: str
     original_filename: str
     file_type: Literal["pdf", "bib"]
+    scope: PaperScope = PaperScope.LIBRARY
     file_size: int = Field(..., ge=0)
     status: ParseStatus
     pages: int = Field(default=0, ge=0)
@@ -314,6 +324,9 @@ class ComparisonStatus(str, Enum):
     SOURCE_NOT_AVAILABLE = "SOURCE_NOT_AVAILABLE"
     SOURCE_EMPTY = "SOURCE_EMPTY"
     LLM_FAILED = "LLM_FAILED"
+    MANUAL_SOURCE_NOT_FOUND = "MANUAL_SOURCE_NOT_FOUND"
+    MANUAL_SOURCE_NOT_READY = "MANUAL_SOURCE_NOT_READY"
+    MANUAL_SOURCE_INVALID = "MANUAL_SOURCE_INVALID"
 
 
 class CitationComparisonRequest(BaseModel):
@@ -337,6 +350,14 @@ class CitationComparisonRequest(BaseModel):
     )
     bib_paper_id: str | None = Field(
         default=None, min_length=1, description="Explicit bibliography for key/author-year lookup"
+    )
+    source_paper_id: str | None = Field(
+        default=None,
+        min_length=1,
+        description=(
+            "Optional ID of a PDF uploaded through the Verify-only source endpoint. "
+            "When supplied, this PDF is used directly for the claim comparison."
+        ),
     )
     claim_id: str | None = Field(default=None, description="Optional echo for batch callers")
     k: int = Field(default=5, ge=1, le=10, description="Passages to retrieve")

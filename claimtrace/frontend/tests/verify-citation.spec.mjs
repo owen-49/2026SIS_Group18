@@ -8,7 +8,7 @@ const judgement = { verdict: 'SUPPORT', confidence: 0.8, rationale: 'Comparison 
 const paper = (id, type) => ({ paper_id: id, file_type: type, original_filename: `${id}.${type}`, title: id, file_size: 100, status: 'completed', pages: 1, paragraph_count: 1, entry_count: 1, error_message: null, created_at: '', updated_at: '' });
 const resultFor = (status, overrides = {}) => ({ claim: sentence, claim_id: 'claim-7', citation_marker: '[7]', citation_key: 'ref7', status, message: `Message: ${status}`, cited_source: source, source_paper_id: 'source-pdf', source_document: document, evidence, judgement: status === 'COMPARED' ? judgement : null, ...overrides });
 
-async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride } = {}) {
+async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride, verifySources = [] } = {}) {
   const requests = [];
   const discoveries = [];
   await page.route('**/api/papers', route => route.fulfill({ json: { total: 4, papers: [paper('manuscript', 'pdf'), paper('second', 'pdf'), paper('bib-a', 'bib'), paper('bib-b', 'bib')] } }));
@@ -17,6 +17,7 @@ async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), c
     const claims = claimsOverride || [{ claim_id: 'claim-7', text: sentence.replace('[7]', marker), page: 1, citation_marker: marker, resolution_status: 'not_found', resolution_message: 'Source will be resolved on submission.', cited_source: null, source_document: null, similar_sources: [], manuscript_location: { page: 1, paragraph_index: 0 } }];
     return route.fulfill({ json: { manuscript_id: 'manuscript', status: 'completed', claims, error_message: null, manuscript_document: { total_pages: 1, pages: [{ page: 1, heading: 'Manuscript', paragraphs: [sentence.replace('[7]', marker), 'Unrelated paragraph.'] }], matched_location: null } } });
   });
+  await page.route('**/api/verify/sources', route => route.fulfill({ json: { total: verifySources.length, papers: verifySources } }));
   await page.route('**/api/verify', () => { throw new Error('Legacy Verify must not be called'); });
   await page.route('**/api/verify/citation', async route => {
     requests.push(route.request().postDataJSON());
@@ -75,7 +76,10 @@ for (const verdict of ['SUPPORT', 'PARTIAL', 'CONTRADICT', 'NOT_FOUND']) {
 test('bibliography is passed to discovery and Verify; changing it clears the old judgement', async ({ page }) => {
   const { requests, discoveries } = await setup(page);
   await page.getByText('Reference settings', { exact: true }).click();
+  const refreshedClaims = page.waitForResponse(response => response.url().includes('/claims?bib_paper_id=bib-b'));
   await page.getByLabel('Bibliography', { exact: true }).selectOption('bib-b');
+  await (await refreshedClaims).finished();
+  await expect(page.getByText('Loading citation information…', { exact: true })).toHaveCount(0);
   await expect.poll(() => discoveries.at(-1)).toContain('bib_paper_id=bib-b');
   await highlight(page); await analyze(page).click();
   await expect(output(page)).toBeVisible();
@@ -84,6 +88,17 @@ test('bibliography is passed to discovery and Verify; changing it clears the old
   await expect(output(page)).toHaveCount(0);
   await expect(analyze(page)).toBeDisabled();
   await expect.poll(() => new URL(discoveries.at(-1)).search).toBe('');
+});
+
+test('a manually selected Verify source PDF is sent only with the claim comparison', async ({ page }) => {
+  const sourcePdf = paper('manual-source', 'pdf');
+  sourcePdf.scope = 'verify_source';
+  const { requests } = await setup(page, { verifySources: [sourcePdf] });
+  await highlight(page);
+  await page.getByLabel('Source PDF for claim', { exact: true }).selectOption('manual-source');
+  await analyze(page).click();
+  await expect(output(page)).toBeVisible();
+  expect(requests[0].source_paper_id).toBe('manual-source');
 });
 
 for (const marker of ['[7,8]', '[7-9]']) {

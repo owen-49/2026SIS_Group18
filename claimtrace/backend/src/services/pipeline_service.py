@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ..models import PaperRecord, ParseStatus
+from ..models import PaperRecord, PaperScope, ParseStatus
 from ..storage import parsed_document_store
 from ..storage.paper_store import PaperStoreError, get_paper, update_paper
 from ..storage.parsed_document_store import (
@@ -38,13 +38,16 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
             raise PipelineError("Uploaded paper record was not found.")
 
         invalidate_references(paper_id)
+        parsed_root = parsed_document_store.PARSED_DIR
+        if processing.scope is PaperScope.VERIFY_SOURCE:
+            parsed_root = parsed_root / "verify-sources"
         parsed = parse_document(
             paper_id,
             Path(processing.file_path),
             title=processing.title,
-            output_dir=parsed_document_store.PARSED_DIR / "markdown",
+            output_dir=parsed_root / "markdown",
         )
-        parsed_path = save_parsed_document(parsed)
+        parsed_path = save_parsed_document(parsed, parsed_dir=parsed_root)
         completed = update_paper(
             paper_id,
             {

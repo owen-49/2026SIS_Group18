@@ -1,22 +1,22 @@
 {
   "contract_version": 2,
-  "audit_id": "9312a649-88fb-4544-9b2e-13a470914033",
-  "input_paper_id": "77983d9d-a2b4-46be-afbc-e7a6c253d703",
+  "audit_id": "d5642f03-cbbb-4c02-8e57-7a36338edcc4",
+  "input_paper_id": "407edbea-2984-41fc-af3b-503ea18e6b8e",
   "input_type": "pdf",
-  "checked_at": "2026-09-14T05:52:23.137954Z",
-  "status": "completed_with_errors",
+  "checked_at": "2026-09-21T02:01:38.103885Z",
+  "status": "completed",
   "total_entries": 2,
   "counts": {
     "VERIFIED": 0,
     "METADATA_MISMATCH": 0,
-    "NEEDS_REVIEW": 0,
-    "NOT_FOUND": 0,
-    "LOOKUP_FAILED": 2
+    "NEEDS_REVIEW": 1,
+    "NOT_FOUND": 1,
+    "LOOKUP_FAILED": 0
   },
   "results": [
     {
       "entry": {
-        "entry_id": "588b2441-c574-5248-8cff-bd1799286919",
+        "entry_id": "f2050a74-8c31-5ec0-88c1-75325724bea4",
         "metadata": {
           "key": "1",
           "entry_type": "misc",
@@ -38,23 +38,29 @@
         "page_start": 2,
         "page_end": 2
       },
-      "status": "LOOKUP_FAILED",
-      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
+      "status": "NOT_FOUND",
+      "reason": "20 of 20 records were ineligible (10 no venue, 10 year disagrees) No acceptable record in the queried sources; this does not prove fabrication.",
       "field_checks": [],
       "matched_record": null,
       "candidates": [],
       "lookup_attempts": [
         {
-          "provider": "google_scholar",
-          "outcome": "failed",
-          "error_code": "SCHOLAR_TIMEOUT",
-          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
+          "provider": "openalex",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "10 of 10 records were ineligible (9 year disagrees, 1 no venue)"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "not_found",
+          "error_code": null,
+          "detail": "20 of 20 records were ineligible (10 no venue, 10 year disagrees)"
         }
       ]
     },
     {
       "entry": {
-        "entry_id": "8962025e-cd82-5091-b8d1-863bff599e50",
+        "entry_id": "a7e61d15-de62-5009-a4ae-554575c89ead",
         "metadata": {
           "key": "2",
           "entry_type": "misc",
@@ -76,17 +82,78 @@
         "page_start": 2,
         "page_end": 2
       },
-      "status": "LOOKUP_FAILED",
-      "reason": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked.",
+      "status": "NEEDS_REVIEW",
+      "reason": "no record's title matches the reference exactly; 6 share part of it and none of them is established",
       "field_checks": [],
       "matched_record": null,
-      "candidates": [],
+      "candidates": [
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W3163652268",
+          "url": "https://doi.org/10.1109/icassp39728.2021.9413901",
+          "retrieved_at": "2026-09-21T02:01:38.103305Z",
+          "metadata": {
+            "title": "Attention Is All You Need In Speech Separation",
+            "authors": [
+              "Cem Subakan",
+              "Mirco Ravanelli",
+              "Samuele Cornell",
+              "Mirko Bronzi",
+              "Jianyuan Zhong"
+            ],
+            "year": 2021,
+            "venue": "ICASSP 2021 - 2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+            "doi": "10.1109/icassp39728.2021.9413901"
+          }
+        },
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W3099527960",
+          "url": "https://doi.org/10.18653/v1/2020.emnlp-main.317",
+          "retrieved_at": "2026-09-21T02:01:38.103305Z",
+          "metadata": {
+            "title": "Attention Is All You Need for Chinese Word Segmentation",
+            "authors": [
+              "Sufeng Duan",
+              "Hai Zhao"
+            ],
+            "year": 2020,
+            "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+            "doi": "10.18653/v1/2020.emnlp-main.317"
+          }
+        },
+        {
+          "provider": "openalex",
+          "record_id": "openalex:W2997150500",
+          "url": "https://doi.org/10.1609/aaai.v34i07.6693",
+          "retrieved_at": "2026-09-21T02:01:38.103305Z",
+          "metadata": {
+            "title": "Channel Attention Is All You Need for Video Frame Interpolation",
+            "authors": [
+              "Myungsub Choi",
+              "Heewon Kim",
+              "Bohyung Han",
+              "Ning Xu",
+              "Kyoung Mu Lee"
+            ],
+            "year": 2020,
+            "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+            "doi": "10.1609/aaai.v34i07.6693"
+          }
+        }
+      ],
       "lookup_attempts": [
         {
-          "provider": "google_scholar",
-          "outcome": "failed",
-          "error_code": "SCHOLAR_TIMEOUT",
-          "detail": "Google Scholar did not respond within 30 seconds. The search was stopped. Retry later or check network access; publication existence remains unchecked."
+          "provider": "openalex",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 6 share part of it and none of them is established"
+        },
+        {
+          "provider": "crossref",
+          "outcome": "ambiguous",
+          "error_code": null,
+          "detail": "no record's title matches the reference exactly; 6 share part of it and none of them is established"
         }
       ]
     }

@@ -1,9 +1,11 @@
 export type Verdict = "SUPPORT" | "PARTIAL" | "CONTRADICT" | "NOT_FOUND";
 export type ParseStatus = "pending" | "processing" | "completed" | "failed";
+export type PaperScope = "library" | "verify_source";
 
 export interface ParsedPaper {
   paper_id: string;
   status: ParseStatus;
+  scope: PaperScope;
   file_type: "pdf" | "bib";
   pages: number;
   paragraph_count: number;
@@ -16,6 +18,7 @@ export interface PaperRecord {
   paper_id: string;
   original_filename: string;
   file_type: "pdf" | "bib";
+  scope: PaperScope;
   file_size: number;
   status: ParseStatus;
   pages: number;
@@ -207,6 +210,7 @@ export interface CitationComparisonRequest {
   manuscript_id: string;
   claim_id: string;
   bib_paper_id?: string;
+  source_paper_id?: string;
 }
 
 export interface CitationComparisonResponse {

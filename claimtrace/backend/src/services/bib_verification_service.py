@@ -5,7 +5,7 @@ from pathlib import Path
 from engine.bib_parser import BibEntry, find_entry_by_title
 from engine.bib_verifier import BibVerificationResult, PdfMetadata, verify_all_entries
 
-from ..models import ParseStatus
+from ..models import PaperScope, ParseStatus
 from ..storage.bib_document_store import BibDocumentStoreError, load_bib_document
 from ..storage.paper_store import PaperStoreError, get_paper
 from ..storage.parsed_document_store import (
@@ -79,6 +79,7 @@ def _load_pdf_metadata(
         if (
             record is None
             or record.file_type != "pdf"
+            or record.scope is not PaperScope.LIBRARY
             or record.status != ParseStatus.COMPLETED
             or not record.parsed_result_path
         ):

@@ -232,12 +232,20 @@ there is none — a failure to check, never a claim of absence.
 
 ### Reading the committed snapshots
 
-`controlled/` and `live/` hold recorded snapshots, and **both still predate the provider
-chain**: they carry `provider="google_scholar"` and `SCHOLAR_TIMEOUT`, recorded
-2026-09-15, because the lookup they exercised no longer exists. They are left unedited —
-editing a record to match later behaviour falsifies it. Re-recording them against the
-current chain is tracked separately from this contract; until that lands, read them as a
-record of that date rather than as current output.
+`controlled/` and `live/` hold snapshots recorded **2026-09-21** against the current
+provider chain: every lookup attempt names `openalex` or `crossref`, and no record carries
+`google_scholar`.
+
+The Scholar-era snapshots recorded 2026-09-14 — 30 `provider="google_scholar"` entries and
+`SCHOLAR_TIMEOUT` — are preserved unedited under `archive-scholar-era/`. They record what
+actually happened at the time and were moved rather than overwritten, because editing a
+record to match later behaviour falsifies it.
+
+**Read the live snapshot's headline result before treating it as a regression.** Its single
+BibTeX entry is "Attention Is All You Need", and it reports `NOT_FOUND` — see §7, where that
+is the documented limitation rather than a failure of the chain. The Scholar-era run over
+the same fixture reported `LOOKUP_FAILED`, so the change from `LOOKUP_FAILED` to `NOT_FOUND`
+is the lookup completing, not the answer improving.
 
 A snapshot records **when it was taken**, not current behaviour. Nothing fails when it
 goes stale, because the script's assertions check live output rather than the snapshot.
@@ -267,26 +275,40 @@ would admit, and projects the resulting Audit status.  It also checks all record
 candidates in `reference_identity_fixture.json`, counting explicitly forbidden
 candidates separately from acceptable and unlabelled candidates.
 
-The corpus previously quoted as 24 Audit files / 91 matched records is local,
-gitignored data and is not present in this checkout.  The available 2026-09-21 corpus
-contains 18 Audit files and 8 unique matched records: current and proposed counts are
+The initial 2026-09-21 run used the smaller corpus that was available before the current
+venue handoff was checked in.  It contains 18 Audit files and 8 unique matched records:
+current and proposed counts are
 `1 VERIFIED / 4 METADATA_MISMATCH / 3 NEEDS_REVIEW`; the proposal adds **0 VERIFIED**
 and admits **0 venue differences**.  The identity fixture contains 13 cases and 148
 recorded candidate pairs; it adds **0 acceptable**, **0 forbidden**, and **0 unlabelled**
 candidate venue agreements.  This smaller corpus contains no abbreviation case, so the
 zero is not evidence that the relaxation improves nothing.  It is evidence that there
-is not yet enough checked-in data to justify changing production.  The production rule
-therefore remains unchanged; rerun the command over the original 24-file corpus before
-considering the relaxation.
+was not enough checked-in data to justify changing production.  The latest handoff is
+now available in `venue-handoff/` and `ClaimTrace-audits-export.zip`; production remains
+unchanged until the measurement is rerun against that corpus.
 
-- **The venue rule costs coverage.** A reference whose only candidates carry no venue
-  reports `NOT_FOUND` where Scholar would have returned a hit. This is the
-  anti-fabrication rule working, and it is a real cost rather than a bug. Do not "fix" it
-  by relaxing the venue requirement or `NON_PUBLICATION_KINDS` without a measurement
-  showing what the relaxation admits. The clearest example is a famous paper: OpenAlex
-  holds "Attention Is All You Need" (Vaswani et al.) as a single venue-less preprint, so
-  both the venue rule and the year rule reject it and the audit reports `NOT_FOUND`. The
-  reason string names the rule that fired.
+- **Coverage is lost before the rules run, and then to the rules.** A reference whose
+  candidates are other papers reports `NOT_FOUND` where Scholar would have returned a hit.
+  This is the anti-fabrication behaviour working at both layers, and it is a real cost
+  rather than a bug. Do not relax the venue requirement or `NON_PUBLICATION_KINDS` without a
+  measurement showing what the relaxation admits.
+
+  The clearest example is the most-cited paper in the field. Measured 2026-09-21,
+  `filter=title.search:Attention Is All You Need&per-page=10` returns ten records and **none
+  is the Vaswani et al. paper**: nine share the title but not the year and are rejected as
+  ineligible, and the tenth is a venue-less 2025 preprint carrying the real paper's 7,608
+  citations — a hijacked title, and the one `openalex_lookup.py` names as the reason
+  `locations[]` is never consulted. Adding `publication_year:2017` to the filter returns
+  **zero** records, so there is no correct OpenAlex record for the title search to rank.
+  The audit reports `NOT_FOUND`, names the rule that fired, and says it does not prove
+  fabrication.
+
+  Two consequences are worth keeping straight. The loss is not only the venue rule: a record
+  must be **in the returned page** before any rule can accept it, and this title has 266
+  matches with a page size of 10. And `NOT_FOUND` here is not a claim that the paper does
+  not exist — it is the report declining to verify against records it cannot trust, which is
+  the same choice the venue rule makes. `live/` now records this case, so it is reproducible
+   rather than asserted.
 - **The identity rules decide before any field comparison, and they are strict.** A
   wrong-year citation is rejected as *ineligible* rather than reported as a field
   difference, so there are **no field checks at all** for that entry. The rejection is
@@ -304,6 +326,11 @@ considering the relaxation.
   manual end-to-end record over the real plugin and backend.
 - **The frontend accepts no manual source-PDF override for Audit.** Candidates remain
   informational.
+- **Verify-only source PDFs are a separate workflow.** `POST /api/verify/sources` stores a
+  user-selected source PDF under the Verify source directory, and `GET /api/verify/sources`
+  lists only those files. They are excluded from `/api/papers`, Audit, the legacy
+  `/api/verify`, BibTeX verification, and automatic citation matching. The claim comparison
+  endpoint may receive `source_paper_id` to use one of these PDFs directly.
 - **Extraction damage is not detected.** `"Jan Šediv\`y"` against `"Ján Šedivý"` and a
   record whose author is a different person (`"Cordelia Schmid"` against
   `"Calvin F. Schmid"`) both surface as `NEEDS_REVIEW`, not as an error.

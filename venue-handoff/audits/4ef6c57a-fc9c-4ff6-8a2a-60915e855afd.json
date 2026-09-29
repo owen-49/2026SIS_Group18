@@ -1,0 +1,701 @@
+{
+  "contract_version": 2,
+  "audit_id": "4ef6c57a-fc9c-4ff6-8a2a-60915e855afd",
+  "input_paper_id": "717fa016-4985-4ea7-8df3-9819b61f67bb",
+  "input_type": "bib",
+  "checked_at": "2026-09-07T04:16:38.649635Z",
+  "status": "completed_with_errors",
+  "total_entries": 17,
+  "counts": {
+    "VERIFIED": 0,
+    "METADATA_MISMATCH": 0,
+    "NEEDS_REVIEW": 0,
+    "NOT_FOUND": 0,
+    "LOOKUP_FAILED": 17
+  },
+  "results": [
+    {
+      "entry": {
+        "entry_id": "89da6a55-f607-506e-b93d-e473cf6bc260",
+        "metadata": {
+          "key": "poria2017context",
+          "entry_type": "inproceedings",
+          "title": "Context-dependent sentiment analysis in user-generated videos",
+          "authors": [
+            "Poria, Soujanya",
+            "others"
+          ],
+          "year": 2017,
+          "venue": "ACL",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{poria2017context, title={Context-dependent sentiment analysis in user-generated videos}, author={Poria, Soujanya and others}, booktitle={ACL}, year={2017}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "aac2bc86-f3d5-57f9-b4de-d181b06cc3fa",
+        "metadata": {
+          "key": "majumder2019dialoguernn",
+          "entry_type": "inproceedings",
+          "title": "DialogueRNN: An attentive RNN for emotion detection in conversations",
+          "authors": [
+            "Majumder, Navonil",
+            "others"
+          ],
+          "year": 2019,
+          "venue": "AAAI",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{majumder2019dialoguernn, title={DialogueRNN: An attentive RNN for emotion detection in conversations}, author={Majumder, Navonil and others}, booktitle={AAAI}, year={2019}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "0c0ed442-462b-5dbe-b03e-fc86bcc9ebb5",
+        "metadata": {
+          "key": "ghosal2019dialoguegcn",
+          "entry_type": "inproceedings",
+          "title": "DialogueGCN: A Graph Convolutional Neural Network for ERC",
+          "authors": [
+            "Ghosal, Deepanway",
+            "others"
+          ],
+          "year": 2019,
+          "venue": "EMNLP-IJCNLP",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{ghosal2019dialoguegcn, title={DialogueGCN: A Graph Convolutional Neural Network for ERC}, author={Ghosal, Deepanway and others}, booktitle={EMNLP-IJCNLP}, year={2019}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "dd70f6c4-17c0-50c8-af02-c5323e408610",
+        "metadata": {
+          "key": "shen2021directed",
+          "entry_type": "inproceedings",
+          "title": "Directed acyclic graph network for conversational emotion recognition",
+          "authors": [
+            "Shen, Weizhou",
+            "others"
+          ],
+          "year": 2021,
+          "venue": "ACL",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{shen2021directed, title={Directed acyclic graph network for conversational emotion recognition}, author={Shen, Weizhou and others}, booktitle={ACL}, year={2021}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "f8a00e87-4a5d-55f2-92f8-a310efc69e90",
+        "metadata": {
+          "key": "poria2020cosmic",
+          "entry_type": "inproceedings",
+          "title": "COSMIC: COmmonSense knowledge for eMotion Identification in Conversations",
+          "authors": [
+            "Poria, Soujanya",
+            "others"
+          ],
+          "year": 2020,
+          "venue": "Findings of EMNLP",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{poria2020cosmic, title={COSMIC: COmmonSense knowledge for eMotion Identification in Conversations}, author={Poria, Soujanya and others}, booktitle={Findings of EMNLP}, year={2020}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "94f94393-9a63-5405-bfb7-91d55cc8ff62",
+        "metadata": {
+          "key": "li2021past",
+          "entry_type": "inproceedings",
+          "title": "Past, present, and future: Conversational emotion recognition through structural modeling of psychological knowledge",
+          "authors": [
+            "Li, Jiangnan",
+            "Lin, Zheng",
+            "Fu, Peng",
+            "Wang, Weiping"
+          ],
+          "year": 2021,
+          "venue": "Findings of the association for computational linguistics: EMNLP 2021",
+          "volume": "",
+          "number": "",
+          "pages": "1204--1214",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{li2021past,  title={Past, present, and future: Conversational emotion recognition through structural modeling of psychological knowledge},  author={Li, Jiangnan and Lin, Zheng and Fu, Peng and Wang, Weiping},  booktitle={Findings of the association for computational linguistics: EMNLP 2021},  pages={1204--1214},  year={2021}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "6e799566-8550-513e-bab7-4bef02ae999f",
+        "metadata": {
+          "key": "ishiwatari2020relation",
+          "entry_type": "inproceedings",
+          "title": "Relation-aware graph attention networks with dual-path modeling for ERC",
+          "authors": [
+            "Ishiwatari, Shogo",
+            "others"
+          ],
+          "year": 2020,
+          "venue": "EMNLP",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{ishiwatari2020relation, title={Relation-aware graph attention networks with dual-path modeling for ERC}, author={Ishiwatari, Shogo and others}, booktitle={EMNLP}, year={2020}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "d0e201bc-56b4-51f1-85ea-54e5900a5191",
+        "metadata": {
+          "key": "hazarika2018icon",
+          "entry_type": "inproceedings",
+          "title": "Icon: Interactive conversational memory network for multimodal emotion detection",
+          "authors": [
+            "Hazarika, Devamanyu",
+            "Poria, Soujanya",
+            "Mihalcea, Rada",
+            "Cambria, Erik",
+            "Zimmermann, Roger"
+          ],
+          "year": 2018,
+          "venue": "Proceedings of the 2018 conference on empirical methods in natural language processing",
+          "volume": "",
+          "number": "",
+          "pages": "2594--2604",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{hazarika2018icon,  title={Icon: Interactive conversational memory network for multimodal emotion detection},  author={Hazarika, Devamanyu and Poria, Soujanya and Mihalcea, Rada and Cambria, Erik and Zimmermann, Roger},  booktitle={Proceedings of the 2018 conference on empirical methods in natural language processing},  pages={2594--2604},  year={2018}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "05c12c80-1426-5712-bca2-71d7d623d906",
+        "metadata": {
+          "key": "garzon2020context",
+          "entry_type": "article",
+          "title": "Context flow graphs: Situation modeling for rule-based proactive context-aware systems",
+          "authors": [
+            "Garzon, Sandro Rodriguez",
+            "Louis, Bernd"
+          ],
+          "year": 2020,
+          "venue": "IEEE Access",
+          "volume": "8",
+          "number": "",
+          "pages": "212939--212960",
+          "doi": "",
+          "url": "",
+          "publisher": "IEEE",
+          "raw_text": "@article{garzon2020context,  title={Context flow graphs: Situation modeling for rule-based proactive context-aware systems},  author={Garzon, Sandro Rodriguez and Louis, Bernd},  journal={IEEE Access},  volume={8},  pages={212939--212960},  year={2020},  publisher={IEEE}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "f9e495ef-32f2-5f46-92b3-987455d6c86a",
+        "metadata": {
+          "key": "hou2023enhancing",
+          "entry_type": "inproceedings",
+          "title": "Enhancing ERC via Multi-view Feature Alignment and Memorization",
+          "authors": [
+            "Hou, Guiyang",
+            "others"
+          ],
+          "year": 2023,
+          "venue": "Findings of EMNLP",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{hou2023enhancing, title={Enhancing ERC via Multi-view Feature Alignment and Memorization}, author={Hou, Guiyang and others}, booktitle={Findings of EMNLP}, year={2023}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "d5063d14-b486-5345-a6b4-72e0cdfe50b7",
+        "metadata": {
+          "key": "zhang2019modeling",
+          "entry_type": "inproceedings",
+          "title": "Modeling both context-and speaker-sensitive dependence for emotion detection in multi-speaker conversations.",
+          "authors": [
+            "Zhang, Dong",
+            "Wu, Liangqing",
+            "Sun, Changlong",
+            "Li, Shoushan",
+            "Zhu, Qiaoming",
+            "Zhou, Guodong"
+          ],
+          "year": 2019,
+          "venue": "IJCAI",
+          "volume": "",
+          "number": "",
+          "pages": "5415--5421",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{zhang2019modeling,  title={Modeling both context-and speaker-sensitive dependence for emotion detection in multi-speaker conversations.},  author={Zhang, Dong and Wu, Liangqing and Sun, Changlong and Li, Shoushan and Zhu, Qiaoming and Zhou, Guodong},  booktitle={IJCAI},  pages={5415--5421},  year={2019},  organization={Macao}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "e232053c-4012-5f38-a0f6-9f7f2ddb46e5",
+        "metadata": {
+          "key": "chatterjee2019understanding",
+          "entry_type": "article",
+          "title": "Understanding emotions in text using deep learning and big data",
+          "authors": [
+            "Chatterjee, Ankush",
+            "Gupta, Umang",
+            "Chinnakotla, Manoj Kumar",
+            "Srikanth, Radhakrishnan",
+            "Galley, Michel",
+            "Agrawal, Puneet"
+          ],
+          "year": 2019,
+          "venue": "Computers in Human Behavior",
+          "volume": "93",
+          "number": "",
+          "pages": "309--317",
+          "doi": "",
+          "url": "",
+          "publisher": "Elsevier",
+          "raw_text": "@article{chatterjee2019understanding,  title={Understanding emotions in text using deep learning and big data},  author={Chatterjee, Ankush and Gupta, Umang and Chinnakotla, Manoj Kumar and Srikanth, Radhakrishnan and Galley, Michel and Agrawal, Puneet},  journal={Computers in Human Behavior},  volume={93},  pages={309--317},  year={2019},  publisher={Elsevier}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "86189120-ffb5-58df-a061-dd400ea46a8f",
+        "metadata": {
+          "key": "lu2020iterative",
+          "entry_type": "inproceedings",
+          "title": "An iterative emotion interaction network for emotion recognition in conversations",
+          "authors": [
+            "Lu, Xin",
+            "Zhao, Yanyan",
+            "Wu, Yang",
+            "Tian, Yijian",
+            "Chen, Huipeng",
+            "Qin, Bing"
+          ],
+          "year": 2020,
+          "venue": "Proceedings of the 28th international conference on computational linguistics",
+          "volume": "",
+          "number": "",
+          "pages": "4078--4088",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{lu2020iterative,  title={An iterative emotion interaction network for emotion recognition in conversations},  author={Lu, Xin and Zhao, Yanyan and Wu, Yang and Tian, Yijian and Chen, Huipeng and Qin, Bing},  booktitle={Proceedings of the 28th international conference on computational linguistics},  pages={4078--4088},  year={2020}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "4377f6dd-cf0d-57b5-8de7-9a19a24e4183",
+        "metadata": {
+          "key": "lee2021iemocap",
+          "entry_type": "inproceedings",
+          "title": "IEMOCAP: Interactive emotional dyadic motion capture database",
+          "authors": [
+            "Busso, Carlos",
+            "others"
+          ],
+          "year": 2008,
+          "venue": "Language Resources and Evaluation",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{lee2021iemocap, title={IEMOCAP: Interactive emotional dyadic motion capture database}, author={Busso, Carlos and others}, journal={Language Resources and Evaluation}, year={2008}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "2c3d63ee-e6e1-598f-a9e7-3a6f58961fc7",
+        "metadata": {
+          "key": "li2017dailydialog",
+          "entry_type": "inproceedings",
+          "title": "DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset",
+          "authors": [
+            "Li, Yanran",
+            "others"
+          ],
+          "year": 2017,
+          "venue": "IJCNLP",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{li2017dailydialog, title={DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset}, author={Li, Yanran and others}, booktitle={IJCNLP}, year={2017}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "462297e6-20c0-5220-9d8a-be3239b3798d",
+        "metadata": {
+          "key": "chen2018meld",
+          "entry_type": "inproceedings",
+          "title": "MELD: A Multimodal Multi-Party Dataset for Emotion Recognition in Conversations",
+          "authors": [
+            "Chen, Soujanya",
+            "others"
+          ],
+          "year": 2018,
+          "venue": "ACL",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{chen2018meld, title={MELD: A Multimodal Multi-Party Dataset for Emotion Recognition in Conversations}, author={Chen, Soujanya and others}, booktitle={ACL}, year={2018}}"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    },
+    {
+      "entry": {
+        "entry_id": "5fc24c4f-7d8a-55cc-82e4-ceb34df4b974",
+        "metadata": {
+          "key": "zhao2023knowledge",
+          "entry_type": "inproceedings",
+          "title": "Knowledge-bridged causal interaction network for causal emotion entailment",
+          "authors": [
+            "Zhao, Weixiang",
+            "Zhao, Yanyan",
+            "Li, Zhuojun",
+            "Qin, Bing"
+          ],
+          "year": null,
+          "venue": "",
+          "volume": "",
+          "number": "",
+          "pages": "",
+          "doi": "",
+          "url": "",
+          "publisher": "",
+          "raw_text": "@inproceedings{zhao2023knowledge,  title={Knowledge-bridged causal interaction network for causal emotion entailment},  author={Zhao, Weixiang and Zhao, Yanyan and Li, Zhuojun and Qin, Bing},"
+        },
+        "number": null,
+        "page_start": null,
+        "page_end": null
+      },
+      "status": "LOOKUP_FAILED",
+      "reason": "External lookup is not integrated. Publication existence is unchecked.",
+      "field_checks": [],
+      "matched_record": null,
+      "candidates": [],
+      "lookup_attempts": [
+        {
+          "provider": "unconfigured",
+          "outcome": "failed",
+          "error_code": "EXTERNAL_LOOKUP_NOT_CONFIGURED",
+          "detail": "No DOI/database lookup implementation is available in this repository."
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

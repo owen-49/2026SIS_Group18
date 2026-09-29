@@ -3,6 +3,7 @@ export interface WorkspacePaper {
   fileName: string;
   uploadedAt: number;
   fileType?: "pdf" | "bib";
+  scope?: "library" | "verify_source";
   fileSize?: number;
   status?: "pending" | "processing" | "completed" | "failed";
   pages?: number;
@@ -32,8 +33,9 @@ export function saveWorkspacePaper(paper: WorkspacePaper) {
   window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify([paper, ...current].slice(0, 20)));
 }
 
-export function getLatestUploadedPaper(fileType?: "pdf" | "bib") {
+export function getLatestUploadedPaper(fileType?: "pdf" | "bib", scope: "library" | "verify_source" = "library") {
   return getWorkspacePapers().find((paper) => paper.paperId !== DEMO_PAPER.paperId
+    && (paper.scope || "library") === scope
     && (!fileType || (paper.fileType || "pdf") === fileType));
 }
 
