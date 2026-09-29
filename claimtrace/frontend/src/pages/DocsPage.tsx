@@ -3,7 +3,7 @@ import { Icon, type IconName } from "../components/Icon";
 
 const workflows: { icon: IconName; title: string; text: string; to: string; action: string }[] = [
   { icon: "audit", title: "Audit a bibliography", text: "Check whether cited publications exist and compare their metadata with source records.", to: "/audit", action: "Open batch audit" },
-  { icon: "verify", title: "Review extracted claims", text: "Choose a manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Review claims" },
+  { icon: "verify", title: "Verify extracted claims", text: "Choose a manuscript, inspect its automatically extracted claims and identified cited papers, then run verification.", to: "/verify", action: "Verify claims" },
 ];
 
 const verdicts = [

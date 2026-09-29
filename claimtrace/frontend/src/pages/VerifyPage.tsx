@@ -300,7 +300,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     <div className="page-stack review-claims-page">
       <section className="page-heading heading-row">
         <div className="workspace-intro workspace-intro-evidence">
-          <div className="workspace-intro-copy"><h1>Review claims</h1><p>Highlight a cited sentence, then analyze it.</p></div>
+          <div className="workspace-intro-copy"><h1>Verify claims</h1><p>Highlight a cited sentence, then analyze it.</p></div>
         </div>
         <div className="audit-heading-actions">
           <Link className="button button-secondary" to={example ? "/verify" : "/verify/example"}>{example ? "Back to my papers" : "Try example"}</Link>
