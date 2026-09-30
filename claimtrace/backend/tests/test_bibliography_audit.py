@@ -286,6 +286,75 @@ def test_llm_fills_missing_parser_fields_without_erasing_valid_ones():
     assert reference.metadata_source == "llm_segmentation"
 
 
+def test_model_error_is_retried_then_success_is_cached(client, monkeypatch, storage_paths):
+    manuscript = persist_manuscript(storage_paths)
+    raw = "Journal of Retrieval, 2024. J. Smith. Retrieval with citations."
+    extraction_calls = []
+
+    def extract(path):
+        extraction_calls.append(path)
+        return SimpleNamespace(
+            references=[SimpleNamespace(raw_text=raw, number=7, page_start=3, page_end=3)],
+            warnings=[],
+        )
+
+    segmentation_calls = []
+
+    def segment(raw_references):
+        segmentation_calls.append(raw_references)
+        if len(segmentation_calls) == 1:
+            return [
+                SegmentationOutcome(
+                    status=SegmentationStatus.MODEL_ERROR,
+                    diagnostic="temporary provider failure",
+                    model="test-model",
+                )
+            ]
+        return [
+            SegmentationOutcome(
+                status=SegmentationStatus.SEGMENTED,
+                metadata=SegmentedMetadata(
+                    authors=["J. Smith"],
+                    title="Retrieval with citations",
+                    venue="Journal of Retrieval",
+                    year=2024,
+                ),
+                model="test-model",
+            )
+        ]
+
+    monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
+    monkeypatch.setattr(reference_input_service, "configured_llm_available", lambda: True)
+    monkeypatch.setattr(
+        app.state,
+        "bibliography_lookup",
+        FakeLookup(lookup_result(outcome="not_found")),
+        raising=False,
+    )
+
+    first = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    assert first.status_code == 200
+    saved_after_failure = json.loads(
+        reference_path(manuscript.paper_id).read_text(encoding="utf-8")
+    )
+    assert saved_after_failure["references"][0]["metadata_status"] == "MODEL_ERROR"
+
+    second = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    third = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    assert second.status_code == third.status_code == 200
+
+    saved_after_recovery = json.loads(
+        reference_path(manuscript.paper_id).read_text(encoding="utf-8")
+    )
+    recovered = saved_after_recovery["references"][0]
+    assert recovered["metadata_status"] == "SEGMENTED"
+    assert recovered["metadata_source"] == "llm_segmentation"
+    assert recovered["title"] == "Retrieval with citations"
+    assert extraction_calls == [Path(manuscript.file_path)]
+    assert segmentation_calls == [[raw], [raw]]
+
+
 def test_a_pdf_reference_is_compared_on_the_text_it_was_searched_with(
     client, monkeypatch, storage_paths
 ):

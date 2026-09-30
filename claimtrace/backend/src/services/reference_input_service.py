@@ -24,6 +24,10 @@ from .reference_metadata_segmenter import (
 )
 
 _REFERENCE_LOCKS = [Lock() for _ in range(32)]
+_RETRYABLE_SEGMENTATION_STATUSES = {
+    SegmentationStatus.NO_CLIENT.value,
+    SegmentationStatus.MODEL_ERROR.value,
+}
 
 
 class AuditInputError(RuntimeError):
@@ -141,7 +145,7 @@ def _needs_llm_segmentation(saved: StoredReferenceList) -> bool:
         return True
     return configured_llm_available() and any(
         not _parser_metadata_complete(reference)
-        and reference.metadata_status == SegmentationStatus.NO_CLIENT.value
+        and reference.metadata_status in _RETRYABLE_SEGMENTATION_STATUSES
         for reference in saved.references
     )
 
