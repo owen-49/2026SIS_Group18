@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPaperClaims, listPapers, listVerifySources, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
+import { PaperManager } from "../components/PaperManager";
 import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
 import { CitationComparisonResult } from "../components/CitationComparisonResult";
@@ -47,8 +48,6 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [matchedClaimIds, setMatchedClaimIds] = useState<string[]>([]);
   const [selectedText, setSelectedText] = useState("");
   const [selectionError, setSelectionError] = useState("");
-  const [bibPaperId, setBibPaperId] = useState("");
-  const [bibliographies, setBibliographies] = useState<PaperRecord[]>([]);
   const [verifySources, setVerifySources] = useState<PaperRecord[]>([]);
   const [verifySourcesLoading, setVerifySourcesLoading] = useState(true);
   const [verifySourcesError, setVerifySourcesError] = useState<string | null>(null);
@@ -64,6 +63,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [result, setResult] = useState<CitationComparisonResponse | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [readerView, setReaderView] = useState<"manuscript" | "source">("manuscript");
+  const sourcesDialog = useRef<HTMLDialogElement>(null);
   const manuscriptDocumentRef = useRef<HTMLDivElement>(null);
   const citedDocumentRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +82,6 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       if (signal?.aborted) return;
       const candidates = response.papers.filter((paper) => paper.file_type === "pdf");
       setPapers(candidates);
-      setBibliographies(response.papers.filter((paper) => paper.file_type === "bib"));
       setSelectedPaperId((current) => {
         if (current && candidates.some((paper) => paper.paper_id === current)) return current;
         if (requestedPaperId && candidates.some((paper) => paper.paper_id === requestedPaperId)) return requestedPaperId;
@@ -108,7 +107,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     try {
       const response = await listVerifySources(signal);
       if (signal?.aborted) return;
-      setVerifySources(response.papers.filter((paper) => paper.scope === "verify_source"));
+      setVerifySources(response.papers.filter((paper) => paper.scope === "verify_source" && paper.file_type === "pdf"));
     } catch (error) {
       if (signal?.aborted) return;
       setVerifySourcesError(error instanceof Error ? error.message : "Unable to load Verify source PDFs.");
@@ -135,7 +134,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setResult(null);
     setVerifyError(null);
     try {
-      const response = await getPaperClaims(paper.paper_id, signal, bibPaperId || undefined);
+      const response = await getPaperClaims(paper.paper_id, signal);
       if (signal?.aborted) return;
       setAnalysis(response);
       setSelectedClaimId("");
@@ -146,7 +145,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     } finally {
       if (!signal?.aborted) setAnalysisLoading(false);
     }
-  }, [example, bibPaperId]);
+  }, [example]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -160,7 +159,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   useEffect(() => {
     verifyVersion.current += 1;
     setSelectedText(""); setSelectionError(""); setSingleMarker(""); setMatchedClaimIds([]);
-    // A manual PDF belongs to the current manuscript and bibliography only.
+    // A manual PDF belongs to the current manuscript only.
     setSelectedSourcePaperId("");
     setAnalysis(null);
     setReaderView("manuscript");
@@ -286,7 +285,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setVerifying(true); setVerifyError(null); setResult(null);
     try {
       const request = { claim: selectedText, citation_marker: citationMarker, manuscript_id: selectedPaperId,
-        claim_id: selectedClaim.claim_id, ...(bibPaperId ? { bib_paper_id: bibPaperId } : {}),
+        claim_id: selectedClaim.claim_id,
         ...(selectedSourcePaperId ? { source_paper_id: selectedSourcePaperId } : {}) };
       const response = example ? demoCitationComparison(request) : await verifyCitation(request, controller.signal);
       if (version === verifyVersion.current) setResult(response);
@@ -301,41 +300,42 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     <div className="page-stack review-claims-page">
       <section className="page-heading heading-row">
         <div className="workspace-intro workspace-intro-evidence">
-          <div className="workspace-intro-copy"><h1>Review claims</h1><p>Highlight a cited sentence, then analyze it.</p></div>
+          <div className="workspace-intro-copy"><h1>Verify claims</h1><p>Highlight a cited sentence, then analyze it.</p></div>
         </div>
         <div className="audit-heading-actions">
           <Link className="button button-secondary" to={example ? "/verify" : "/verify/example"}>{example ? "Back to my papers" : "Try example"}</Link>
           <UploadFilesButton pdfOnly disabled={verifying} onReady={async (paper) => {
             const response = await listPapers();
             setPapers(response.papers.filter((entry) => entry.file_type === "pdf"));
-            setBibliographies(response.papers.filter((entry) => entry.file_type === "bib"));
             setPapersError(null);
             setPaperPreviewReason(null);
             setSelectedPaperId(paper.paper_id);
             setExample(false);
           }} />
-          <UploadFilesButton pdfOnly purpose="verify_source" disabled={verifying} onReady={async (paper) => {
-            const response = await listVerifySources();
-            setVerifySources(response.papers.filter((entry) => entry.scope === "verify_source"));
-            setSelectedSourcePaperId(paper.paper_id);
-            setVerifySourcesError(null);
-            setResult(null);
-            setVerifyError(null);
-            setExample(false);
-          }} />
+          <button className="manage-papers-entry" type="button" disabled={verifying} aria-haspopup="dialog" onClick={() => sourcesDialog.current?.showModal()}><Icon name="folder" size={17} /> Manage source PDFs</button>
 
         </div>
       </section>
 
 
+      <dialog className="paper-manager-dialog" ref={sourcesDialog} aria-labelledby="paper-manager-title">
+        <PaperManager sourceOnly papers={verifySources} selectedId={selectedSourcePaperId} loading={verifySourcesLoading} busy={verifying}
+          error={verifySourcesError} demo={example} onClose={() => sourcesDialog.current?.close()}
+          onRefresh={() => { void loadVerifySources(); }}
+          onSelect={(id) => { setSelectedSourcePaperId(id); setResult(null); setVerifyError(null); sourcesDialog.current?.close(); }}
+          onDeleted={(id) => {
+            setVerifySources((current) => current.filter((paper) => paper.paper_id !== id));
+            if (id === selectedSourcePaperId || id === result?.source_paper_id) { setSelectedSourcePaperId(""); setResult(null); setVerifyError(null); }
+          }}
+          onReady={async (paper) => {
+            const response = await listVerifySources();
+            setVerifySources(response.papers.filter((entry) => entry.scope === "verify_source" && entry.file_type === "pdf"));
+            setSelectedSourcePaperId(paper.paper_id); setVerifySourcesError(null); setResult(null); setVerifyError(null); setExample(false);
+          }} />
+      </dialog>
+
       <section className="review-document-controls" aria-label="Review documents">
         <div className="review-document-choice"><span className="review-document-icon"><Icon name="document" size={20} /></span><label className="manuscript-picker"><span>Manuscript PDF</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.length === 0 && <option value="">{papersLoading ? "Loading manuscripts…" : "Upload a PDF to get started"}</option>}{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label></div>
-        <details className="review-reference-settings">
-          <summary><span>Reference settings</span><small>{bibPaperId ? "Custom bibliography" : "Automatic"}</small></summary>
-          <div className="review-reference-content"><label className="manuscript-picker"><span>Reference file · optional</span><select aria-label="Bibliography" value={bibPaperId} disabled={verifying || papersLoading || bibliographies.length === 0} onChange={(event) => { verifyVersion.current += 1; setResult(null); setSelectedText(""); setSelectedClaimId(""); setSingleMarker(""); setBibPaperId(event.target.value); }}><option value="">Manuscript references / automatic</option>{bibliographies.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename}</option>)}</select></label>
-            <p>{bibliographies.length ? "Leave on automatic to use the manuscript’s references, or choose an uploaded BibTeX file." : "No BibTeX file uploaded. The manuscript’s references will be used automatically."}</p>
-          </div>
-        </details>
       </section>
 
       {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading completed papers from the backend.</p></section>}
@@ -425,8 +425,8 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             {selectedClaim && <section className="manual-source-picker">
               <label className="field claim-picker-field"><span>Source PDF for this claim · optional</span><select aria-label="Source PDF for claim" value={selectedSourcePaperId} disabled={verifying || verifySourcesLoading} onChange={(event) => { setSelectedSourcePaperId(event.target.value); setResult(null); setVerifyError(null); }}>
                 <option value="">Automatic source resolution</option>
-                {verifySources.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.title || paper.original_filename}{paper.status !== "completed" ? ` · ${paper.status}` : ""}</option>)}
-              </select><small>{verifySourcesError || (verifySources.length ? "A selected source is used only for this claim comparison." : "Upload a source PDF above to compare this claim against its own text.")}</small></label>
+                {verifySources.map((paper) => <option value={paper.paper_id} key={paper.paper_id} disabled={paper.status !== "completed"}>{paper.original_filename || paper.title}{paper.status !== "completed" ? ` · ${paper.status}` : ""}</option>)}
+              </select><small>{verifySourcesError || (verifySources.length ? "A selected source is used only for this claim comparison." : "Upload a PDF in Manage source PDFs to compare this claim against its text.")}</small></label>
             </section>}
             {selectedClaim && !result && <>
               <section className={`citation-existence ${isSearching ? "searching" : displayedSource ? "exists" : "missing"}`} role="status"><span><Icon name={displayedSource ? "document" : "search"} size={18} /></span><div><strong>{displayedSource ? (selectedSourcePaperId ? "Selected source PDF" : "Associated reference") : "Source resolution pending"}</strong><p>{selectedSourcePaperId ? "The selected Verify source PDF will be used for this claim comparison." : selectedClaim.resolution_message || "Analyze this citation to resolve its source and attempt a comparison. No judgement has been made yet."}</p></div></section>

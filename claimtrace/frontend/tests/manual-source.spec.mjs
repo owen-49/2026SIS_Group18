@@ -87,7 +87,7 @@ for(const status of ['MANUAL_SOURCE_NOT_FOUND','MANUAL_SOURCE_NOT_READY','MANUAL
 
 test('source upload uses dedicated endpoint and selects it for comparison',async({page})=>{
  const {requests}=await setup(page);await highlight(page);
- const record={...paper('uploaded-source','pdf'),scope:'verify_source'};
+ const record={...paper('uploaded-source','pdf'),original_filename:'source.pdf',title:'Different parsed title',scope:'verify_source'};
  let uploaded=false;let uploadCount=0;
  await page.route('**/api/verify/sources',route=>{
   if(route.request().method()==='POST'){
@@ -97,11 +97,14 @@ test('source upload uses dedicated endpoint and selects it for comparison',async
   }
   return route.fulfill({json:{total:uploaded?1:0,papers:uploaded?[record]:[]}});
  });
+ await page.getByRole('button',{name:'Manage source PDFs',exact:true}).click();
  await page.getByRole('button',{name:'Upload source PDF',exact:true}).click();
- const dialog=page.locator('dialog[open]');
+ const dialog=page.getByRole('dialog', {name:'Upload source PDF',exact:true});
  await dialog.locator('input[type=file]').setInputFiles({name:'source.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-mocked-upload-fixture')});
  await expect(dialog.getByRole('status')).toContainText('ready and selected');
  await dialog.getByRole('button',{name:'Done',exact:true}).click();
+ await page.getByRole('button',{name:'Close paper manager',exact:true}).click();
+ await expect(page.getByLabel('Source PDF for claim',{exact:true}).locator('option:checked')).toHaveText('source.pdf');
  await expect(page.getByLabel('Source PDF for claim',{exact:true})).toHaveValue('uploaded-source');
  await analyze(page).click();await expect(output(page)).toBeVisible();
  expect(requests.at(-1).source_paper_id).toBe('uploaded-source');
@@ -109,7 +112,7 @@ test('source upload uses dedicated endpoint and selects it for comparison',async
  await expect(page.getByRole('combobox',{name:'Manuscript PDF',exact:true}).locator('option[value="uploaded-source"]')).toHaveCount(0);
 });
 
-for (const change of ['bibliography', 'highlight', 'claim']) {
+for (const change of ['highlight', 'claim']) {
   test(`changing ${change} clears the manual source and previous result`, async ({ page }) => {
     const sourcePdf = { ...paper('manual-source', 'pdf'), scope: 'verify_source' };
     const claimsOverride = change === 'claim' ? ['claim-7', 'claim-other'].map(claim_id => ({
@@ -117,19 +120,14 @@ for (const change of ['bibliography', 'highlight', 'claim']) {
       resolution_status: 'not_found', cited_source: null, source_document: null,
       similar_sources: [], manuscript_location: { page: 1, paragraph_index: 0 },
     })) : undefined;
-    const { requests, discoveries } = await setup(page, { verifySources: [sourcePdf], claimsOverride });
+    const { requests } = await setup(page, { verifySources: [sourcePdf], claimsOverride });
     await highlight(page);
     if (change === 'claim') await page.getByLabel('Cited source', { exact: true }).selectOption('claim-7');
     const picker = page.getByLabel('Source PDF for claim', { exact: true });
     await picker.selectOption('manual-source');
     await analyze(page).click();
     await expect(output(page)).toBeVisible();
-    if (change === 'bibliography') {
-      await page.getByText('Reference settings', { exact: true }).click();
-      await page.getByLabel('Bibliography', { exact: true }).selectOption('bib-a');
-      await expect.poll(() => discoveries.at(-1)).toContain('bib_paper_id=bib-a');
-      await highlight(page);
-    } else if (change === 'claim') {
+    if (change === 'claim') {
       await page.getByLabel('Cited source', { exact: true }).selectOption('claim-other');
     } else {
       // Dragging an existing highlight moves it in Chrome; create a fresh selection.
@@ -148,7 +146,6 @@ for (const change of ['bibliography', 'highlight', 'claim']) {
     await expect.poll(() => requests.length).toBe(2);
     expect(requests[0].source_paper_id).toBe('manual-source');
     expect(requests[1]).not.toHaveProperty('source_paper_id');
-    if (change === 'bibliography') expect(requests[1].bib_paper_id).toBe('bib-a');
     if (change === 'claim') expect(requests[1].claim_id).toBe('claim-other');
   });
 }

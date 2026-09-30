@@ -73,29 +73,28 @@ for (const verdict of ['SUPPORT', 'PARTIAL', 'CONTRADICT', 'NOT_FOUND']) {
   });
 }
 
-test('bibliography is passed to discovery and Verify; changing it clears the old judgement', async ({ page }) => {
+test('Verify uses manuscript references and only offers PDFs', async ({ page }) => {
   const { requests, discoveries } = await setup(page);
-  await page.getByText('Reference settings', { exact: true }).click();
-  const refreshedClaims = page.waitForResponse(response => response.url().includes('/claims?bib_paper_id=bib-b'));
-  await page.getByLabel('Bibliography', { exact: true }).selectOption('bib-b');
-  await (await refreshedClaims).finished();
-  await expect(page.getByText('Loading citation information…', { exact: true })).toHaveCount(0);
-  await expect.poll(() => discoveries.at(-1)).toContain('bib_paper_id=bib-b');
+  await expect(page.getByText('Reference settings', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Bibliography', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Manuscript PDF', exact: true }).locator('option')).toHaveCount(2);
   await highlight(page); await analyze(page).click();
   await expect(output(page)).toBeVisible();
-  expect(requests[0].bib_paper_id).toBe('bib-b');
-  await page.getByLabel('Bibliography', { exact: true }).selectOption('');
-  await expect(output(page)).toHaveCount(0);
-  await expect(analyze(page)).toBeDisabled();
-  await expect.poll(() => new URL(discoveries.at(-1)).search).toBe('');
+  expect(requests[0]).not.toHaveProperty('bib_paper_id');
+  expect(discoveries.length).toBeGreaterThan(0);
+  for (const url of discoveries) expect(new URL(url).searchParams.has('bib_paper_id')).toBe(false);
 });
 
 test('a manually selected Verify source PDF is sent only with the claim comparison', async ({ page }) => {
   const sourcePdf = paper('manual-source', 'pdf');
   sourcePdf.scope = 'verify_source';
+  sourcePdf.title = 'Parsed title that differs from the uploaded filename';
   const { requests } = await setup(page, { verifySources: [sourcePdf] });
   await highlight(page);
-  await page.getByLabel('Source PDF for claim', { exact: true }).selectOption('manual-source');
+  const picker = page.getByLabel('Source PDF for claim', { exact: true });
+  await expect(picker.locator('option[value="manual-source"]')).toHaveText('manual-source.pdf');
+  await picker.selectOption('manual-source');
+  await expect(picker.locator('option:checked')).toHaveText('manual-source.pdf');
   await analyze(page).click();
   await expect(output(page)).toBeVisible();
   expect(requests[0].source_paper_id).toBe('manual-source');
@@ -140,7 +139,7 @@ test('an in-flight response cannot appear after leaving and re-entering Verify',
   });
   await highlight(page); await analyze(page).click(); await started;
   await page.getByRole('link', { name: 'Batch audit', exact: true }).click(); release();
-  await page.getByRole('link', { name: 'Review claims', exact: true }).click();
+  await page.getByRole('link', { name: 'Verify claims', exact: true }).click();
   await page.locator('[data-selectable-paragraph]').first().waitFor();
   await expect(page.locator('.verdict-badge')).toHaveCount(0);
   await expect(analyze(page)).toBeDisabled();
