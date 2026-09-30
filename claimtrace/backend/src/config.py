@@ -91,6 +91,10 @@ class Settings:
     # not cancelled.
     metadata_lookup_timeout_seconds: float = 10.0
 
+    # ── Reference metadata segmentation ──────────────────
+    reference_metadata_batch_size: int = 10
+    reference_metadata_timeout_seconds: float = 30.0
+
     @property
     def is_llm_configured(self) -> bool:
         """Check whether any LLM provider has a valid API key set.
@@ -188,6 +192,12 @@ def _load_settings() -> Settings:
         parser_use_struct_tree=os.getenv("PARSER_USE_STRUCT_TREE", "false").lower() == "true",
         metadata_lookup_timeout_seconds=float(
             os.getenv("METADATA_LOOKUP_TIMEOUT_SECONDS", "10")
+        ),
+        reference_metadata_batch_size=max(
+            1, int(os.getenv("REFERENCE_METADATA_BATCH_SIZE", "10"))
+        ),
+        reference_metadata_timeout_seconds=max(
+            0.1, float(os.getenv("REFERENCE_METADATA_TIMEOUT_SECONDS", "30"))
         ),
     )
 

@@ -21,8 +21,17 @@ from backend.src.routes import audit as audit_route
 from backend.src.services import pipeline_service, reference_input_service
 from backend.src.services.analysis_service import _find_bib_entry, _load_bibliography_entries
 from backend.src.services.bibliography_audit_service import _authors_agree
+from backend.src.services.reference_metadata_segmenter import (
+    SegmentationOutcome,
+    SegmentationStatus,
+    SegmentedMetadata,
+)
 from backend.src.storage.paper_store import create_paper
-from backend.src.storage.reference_store import ReferenceStoreError, reference_path
+from backend.src.storage.reference_store import (
+    ReferenceStoreError,
+    StoredReference,
+    reference_path,
+)
 from engine.bib_parser import BibEntry
 from pydantic import ValidationError
 
@@ -195,6 +204,86 @@ def audit_pdf_reference(client, monkeypatch, storage_paths, raw_text, record):
     monkeypatch.setattr(app.state, "bibliography_lookup", lookup, raising=False)
     body = client.post("/api/audit", json={"manuscript_id": record_entry.paper_id}).json()
     return body["results"][0]
+
+
+def test_llm_reference_metadata_is_persisted_reused_and_treated_as_recovered(
+    client, monkeypatch, storage_paths
+):
+    manuscript = persist_manuscript(storage_paths)
+    raw = "Journal of Retrieval, 2024. J. Smith. Retrieval with citations."
+
+    monkeypatch.setattr(
+        reference_input_service,
+        "extract_pdf_references",
+        lambda path: SimpleNamespace(
+            references=[SimpleNamespace(raw_text=raw, number=7, page_start=3, page_end=3)],
+            warnings=[],
+        ),
+    )
+    segmentation_calls = []
+
+    def segment(raw_references):
+        segmentation_calls.append(raw_references)
+        return [
+            SegmentationOutcome(
+                status=SegmentationStatus.SEGMENTED,
+                metadata=SegmentedMetadata(
+                    authors=["J. Smith"],
+                    title="Retrieval with citations",
+                    venue="Journal of Retrieval",
+                    year=2024,
+                ),
+                model="test-model",
+            )
+        ]
+
+    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
+    lookup = FakeLookup(
+        lookup_result(records=[external_record(title="A different external title")])
+    )
+    monkeypatch.setattr(app.state, "bibliography_lookup", lookup, raising=False)
+
+    bodies = [
+        client.post("/api/audit", json={"manuscript_id": manuscript.paper_id}).json()
+        for _ in range(2)
+    ]
+
+    assert segmentation_calls == [[raw]]
+    assert [entry.metadata.title for entry in lookup.seen] == [
+        "Retrieval with citations",
+        "Retrieval with citations",
+    ]
+    row = bodies[0]["results"][0]
+    assert row["entry"]["metadata_source"] == "llm_segmentation"
+    assert row["status"] == "NEEDS_REVIEW"
+    saved = json.loads(reference_path(manuscript.paper_id).read_text(encoding="utf-8"))
+    assert saved["metadata_version"] == 3
+    assert saved["references"][0]["metadata_status"] == "SEGMENTED"
+    assert saved["references"][0]["metadata_model"] == "test-model"
+
+
+def test_llm_fills_missing_parser_fields_without_erasing_valid_ones():
+    reference = StoredReference(
+        raw_text="J. Smith. Existing title. Journal of Retrieval, 2024.",
+        title="Existing title",
+    )
+    outcome = SegmentationOutcome(
+        status=SegmentationStatus.PARTIAL,
+        metadata=SegmentedMetadata(
+            authors=["J. Smith"],
+            venue="Journal of Retrieval",
+            year=2024,
+        ),
+        model="test-model",
+    )
+
+    reference_input_service._apply_segmentation(reference, outcome)
+
+    assert reference.title == "Existing title"
+    assert reference.authors == ["J. Smith"]
+    assert reference.venue == "Journal of Retrieval"
+    assert reference.year == 2024
+    assert reference.metadata_source == "llm_segmentation"
 
 
 def test_a_pdf_reference_is_compared_on_the_text_it_was_searched_with(
@@ -487,6 +576,9 @@ def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
             venue=metadata.venue, doi=metadata.doi,
         )], warnings=[])
 
+    def segment(raw_references):
+        pytest.fail(f"complete Parser metadata must bypass the LLM: {raw_references}")
+
     queries = []
 
     class EchoProvider:
@@ -509,15 +601,14 @@ def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
             )])
 
     monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
+    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
     monkeypatch.setattr(
         app.state, "bibliography_lookup", ProviderChainLookup([EchoProvider()]), raising=False
     )
     bodies = [client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
               for _ in range(2)]
     assert len(calls) == (0 if legacy else 1)
-    # Asserted on the parsed reference rather than on a query string: what the
-    # provider receives is the reference's fields, and that is the contract that
-    # survives a change of provider.
+    # Standard APA/IEEE metadata goes directly from Parser to the provider.
     assert [(q.title, q.authors, q.year) for q in queries] == [
         ("Retrieval with citations", ["J. Smith"], 2024)
     ] * 2
@@ -530,7 +621,7 @@ def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
     assert client.get(f"/api/audit/{bodies[0]['audit_id']}").json() == bodies[0]
     saved = json.loads(reference_path(record.paper_id).read_text(encoding="utf-8"))
     assert saved["references"][0]["title"] == "Retrieval with citations"
-    assert saved["metadata_version"] == 2
+    assert saved["metadata_version"] == 3
 
 
 def test_real_pdf_upload_to_audit(client, monkeypatch):
@@ -562,9 +653,13 @@ def test_real_pdf_upload_to_audit(client, monkeypatch):
             queries.append(query)
             return ProviderResponse(status="ok", candidates=[])
 
+    def segment(raw_references):
+        pytest.fail(f"standard IEEE references must bypass the LLM: {raw_references}")
+
     monkeypatch.setattr(
         app.state, "bibliography_lookup", ProviderChainLookup([EmptyProvider()]), raising=False
     )
+    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
     upload = client.post("/api/parse", files={"file": (
         "audit-fixture.pdf", content, "application/pdf"
     )})
@@ -629,7 +724,7 @@ def test_reads_parser_public_reference_json_without_reextracting(
     response = client.post("/api/audit", json={"manuscript_id": record.paper_id})
     assert response.status_code == 200
     assert response.json()["total_entries"] == len(raw_entries)
-    assert json.loads(artifact.read_text(encoding="utf-8"))["metadata_version"] == 2
+    assert json.loads(artifact.read_text(encoding="utf-8"))["metadata_version"] == 3
     if raw_entries:
         entry = response.json()["results"][0]["entry"]
         assert entry["metadata"]["raw_text"] == raw_entries[0]["raw_text"]

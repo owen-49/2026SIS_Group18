@@ -4,6 +4,7 @@ import hashlib
 import os
 import tempfile
 from pathlib import Path
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, ValidationError
@@ -25,6 +26,19 @@ class StoredReference(BaseModel):
     number: int | None = None
     page_start: int | None = Field(default=None, ge=1)
     page_end: int | None = Field(default=None, ge=1)
+    metadata_source: Literal[
+        "parser", "llm_segmentation", "raw_text_heuristic"
+    ] | None = None
+    metadata_status: Literal[
+        "SEGMENTED",
+        "PARTIAL",
+        "NO_CLIENT",
+        "MODEL_ERROR",
+        "INVALID_RESPONSE",
+        "VALIDATION_FAILED",
+    ] | None = None
+    metadata_model: str | None = None
+    metadata_prompt_version: str | None = None
 
 
 class StoredReferenceList(BaseModel):

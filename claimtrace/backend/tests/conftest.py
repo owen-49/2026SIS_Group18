@@ -15,7 +15,11 @@ from backend.src.config import get_settings  # noqa: E402
 from backend.src.main import app  # noqa: E402
 from backend.src.routes import parse as parse_route  # noqa: E402
 from backend.src.routes import verify_sources as verify_sources_route  # noqa: E402
-from backend.src.services import engine_adapter, paper_deletion_service  # noqa: E402
+from backend.src.services import (  # noqa: E402
+    engine_adapter,
+    paper_deletion_service,
+    reference_metadata_segmenter,
+)
 from backend.src.storage import (  # noqa: E402
     bib_document_store,
     paper_store,
@@ -34,7 +38,11 @@ def _clear_settings_caches() -> None:
     a real one.
     """
     get_settings.cache_clear()
-    for cached in (engine_adapter._get_llm_client, engine_adapter._get_embedder):
+    for cached in (
+        engine_adapter._get_llm_client,
+        engine_adapter._get_embedder,
+        reference_metadata_segmenter._get_llm_client,
+    ):
         cache_clear = getattr(cached, "cache_clear", None)
         if cache_clear is not None:
             cache_clear()
