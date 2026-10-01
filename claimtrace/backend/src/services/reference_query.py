@@ -1,12 +1,12 @@
 """Turn one stored reference entry into the query the metadata chain searches.
 
-A reference reaches the audit with two possible descriptions of itself: the
-structured fields a parser filled in, and the entry's raw text. Neither is
-complete on its own, and which one is complete depends on how the paper was
-loaded. Measured over the 174 reference entries stored under
-``uploads/parsed``:
+A reference reaches the audit with structured fields and its raw text. For a
+PDF artifact the structured values may come from the Parser or Backend LLM
+segmentation; for BibTeX they are user-supplied. Neither source is assumed
+complete on its own. Historically, over the 174 reference entries
+stored under ``uploads/parsed`` before v3 segmentation:
 
-- The PDF path's structured fields are almost always empty -- one entry in 174
+- The PDF path's Parser fields were almost always empty -- one entry in 174
   carries a title -- because the reference-list parser implements only a couple
   of citation styles. Its raw text, on the other hand, yields a title for 173.
 - The BibTeX path is the reverse. Its structured fields are complete by
@@ -47,8 +47,8 @@ def reference_query_for(entry: ReferenceEntry) -> ReferenceQuery:
     """Return the search query for one reference, from whichever source has it.
 
     Args:
-        entry: The stored reference, carrying both the structured metadata a
-            parser filled in and the entry's raw text.
+        entry: The stored reference, carrying both structured metadata and the
+            entry's raw text.
 
     Returns:
         A :class:`engine.identity.ReferenceQuery`. Fields neither source

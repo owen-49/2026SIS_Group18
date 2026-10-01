@@ -16,8 +16,18 @@ from ..storage.reference_store import (
     save_references,
     source_digest,
 )
+from .reference_metadata_segmenter import (
+    SegmentationOutcome,
+    SegmentationStatus,
+    configured_llm_available,
+    segment_with_configured_llm,
+)
 
 _REFERENCE_LOCKS = [Lock() for _ in range(32)]
+_RETRYABLE_SEGMENTATION_STATUSES = {
+    SegmentationStatus.NO_CLIENT.value,
+    SegmentationStatus.MODEL_ERROR.value,
+}
 
 
 class AuditInputError(RuntimeError):
@@ -51,6 +61,95 @@ def extract_pdf_references(path: Path):
         ) from exc
 
 
+def _has_structured_metadata(reference: StoredReference) -> bool:
+    return bool(
+        reference.title
+        or reference.authors
+        or reference.year is not None
+        or reference.venue
+        or reference.doi
+    )
+
+
+def _parser_metadata_complete(reference: StoredReference) -> bool:
+    """Treat DOI and year as optional for otherwise complete APA/IEEE entries."""
+
+    return bool(reference.title and reference.authors and reference.venue)
+
+
+def _fallback_metadata_source(reference: StoredReference) -> str:
+    return "parser" if _has_structured_metadata(reference) else "raw_text_heuristic"
+
+
+def _apply_segmentation(
+    reference: StoredReference,
+    outcome: SegmentationOutcome,
+) -> None:
+    """Merge validated LLM fields into an incomplete Parser result."""
+
+    reference.metadata_status = outcome.status.value
+    reference.metadata_model = outcome.model
+    reference.metadata_prompt_version = outcome.prompt_version
+
+    if outcome.status in {SegmentationStatus.SEGMENTED, SegmentationStatus.PARTIAL}:
+        metadata = outcome.metadata
+        reference.title = metadata.title or reference.title
+        reference.authors = metadata.authors or reference.authors
+        reference.year = metadata.year if metadata.year is not None else reference.year
+        reference.venue = metadata.venue or reference.venue
+        reference.doi = metadata.doi or reference.doi
+        reference.metadata_source = "llm_segmentation"
+        return
+
+    # Provider/configuration failures retain any safe Parser fields. The
+    # downstream raw-text query fallback can still work when none were found.
+    reference.metadata_source = _fallback_metadata_source(reference)
+
+
+def _segment_stored_references(references: list[StoredReference]) -> None:
+    pending = [reference for reference in references if not _parser_metadata_complete(reference)]
+    for reference in references:
+        if _parser_metadata_complete(reference) and reference.metadata_source is None:
+            reference.metadata_source = "parser"
+    if not pending:
+        return
+
+    outcomes = segment_with_configured_llm([reference.raw_text for reference in pending])
+    for reference, outcome in zip(pending, outcomes, strict=True):
+        _apply_segmentation(reference, outcome)
+
+
+def _enrich_legacy_parser_metadata(saved: StoredReferenceList) -> None:
+    """Apply the restored APA/IEEE Parser to pre-v2 raw-text artifacts."""
+
+    if saved.metadata_version >= 2:
+        return
+    try:
+        from parser.reference_json_extractor import parse_reference_metadata
+    except ImportError as exc:
+        raise AuditInputError(
+            503,
+            "REFERENCE_PARSER_UNAVAILABLE",
+            "The reference Parser is required to enrich legacy references.",
+        ) from exc
+    for reference in saved.references:
+        metadata = parse_reference_metadata(reference.raw_text)
+        for name in ("title", "authors", "year", "venue", "doi"):
+            if getattr(reference, name) in (None, []):
+                setattr(reference, name, getattr(metadata, name))
+    saved.metadata_version = 2
+
+
+def _needs_llm_segmentation(saved: StoredReferenceList) -> bool:
+    if saved.metadata_version < 3:
+        return True
+    return configured_llm_available() and any(
+        not _parser_metadata_complete(reference)
+        and reference.metadata_status in _RETRYABLE_SEGMENTATION_STATUSES
+        for reference in saved.references
+    )
+
+
 def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
     """Reuse a valid artifact, extracting only when absent (one worker process)."""
     with _REFERENCE_LOCKS[hash(record.paper_id) % len(_REFERENCE_LOCKS)]:
@@ -64,25 +163,10 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                 if saved.source_sha256 and path.is_file():
                     if saved.source_sha256 != source_digest(path):
                         raise ReferenceStoreError("Reference artifact is stale; reprocess the PDF.")
-                if saved.metadata_version < 2:
-                    # Enrich legacy raw-text artifacts with the Parser's metadata
-                    # parser without rerunning PDF conversion or changing IDs.
-                    for reference in saved.references:
-                        names = ("title", "authors", "year", "venue", "doi")
-                        missing = set(names) - reference.model_fields_set
-                        if not missing:
-                            continue
-                        try:
-                            from parser.reference_json_extractor import parse_reference_metadata
-                        except ImportError as exc:
-                            raise AuditInputError(
-                                503, "REFERENCE_PARSER_UNAVAILABLE",
-                                "The reference Parser is required to enrich legacy references.",
-                            ) from exc
-                        metadata = parse_reference_metadata(reference.raw_text)
-                        for name in missing:
-                            setattr(reference, name, getattr(metadata, name))
-                    saved.metadata_version = 2
+                _enrich_legacy_parser_metadata(saved)
+                if _needs_llm_segmentation(saved):
+                    _segment_stored_references(saved.references)
+                    saved.metadata_version = 3
                     save_references(record.paper_id, saved)
                 return saved
             if not path.is_file():
@@ -91,25 +175,27 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                 )
             digest = source_digest(path)
             extracted = extract_pdf_references(path)
+            references = [
+                StoredReference(
+                    raw_text=reference.raw_text,
+                    title=getattr(reference, "title", None),
+                    authors=getattr(reference, "authors", None),
+                    year=getattr(reference, "year", None),
+                    venue=getattr(reference, "venue", None),
+                    doi=getattr(reference, "doi", None),
+                    number=reference.number,
+                    page_start=reference.page_start,
+                    page_end=reference.page_end,
+                )
+                for reference in extracted.references
+            ]
+            _segment_stored_references(references)
             saved = StoredReferenceList(
-                metadata_version=2,
+                metadata_version=3,
                 source_file=path.name,
                 paper_id=record.paper_id,
                 source_sha256=digest,
-                references=[
-                    StoredReference(
-                        raw_text=reference.raw_text,
-                        title=getattr(reference, "title", None),
-                        authors=getattr(reference, "authors", None),
-                        year=getattr(reference, "year", None),
-                        venue=getattr(reference, "venue", None),
-                        doi=getattr(reference, "doi", None),
-                        number=reference.number,
-                        page_start=reference.page_start,
-                        page_end=reference.page_end,
-                    )
-                    for reference in extracted.references
-                ],
+                references=references,
                 warnings=list(extracted.warnings),
             )
             save_references(record.paper_id, saved)
@@ -163,6 +249,7 @@ def load_audit_references(
             ReferenceEntry(
                 entry_id=_entry_id(paper_id, index, entry.raw_text or entry.key),
                 metadata=entry,
+                metadata_source="bibtex",
             )
             for index, entry in enumerate(document.entries)
         ]
@@ -184,6 +271,7 @@ def load_audit_references(
                     venue=reference.venue or "",
                     doi=reference.doi or "",
                 ),
+                metadata_source=reference.metadata_source or "raw_text_heuristic",
                 number=reference.number,
                 page_start=reference.page_start,
                 page_end=reference.page_end,

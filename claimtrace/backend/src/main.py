@@ -97,6 +97,6 @@ async def startup():
         print(
             f"[ClaimTrace] LLM NOT configured ({provider}). "
             "Set API key in .env. Single Verify uses a lexical baseline; "
-            "Bibliography Audit uses the OpenAlex/Crossref metadata chain "
-            "without an LLM."
+            "reference metadata keeps its Parser/raw-text fallback, and "
+            "Bibliography Audit still uses the OpenAlex/Crossref metadata chain."
         )

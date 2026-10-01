@@ -101,15 +101,25 @@ def _authors_agree(left: list[str], right: list[str]) -> bool:
 
 
 def _recovered_fields(entry: ReferenceEntry, query: ReferenceQuery) -> dict[str, bool]:
-    """Which compared fields came from the reference's raw text, not its metadata.
+    """Which compared fields were extracted from PDF text, not supplied by a user.
 
-    For a reference read from a PDF reference list this is most of them: measured
-    over the 174 stored entries, the structured title is non-empty for one and the
-    raw text supplies one for 173. For a BibTeX entry nothing is ever recovered --
-    ``reference_query_for`` does not parse an ``@article{...}`` block as a
-    reference-list entry, and its structured fields are complete by construction.
+    Parser metadata, LLM segmentation and the raw-text heuristic are recovered
+    descriptions. For BibTeX nothing is recovered: its structured fields are
+    user-supplied and its ``@article{...}`` block is never reparsed.
     """
     metadata = entry.metadata
+    if entry.metadata_source in {
+        "parser",
+        "llm_segmentation",
+        "raw_text_heuristic",
+    }:
+        return {
+            "title": bool(query.title),
+            "authors": bool(query.authors),
+            "year": query.year is not None,
+            "venue": bool(query.venue),
+            "doi": bool(query.doi),
+        }
     return {
         "title": not (metadata.title or "").strip() and bool(query.title),
         "authors": not metadata.authors and bool(query.authors),
@@ -228,13 +238,10 @@ def compare_external_metadata(
 def audit_reference(
     entry: ReferenceEntry, lookup: BibliographyLookup | None
 ) -> ReferenceAuditResult:
-    # The searchable title, not the stored one. A reference-list entry from a
-    # PDF carries its title in the raw text -- measured over the 174 entries
-    # under uploads/parsed, the structured field holds a title for exactly one
-    # of them, while the raw text yields one for 173. Guarding on the stored
-    # field therefore returned every PDF reference here before any lookup ran.
-    # The lookup resolves the same question through the same function, so the
-    # two cannot drift into disagreeing about what is searchable.
+    # Read the same merged description used by lookup. PDF metadata can come
+    # from the Parser, validated LLM segmentation or the raw-text heuristic,
+    # while BibTeX fields are already structured. Keeping this guard
+    # on the shared query prevents search and comparison from drifting apart.
     if not reference_query_for(entry).title.strip():
         return ReferenceAuditResult(
             entry=entry,

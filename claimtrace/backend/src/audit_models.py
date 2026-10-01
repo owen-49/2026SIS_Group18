@@ -20,6 +20,9 @@ class AuditStatus(str, Enum):
 class ReferenceEntry(BaseModel):
     entry_id: str
     metadata: BibEntryRecord
+    metadata_source: Literal[
+        "structured", "bibtex", "parser", "llm_segmentation", "raw_text_heuristic"
+    ] = "structured"
     number: int | None = None
     page_start: int | None = None
     page_end: int | None = None
