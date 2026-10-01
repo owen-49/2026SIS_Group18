@@ -1,169 +1,141 @@
 # ClaimTrace — Market Deck 逐页讲稿
 
-> 对应 `ClaimTrace-Market-Competitor-Analysis.pptx`（7 页）
-> 目标时长：**8 分钟**（英文台词 1,020 词，140 wpm 约 7 分 20 秒，余下约 40 秒给停顿、翻页和现场演示）
-> 每页标注了分页时间，加起来正好 8:00。**超时就砍 Slide 5/6 的演示，不要砍 Slide 2。**
+> 对应 **`ClaimTrace Market & Competitor Analysis(1).pptx`**（7 页，16:9）
+> 目标时长：**8 分钟**（英文台词 1,010 词，140 wpm 约 7 分 12 秒，余下约 45 秒给停顿、翻页和指图）
+> 每页标注分页时间，加起来正好 8:00
 > 体例同 `ClaimTrace-Pitch-Script-and-QA.md`：中文提示 + 英文可直接照读
 
-**开场前提醒：** 这套 deck 的数字和 A1 讲稿**不完全一样**——A1 里 12,402/7.1%、371M→617M、GhostCite 76.7%、20.9M 这几个数字经核查站不住，已替换。文末有一节列出必须改口的地方，**上台前务必看那一段**。
+**分工（本轮更新）：** 市场部分 = **Hongyang Chen + Siyuan Sun**；Case Study 与 Core Function = **Sichen Liu + Jun Li Li**。封面与收尾由 Sichen 负责。
 
-**压缩说明：** 这是 8 分钟版。原 9–11 分钟版见 `git log -- ClaimTrace-Market-Deck-Script.md`。被砍掉的主要是**屏幕上已经写着的内容**（Slide 5/6 的三张卡片、各页条目），所有数字和出处一个没删。
+**开场前提醒：** 这套 deck 的数字和 A1 讲稿**不一样**——A1 里 12,402/7.1%、371M→617M、GhostCite 76.7%、20.9M 这几个数字经核查站不住。新 deck 已全部换成可核查的来源，文末列了必须改口的地方。
 
----
-
-## Slide 1 — 封面（30 秒）
-
-**建议主讲：** Sichen（组长）
-
-> "Good morning. We're Group 18 — this is our market and competitor analysis for **ClaimTrace**, a citation audit tool for academic writing.
->
-> One thing about method, because it shapes every slide: **we re-checked every number in this deck.** Where we couldn't trace a figure to a source, we cut it — including numbers from our own earlier pitch."
-
-**提示：** 最后一句是关键——它把「换数字」这件事变成了方法论上的加分项，而不是被抓包。说完停半秒再翻页。
+**关于这份 deck：** 它和上一版结构完全不同（16:9、卡片式、每页底部自带 Sources 行），所以讲稿是重写的，不是改的。旧版讲稿见 `git log -- ClaimTrace-Market-Deck-Script.md`。
 
 ---
 
-## Slide 2 — The targeted market（2 分 30 秒，全 deck 的核心）
+## Slide 1 — 封面（25 秒）
 
-**建议主讲：** Hongyang（①②④）+ Sichen（③）
+**主讲：** Sichen
 
-### ① 市场是什么
-
-> "Our market is academic writing. Overleaf alone reports **twenty million users**, and **five point seven million papers** were published in 2024 — up from three point nine million in 2019. **Forty-six percent growth in five years.**
+> "Good morning — Group 18. This is our market and competitor analysis for **ClaimTrace**, a citation audit tool for academic writing.
 >
-> Every claim in every one of those papers cites a source."
+> One note on method, because it shapes every slide: **every number here was re-checked**, and each slide carries its sources along the bottom. Where we couldn't trace a figure, we cut it."
 
-### ② 问题有多大
+**提示：** 最后一句把「换数字」变成方法论加分项。说完停半秒再翻页。
 
-> "And **one in six of those citations is wrong.** **Sixteen point nine percent** of quotations are incorrect; **eight percent** are major — the source says something different from what the author claimed.
+---
+
+## Slide 2 — The targeted market（2 分钟）
+
+**主讲：** Hongyang
+
+**动作：** 按卡片 1 → 2 → 3 → 4 的顺序讲，鼠标跟着卡片走。
+
+> "Our market is academic writing. Overleaf reports **twenty million users**. **Five point seven million papers** were published in 2024 — **up forty-six percent** from 3.9 million in 2019. Every claim in every one of them cites a source.
 >
-> That pools **forty-six studies and thirty-two thousand quotations**. Baethge and Jergas, 2025. And the trend line is flat — **no improvement in forty years.**"
+> And **one in six of those citations is wrong.** **Sixteen point nine percent** of quotations are incorrect; **eight percent** are major — the source says something different from what the author claimed. That pools **forty-six studies and thirty-two thousand quotations**. Baethge and Jergas, 2025. And **no improvement in forty years.**"
 
 **提示：** "Sixteen point nine" 和 "no improvement in forty years" 放慢、重读。这是全场最有力的数字。
 
-### ③ 谁在拦
+> "On size — **the vendors can't agree.** Three commercial estimates, same category, same year: **three hundred seventy-one million to one point one five billion.** That's **three times apart.** The only audited number is Clarivate's — **one point two six six billion**, from their SEC filing.
+>
+> So we quote a report's scope, or we quote the audited filing. **A number without its scope isn't evidence.**"
 
-> "Nothing downstream catches it. Reviewers missed **two-thirds of major errors** in one experiment, and **three out of nine** planted errors in another.
+> "Four kinds of tool exist. **Reference managers** format metadata. **Turnitin and iThenticate** match text — in Turnitin's own words, *'Turnitin does not check for plagiarism.'* **Reference checkers** confirm a record exists. And **scite** classifies how *other people* cited a paper.
 >
-> A **BMJ** analysis in 2023 said responsibility for auditing citations *'rests with those who selected it, not reviewers'* — and proposed **AI tools at submission** to do exactly this.
->
-> That's our product thesis. Published in a medical journal."
+> None of them answers our question: **does my source support my sentence?** ReciteWorks' own FAQ says *'No, not currently.'* And the price list agrees — **a hundred seventy-five dollars buys metadata, a hundred twenty-five buys similarity.** Neither buys claim support."
 
-### ④ 市场多大，缺口在哪
+> "And it's getting worse. Fabricated citations grew **twelve-fold** — to about **one in two hundred seventy-seven** papers — and **ninety-eight point four percent** of affected papers saw **no publisher action.**"
 
-> "Now the market size — and this is where the easy answer is wrong.
->
-> Three commercial estimates, same category, same year: **three hundred seventy-one million, three hundred eighty-five million, and one point one five billion.** That's **three times apart.** The only audited number is Clarivate's — **one point two six six billion**, from their SEC filing.
->
-> So we show the spread and quote the audited figure. **A number without its scope isn't evidence.**"
-
-> "Four kinds of tool exist. **Reference managers** format metadata. **Turnitin** checks text overlap — in its own words, *'Turnitin does not check for plagiarism.'* **Reference checkers** confirm a record exists. And **scite** classifies how *other people* cited a paper.
->
-> None of them answers our question: **does my source support my sentence?**
->
-> ReciteWorks' own FAQ says *'No, not currently.'* And the price list agrees — **a hundred and seventy-five dollars buys metadata checking, a hundred and twenty-five buys similarity.** Neither buys claim support."
-
-**提示：** "Neither buys claim support" 是全页落点。说完停顿，再翻到 Slide 3。
+**提示：** "Neither buys claim support" 是落点。说完停顿，翻到 Slide 3。
 
 ---
 
-## Slide 3 — 三张图（1 分 25 秒）
+## Slide 3 — Empirical Evidence（1 分 20 秒）
 
-**建议主讲：** Sichen
+**主讲：** Siyuan
 
-**动作：** 按「左下 → 右上 → 右下」的顺序讲，和鼠标走位一致。
+**动作：** 左 → 右上 → 右下（表格）。表格不要逐格念。
 
-### 左下：写作面 vs 付费面
-
-> "Three figures, one argument. Start bottom-left.
->
-> **Twenty million people** write in Overleaf. scite — the category leader — had about **twenty-one thousand paying subscribers** when it was acquired. Roughly **nine hundred and fifty to one.**
+> "Two pieces of evidence. **Left: the writing surface against the paying surface.** Twenty million people write citations in Overleaf. scite — the category leader — had about **twenty-one thousand paying subscribers** when it was acquired. Roughly **nine hundred and fifty to one.**
 >
 > Every researcher writes citations. **Almost nobody pays to have them verified.**"
 
-### 右上：市场
-
-> "Top right. Research output keeps growing — but the tooling market that serves it is sized **three times apart** by different vendors for the same year.
+> "**Top right**: the same three-times disagreement, with Clarivate's audited figure alongside.
 >
-> That disagreement *is* the finding. It's why we name a scope instead of quoting a point estimate."
+> **Bottom: the capability matrix.** Four tool classes against four questions. The first three questions are all answered by somebody. **The fourth — does the source support my claim — is the column we're aiming at.**"
 
-### 右下：能力矩阵
-
-> "Bottom right: thirteen products, four questions. The first three columns are occupied. **The fourth — does your source support your sentence — is owned by no established product.**
+> "Two honest notes, and I'd rather say them than be asked.
 >
-> One honest note: **unoccupied is not empty.** RefVerifier, Grounded AI and sci2sci are trying it. We're not claiming nobody's trying — we're claiming **no established product owns it.**
+> **First: the ClaimTrace row is our own assessment of our own product.** We put ourselves in the table, so read that row as our claim, not as a third-party finding.
 >
-> And the partial marks are deliberate. The matrix distinguishes **'documents this'** from **'claims this.'**"
+> **Second: unoccupied is not empty.** RefVerifier, Grounded AI and sci2sci are prototypes trying this. We're not saying nobody's trying — we're saying **no established product owns it.**"
 
-**提示：** 「unoccupied is not empty」这句主动交代弱点，比被 tutor 问出来强得多。**这句不能砍。**
+**提示：** 这两句是全 deck 最容易被 tutor 抓住的地方，主动说是加分。**别跳过。**
 
 ---
 
-## Slide 4 — Case Study: scite.ai（1 分钟）
+## Slide 4 — Case Study: scite.ai（1 分 15 秒）
 
-**建议主讲：** Siyuan
+**主讲：** Jun Li Li
 
-> "For the case study we picked scite.ai — the biggest competitor, and the one every reviewer names first. **Research Solutions — NASDAQ-listed — bought it in December 2023**, so the category is real and paid for.
+> "For the case study we picked **scite.ai** — the biggest competitor, and the one every reviewer names first. Four reasons it's the one worth studying.
 >
-> **Be precise about the price.** The initial consideration was about **twenty-one million**, and the earn-out was finalised at **fifteen point four million** in July 2025 — **roughly twenty-nine million all-in.** The commonly-quoted twenty point nine million is only the first part.
->
-> But it answers a different question. scite tells you how *other people* cited a paper. It never tells you whether *your sentence* matches *your source.*
->
-> The category is real and funded. It's just pointed somewhere else."
+> It has the **only comparable engineering pipeline** — full-text ingestion, a trained classifier, published methods. It **proves the category is paid for**: Research Solutions, NASDAQ-listed, acquired it in December 2023. And it **publishes its own accuracy**, including where it's weak."
 
-**提示：** 主动纠正 20.9M 这个数字，是**加分动作**——它证明你们核过账，而不是抄了个数。**这段不能砍**，它是全场唯一一处当场纠错的示范。
+> "**Be precise about the price.** The initial consideration was about **twenty-one million**, and the earn-out settled at **fifteen point four million** in July 2025 — **roughly twenty-nine million all-in.** The twenty point nine million you may have seen quoted is the initial figure *net of cash acquired*, not the total."
+
+> "And the takeaway: **it answers a different question.** scite tells you how *other people* cited a paper. It never tells you whether *your sentence* matches *your source.*
+>
+> The category is real and funded. **It's just pointed somewhere else.**"
+
+**提示：** 主动说清 $29M，是证明你们核过账的加分动作。**这段不能砍。**
 
 ---
 
-## Slide 5 — Function 1: Smart Citations（1 分 10 秒）
+## Slide 5 — Core Function One（1 分 20 秒）
 
-**建议主讲：** Yi Jiang
+**主讲：** Sichen
 
-**动作：** 三张卡片（Empathise / Define / Ideate）**不要念**，指一下就说「as the template asks」。时间留给下面的数字。有网就现场开 scite 免费版演示。
+**动作：** 三张卡片（Empathise / Define / Ideate）**不要念**，手一指带过。时间留给数字和右图。
 
-> "Function one: Smart Citations. We analysed it the way the template asks — empathise, define, ideate.
+> "Function one: Smart Citations. We analysed it the way the template asks — empathise, define, ideate. **I'll skip reading the cards and go to the numbers.**
 >
-> Now the part I'd want you to look at. **These are their own published numbers.** Mentioning: ninety-six. Supporting: **fifty-five.** Disputing: **twenty.**
->
-> The classes that carry the scientific signal are the rarest, and the hardest to classify."
+> **These are scite's own published figures.** Mentioning: ninety-six. Supporting: **fifty-five.** Disputing: **twenty.** The classes that carry the scientific signal are the rarest, and the hardest to classify. Their own paper also admits ingestion **fails on about thirty percent** of citation statements in PDFs."
 
-> "And an **independent peer-reviewed audit** found worse. It took three hundred and twenty-four citations of retracted papers. scite returned **two supporting, ninety-six mentioning, and zero contrasting.** Human assessors found **seventeen contrasting** — citations the product showed as none, in a study of retracted papers, which is exactly where a contrasting signal matters most.
+> "And an **independent peer-reviewed audit** found worse: across three hundred twenty-four citations of retracted papers, **scite returned zero contrasting — human assessors found seventeen.**
 >
-> **Our comment:** the engineering is serious and openly documented. This is the strongest competitor, not a straw man. But the failure mode isn't a wrong label — **it's a label that reads as reassurance.** And an aggregate label about a paper can't answer a question about your sentence. That's a scope limit, not a bug."
+> **Our comment:** the engineering is serious, and this is the strongest competitor, **not a straw man.** But the failure mode isn't a wrong label — **it's a label that reads as reassurance.**"
 
-**提示：** 如果 tutor 追问「scite 作者反驳了怎么办」——承认：2025 年有 scite 相关作者发过 reply 质疑方法，争议未定，不要说成定论。
+> "**One thing about the screenshot on the right** — it's a *prepared example comparison*, and it says so on the image itself: no backend analysis was performed for it. **Treat it as an illustration of the interface, not as a result.**"
+
+**提示：** 最后这段必须说。图里明写着 "EXAMPLE COMPARISON · SAMPLE RESULT"，你不说而被 tutor 发现，效果完全相反。**主动说 = 严谨，被问出来 = 心虚。**
 
 ---
 
-## Slide 6 — Function 2: Reference Check（1 分 10 秒）
+## Slide 6 — Core Function Two（1 分 20 秒）
 
-**建议主讲：** Zheng Fu
+**主讲：** Jun Li Li
 
-**动作：** 同样不念卡片。左栏四条评论挑「Metadata, not meaning」一条讲透，其余留给观众读。
+**动作：** 左栏四条评论挑「Metadata, not meaning」讲透，其余留给观众读。右图是 ClaimTrace 自己的界面 —— 指一下五个状态。
 
-> "Function two is Reference Check — the same corpus, pointed at your own manuscript. It's the closest thing in the market to our Audit feature, so let's be fair to it, then precise about where it stops.
+> "Function two: **Reference Check** — the same corpus, pointed at your own manuscript. It's the closest thing in the market to our Audit feature, so let's be fair to it, and then precise about where it stops.
 >
-> **It reports on third parties.** It tells you reference number twelve has been retracted. **It cannot tell you that your sentence about number twelve is wrong** — and to its credit, it doesn't claim to."
+> **It reports on third parties.** It tells you reference number twelve has been retracted. **It cannot tell you that your sentence about number twelve is wrong** — and to its credit, it doesn't claim to. Notices are facts about a *record*; they're silent on whether the record supports the claim attached. And unlike Smart Citations, **Reference Check publishes no accuracy figure at all.**"
 
-> "ClaimTrace covers the two layers it leaves open.
+> "The screenshot on the right is **ours** — the Audit interface, with the five states and the field checks behind them. Audit checks the record: does the reference exist, and do title, authors, year and venue agree. OpenAlex first, Crossref as fallback, both keyless.
 >
-> **Audit — the record.** Existence, and whether title, authors, year and venue agree. OpenAlex first, Crossref as fallback, both keyless.
->
-> **Verify — the meaning.** The source passage that supports or contradicts your sentence — **the passage shown, not just a label.**
->
-> And the third one is genuinely ours. **The failure rule.** A failed lookup stays `LOOKUP_FAILED`. `NOT_FOUND` means the search *completed* and found nothing. **We never turn a failed lookup into a verdict.**"
+> And the line we'd want you to take away. **A failed lookup stays `LOOKUP_FAILED`.** `NOT_FOUND` means the search *completed* and found nothing. **We never turn a failed lookup into a verdict.**"
 
-**提示：** 「never turn a failed lookup into a verdict」是本项目唯一的、可被验证的独占设计。**这是全场最该被记住的一句，任何情况下都不砍。**
+**提示：** 最后一句是本项目唯一可被验证的独占设计。**任何情况下都不砍。** 注意它现在**只写在界面上，不在这页文字里** —— 必须由你说出来。
 
 ---
 
-## Slide 7 — Thank you（25 秒）
+## Slide 7 — Thank you（20 秒）
 
-**建议主讲：** Sichen
+**主讲：** Sichen
 
-> "So that's the analysis. The market is real, the leader is funded, and the column we're going after is unoccupied.
->
-> We can show you two things live — the Overleaf hover flow, and an audit run on a real bibliography.
+> "So: the market is real, the leader is funded, and the column we're aiming at is owned by no established product.
 >
 > Thank you — we'd love your questions."
 
@@ -177,50 +149,67 @@
 |---|---|
 | "12,402 papers, 7.1%" | "16.9% of quotations are incorrect, 8% are major — 46 studies, 32,000 quotations" |
 | "375 retracted, 76%, 9,662 citations" | 用 "70–94% of retracted papers keep being cited；一篇 Nature Index 研究里是 93.9%" |
-| "$371M → $617M, 7.6% CAGR" | "venders 估到 3 倍差距（$371M–$1,150M），能审计的只有 Clarivate 的 $1.266B" |
+| "$371M → $617M, 7.6% CAGR" | "vendors 估到 3 倍差距（$371M–$1,150M），能审计的只有 Clarivate 的 $1.266B" |
 | "GhostCite 76.7% of reviewers" | 不说。用 BMJ 2023 + 审稿人实验（漏掉 2/3 major errors）代替 |
 | "scite acquired for $20.9M" | "≈$29M all-in：$21.1M initial + $15.4M earn-out（2025 年 7 月敲定）" |
 | "Overleaf 25M users / 200M documents" | "Overleaf 自己的 about 页写的是 20 million+ users" |
 
 **保留不变：** GPT-4o 19.9% / 45.4%、GPT-3.5 55% / 43% —— 这两个数字站得住，继续用。
 
-**为什么值得主动改口：** 如果 tutor 去查，他会发现 A1 的数字对不上。你们**主动**说明「我们重新核过，换了站得住的来源」，比被指出来的效果好得多。Slide 4 的价格纠正就是故意留的示范。
+---
+
+## 这份 deck 里三处需要小心的地方
+
+不是错误，但**被追问时要有准备好的说法**：
+
+1. **Slide 3 表格里的 ClaimTrace 行是自评。**
+   `Text Match? Yes` 要解释清楚：「是拿你的句子去比对**来源段落**，不是拿全文去比对语料库 —— 和 Turnitin 不是一回事。」
+   `Cited by Others? (Fallback)` 这一格**目前的产品并没有这个功能**，被问到就直说「那是我们规划中的回退路径，不是已交付能力」。**不要临场把它说成已有功能。**
+
+2. **Slide 3 的表格不再显示「prototypes 也在做」。** 原文的 "unoccupied is not empty" 提示没了，所以这句**必须由 Siyuan 口头补上**，否则 "★ SOLE FOCUS" 会被读成「没人在做」，而那是假的。
+
+3. **Slide 5 的截图是示意，不是真实分析结果。** 图上自己写着 "Prepared example comparison; no backend analysis was performed" 和 "This score is illustrative"。**Sichen 必须主动说明**。Slide 6 的截图是真实界面，可以说「这就是我们的 Audit 页面」。
 
 ---
 
 ## 三条贯穿全场的原则
 
-1. **每个数字都带出处和年份。** 说 "sixteen point nine percent" 时后面跟一句 "Baethge and Jergas, 2025"。这套 deck 的整个卖点就是**你们比竞品更严谨**——如果自己报数不带来源，这个卖点就塌了。
-2. **主动交代弱点。** "unoccupied is not empty"、"scite 作者发过 reply"、"vendors 差三倍"——这些是主动说的，不是被问出来的。主动说 = 可信；被问出来 = 心虚。
+1. **每个数字都带出处和年份。** 新 deck 每页底部已有 Sources 行，**指着它说**比背出来更好。
+2. **主动交代弱点。** 「表格里我们自己那一行是自评」「截图是示意」「unoccupied is not empty」—— 主动说 = 可信；被问出来 = 心虚。
 3. **回到那一句。** 每个答案最后都落回：**"We never turn a failed lookup into a verdict."**
 
 ---
 
 ## 时间不够时的取舍顺序
 
-砍到这个顺序为止，**越靠前越先砍**：
+越靠前越先砍：
 
-1. Slide 5 的现场演示（省 20–30 秒，改成指截图）
-2. Slide 3 右下的「unoccupied is not empty」补充说明（省 15 秒，但**被问到一定要说**）
-3. Slide 6 的 Audit / Verify 两层细节（省 20 秒，卡片上写着）
-4. Slide 2 ④ 的四类工具逐一点名（省 20 秒，只说 Turnitin 和 scite 两个代表）
+1. Slide 5 的现场演示（改成指截图，省 20–30 秒）
+2. Slide 3 的「自评」说明（省 15 秒，但**被问到一定要说**）
+3. Slide 2 的四类工具逐一点名（省 20 秒，只说 Turnitin 和 scite 两个代表）
+4. Slide 4 的「四个理由」（省 20 秒，只留 pipeline 和 paid-for 两条）
 
-**永远不砍：** Slide 2 ② 的 16.9% / 8.0%、Slide 4 的价格纠正、Slide 6 的 failure rule。
+**永远不砍：** Slide 2 的 16.9% / 8.0%、Slide 4 的价格说明、Slide 6 的 failure rule、Slide 5 的「截图是示意」。
 
 ---
 
-## 分工建议
+## 分工表
 
-按现有分组，7 人 7 页，每人一分钟左右，平衡且每个人都有台词：
+**本轮分工：** 市场 = Hongyang + Siyuan；Case Study + Core Function = Sichen + Jun Li Li。
 
-| Slide | 主讲 | 时长 | 理由 |
+| Slide | 内容 | 主讲 | 时长 |
 |---|---|---|---|
-| 1 封面 | Sichen | 0:30 | 组长开场 |
-| 2 市场 | Hongyang | 2:30 | 后端组，市场数据部分 |
-| 3 三张图 | Sichen | 1:25 | 图表是组长做的，讲得最顺 |
-| 4 Case Study | Siyuan | 1:00 | 后端组 |
-| 5 Function 1 | Yi Jiang | 1:10 | Parser 组 |
-| 6 Function 2 | Zheng Fu | 1:10 | Parser 组 |
-| 7 收尾 | Sichen | 0:25 | 收尾 + 接 Q&A |
+| 1 | 封面 | Sichen | 0:25 |
+| 2 | The targeted market | **Hongyang** | 2:00 |
+| 3 | Empirical Evidence | **Siyuan** | 1:20 |
+| 4 | Case Study — scite.ai | **Jun Li Li** | 1:15 |
+| 5 | Core Function One | **Sichen** | 1:20 |
+| 6 | Core Function Two | **Jun Li Li** | 1:20 |
+| 7 | 收尾 | Sichen | 0:20 |
+| | | **合计** | **8:00** |
 
-Jun Li 和 Sam（前端组）建议负责 Slide 5/6 的**现场演示**——由他们操作 Overleaf 悬停和审计演示，讲解交给台上的人。这样前端组也有明确任务。
+各人时长：Hongyang 2:00 · Siyuan 1:20 · Sichen 2:05 · Jun Li Li 2:35。
+
+**说明：** Slide 4/5/6 三人两两分配是建议方案（Jun Li Li 拿 4 和 6，Sichen 拿 5）。换成「Sichen 拿 4+5、Jun Li Li 只拿 6」的话，两人会变成 Sichen 3:20 / Jun Li Li 1:20，比现在更不平均 —— 所以建议维持上表。**要换告诉我，我重排时间。**
+
+**建议：** 封面上的 Yi Jiang、Zheng Fu、Yiyang Yuan 本轮没有台词。可以让他们负责 **Slide 5/6 的现场操作**（切换截图、放大界面）或者 Q&A 环节接问题 —— 有明确任务比空着好。
