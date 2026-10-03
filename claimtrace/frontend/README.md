@@ -66,3 +66,21 @@ The `/audit` screen speaks the bibliography Audit v2 contract: it rejects any re
 whose `contract_version` is not 2 and renders all five outcome states. See
 [docs/audit-contract.md](../docs/audit-contract.md) for the contract and
 [docs/frontend-handoff.md](../docs/frontend-handoff.md) for the frontend's own.
+
+### Personal AI configuration (backend PR #53)
+
+Open **AI settings** in the header, select OpenAI or DeepSeek, and enter a model
+ID and your own API key. The model must support chat completions and JSON responses.
+Credentials are held only in page memory, survive in-app navigation, and are cleared
+on reload or with **Clear configuration**. They are not written to browser storage.
+
+Both `/api/verify/citation` and the legacy `/api/verify` client attach `ai_config`.
+Live Verify requires configuration; example mode does not. Audit remains available
+without AI. Enable **Use AI for incomplete Audit references** to include configuration
+in Audit requests. Uploads, source management and claim discovery never receive it.
+Provider calls may incur charges. Use HTTPS for deployments outside local testing.
+
+Configuration changes clear previous Verify results and cancel pending comparisons.
+Provider errors remain unjudged and retain their backend error code/message; retries
+are user initiated. Integration tests use fake keys and mocked responses, not paid calls.
+Coordinate live acceptance and deployment with backend PR #53 and the deployment branch.

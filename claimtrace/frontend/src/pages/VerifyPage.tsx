@@ -1,3 +1,4 @@
+import { useAISettings } from "../data/aiSettings";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPaperClaims, listPapers, listVerifySources, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
@@ -33,6 +34,7 @@ function sourceMeta(source: IdentifiedSource) {
 }
 
 export function VerifyPage({ example: initialExample = false, similarExample = false }: { example?: boolean; similarExample?: boolean }) {
+  const { config: aiConfig } = useAISettings();
   const [uploadedPaper] = useState(() => similarExample ? undefined : getLatestUploadedPaper("pdf"));
   const [example, setExample] = useState(initialExample && !uploadedPaper);
   const usingMockApi = example || configuredMockApi;
@@ -66,6 +68,12 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const sourcesDialog = useRef<HTMLDialogElement>(null);
   const manuscriptDocumentRef = useRef<HTMLDivElement>(null);
   const citedDocumentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    verifyVersion.current += 1;
+    verifyController.current?.abort();
+    setResult(null); setVerifyError(null);
+  }, [aiConfig]);
 
   const loadPapers = useCallback(async (signal?: AbortSignal) => {
     if (example) {
@@ -203,7 +211,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const displayedSource = result ? result.cited_source : manualSource || selectedClaim?.cited_source;
   const displayedDocument = result ? result.source_document : selectedSourcePaperId ? null : selectedClaim?.source_document;
   const previewReason = [paperPreviewReason, analysisPreviewReason].filter(Boolean).join(" ");
-  const verifyDisabledReason = analysisLoading ? "Loading citation information…"
+  const verifyDisabledReason = !usingMockApi && !aiConfig ? "Add your provider, model and API key in AI settings to verify." : analysisLoading ? "Loading citation information…"
     : !selectedText ? "Highlight a cited sentence in the manuscript first."
     : needsCitationChoice ? "Choose which citation to analyze."
     : !selectedClaim ? "Select a sentence with a citation returned for this manuscript."

@@ -1,3 +1,4 @@
+import { configureAI, testAI } from './ai-helpers.mjs';
 import { test, expect } from '@playwright/test';
 
 const sentence = 'This method improves retrieval [7].';
@@ -8,7 +9,7 @@ const judgement = { verdict: 'SUPPORT', confidence: 0.8, rationale: 'Comparison 
 const paper = (id, type) => ({ paper_id: id, file_type: type, original_filename: `${id}.${type}`, title: id, file_size: 100, status: 'completed', pages: 1, paragraph_count: 1, entry_count: 1, error_message: null, created_at: '', updated_at: '' });
 const resultFor = (status, overrides = {}) => ({ claim: sentence, claim_id: 'claim-7', citation_marker: '[7]', citation_key: 'ref7', status, message: `Message: ${status}`, cited_source: source, source_paper_id: 'source-pdf', source_document: document, evidence, judgement: status === 'COMPARED' ? judgement : null, ...overrides });
 
-async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride, verifySources = [] } = {}) {
+async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride, verifySources = [], configured = true } = {}) {
   const requests = [];
   const discoveries = [];
   await page.route('**/api/papers', route => route.fulfill({ json: { total: 4, papers: [paper('manuscript', 'pdf'), paper('second', 'pdf'), paper('bib-a', 'bib'), paper('bib-b', 'bib')] } }));
@@ -24,6 +25,7 @@ async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), c
     await route.fulfill({ json: response });
   });
   await page.goto('/verify');
+  if (configured) await configureAI(page);
   await page.locator('[data-selectable-paragraph]').first().waitFor();
   return { requests, discoveries };
 }
@@ -60,7 +62,7 @@ for (const status of ['NO_BIBLIOGRAPHY', 'MARKER_UNSUPPORTED', 'REFERENCE_NOT_FO
     await expect(page.locator('.verdict-badge')).toHaveCount(0);
     await page.getByRole('button', { name: 'Cited source', exact: true }).click();
     await expect(page.locator('#review-cited-article').getByText('Preserved source document.', { exact: false })).toBeVisible();
-    expect(requests[0]).toEqual({ claim: sentence, citation_marker: '[7]', manuscript_id: 'manuscript', claim_id: 'claim-7' });
+    expect(requests[0]).toEqual({ claim: sentence, citation_marker: '[7]', manuscript_id: 'manuscript', claim_id: 'claim-7', ai_config: testAI });
   });
 }
 
@@ -106,7 +108,7 @@ for (const marker of ['[7,8]', '[7-9]']) {
     await expect(analyze(page)).toBeDisabled();
     await page.getByLabel('Reference in citation', { exact: true }).selectOption('[8]');
     await analyze(page).click(); await expect(output(page)).toBeVisible();
-    expect(requests[0]).toEqual({ claim: sentence.replace('[7]', marker), citation_marker: '[8]', manuscript_id: 'manuscript', claim_id: 'claim-7' });
+    expect(requests[0]).toEqual({ claim: sentence.replace('[7]', marker), citation_marker: '[8]', manuscript_id: 'manuscript', claim_id: 'claim-7', ai_config: testAI });
   });
 }
 
@@ -156,4 +158,59 @@ test('Audit still submits PDF and BibTeX IDs using the v2 contract', async ({ pa
     await expect(page.getByText('Audit test warning.', { exact: true })).toBeVisible();
     expect(requests.at(-1)).toEqual(request);
   }
+});
+
+
+test('Verify requires configuration, clears stale results and forgets keys on reload', async ({ page }) => {
+  const { requests } = await setup(page, { configured: false });
+  await highlight(page);
+  await expect(analyze(page)).toBeDisabled();
+  await configureAI(page);
+  await analyze(page).click(); await expect(output(page)).toBeVisible();
+  expect(requests[0].ai_config).toEqual(testAI);
+  await configureAI(page, { provider: 'deepseek', model: 'deepseek-test', key: 'fake-deepseek-key' });
+  await expect(output(page)).toHaveCount(0);
+  await analyze(page).click(); await expect(output(page)).toBeVisible();
+  expect(requests[1].ai_config).toEqual({provider:'deepseek',model:'deepseek-test',api_key:'fake-deepseek-key'});
+  const storage = await page.evaluate(() => JSON.stringify({local: {...localStorage}, session: {...sessionStorage}}));
+  expect(storage).not.toContain('fake-deepseek-key');
+  await page.reload(); await highlight(page); await expect(analyze(page)).toBeDisabled();
+});
+
+for (const [status, code] of [[422,'AI_CONFIG_REQUIRED'],[422,'INVALID_REQUEST'],[422,'AI_CONFIG_INVALID'],[401,'AI_AUTH_FAILED'],[403,'AI_ACCESS_DENIED'],[429,'AI_QUOTA_EXCEEDED'],[429,'AI_RATE_LIMITED'],[422,'AI_MODEL_UNAVAILABLE'],[504,'AI_TIMEOUT'],[502,'AI_PROVIDER_FAILED']]) {
+  test(`${code} clears the verdict and allows an explicit retry`, async ({ page }) => {
+    await setup(page); await highlight(page); await analyze(page).click();
+    await expect(output(page)).toBeVisible();
+    let calls=0;
+    await page.route('**/api/verify/citation', route => { calls++; return route.fulfill({status,json:{detail:{code,message:'Safe provider error.'}}}); });
+    await analyze(page).click();
+    await expect(page.getByRole('alert')).toContainText(code);
+    await expect(output(page)).toHaveCount(0);
+    await expect(analyze(page)).toBeEnabled();
+    expect(calls).toBe(1);
+  });
+}
+
+test('Audit sends optional AI configuration and legacy Verify requires it', async ({ page }) => {
+  await setup(page, { configured: false });
+  const auditRequests=[];
+  await page.route('**/api/audit', route => { auditRequests.push(route.request().postDataJSON()); return route.fulfill({json:{contract_version:2,audit_id:'a',input_paper_id:'manuscript',input_type:'pdf',status:'completed',total_entries:0,counts:{},results:[],warnings:[]}}); });
+  await page.getByRole('link',{name:'Batch audit',exact:true}).click();
+  await page.getByRole('button',{name:'Manage papers',exact:true}).click();
+  await page.getByRole('button',{name:'Select manuscript.pdf for audit',exact:true}).click();
+  await page.getByRole('button',{name:'Run audit',exact:true}).click();
+  await expect.poll(()=>auditRequests.length).toBe(1);
+  expect(auditRequests[0]).not.toHaveProperty('ai_config');
+  await configureAI(page,{provider:'deepseek',model:'deepseek-test',key:'fake-deepseek-key',audit:true});
+  await page.getByRole('button',{name:'Run audit',exact:true}).click();
+  await expect.poll(()=>auditRequests.length).toBe(2);
+  expect(auditRequests[1].ai_config.provider).toBe('deepseek');
+  let legacy;
+  await page.route('**/api/verify', route => { legacy=route.request().postDataJSON(); return route.fulfill({json:{claim:'test',verdict:'SUPPORT',confidence:0.9,rationale:'mock',matches:[]}}); });
+  await page.evaluate(async()=>{const {verifyClaim}=await import('/src/api/client.ts');await verifyClaim('test','source-pdf');});
+  expect(legacy.ai_config).toEqual(auditRequests[1].ai_config);
+  await page.getByRole('button',{name:/^AI settings/}).click();
+  await page.getByRole('button',{name:'Clear configuration'}).click();
+  const error = await page.evaluate(async()=>{const {verifyClaim}=await import('/src/api/client.ts');try{await verifyClaim('test','source-pdf');return '';}catch(e){return e.message;}});
+  expect(error).toContain('AI settings');
 });
