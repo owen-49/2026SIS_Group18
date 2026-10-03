@@ -315,29 +315,22 @@ def segment_reference_metadata(
     return outcomes
 
 
-def _get_llm_client():
-    """No application credential fallback; callers must supply a user runtime."""
-    return None
-
-
-def segment_with_configured_llm(
+def segment_with_user_ai(
     raw_references: list[str], *, ai_runtime=None
 ) -> list[SegmentationOutcome]:
     """Segment with the explicit user runtime; no runtime means no paid call."""
-
+    if ai_runtime is None:
+        return _failure_outcomes(
+            len(raw_references),
+            SegmentationStatus.NO_CLIENT,
+            "Supply your own ai_config to enable AI metadata extraction.",
+            model=None,
+        )
     settings = get_settings()
-    outcomes = segment_reference_metadata(
+    return segment_reference_metadata(
         raw_references,
-        client=ai_runtime if ai_runtime is not None else _get_llm_client(),
-        model=ai_runtime.model if ai_runtime is not None else settings.llm_model_name,
+        client=ai_runtime,
+        model=ai_runtime.model,
         batch_size=settings.reference_metadata_batch_size,
         timeout_seconds=settings.reference_metadata_timeout_seconds,
     )
-
-    return outcomes
-
-
-def configured_llm_available() -> bool:
-    """Return whether reference segmentation can call a configured client."""
-
-    return _get_llm_client() is not None

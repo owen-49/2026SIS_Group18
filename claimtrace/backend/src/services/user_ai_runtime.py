@@ -20,6 +20,8 @@ def safe_provider_error(exc: Exception) -> UserAIError:
         return UserAIError("AI_AUTH_FAILED", "The user's AI credentials were rejected.")
     if status == 403:
         return UserAIError("AI_ACCESS_DENIED", "The user's AI account cannot access this resource.")
+    if status == 402:
+        return UserAIError("AI_QUOTA_EXCEEDED", "The user's AI balance is exhausted.")
     if status == 429:
         # Inspect only the structured code; never expose the provider's body.
         body = getattr(exc, "body", None)

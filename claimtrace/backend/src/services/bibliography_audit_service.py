@@ -38,7 +38,7 @@ def _folded(value: str) -> str:
     Deliberately separate from :func:`_normalise`, because the two answer
     different questions. A title or a venue is compared as each source wrote it,
     and folding those would move that comparison without a measurement asking for
-    it. An author's name is compared for identity, and there "Tom谩拧 Mikolov" and
+    it. An author's name is compared for identity, and there "Tomáš Mikolov" and
     "Tomas Mikolov" are one person that two sources spell differently.
     """
     decomposed = unicodedata.normalize("NFKD", value or "")

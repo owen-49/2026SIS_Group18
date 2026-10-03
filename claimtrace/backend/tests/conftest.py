@@ -18,7 +18,6 @@ from backend.src.routes import verify_sources as verify_sources_route  # noqa: E
 from backend.src.services import (  # noqa: E402
     engine_adapter,
     paper_deletion_service,
-    reference_metadata_segmenter,
 )
 from backend.src.storage import (  # noqa: E402
     bib_document_store,
@@ -41,7 +40,6 @@ def _clear_settings_caches() -> None:
     for cached in (
         engine_adapter._get_llm_client,
         engine_adapter._get_embedder,
-        reference_metadata_segmenter._get_llm_client,
     ):
         cache_clear = getattr(cached, "cache_clear", None)
         if cache_clear is not None:

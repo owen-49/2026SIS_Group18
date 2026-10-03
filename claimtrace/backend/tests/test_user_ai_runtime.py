@@ -16,6 +16,7 @@ def client(create):
     ("status", "body", "expected"),
     [
         (401, None, "AI_AUTH_FAILED"),
+        (402, None, "AI_QUOTA_EXCEEDED"),
         (403, None, "AI_ACCESS_DENIED"),
         (429, {"error": {"code": "insufficient_quota"}}, "AI_QUOTA_EXCEEDED"),
         (429, None, "AI_RATE_LIMITED"),

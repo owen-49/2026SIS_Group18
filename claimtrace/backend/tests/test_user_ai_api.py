@@ -202,9 +202,9 @@ def test_reference_segmentation_uses_user_config_and_cache_contains_no_key(
 
 def test_claim_discovery_without_config_cannot_consume_team_credits(client, providers, monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "team-key-must-not-be-used")
-    from backend.src.services.reference_metadata_segmenter import segment_with_configured_llm
+    from backend.src.services.reference_metadata_segmenter import segment_with_user_ai
 
-    outcomes = segment_with_configured_llm(["A nonstandard reference"])
+    outcomes = segment_with_user_ai(["A nonstandard reference"])
     assert outcomes[0].status.value == "NO_CLIENT"
     assert providers == []
 
@@ -343,3 +343,135 @@ def test_failed_reference_ai_call_preserves_parser_artifact_for_new_user_request
         "second-user-key",
     ]
     assert all(provider.closed for provider in providers)
+
+
+@pytest.mark.parametrize("failed_status", ["NO_CLIENT", "MODEL_ERROR", "INVALID_RESPONSE"])
+def test_retry_preserves_successful_metadata_without_venue(
+    client, storage_paths, providers, monkeypatch, failed_status
+):
+    from pathlib import Path
+
+    from backend.src.storage.reference_store import (
+        StoredReference,
+        StoredReferenceList,
+        load_references,
+        save_references,
+    )
+
+    manuscript = persist_manuscript(storage_paths)
+    successful = StoredReference(
+        raw_text="J. Smith. Cached title.",
+        title="Cached title",
+        authors=["J. Smith"],
+        metadata_status="SEGMENTED",
+        metadata_source="llm_segmentation",
+        metadata_model="cached-model",
+    )
+    failed = StoredReference(
+        raw_text="J. Smith. Retry title. Journal of Retrieval, 2024.",
+        metadata_status=failed_status,
+    )
+    save_references(
+        manuscript.paper_id,
+        StoredReferenceList(
+            paper_id=manuscript.paper_id,
+            source_file=Path(manuscript.file_path).name,
+            metadata_version=3,
+            references=[successful, failed],
+        ),
+    )
+    original = user_ai.OpenAI
+
+    def build(**config):
+        provider = original(**config)
+        provider.reply = json.dumps(
+            {
+                "items": [
+                    {
+                        "item_id": "0",
+                        "authors": ["J. Smith"],
+                        "title": "Retry title",
+                        "venue": "Journal of Retrieval",
+                        "year": 2024,
+                        "doi": None,
+                    }
+                ]
+            }
+        )
+        return provider
+
+    monkeypatch.setattr(user_ai, "OpenAI", build)
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", FakeLookup(lookup_result("not_found")), raising=False
+    )
+    for _ in range(2):
+        response = client.post(
+            "/api/audit", json={"manuscript_id": manuscript.paper_id, "ai_config": CONFIG}
+        )
+        assert response.status_code == 200
+    assert sum(len(provider.calls) for provider in providers) == 1
+    assert successful.raw_text not in providers[0].calls[0]["messages"][-1]["content"]
+    assert failed.raw_text in providers[0].calls[0]["messages"][-1]["content"]
+    assert (
+        load_references(manuscript.paper_id).references[0].model_dump() == successful.model_dump()
+    )
+    assert all(provider.closed for provider in providers)
+
+
+@pytest.mark.usefixtures("seeded")
+def test_deepseek_insufficient_balance_returns_safe_quota_error(client, providers, monkeypatch):
+    import httpx
+    from openai import APIStatusError
+
+    original = user_ai.OpenAI
+
+    def build(**config):
+        provider = original(**config)
+        provider.reply = APIStatusError(
+            "private-user-key upstream body",
+            response=httpx.Response(
+                402, request=httpx.Request("POST", "https://api.deepseek.com/chat/completions")
+            ),
+            body={"error": {"message": "private-user-key"}},
+        )
+        return provider
+
+    monkeypatch.setattr(user_ai, "OpenAI", build)
+    response = client.post(
+        "/api/verify/citation",
+        json={
+            "claim": CLAIM,
+            "citation_marker": MARKER,
+            "ai_config": {**CONFIG, "provider": "deepseek", "model": "deepseek-chat"},
+        },
+    )
+    assert response.status_code == 429
+    assert response.json()["detail"]["code"] == "AI_QUOTA_EXCEEDED"
+    assert "private-user-key" not in response.text
+    assert len(providers[0].calls) == 1 and providers[0].closed
+
+
+def test_audit_warning_explains_missing_user_configuration(
+    client, storage_paths, providers, monkeypatch
+):
+    manuscript = persist_manuscript(storage_paths)
+    monkeypatch.setattr(
+        reference_input_service,
+        "extract_pdf_references",
+        lambda path: SimpleNamespace(
+            references=[
+                SimpleNamespace(
+                    raw_text="An incomplete reference", number=1, page_start=1, page_end=1
+                )
+            ],
+            warnings=[],
+        ),
+    )
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", FakeLookup(lookup_result("not_found")), raising=False
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "team-key-must-not-be-used")
+    response = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    assert response.status_code == 200
+    assert "ai_config" in str(response.json()["warnings"])
+    assert providers == []

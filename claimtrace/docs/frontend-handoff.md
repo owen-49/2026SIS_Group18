@@ -322,3 +322,10 @@ Reported when the extension loaded the PDF list. Two causes, both fixed:
 store at all, silently returning an empty list would look like "you have no papers" and
 invite the user to re-upload over data that is merely unreadable. A 500 is the honest
 answer. Do not "fix" this into an empty 200.
+
+
+### PR 53 integration gate
+
+PR 53 remains a draft until the frontend supplies ai_config to both Verify entry points and offers user AI configuration for Audit metadata extraction. Coordinate this work with JunLi before requesting final approval and merging. Missing Audit configuration retains Parser fields and raw text and returns a warning explaining how to enable AI extraction.
+
+DeepSeek upstream HTTP 402 maps to AI_QUOTA_EXCEEDED with backend HTTP 429. Version 3 reference retries send only NO_CLIENT, MODEL_ERROR and INVALID_RESPONSE entries; successful SEGMENTED entries remain cached even when venue is absent.
