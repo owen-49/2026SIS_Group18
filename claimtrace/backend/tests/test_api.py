@@ -6,9 +6,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+from backend.src import user_ai
 from backend.src.models import PaperRecord, ParsedDocument, ParsedParagraph, ParseStatus
 from backend.src.routes import parse as parse_route
-from backend.src.services import engine_adapter
 from backend.src.storage.paper_store import create_paper, get_paper, update_paper
 from backend.src.storage.parsed_document_store import save_parsed_document
 
@@ -340,7 +340,12 @@ def test_delete_refuses_file_outside_upload_storage(client, storage_paths):
     assert get_paper(paper_id) is not None
 
 
-def test_verify_returns_frontend_contract(client, sample_pdf_bytes):
+def test_verify_returns_frontend_contract(client, sample_pdf_bytes, monkeypatch):
+    monkeypatch.setattr(
+        user_ai,
+        "OpenAI",
+        lambda **kwargs: _llm_client('{"label": "SUPPORT", "rationale": "Evidence supports it."}'),
+    )
     uploaded = client.post(
         "/api/parse",
         files={"file": ("attention.pdf", sample_pdf_bytes, "application/pdf")},
@@ -349,6 +354,7 @@ def test_verify_returns_frontend_contract(client, sample_pdf_bytes):
     response = client.post(
         "/api/verify",
         json={
+            "ai_config": {"provider": "openai", "model": "user-model", "api_key": "user-test-key"},
             "claim": "Self-attention removes the need for recurrence.",
             "source_paper_id": uploaded["paper_id"],
         },
@@ -366,11 +372,11 @@ def _llm_client(reply: str):
     """A stand-in LLM client that always answers with the given text."""
 
     def create(**_kwargs):
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=reply))]
-        )
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=reply))])
 
-    return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+    return SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create)), close=lambda: None
+    )
 
 
 def test_verify_reports_an_unjudged_claim_as_a_failure(client, sample_pdf_bytes, monkeypatch):
@@ -386,14 +392,15 @@ def test_verify_reports_an_unjudged_claim_as_a_failure(client, sample_pdf_bytes,
         files={"file": ("attention.pdf", sample_pdf_bytes, "application/pdf")},
     ).json()
     monkeypatch.setattr(
-        engine_adapter,
-        "_get_llm_client",
-        lambda: _llm_client('{"label": "SUPPORTS", "rationale": "..."}'),
+        user_ai,
+        "OpenAI",
+        lambda **kwargs: _llm_client('{"label": "SUPPORTS", "rationale": "..."}'),
     )
 
     response = client.post(
         "/api/verify",
         json={
+            "ai_config": {"provider": "openai", "model": "user-model", "api_key": "user-test-key"},
             "claim": "Self-attention removes the need for recurrence.",
             "source_paper_id": uploaded["paper_id"],
         },
@@ -413,6 +420,7 @@ def test_verify_unknown_paper_returns_404(client):
     response = client.post(
         "/api/verify",
         json={
+            "ai_config": {"provider": "openai", "model": "user-model", "api_key": "user-test-key"},
             "claim": "A claim with a missing source paper.",
             "source_paper_id": "does-not-exist",
         },
@@ -485,7 +493,6 @@ def test_claims_use_persisted_parser_output(client, storage_paths):
     assert claim["citation_marker"] == "[1]"
     assert claim["manuscript_location"] == {"page": 1, "paragraph_index": 0}
     assert claims_body["manuscript_document"]["total_pages"] == 2
-
 
 
 def test_claims_unknown_paper_returns_404(client):

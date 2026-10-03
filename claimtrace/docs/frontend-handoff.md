@@ -69,11 +69,98 @@ resend the selected single marker with the original claim text. Missing or unrea
 return `SOURCE_NOT_AVAILABLE` with the underlying code in the message; a missing number
 returns `REFERENCE_NOT_FOUND`. No failure is converted into a judgement.
 
-**LLM unavailability.** A missing LLM configuration is HTTP 503 with
-`{"detail": {"code": "<VerificationStatus>", "message": "<Engine rationale>"}}` — the
-response shape is unchanged. The one case that still returns 200 with a lexical verdict is
-the announced no-LLM baseline, where no model call was attempted at all. See
-`docs/engine-contract.zh-CN.md` §6.2.
+**User AI configuration.** Both Verify endpoints require a per-request `ai_config`.
+Missing configuration is HTTP 422 `AI_CONFIG_REQUIRED`; no team environment key or
+lexical verdict substitutes for it. Provider failures use the safe HTTP errors below.
+Malformed model replies remain unjudged under the existing response contract.
+
+### User supplied AI API contract
+
+Every user AI operation receives configuration in its JSON request body:
+
+```json
+{
+  "claim": "The selected claim text.",
+  "citation_marker": "[7]",
+  "manuscript_id": "uploaded-manuscript-id",
+  "ai_config": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "api_key": "USER_API_KEY_PLACEHOLDER"
+  }
+}
+```
+
+| Endpoint | Configuration requirement |
+| :--- | :--- |
+| `POST /api/verify/citation` | Required; applies to reference metadata extraction during source resolution and claim verification |
+| `POST /api/verify` | Required; applies to the legacy claim verification call |
+| `POST /api/audit` | Optional; enables AI segmentation for incomplete manuscript references; BibTeX and external metadata lookup do not require AI |
+| Upload, source management, `/claims`, report retrieval and `/health` | No AI configuration; no paid LLM calls |
+
+For Audit, add the same `ai_config` alongside `manuscript_id`. Without configuration,
+the Parser and raw text remain available, and incomplete extraction is reported in
+warnings. An Audit without AI is an external metadata check, not a semantic verdict.
+
+The first version accepts `openai` and `deepseek`. The backend fixes the respective
+destinations to `https://api.openai.com/v1` and `https://api.deepseek.com/v1`.
+`base_url` and other configuration fields are rejected. `model` must be a nonempty
+string; users must choose a model their account supports that accepts chat completions
+and JSON responses. Provider/model compatibility must be tested with the user's account.
+
+Each request owns one client and model, with a 30 second timeout per model call and
+zero SDK retries. After a provider failure, later batches in that request make no further
+calls. Retrying is an explicit new request using the user's configuration; it never
+substitutes a team key. The backend does not alter environment variables or store user
+clients in application state. Clients are closed after the request.
+
+The backend does not save or return API keys. Request model representations mask them,
+request serialisation excludes `ai_config`, validation errors omit raw input, and SDK
+exception payloads are replaced with safe messages before reaching API responses or
+persisted diagnostics. Send keys in JSON over HTTPS outside local testing; never put
+them in URLs, logs or examples. Deployment must also keep request-body and SDK HTTP
+debug logging disabled. Frontend key storage is outside this backend change.
+
+| HTTP | `detail.code` | Meaning |
+| :--- | :--- | :--- |
+| 422 | `AI_CONFIG_REQUIRED` | Supply your own configuration |
+| 422 | `INVALID_REQUEST` | Invalid provider, fields, model, key or other request input; `errors` contains locations and types only |
+| 422 | `AI_CONFIG_INVALID` | Client initialisation failed |
+| 401 | `AI_AUTH_FAILED` | User credentials rejected |
+| 403 | `AI_ACCESS_DENIED` | User account lacks access |
+| 429 | `AI_QUOTA_EXCEEDED` | Recognised provider quota exhaustion |
+| 429 | `AI_RATE_LIMITED` | Rate limited; unrecognised quota errors may also use this code |
+| 422 | `AI_MODEL_UNAVAILABLE` | Provider returned 404 |
+| 504 | `AI_TIMEOUT` | Provider timeout |
+| 502 | `AI_PROVIDER_FAILED` | Other provider failure |
+
+Provider errors use `{"detail":{"code":"AI_AUTH_FAILED","message":"..."}}`.
+They carry no verdict. Unusable model content retains the existing `LLM_FAILED`
+response with `judgement: null` for citation Verify; legacy Verify uses its existing
+503 Engine status. Invalid reference segmentation is persisted as an extraction status,
+preserves Parser/raw text, and is exposed through Audit warnings.
+
+Successful reference metadata is cached by paper, not by user/provider/model. Reusing a
+successful artifact does not cause another AI charge, even if a later request chooses
+a different model. Incomplete `NO_CLIENT`, `MODEL_ERROR` or `INVALID_RESPONSE` outcomes
+can be retried when a later request supplies configuration. Parser results survive
+provider failures, so a new request does not rerun PDF conversion. Credentials are not
+part of any reference or Audit artifact. The existing shared paper library remains;
+this feature isolates credentials and is not user authentication or tenant data isolation.
+
+**Frontend handoff to JunLi:** add the configuration UI and attach `ai_config` to the
+Verify/Audit requests that need AI. This PR changes no frontend or extension code;
+existing clients will receive `AI_CONFIG_REQUIRED` when they attempt Verify without
+configuration. Agree the release order before merging/deploying the combined product.
+Keep all errors visibly unjudged.
+
+**Deployment handoff to Siyuan:** runtime user operations do not consume environment
+keys. Keep health checks independent of a user's configuration, preserve request JSON
+through the proxy, enforce HTTPS, and disable body/debug logging. `main.py`, `config.py`
+and `.env.example` are unchanged for separate-branch coordination. The old startup
+client/log still describes environment configuration and is unused by these request
+paths; it is not proof that user Verify is configured. Coordinate its removal/update
+in the deployment branch and test both branches together.
 
 Changing the selection or the bibliography clears the previous result; leaving the page
 cancels pending requests.

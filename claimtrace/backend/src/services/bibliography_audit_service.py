@@ -38,7 +38,7 @@ def _folded(value: str) -> str:
     Deliberately separate from :func:`_normalise`, because the two answer
     different questions. A title or a venue is compared as each source wrote it,
     and folding those would move that comparison without a measurement asking for
-    it. An author's name is compared for identity, and there "Tomáš Mikolov" and
+    it. An author's name is compared for identity, and there "Tom谩拧 Mikolov" and
     "Tomas Mikolov" are one person that two sources spell differently.
     """
     decomposed = unicodedata.normalize("NFKD", value or "")
@@ -83,9 +83,7 @@ def _authors_agree(left: list[str], right: list[str]) -> bool:
         return False
     readings = [_author_reading(name) for name in left]
     unmatched = [_author_reading(name) for name in right]
-    if sorted(surname for surname, _ in readings) != sorted(
-        surname for surname, _ in unmatched
-    ):
+    if sorted(surname for surname, _ in readings) != sorted(surname for surname, _ in unmatched):
         return False
     for surname, given in readings:
         for index, (other_surname, other_given) in enumerate(unmatched):
@@ -211,9 +209,7 @@ def compare_external_metadata(
     # reference is wrong: measured over the 91 stored matched records, venue
     # differs in 50 of them and nearly every one is the reference abbreviating a
     # venue the record spells out, as "ACL" against the full proceedings name.
-    if any(
-        check.status == "MISMATCH" and not recovered.get(check.field_name) for check in checks
-    ):
+    if any(check.status == "MISMATCH" and not recovered.get(check.field_name) for check in checks):
         return AuditStatus.METADATA_MISMATCH, checks, "Identified record has field differences."
     required = {"title", "authors", "year", "venue"}
     complete = all(check.status == "MATCH" for check in checks if check.field_name in required)
@@ -312,8 +308,10 @@ def audit_reference(
 def run_bibliography_audit(
     request: AuditRequest,
     lookup: BibliographyLookup | None,
+    *,
+    ai_runtime=None,
 ) -> BibliographyAuditResponse:
-    paper_id, input_type, entries, warnings = load_audit_references(request)
+    paper_id, input_type, entries, warnings = load_audit_references(request, ai_runtime=ai_runtime)
     results = [audit_reference(entry, lookup) for entry in entries]
     counts = {status: sum(result.status == status for result in results) for status in AuditStatus}
     status = "completed_with_errors" if counts[AuditStatus.LOOKUP_FAILED] else "completed"

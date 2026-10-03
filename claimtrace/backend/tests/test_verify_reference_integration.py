@@ -3,9 +3,10 @@
 from uuid import uuid4
 
 import pytest
+from backend.src import user_ai
 from backend.src.config import get_settings
 from backend.src.models import ComparisonStatus
-from backend.src.services import citation_comparison_service, engine_adapter, source_locator
+from backend.src.services import citation_comparison_service, source_locator
 from backend.src.services.source_locator import look_up_citation
 from backend.src.storage.reference_store import (
     StoredReference,
@@ -86,7 +87,8 @@ def test_claims_and_verify_use_same_source_and_real_passages(client, monkeypatch
     llm, retriever = FakeLLM(), FakeRetriever()
     monkeypatch.setenv("OPENAI_API_KEY", "test-not-real")
     get_settings.cache_clear()
-    monkeypatch.setattr(engine_adapter, "_get_llm_client", lambda: llm)
+    llm.close = lambda: None
+    monkeypatch.setattr(user_ai, "OpenAI", lambda **kwargs: llm)
     monkeypatch.setattr(citation_comparison_service, "_new_retriever", lambda: retriever)
     claims = client.get(f"/api/papers/{mid}/claims")
     assert claims.status_code == 200
@@ -94,6 +96,7 @@ def test_claims_and_verify_use_same_source_and_real_passages(client, monkeypatch
     response = client.post(
         "/api/verify/citation",
         json={
+            "ai_config": {"provider": "openai", "model": "user-model", "api_key": "user-test-key"},
             "claim": claim["text"],
             "citation_marker": claim["citation_marker"],
             "manuscript_id": mid,
@@ -187,6 +190,7 @@ def test_missing_reference_input_is_not_a_verdict(client, monkeypatch):
     response = client.post(
         "/api/verify/citation",
         json={
+            "ai_config": {"provider": "openai", "model": "user-model", "api_key": "user-test-key"},
             "claim": "A retrieval method improves checking [1].",
             "citation_marker": "[1]",
             "manuscript_id": str(uuid4()),

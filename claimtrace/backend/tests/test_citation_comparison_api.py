@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 from types import SimpleNamespace
 
 import pytest
+from backend.src import user_ai
 from backend.src.config import get_settings
 from backend.src.models import (
     BibEntryRecord,
@@ -90,6 +91,9 @@ class FakeLLM:
         self.calls: list[dict] = []
         self.chat = SimpleNamespace(completions=FakeCompletions(self))
 
+    def close(self):
+        pass
+
     @property
     def prompt(self) -> str:
         assert self.calls, "the LLM was never called"
@@ -112,9 +116,7 @@ def seeded(storage_paths):
         year=2024,
         doi="10.1234/example",
         pages=1,
-        paragraphs=[
-            ParsedParagraph(text=chunk, page_start=1, page_end=1) for chunk in PASSAGES
-        ],
+        paragraphs=[ParsedParagraph(text=chunk, page_start=1, page_end=1) for chunk in PASSAGES],
     )
     create_paper(
         PaperRecord(
@@ -166,6 +168,9 @@ def llm_configured(monkeypatch):
     """Make ``settings.is_llm_configured`` true without any real key."""
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-real")
     get_settings.cache_clear()
+    monkeypatch.setattr(
+        user_ai, "OpenAI", lambda **kwargs: engine_adapter._get_llm_client() or FakeLLM()
+    )
     yield
     get_settings.cache_clear()
 
@@ -187,7 +192,11 @@ def wired(monkeypatch, llm_configured):
 
 
 def post(client, **overrides):
-    payload = {"claim": CLAIM, "citation_marker": MARKER}
+    payload = {
+        "claim": CLAIM,
+        "citation_marker": MARKER,
+        "ai_config": {"provider": "openai", "model": "gpt-4o-mini", "api_key": "user-test-key"},
+    }
     payload.update(overrides)
     return client.post("/api/verify/citation", json=payload)
 
@@ -204,9 +213,7 @@ def add_verify_source():
         authors=["Source Author"],
         year=2025,
         pages=1,
-        paragraphs=[
-            ParsedParagraph(text=chunk, page_start=1, page_end=1) for chunk in passages
-        ],
+        paragraphs=[ParsedParagraph(text=chunk, page_start=1, page_end=1) for chunk in passages],
     )
     create_paper(
         PaperRecord(
@@ -308,17 +315,15 @@ def test_verdict_is_not_overwritten_by_any_local_baseline(client, seeded, wired)
 # ── LLM failures -------------------------------------------------
 
 
-def test_missing_api_key_is_503_and_never_builds_a_retriever(client, seeded, monkeypatch):
+def test_missing_user_config_is_422_and_never_builds_a_retriever(client, seeded, monkeypatch):
     """A deployment fault must fail loudly, not fabricate a NOT_FOUND verdict."""
     built: list[object] = []
-    monkeypatch.setattr(
-        citation_comparison_service, "_new_retriever", lambda: built.append(1)
-    )
+    monkeypatch.setattr(citation_comparison_service, "_new_retriever", lambda: built.append(1))
 
-    response = post(client)
+    response = post(client, ai_config=None)
 
-    assert response.status_code == 503
-    assert response.json()["detail"]["code"] == "LLM_NOT_CONFIGURED"
+    assert response.status_code == 422
+    assert response.json()["detail"]["code"] == "AI_CONFIG_REQUIRED"
     # Fail fast: no embedding work is done before the configuration is checked.
     assert built == []
 
@@ -328,13 +333,9 @@ def test_llm_error_is_reported_as_llm_failed_but_keeps_the_evidence(client, seed
 
     response = post(client)
 
-    assert response.status_code == 200
-    body = response.json()
-    assert body["status"] == "LLM_FAILED"
-    assert body["judgement"] is None
-    # The source and its evidence were genuinely obtained; a 5xx would discard them.
-    assert len(body["evidence"]) == len(PASSAGES)
-    assert body["cited_source"]["title"] == "Retrieval with citations"
+    assert response.status_code == 502
+    assert response.json()["detail"]["code"] == "AI_PROVIDER_FAILED"
+    assert "upstream 502" not in response.text
 
 
 def test_out_of_enum_label_is_llm_failed_not_a_500(client, seeded, wired):
@@ -406,9 +407,7 @@ def test_none_reply_content_is_llm_failed_not_a_500(client, seeded, wired):
     ],
     ids=["unparseable", "missing-label", "bad-label", "blank-label", "non-object", "null"],
 )
-def test_unusable_model_replies_are_never_reported_as_compared(
-    client, seeded, wired, reply
-):
+def test_unusable_model_replies_are_never_reported_as_compared(client, seeded, wired, reply):
     """The sweep that matters: no unusable reply may look like a judgement."""
     wired.llm.reply = reply
 

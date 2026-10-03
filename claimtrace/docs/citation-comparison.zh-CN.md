@@ -2,7 +2,7 @@
 
 > 面向：接手前端接线或继续加固后端的组员；**这是现行契约，不是历史交接**
 > 对应规格：Engine 的 `SourceResolver` 契约（`engine/engine/source_resolver.py`；引擎侧已完成，本文档是后端侧的实现说明）
-> 状态：后端链路已打通并通过真实 DeepSeek 验收；**前端视图与 Chrome 扩展不在本次范围**
+> 状态：后端使用请求级用户 AI 配置。已有真实 DeepSeek 验收属于历史版本，本次新增配置链路只做离线测试；前端与 Chrome 扩展不在本次范围。
 
 ---
 
@@ -27,7 +27,7 @@
 
 ### 1.2 有意**不**做
 
-- **不动 `POST /api/verify`** —— 一行没改。新旧两个端点并存，职责不同（见 §1.3）。
+* 两个 Verify 端点并存，均要求用户 `ai_config`；职责区别见 §1.3。
 - **不做批量端点** —— 前端可以循环调用，每次请求独立；批量需要并发与配额控制，单独排期。
 - **不做 `risk_level`** —— 规格里的 `CitationAuditResult` 有这个字段，但它是前端展示层概念，
   不该由后端凭 confidence 硬编码。前端可以用 `confidence` 自行分档。
@@ -49,19 +49,13 @@
 | 检索 | 词元重叠排序（词法） | FAISS + MiniLM 向量检索（语义） |
 | 取几段 | 1 段 | top-k（默认 5，实际送 LLM 前 3 段） |
 | 页码溯源 | 无 | 有（`evidence[].page` / `location`） |
-| 无 LLM 时 | 降级为词法判定 | **503 拒绝** |
+| 缺用户配置时 | 422 `AI_CONFIG_REQUIRED` | 422 `AI_CONFIG_REQUIRED` |
 
-> 旧端点的**无 client 词法降级**逻辑保留不动（`engine_adapter.verify_claim`）——它服务的是旧端点，
-> 不影响新端点。
->
-> **更新（2026-09-14）**：`verify_claim` 加了一个**显式状态分支**（原来是靠 `AttributeError`
-> 被安全网 `except` 吞掉才"碰巧"降级的）。响应形状、状态码、`VerdictEnum` 取值**都不变**，
-> 只有两处取值按设计改变（坏 JSON 回复 / 空白原文改走词重叠降级）。
->
-> **更新（2026-09-19）**：**有 client 但模型没判定成功**的情况不再是词法降级——它改走
-> **HTTP 503 + `{"detail": {"code": <VerificationStatus>, "message": <rationale>}}`**。
-> 上表"无 LLM 时 = 降级为词法判定"那一行只对**完全没配 client** 成立。
-> 响应形状仍未改。详见 [engine-verify-contract.zh-CN.md §6.2](engine-verify-contract.zh-CN.md)。
+两个 HTTP 端点都不会因缺少用户 key 而使用团队 key 或生成词法判定。
+底层 adapter 的词法基线只供内部离线调用，HTTP 路径通过路由拒绝缺配置请求。
+用户配置同时进入来源解析时的参考文献提取和最终 claim 判定。
+完整请求、错误码、超时与缓存契约见
+[frontend-handoff.md](frontend-handoff.md#user-supplied-ai-api-contract)。
 
 ---
 
@@ -177,7 +171,7 @@ if (body.status === "COMPARED") {
 | `REFERENCE_AMBIGUOUS` | 200 | 命中多条，拒绝猜测 | "这条引用对应多篇文献，请消歧" |
 | `SOURCE_NOT_AVAILABLE` | 200 | 找到了文献，但库里没有匹配的**已解析 PDF** | "请上传并解析被引论文的 PDF" |
 | `SOURCE_EMPTY` | 200 | 定位成功，但源论文解析出零段落 | "被引论文没有可用正文" |
-| `LLM_FAILED` | 200 | LLM 报错或返回了无法使用的标签 | "模型未能给出判定，请重试" |
+| `LLM_FAILED` | 200 | 模型返回无法使用的内容或标签 | "模型未能给出判定，请重试" |
 | `MANUAL_SOURCE_NOT_FOUND` | 200 | 选择的 Verify 专用源 PDF 不存在 | "请重新选择源 PDF" |
 | `MANUAL_SOURCE_NOT_READY` | 200 | 选择的源 PDF仍在解析 | "请等待源 PDF解析完成" |
 | `MANUAL_SOURCE_INVALID` | 200 | 选择的文件不是可用的 Verify 专用源 PDF | "请重新上传源 PDF" |
@@ -197,22 +191,14 @@ if (body.status === "COMPARED") {
 
 所以 `[1]` 在空库里和在满库里都返回 `MARKER_UNSUPPORTED`，行为可预测。
 
-### 3.2 两个 HTTP 错误
+### 3.2 HTTP 错误
 
-| 情况 | HTTP | 响应体 |
-|---|---|---|
-| 请求校验失败（claim 空、k 越界、多余字段） | **422** | FastAPI 标准校验错误 |
-| 没有配置任何 LLM API key | **503** | `{"detail": {"code": "LLM_NOT_CONFIGURED", "message": "..."}}` |
-| 其他内部故障 | **500** | `{"detail": {"code": "COMPARISON_FAILED", "message": "..."}}` |
-
-> ⚠️ **已知不一致**：空的 `claim` 返回 **422**（Pydantic 校验），而旧的 `/api/verify`
-> 对手写检查返回 **400**。新端点选择让校验错误统一走 422（附带的 OpenAPI schema 也是这么写的）。
-> 如果前端想统一处理，按 `status_code >= 400` 分支即可。
-
-> **503 而不是降级**：如果放行并传 `client=None`，引擎的 `Verifier.verify` 会返回
-> `NOT_FOUND, confidence=0.0, "Mock mode: no LLM client provided."` —— 一个**伪造的
-> `NOT_FOUND` 冒充真实判定**。缺 key 是部署故障，应当响亮地拒绝。
-> 另外 503 在**做任何 embedding 之前**就返回了（快速失败），不会白烧 4 秒 CPU。
+请求校验失败为 422 `INVALID_REQUEST`，响应只包含字段位置和错误类型，不回显请求内容。
+缺少用户配置为 422 `AI_CONFIG_REQUIRED`，在检索和模型调用前拒绝。
+鉴权失败、额度不足、限流、超时及其他 provider 故障返回稳定的脱敏 HTTP 错误；
+完整错误表见 [配置契约](frontend-handoff.md#user-supplied-ai-api-contract)。
+这些响应不含 judgement。模型返回无效内容时仍按现有响应返回 `LLM_FAILED`，保留证据。
+旧 `/api/verify` 的空 claim 手写检查仍为 400，其余请求校验为 422。
 
 ---
 
@@ -334,62 +320,17 @@ evidence[].location ← view.paragraph_locations.get(passage_index)
 
 ---
 
-## 6. LLM 配置
+## 6. 用户 LLM 配置
 
-### 6.1 `load_dotenv()` —— 这次修好的一个隐形故障
+`ai_config` 随每个请求提交，包含 provider、model、api_key。第一版仅支持 OpenAI 和
+DeepSeek 官方地址，拒绝自定义 base_url。后端不保存 key，不回退到环境中的团队 key。
+调用 client 与 model 显式传入参考文献提取、来源解析及 Verify 比较服务，不使用全局用户 client。
+每次调用最多等待 30 秒，SDK 不自动重试；失败后由用户发起新请求重试。
 
-`config.py` 以前**从不调用 `load_dotenv()`**。Docker 靠 `env_file` 注入环境变量所以没事，
-但本地 `uvicorn src.main:app` 完全读不到 `.env`——启动日志永远是
-`LLM NOT configured`，即使 `.env` 里 key 填得好好的。
-
-现在 [config.py:130](../backend/src/config.py#L130) 会加载：
-
-```python
-load_dotenv(os.getenv("CLAIMTRACE_ENV_FILE") or find_dotenv(), override=False)
-```
-
-- `find_dotenv()` 从 `config.py` 自身向上找，因此**与工作目录无关**，能找到 `claimtrace/.env`
-- `override=False` 让**真实环境变量优先于文件**
-- `CLAIMTRACE_ENV_FILE` 是逃生舱：指向任意文件即可改读它；**指向空文件（`os.devnull`）
-  就是完全关掉 `.env` 加载**
-
-启动后应当看到：
-
-```
-[ClaimTrace] LLM ready: deepseek/deepseek-chat
-```
-
-### 6.2 ⚠️ `lru_cache` 会把 `None` 也缓存住
-
-`engine_adapter._get_llm_client()` 是 `@lru_cache(maxsize=1)`。
-**如果进程启动时没有 key，它会缓存 `None`；之后即使补上 key，不重启也不生效。**
-调试"为什么配了 key 还是 503"时先看这一条。
-
-### 6.3 测试必须能脱离 `.env`
-
-`main.py:10` 在**导入时**就执行 `settings = get_settings()` 并据此构建 CORS 中间件。
-所以 `conftest.py` 在**模块级**、**导入 app 之前**设了 `CLAIMTRACE_ENV_FILE = os.devnull`。
-放在 fixture 里**太晚了**——这是踩过的坑。
-
-`conftest.py` 的 autouse fixture 另外会清掉四个 provider 的 key 并重置缓存，
-保证测试**绝不发真实 API 调用**。
-
-### 6.4 其他注意点
-
-- **MiniLM 已在本机缓存**：`~/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2`
-  （87M），首次运行**不需要联网**。
-- **`EMBEDDING_MODEL` 是死配置**：`engine/embedder.py` 把模型名硬编码成
-  `all-MiniLM-L6-v2`，`settings.embedding_model` 传不进去。改模型得改引擎。
-- **Embedder 缓存了，Retriever 没有**：`Retriever()` 构造要 **4.4 秒**（加载模型），
-  而 `build_index(400 段)` 只要 **0.38 秒**。所以 `_get_embedder()` 是 `lru_cache`，
-  每次请求 `Retriever(embedder=_get_embedder())`。
-  **绝不能缓存 Retriever 本身**——`build_index` 会原地改它，两个线程共享就会出现
-  A 请求搜到 B 的索引，**静默错答，不是崩溃**。
-- **首个请求约 5 秒**（4.4s 模型加载 + 嵌入），之后每个请求约 1 秒。
-  发生在 threadpool worker 内，不阻塞事件循环。Demo 可接受，**不靠启动预热解决**
-  （那会给每次启动加 4.4 秒并常驻 90MB）。
-
----
+请求、错误、缓存、JunLi 接入及思远部署对接统一写在
+[frontend-handoff.md](frontend-handoff.md#user-supplied-ai-api-contract)。
+原 `.env` 读取仍服务部署和其他既有配置，不能用启动日志判断用户请求是否配置。
+本次不修改共享 `main.py`、`config.py` 或 `.env.example`。
 
 ## 7. 测试与运行
 
@@ -421,8 +362,8 @@ python -m pytest backend/tests
 
 **`backend/tests/test_citation_comparison_api.py`**（30 项，`client` fixture + `FakeRetriever`
 + `SimpleNamespace` 假 LLM）：happy path / 页码正确 / 假 retriever 收到的段落文本正确 /
-claim 与原文真的进了 prompt / 无 key ⇒ **503 且 retriever 从未被构造** / LLM 抛错 ⇒
-200 `LLM_FAILED` 且 `evidence` 仍在 / 枚举外标签 `"SUPPORTS"` ⇒ `LLM_FAILED` 不 500 /
+claim 与原文真的进了 prompt / 缺用户配置 ⇒ **422 且 retriever 从未被构造** / provider 抛错 ⇒
+脱敏 HTTP 错误，无判定 / 枚举外标签 `"SUPPORTS"` ⇒ `LLM_FAILED` 不 500 /
 **负数相似度 ⇒ 夹到 0.0 不 500** / 空检索 ⇒ `SOURCE_EMPTY` 且 LLM 未被调用 /
 claim 空 ⇒ 422 / `extra="forbid"` 生效 / 旧 `/api/verify` 仍在 OpenAPI 里。
 
@@ -439,7 +380,7 @@ claim 空 ⇒ 422 / `extra="forbid"` 生效 / 旧 `/api/verify` 仍在 OpenAPI �
 > 测试用 `SimpleNamespace` 冒充 `RetrievalResult`，是为了**避免 import torch**。
 > 谁把它换成真的 `RetrievalResult`，整个 backend 测试会慢好几秒。
 
-### 7.3 真实 LLM 验收（已跑通）
+### 7.3 历史真实 LLM 验收（本次未重跑）
 
 ```bash
 cd /Users/owen/Desktop/SIS-2026S2/claimtrace

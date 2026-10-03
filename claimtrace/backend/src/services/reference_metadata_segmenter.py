@@ -11,10 +11,8 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from functools import lru_cache
 from typing import Any
 
-from engine.llm_client import build_llm_client
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from ..config import get_settings
@@ -169,8 +167,7 @@ def _failure_outcomes(
     model: str | None,
 ) -> list[SegmentationOutcome]:
     return [
-        SegmentationOutcome(status=status, diagnostic=diagnostic, model=model)
-        for _ in range(count)
+        SegmentationOutcome(status=status, diagnostic=diagnostic, model=model) for _ in range(count)
     ]
 
 
@@ -318,39 +315,26 @@ def segment_reference_metadata(
     return outcomes
 
 
-@lru_cache(maxsize=1)
 def _get_llm_client():
-    """Build the configured OpenAI-compatible client once per process."""
+    """No application credential fallback; callers must supply a user runtime."""
+    return None
+
+
+def segment_with_configured_llm(
+    raw_references: list[str], *, ai_runtime=None
+) -> list[SegmentationOutcome]:
+    """Segment with the explicit user runtime; no runtime means no paid call."""
 
     settings = get_settings()
-    provider_configs = {
-        "openai": {
-            "api_key": settings.openai_api_key,
-            "base_url": settings.openai_base_url,
-        },
-        "deepseek": {
-            "api_key": settings.deepseek_api_key,
-            "base_url": settings.deepseek_base_url,
-        },
-        "gemini": {"api_key": settings.gemini_api_key, "base_url": None},
-        "anthropic": {"api_key": settings.anthropic_api_key, "base_url": None},
-        "ollama": {"api_key": "", "base_url": settings.ollama_base_url},
-    }
-    config = provider_configs.get(settings.llm_provider, {})
-    return build_llm_client(provider=settings.llm_provider, **config)
-
-
-def segment_with_configured_llm(raw_references: list[str]) -> list[SegmentationOutcome]:
-    """Segment references with the Backend's configured provider and model."""
-
-    settings = get_settings()
-    return segment_reference_metadata(
+    outcomes = segment_reference_metadata(
         raw_references,
-        client=_get_llm_client(),
-        model=settings.llm_model_name,
+        client=ai_runtime if ai_runtime is not None else _get_llm_client(),
+        model=ai_runtime.model if ai_runtime is not None else settings.llm_model_name,
         batch_size=settings.reference_metadata_batch_size,
         timeout_seconds=settings.reference_metadata_timeout_seconds,
     )
+
+    return outcomes
 
 
 def configured_llm_available() -> bool:

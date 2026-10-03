@@ -35,6 +35,16 @@ bibliographic records and field differences.
 
 Legacy `source_paper_ids` is accepted but ignored, with a response warning.
 
+Optional `ai_config` enables user-funded LLM segmentation of incomplete PDF reference
+metadata. It has `provider`, `model` and `api_key`; only OpenAI and DeepSeek official
+addresses are supported. No configuration means no paid LLM call, including on claim
+discovery; Parser/raw text and the OpenAlex/Crossref chain remain available. A team
+environment key is never a fallback. Provider failures return safe HTTP errors after
+preserving parsed reference artifacts. Invalid model responses preserve the input and
+add an extraction warning. Successful artifacts are reused without another AI call.
+See [frontend-handoff.md](frontend-handoff.md#user-supplied-ai-api-contract) for the
+complete configuration, error and cache contract. The Audit v2 response is unchanged.
+
 The response is `BibliographyAuditResponse` in `backend/src/audit_models.py`:
 `contract_version: 2`, `audit_id`, `input_paper_id`, `input_type`, `checked_at`,
 `status`, `total_entries`, `counts`, `results`, and `warnings`.

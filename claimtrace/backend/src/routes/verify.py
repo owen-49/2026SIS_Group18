@@ -21,12 +21,13 @@ from ..services.verification_service import (
     VerificationServiceError,
     verify_paper_claim,
 )
+from ..user_ai import UserAIRoute, user_ai_session
 
-router = APIRouter()
+router = APIRouter(route_class=UserAIRoute)
 
 
 @router.post("/verify", response_model=VerifyResponse)
-async def verify_claim(request: VerifyRequest):
+def verify_claim(request: VerifyRequest):
     """Verify a single claim against its cited source paper.
 
     The source paper must have been previously uploaded via POST /api/parse.
@@ -43,24 +44,26 @@ async def verify_claim(request: VerifyRequest):
     if not request.claim.strip():
         raise HTTPException(status_code=400, detail="Claim text is required.")
 
-    try:
-        return verify_paper_claim(
-            paper_id=request.source_paper_id,
-            claim=request.claim.strip(),
-        )
-    except ClaimNotJudgedError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail={"code": exc.code, "message": exc.message},
-        ) from exc
-    except PaperNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except PaperNotReadyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except InvalidPaperError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except VerificationServiceError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    with user_ai_session(request.ai_config, required=True) as runtime:
+        try:
+            return verify_paper_claim(
+                paper_id=request.source_paper_id,
+                claim=request.claim.strip(),
+                ai_runtime=runtime,
+            )
+        except ClaimNotJudgedError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail={"code": exc.code, "message": exc.message},
+            ) from exc
+        except PaperNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except PaperNotReadyError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except InvalidPaperError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except VerificationServiceError as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @router.post("/verify/citation", response_model=CitationComparisonResponse)
@@ -74,32 +77,34 @@ def verify_citation_comparison(request: CitationComparisonRequest):
     without automatic source resolution.
 
     Failures that still carry useful information — an unresolvable marker, a
-    reference with no parsed PDF, a model error — are returned as HTTP 200 with
+    reference with no parsed PDF, an unusable model reply — are returned as HTTP 200 with
     a ``status`` other than ``COMPARED`` and ``judgement: null``. A non-COMPARED
     status means *the claim was not judged*; it never means the claim is
-    unsupported.
+    unsupported. Provider failures return safe HTTP errors; ai_config is required.
 
     Declared ``def`` rather than ``async def`` on purpose: every step here is
     blocking (JSON reads, embedding on CPU, FAISS, a synchronous LLM call), so
     FastAPI must run it in a threadpool instead of stalling the event loop.
     """
-    try:
-        return compare_claim_to_cited_paper(
-            claim=request.claim,
-            citation_marker=request.citation_marker,
-            manuscript_id=request.manuscript_id,
-            bib_paper_id=request.bib_paper_id,
-            source_paper_id=request.source_paper_id,
-            claim_id=request.claim_id,
-            k=request.k,
-        )
-    except ComparisonLLMNotConfiguredError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail={"code": "LLM_NOT_CONFIGURED", "message": str(exc)},
-        ) from exc
-    except CitationComparisonError as exc:
-        raise HTTPException(
-            status_code=500,
-            detail={"code": "COMPARISON_FAILED", "message": str(exc)},
-        ) from exc
+    with user_ai_session(request.ai_config, required=True) as runtime:
+        try:
+            return compare_claim_to_cited_paper(
+                claim=request.claim,
+                citation_marker=request.citation_marker,
+                manuscript_id=request.manuscript_id,
+                bib_paper_id=request.bib_paper_id,
+                source_paper_id=request.source_paper_id,
+                claim_id=request.claim_id,
+                k=request.k,
+                ai_runtime=runtime,
+            )
+        except ComparisonLLMNotConfiguredError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail={"code": "LLM_NOT_CONFIGURED", "message": str(exc)},
+            ) from exc
+        except CitationComparisonError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail={"code": "COMPARISON_FAILED", "message": str(exc)},
+            ) from exc

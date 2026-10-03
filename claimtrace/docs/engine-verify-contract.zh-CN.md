@@ -87,9 +87,12 @@ verify_with_retrieval(
 
 顺序即传入顺序（检索排名），**不做重排**。
 
-### 2.5 ⚠️ 继承自 SDK 的超时预算（尚未收紧，见 §7）
+### 2.5 直接 Engine 调用的 SDK 超时预算
 
-`create()` 不带 `timeout=`，因此继承 openai SDK 2.8.1 的默认值：
+后端用户 API 路径通过请求级包装器强制 30 秒超时和零 SDK 重试。
+本节下列预算仅描述直接传入默认 SDK client 的 Engine 调用，不再适用于该 HTTP 路径。
+
+Engine 的 `create()` 不带 `timeout=`，直接调用时继承 SDK 默认值：
 
 ```
 Timeout(connect=5.0, read=600, write=600, pool=600)     # read 预算 600 s
@@ -238,7 +241,8 @@ VerificationResult.failed(claim="c", status=VerificationStatus.JUDGED, rationale
 |---|---|---|
 | `JUDGED` | `COMPARED` + `judgement` | 200 |
 | `NO_EVIDENCE` | `SOURCE_EMPTY` | 200 |
-| `NO_CLIENT` / `MODEL_ERROR` / `INVALID_LABEL` / `INVALID_RESPONSE` | `LLM_FAILED` | 200 |
+| `NO_CLIENT` / `INVALID_LABEL` / `INVALID_RESPONSE` | `LLM_FAILED` | 200 |
+| 用户 provider 调用失败 | 安全错误，无判定 | 按错误类型为 401、403、429、422、504 或 502 |
 
 `message=result.rationale` 是**承重的**：它让引擎的具体原因（比如非法标签的字面值）
 可见，而不是被折叠成一个 code。这是新端点**唯一**消费者，映射干净。
@@ -264,10 +268,10 @@ VerificationResult.failed(claim="c", status=VerificationStatus.JUDGED, rationale
 |---|---|---|---|
 | `JUDGED` | 模型判定 | 相同 | 200 |
 | `NO_EVIDENCE` | 伪 `SUPPORT` / `NOT_FOUND` + conf 0.2 | `ClaimNotJudgedError` | 503 `NO_EVIDENCE` |
-| `MODEL_ERROR` | 同上 | 同上 | 503 `MODEL_ERROR` |
+| 用户 provider 调用失败 | 同上 | 安全错误，无判定 | 见配置契约错误表 |
 | `INVALID_LABEL` | 同上 | 同上 | 503 `INVALID_LABEL` |
 | `INVALID_RESPONSE` | 同上 | 同上 | 503 `INVALID_RESPONSE` |
-| **未配置 client** | 词法基线（有文档的降级模式） | **不变** | 200 |
+| **缺用户配置** | 词法基线 | HTTP 路由拒绝 | 422 `AI_CONFIG_REQUIRED` |
 
 `code` **直接用 Engine 的 `VerificationStatus` 取值**，而不是折叠成一个笼统的码：
 §3 的表里每种状态对应不同的修法，丢掉这个区别就等于丢掉可操作性。
@@ -374,3 +378,11 @@ cd /Users/owen/Desktop/SIS-2026S2/claimtrace && python backend/scripts/acceptanc
 | 本文档 | 新建 |
 
 **前端与浏览器插件：一字未动。**
+
+
+## 用户配置边界
+
+后端的两个 Verify HTTP 端点要求请求级用户配置。密钥不进入 Engine 模块的环境或全局状态；
+后台显式传入当前请求的 client 和 model。用户 provider 异常先被脱敏再进入 Engine，
+随后由后端返回稳定错误码。Engine 自身的枚举和判定语义没有修改。
+详见 [用户配置契约](frontend-handoff.md#user-supplied-ai-api-contract)。

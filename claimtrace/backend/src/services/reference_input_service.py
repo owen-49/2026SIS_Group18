@@ -27,6 +27,7 @@ _REFERENCE_LOCKS = [Lock() for _ in range(32)]
 _RETRYABLE_SEGMENTATION_STATUSES = {
     SegmentationStatus.NO_CLIENT.value,
     SegmentationStatus.MODEL_ERROR.value,
+    SegmentationStatus.INVALID_RESPONSE.value,
 }
 
 
@@ -106,7 +107,7 @@ def _apply_segmentation(
     reference.metadata_source = _fallback_metadata_source(reference)
 
 
-def _segment_stored_references(references: list[StoredReference]) -> None:
+def _segment_stored_references(references: list[StoredReference], *, ai_runtime=None) -> None:
     pending = [reference for reference in references if not _parser_metadata_complete(reference)]
     for reference in references:
         if _parser_metadata_complete(reference) and reference.metadata_source is None:
@@ -114,7 +115,12 @@ def _segment_stored_references(references: list[StoredReference]) -> None:
     if not pending:
         return
 
-    outcomes = segment_with_configured_llm([reference.raw_text for reference in pending])
+    raw = [reference.raw_text for reference in pending]
+    outcomes = (
+        segment_with_configured_llm(raw, ai_runtime=ai_runtime)
+        if ai_runtime is not None
+        else segment_with_configured_llm(raw)
+    )
     for reference, outcome in zip(pending, outcomes, strict=True):
         _apply_segmentation(reference, outcome)
 
@@ -140,17 +146,17 @@ def _enrich_legacy_parser_metadata(saved: StoredReferenceList) -> None:
     saved.metadata_version = 2
 
 
-def _needs_llm_segmentation(saved: StoredReferenceList) -> bool:
+def _needs_llm_segmentation(saved: StoredReferenceList, *, ai_runtime=None) -> bool:
     if saved.metadata_version < 3:
         return True
-    return configured_llm_available() and any(
+    return (ai_runtime is not None or configured_llm_available()) and any(
         not _parser_metadata_complete(reference)
         and reference.metadata_status in _RETRYABLE_SEGMENTATION_STATUSES
         for reference in saved.references
     )
 
 
-def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
+def persisted_pdf_references(record: PaperRecord, *, ai_runtime=None) -> StoredReferenceList:
     """Reuse a valid artifact, extracting only when absent (one worker process)."""
     with _REFERENCE_LOCKS[hash(record.paper_id) % len(_REFERENCE_LOCKS)]:
         path = Path(record.file_path)
@@ -164,10 +170,12 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                     if saved.source_sha256 != source_digest(path):
                         raise ReferenceStoreError("Reference artifact is stale; reprocess the PDF.")
                 _enrich_legacy_parser_metadata(saved)
-                if _needs_llm_segmentation(saved):
-                    _segment_stored_references(saved.references)
+                if _needs_llm_segmentation(saved, ai_runtime=ai_runtime):
+                    _segment_stored_references(saved.references, ai_runtime=ai_runtime)
                     saved.metadata_version = 3
                     save_references(record.paper_id, saved)
+                if ai_runtime is not None:
+                    ai_runtime.raise_if_failed()
                 return saved
             if not path.is_file():
                 raise AuditInputError(
@@ -189,7 +197,7 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                 )
                 for reference in extracted.references
             ]
-            _segment_stored_references(references)
+            _segment_stored_references(references, ai_runtime=ai_runtime)
             saved = StoredReferenceList(
                 metadata_version=3,
                 source_file=path.name,
@@ -199,6 +207,8 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
                 warnings=list(extracted.warnings),
             )
             save_references(record.paper_id, saved)
+            if ai_runtime is not None:
+                ai_runtime.raise_if_failed()
             return saved
         except (ReferenceStoreError, OSError, ValueError) as exc:
             raise AuditInputError(
@@ -211,6 +221,8 @@ def persisted_pdf_references(record: PaperRecord) -> StoredReferenceList:
 
 def load_audit_references(
     request: AuditRequest,
+    *,
+    ai_runtime=None,
 ) -> tuple[str, str, list[ReferenceEntry], list[str]]:
     paper_id = request.bib_paper_id or request.manuscript_id
     expected_type = "bib" if request.bib_paper_id else "pdf"
@@ -254,8 +266,18 @@ def load_audit_references(
             for index, entry in enumerate(document.entries)
         ]
     else:
-        references = persisted_pdf_references(record)
+        references = persisted_pdf_references(record, ai_runtime=ai_runtime)
         warnings.extend(references.warnings)
+        incomplete = sum(
+            reference.metadata_status
+            in {"NO_CLIENT", "MODEL_ERROR", "INVALID_RESPONSE", "VALIDATION_FAILED", "PARTIAL"}
+            for reference in references.references
+        )
+        if incomplete:
+            warnings.append(
+                f"{incomplete} reference(s) have incomplete AI metadata extraction; "
+                "Parser fields and original text remain available for review."
+            )
         entries = [
             ReferenceEntry(
                 entry_id=_entry_id(paper_id, index, reference.raw_text),
