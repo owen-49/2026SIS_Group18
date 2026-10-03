@@ -1,0 +1,27 @@
+name: Backend deployment rehearsal
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/backend-deployment.yml
+      - claimtrace/.dockerignore
+      - claimtrace/backend/**
+      - claimtrace/parser/**
+      - claimtrace/engine/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build, parse, recreate, back up and recover isolated data
+        run: python claimtrace/backend/deploy/smoke_deployment.py

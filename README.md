@@ -124,6 +124,10 @@ The backend serves `http://localhost:8000`; the web app `http://localhost:3000`.
 Copy `claimtrace/.env.example` to `.env` for the backend and
 `frontend/.env.example` to `frontend/.env.local` for the web app.
 
+For a backend-only production rehearsal, use
+[the deployment runbook](claimtrace/backend/deploy/README.md). It has a separate
+image/Compose configuration, persistent volumes and an isolated acceptance script.
+
 ---
 
 ## Development Workflow
@@ -255,6 +259,7 @@ Backend → Frontend/Extension is REST:
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/health` | GET | Service health check |
+| `/ready` | GET | Local deployment prerequisites and writable storage (200 / 503) |
 | `/api/parse` | POST | Upload & parse a PDF or `.bib` |
 | `/api/parse/{paper_id}` | GET | Get parse status |
 | `/api/parse/{paper_id}` | PUT | Replace a synchronised `.bib` in place |

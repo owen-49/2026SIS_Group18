@@ -1,0 +1,6 @@
+# Keep the pre-installed CPU wheel; never resolve to a CUDA PyTorch release.
+torch==2.6.0
+# Known compatible embedding stack; other package bounds live in pyproject.toml.
+sentence-transformers==3.4.1
+transformers==4.49.0
+numpy==1.26.4
