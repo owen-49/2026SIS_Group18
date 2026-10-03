@@ -343,3 +343,8 @@
 .review-reference-content p { margin: 9px 0 0; color: #7b877e; font-size: 12px; line-height: 1.6; max-width: 560px; }
 .review-document-controls select:disabled { cursor: default; opacity: .6; }
 @media (max-width: 620px) { .review-document-controls { padding: 16px; } .review-reference-content { padding-left: 0; } }
+
+.ai-settings-dialog .field { display: grid; gap: 6px; margin: 16px 0; }
+.ai-settings-dialog input:not([type="checkbox"]), .ai-settings-dialog select { width: 100%; padding: 10px 12px; border: 1px solid #d4dbe5; border-radius: 8px; }
+.ai-audit-option { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+.ai-settings-note { color: #64748b; font-size: 13px; line-height: 1.5; }

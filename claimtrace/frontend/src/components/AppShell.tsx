@@ -1,3 +1,4 @@
+import { AISettings } from "./AISettings";
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { Icon, type IconName } from "./Icon";
@@ -49,6 +50,7 @@ export function AppShell() {
           <button className="icon-button mobile-menu" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <Icon name="menu" />
           </button>
+          <AISettings />
           <Link className="help-button" to="/docs">Help <Icon name="external" size={13} /></Link>
         </header>
         <main className="content"><Outlet /></main>

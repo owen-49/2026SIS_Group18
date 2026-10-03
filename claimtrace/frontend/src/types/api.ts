@@ -1,3 +1,9 @@
+export interface AIConfig {
+  provider: "openai" | "deepseek";
+  model: string;
+  api_key: string;
+}
+
 export type Verdict = "SUPPORT" | "PARTIAL" | "CONTRADICT" | "NOT_FOUND";
 export type ParseStatus = "pending" | "processing" | "completed" | "failed";
 export type PaperScope = "library" | "verify_source";
