@@ -19,6 +19,7 @@ number is not the point, but the duplication was.
 | Document | Reader | Kind | What it answers |
 | --- | --- | --- | --- |
 | [architecture.md](architecture.md) | everyone | overview | How the system is layered, what the data flows are, which endpoints exist, **what is still missing** |
+| [Backend deployment runbook](../backend/deploy/README.md) | Backend | operations | Production container preparation, single-worker storage, backup/restore and isolated acceptance checks |
 | [audit-contract.md](audit-contract.md) | Backend, Frontend, Extension | contract | Bibliography Audit v2: request/response, the five states, the provider chain, the identity rules, the measured limits |
 | [engine-verify-contract.zh-CN.md](engine-verify-contract.zh-CN.md) | Engine, Backend | contract | The Engine's Verify input/output contract and how a failure is reported without inventing a verdict |
 | [citation-comparison.zh-CN.md](citation-comparison.zh-CN.md) | Backend, Engine | contract | Claim × source-paper semantic comparison: statuses, failure handling, and the reasoning for each |
