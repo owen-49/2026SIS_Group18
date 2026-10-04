@@ -3,15 +3,19 @@
 Seeds the paper library directly (bypassing PDF parsing, which is covered by
 the audit pipeline's own acceptance runs) and exercises the whole comparison
 chain for real: sentence-transformers embedding, FAISS retrieval, and a live
-call to the provider configured in claimtrace/.env.
+call using explicitly supplied user credentials. This spends the user's API credits.
 
 Run from the repository root so ``backend.src`` is importable:
 
-    cd claimtrace && python backend/scripts/acceptance_citation_comparison.py
+    cd claimtrace
+    python backend/scripts/acceptance_citation_comparison.py
+        --provider deepseek --model deepseek-chat
 
 It never prints API keys.
 """
 
+import argparse
+import getpass
 import sys
 import tempfile
 from datetime import UTC, datetime
@@ -21,7 +25,6 @@ from pathlib import Path
 # no matter which directory the script is launched from.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from backend.src.config import get_settings  # noqa: E402
 from backend.src.models import (
     BibEntryRecord,
     PaperRecord,
@@ -93,8 +96,7 @@ def seed(upload_dir: Path) -> None:
         doi="10.5555/3295222.3295349",
         pages=1,
         paragraphs=[
-            ParsedParagraph(text=text, page_start=1, page_end=1)
-            for text in SOURCE_PARAGRAPHS
+            ParsedParagraph(text=text, page_start=1, page_end=1) for text in SOURCE_PARAGRAPHS
         ],
     )
     create_paper(
@@ -143,13 +145,15 @@ def seed(upload_dir: Path) -> None:
 
 
 def main() -> int:
-    settings = get_settings()
-    print(f"provider     : {settings.llm_provider}")
-    print(f"model        : {settings.llm_model_name}")
-    print(f"llm ready    : {settings.is_llm_configured}")
-    if not settings.is_llm_configured:
-        print("No API key configured — run from the repository root so .env is found.")
+    arguments = argparse.ArgumentParser(description="Live test using your own API credits")
+    arguments.add_argument("--provider", required=True, choices=["openai", "deepseek"])
+    arguments.add_argument("--model", required=True)
+    args = arguments.parse_args()
+    key = getpass.getpass("Your API key (not saved; this test spends your credits): ")
+    if not key.strip():
+        print("A user API key is required.")
         return 1
+    ai_config = {"provider": args.provider, "model": args.model, "api_key": key}
 
     with tempfile.TemporaryDirectory() as tmp:
         seed(Path(tmp))
@@ -157,22 +161,30 @@ def main() -> int:
         from backend.src.main import app
 
         with TestClient(app) as client:
-            print(f"startup llm  : {type(app.state.llm_client).__name__}")
+            print(f"user provider: {args.provider}, model: {args.model}")
             print("-" * 78)
             for expectation, claim in CASES:
                 response = client.post(
                     "/api/verify/citation",
-                    json={"claim": claim, "citation_marker": r"\cite{vaswani2017attention}"},
+                    json={
+                        "claim": claim,
+                        "citation_marker": r"\cite{vaswani2017attention}",
+                        "ai_config": ai_config,
+                    },
                 )
                 body = response.json()
-                print(f"[{expectation}]  HTTP {response.status_code}  status={body['status']}")
+                print(
+                    f"[{expectation}]  HTTP {response.status_code}  "
+                    f"status={body.get('status', 'ERROR')}"
+                )
                 print(f"  claim      : {claim[:72]}...")
                 judgement = body.get("judgement")
                 if judgement:
                     print(f"  verdict    : {judgement['verdict']}  ({judgement['confidence']})")
                     print(f"  rationale  : {judgement['rationale'][:200]}")
                 else:
-                    print(f"  message    : {body['message']}")
+                    print(f"  message    : {body.get('message', body.get('detail'))}")
+                    return 1
                 for item in body.get("evidence", [])[:2]:
                     print(
                         f"  evidence   : rank={item['rank']} page={item['page']} "

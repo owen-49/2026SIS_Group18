@@ -132,11 +132,16 @@ def _load_reference_input(
     request: AuditRequest,
     *,
     lock_id: str,
+    ai_runtime=None,
 ) -> tuple[list[Any] | None, tuple[str, str] | None]:
     """Load one reference input and retain an API-safe error for its callers."""
     try:
         with paper_lifecycle_lock(lock_id):
-            _, _, references, _ = load_audit_references(request)
+            _, _, references, _ = (
+                load_audit_references(request, ai_runtime=ai_runtime)
+                if ai_runtime is not None
+                else load_audit_references(request)
+            )
     except AuditInputError as exc:
         return None, (exc.code, str(exc))
     return references, None
@@ -408,6 +413,7 @@ def look_up_citation(
     exclude_paper_id: str | None = None,
     bib_paper_id: str | None = None,
     context: CitationLookupContext | None = None,
+    ai_runtime=None,
 ) -> CitationLookup:
     """Map a citation marker to a parsed source paper in the local library.
 
@@ -496,6 +502,7 @@ def look_up_citation(
             references, error = _load_reference_input(
                 request,
                 lock_id=exclude_paper_id if manuscript_references else bib_paper_id,
+                ai_runtime=ai_runtime,
             )
             if error is not None:
                 code, detail = error

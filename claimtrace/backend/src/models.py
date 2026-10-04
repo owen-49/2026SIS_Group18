@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .user_ai import UserAIConfig
+
 
 class VerdictEnum(str, Enum):
     SUPPORT = "SUPPORT"
@@ -40,6 +42,7 @@ class BibFieldStatusEnum(str, Enum):
 
 
 class VerifyRequest(BaseModel):
+    ai_config: UserAIConfig | None = Field(default=None, repr=False, exclude=True)
     claim: str = Field(..., description="The claim text to verify")
     source_paper_id: str = Field(
         ..., description="ID of the uploaded source paper to check against"
@@ -50,6 +53,7 @@ class AuditRequest(BaseModel):
     """Audit one persisted bibliography or one manuscript reference list."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    ai_config: UserAIConfig | None = Field(default=None, repr=False, exclude=True)
     bib_paper_id: str | None = Field(default=None, min_length=1)
     manuscript_id: str | None = Field(default=None, min_length=1)
     # Accepted for old clients, but never used as proof of publication existence.
@@ -63,9 +67,7 @@ class AuditRequest(BaseModel):
 
 
 class BibVerifyRequest(BaseModel):
-    bib_paper_id: str = Field(
-        ..., description="ID of the uploaded .bib file (from /api/parse)"
-    )
+    bib_paper_id: str = Field(..., description="ID of the uploaded .bib file (from /api/parse)")
     source_paper_ids: list[str] = Field(
         default_factory=list,
         description="IDs of uploaded source PDFs to cross-check against",
@@ -333,6 +335,7 @@ class CitationComparisonRequest(BaseModel):
     """Compare one manuscript claim against the paper it cites."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    ai_config: UserAIConfig | None = Field(default=None, repr=False, exclude=True)
     claim: str = Field(..., min_length=1, description="The claim sentence to check")
     citation_marker: str = Field(
         ...,

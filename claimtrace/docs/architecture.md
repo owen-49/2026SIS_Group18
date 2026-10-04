@@ -303,8 +303,12 @@ Response: {
 ### 1. 文件持久化而非数据库
 `papers.json` + 文件存储替代 Postgres/MySQL。理由：数据量小（几篇到几十篇论文）、无多用户并发、无复杂查询。省下的时间投入 PDF 解析和检索准确率。若后续需要查询/多用户，SQLite 是零成本升级路径。
 
-### 2. 多 Provider LLM 抽象
-`llm_client.build_llm_client()` 工厂把 OpenAI/Gemini/Claude/Ollama 统一成 OpenAI 兼容接口。所有 provider 讲同一种协议，上层代码无感知切换。语义分类仅属于单条 Verify。文献 Audit 不使用 LLM 支持度分类，其外部记录查询适配器仍待接入。
+### 2. 请求级用户 LLM 配置
+两个 Verify HTTP 端点接收用户的 `ai_config`，由 backend 创建独立 client 并显式传入 Engine。
+参考文献提取也接收同一请求配置。第一版支持 OpenAI 和 DeepSeek 官方地址，不保存 key，
+不回退到团队环境 key。语义判定仍只属于单条 Verify；Audit 中 LLM 只提取原文元数据，
+出版记录仍由 OpenAlex 与 Crossref 查询。配置提交、错误及部署边界见
+[frontend-handoff.md](frontend-handoff.md#user-supplied-ai-api-contract)。
 
 ### 3. 两阶段检索（Paragraph → Sentence）
 段落级 embedding 保证召回，句子级重排保证精度。避免纯句子切分（噪声大）和纯段落切分（精度低）各自的缺陷。

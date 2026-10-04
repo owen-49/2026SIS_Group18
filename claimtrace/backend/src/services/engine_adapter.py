@@ -2,10 +2,10 @@
 
 Retrieval uses deterministic lexical-overlap ranking (a fast stand-in for the
 Engine's FAISS retriever). Entailment verification is delegated to the real
-Engine Verifier backed by the configured LLM (DeepSeek / OpenAI / Gemini / ...).
+Engine Verifier backed by the explicitly supplied user runtime.
 
-When no LLM client is configured (no API key), it falls back to the old
-deterministic lexical verdict so CI and local dev without keys still work.
+Internal offline calls without a runtime retain the lexical baseline. HTTP
+Verify routes require user configuration and never use that baseline or team keys.
 
 A configured Engine that completes *without* a verdict is a different case, and
 is not a fallback: it raises :class:`ClaimNotJudgedError`, which the route
@@ -18,7 +18,6 @@ would report a finding the Engine never made.
 import re
 from functools import lru_cache
 
-from engine.llm_client import build_llm_client
 from engine.verifier import VerificationStatus, Verifier
 
 from ..config import get_settings
@@ -52,11 +51,7 @@ class ClaimNotJudgedError(RuntimeError):
 
 
 def _tokens(text: str) -> set[str]:
-    return {
-        token
-        for token in re.findall(r"[a-z0-9]+", text.lower())
-        if len(token) > 2
-    }
+    return {token for token in re.findall(r"[a-z0-9]+", text.lower()) if len(token) > 2}
 
 
 def _similarity(claim: str, passage: str) -> float:
@@ -67,35 +62,9 @@ def _similarity(claim: str, passage: str) -> float:
     return len(claim_tokens & passage_tokens) / len(claim_tokens)
 
 
-@lru_cache(maxsize=1)
 def _get_llm_client():
-    """Build (and cache) the LLM client from application settings."""
-    settings = get_settings()
-    provider = settings.llm_provider
-    provider_configs = {
-        "openai": {
-            "api_key": settings.openai_api_key,
-            "base_url": settings.openai_base_url,
-        },
-        "deepseek": {
-            "api_key": settings.deepseek_api_key,
-            "base_url": settings.deepseek_base_url,
-        },
-        "gemini": {
-            "api_key": settings.gemini_api_key,
-            "base_url": None,
-        },
-        "anthropic": {
-            "api_key": settings.anthropic_api_key,
-            "base_url": None,
-        },
-        "ollama": {
-            "api_key": "",
-            "base_url": settings.ollama_base_url,
-        },
-    }
-    config = provider_configs.get(provider, {})
-    return build_llm_client(provider=provider, **config)
+    """No application credential fallback; callers must supply a user runtime."""
+    return None
 
 
 @lru_cache(maxsize=1)
@@ -117,7 +86,7 @@ def _get_embedder():
     return Embedder()
 
 
-def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
+def verify_claim(claim: str, document: ParsedDocument, *, ai_runtime=None) -> VerifyResponse:
     """Verify a claim against a parsed document.
 
     Ranks paragraphs by lexical overlap to pick the best-matching passage,
@@ -151,10 +120,12 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
     best_passage = ranked[0][1]
 
     # ── 2. Verify: real LLM entailment, or the documented baseline ──
-    client = _get_llm_client()
+    client = ai_runtime if ai_runtime is not None else _get_llm_client()
     if client is not None:
         settings = get_settings()
-        verifier = Verifier(model=settings.llm_model_name)
+        verifier = Verifier(
+            model=ai_runtime.model if ai_runtime is not None else settings.llm_model_name
+        )
         try:
             result = verifier.verify(clean_claim, best_passage, client=client)
         except Exception as exc:
@@ -163,6 +134,8 @@ def verify_claim(claim: str, document: ParsedDocument) -> VerifyResponse:
             # here is a provider SDK fault mid-flight or a bug in this module.
             raise EngineAdapterError(f"The Engine call failed: {exc}") from exc
 
+        if ai_runtime is not None:
+            ai_runtime.raise_if_failed()
         if result.status is not VerificationStatus.JUDGED:
             # The Engine declined to judge — it had no usable evidence, the call
             # failed, or the reply was unusable. Every one of those statuses

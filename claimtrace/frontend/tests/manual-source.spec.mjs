@@ -1,3 +1,4 @@
+import { configureAI } from './ai-helpers.mjs';
 import { test, expect } from '@playwright/test';
 
 const sentence = 'This method improves retrieval [7].';
@@ -8,7 +9,7 @@ const judgement = { verdict: 'SUPPORT', confidence: 0.8, rationale: 'Comparison 
 const paper = (id, type) => ({ paper_id: id, file_type: type, original_filename: `${id}.${type}`, title: id, file_size: 100, status: 'completed', pages: 1, paragraph_count: 1, entry_count: 1, error_message: null, created_at: '', updated_at: '' });
 const resultFor = (status, overrides = {}) => ({ claim: sentence, claim_id: 'claim-7', citation_marker: '[7]', citation_key: 'ref7', status, message: `Message: ${status}`, cited_source: source, source_paper_id: 'source-pdf', source_document: document, evidence, judgement: status === 'COMPARED' ? judgement : null, ...overrides });
 
-async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride, verifySources = [] } = {}) {
+async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), claimsOverride, verifySources = [], configured = true } = {}) {
   const requests = [];
   const discoveries = [];
   await page.route('**/api/papers', route => route.fulfill({ json: { total: 4, papers: [paper('manuscript', 'pdf'), paper('second', 'pdf'), paper('bib-a', 'bib'), paper('bib-b', 'bib')] } }));
@@ -24,6 +25,7 @@ async function setup(page, { marker = '[7]', response = resultFor('COMPARED'), c
     await route.fulfill({ json: response });
   });
   await page.goto('/verify');
+  if (configured) await configureAI(page);
   await page.locator('[data-selectable-paragraph]').first().waitFor();
   return { requests, discoveries };
 }

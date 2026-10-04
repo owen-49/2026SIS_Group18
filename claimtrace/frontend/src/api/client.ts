@@ -1,3 +1,4 @@
+import { getAISettings, requireAIConfig } from "../data/aiSettings";
 import { demoAudit, demoPaperClaims, demoVerification, demoCitationComparison } from "../data/mockData";
 import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
 import type { AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
@@ -17,7 +18,7 @@ async function readResponse<T>(response: Response): Promise<T> {
     const body = (await response.json()) as { detail?: string | Array<{ msg?: string }> | { message?: string; code?: string } };
     if (typeof body.detail === "string") message = body.detail;
     if (body.detail && !Array.isArray(body.detail) && typeof body.detail === "object" && body.detail.message) {
-      message = body.detail.message;
+      message = body.detail.code ? `${body.detail.code}: ${body.detail.message}` : body.detail.message;
     }
     if (Array.isArray(body.detail)) {
       const details = body.detail.map((item) => item.msg).filter(Boolean).join("; ");
@@ -216,7 +217,7 @@ export async function verifyClaim(claim: string, sourcePaperId: string): Promise
   const response = await fetch(apiUrl("/api/verify"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ claim, source_paper_id: sourcePaperId }),
+    body: JSON.stringify({ claim, source_paper_id: sourcePaperId, ai_config: requireAIConfig() }),
   });
   return readResponse<VerifyResponse>(response);
 }
@@ -233,7 +234,10 @@ export async function runAudit(
   const response = await fetch(apiUrl("/api/audit"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(inputType === "bib" ? { bib_paper_id: inputPaperId } : { manuscript_id: inputPaperId }),
+    body: JSON.stringify({
+      ...(inputType === "bib" ? { bib_paper_id: inputPaperId } : { manuscript_id: inputPaperId }),
+      ...(getAISettings().auditEnabled ? { ai_config: requireAIConfig() } : {}),
+    }),
   });
   const result = await readResponse<AuditResponse>(response);
   if (result.contract_version !== 2 || !Array.isArray(result.results)) {
@@ -250,7 +254,7 @@ export async function verifyCitation(request: CitationComparisonRequest, signal?
   }
   const response = await fetch(apiUrl("/api/verify/citation"), {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request), signal,
+    body: JSON.stringify({ ...request, ai_config: requireAIConfig() }), signal,
   });
   const result = await readResponse<CitationComparisonResponse>(response);
   if (typeof result.status !== "string" || typeof result.message !== "string" || !Array.isArray(result.evidence)) {

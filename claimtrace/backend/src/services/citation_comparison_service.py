@@ -38,6 +38,7 @@ from .source_locator import (
     look_up_manual_source,
     parse_source,
 )
+from .user_ai_runtime import UserAIError
 
 if TYPE_CHECKING:  # pragma: no cover - import cost only
     from engine.retriever import Retriever
@@ -130,6 +131,7 @@ def compare_claim_to_cited_paper(
     source_paper_id: str | None = None,
     claim_id: str | None = None,
     k: int = 5,
+    ai_runtime=None,
 ) -> CitationComparisonResponse:
     """Compare a claim against the paper its citation marker points at.
 
@@ -152,7 +154,7 @@ def compare_claim_to_cited_paper(
         raise CitationComparisonError("Claim text is required.")
 
     settings = get_settings()
-    if not settings.is_llm_configured:
+    if ai_runtime is None and engine_adapter._get_llm_client() is None:
         raise ComparisonLLMNotConfiguredError(
             f"No API key is configured for LLM provider '{settings.llm_provider}'."
         )
@@ -165,7 +167,10 @@ def compare_claim_to_cited_paper(
             )
         else:
             lookup = look_up_citation(
-                citation_marker, exclude_paper_id=manuscript_id, bib_paper_id=bib_paper_id
+                citation_marker,
+                exclude_paper_id=manuscript_id,
+                bib_paper_id=bib_paper_id,
+                ai_runtime=ai_runtime,
             )
     except SourceLocatorError as exc:
         raise CitationComparisonError("Unable to read the paper library.") from exc
@@ -216,7 +221,7 @@ def compare_claim_to_cited_paper(
     source_document = _source_document(lookup, evidence)
 
     # ── Judge: real LLM verdict ────────────────────────────────
-    client = engine_adapter._get_llm_client()
+    client = ai_runtime if ai_runtime is not None else engine_adapter._get_llm_client()
     if client is None:
         raise ComparisonLLMNotConfiguredError(
             f"The LLM client for provider '{settings.llm_provider}' could not be built."
@@ -224,11 +229,15 @@ def compare_claim_to_cited_paper(
 
     from engine.verifier import VerificationStatus, Verifier
 
-    verifier = Verifier(model=settings.llm_model_name)
+    verifier = Verifier(
+        model=ai_runtime.model if ai_runtime is not None else settings.llm_model_name
+    )
     try:
         result = verifier.verify_with_retrieval(
             clean_claim, resolved.retrieval, client=client, top_n=3
         )
+        if ai_runtime is not None:
+            ai_runtime.raise_if_failed()
         if result.status is not VerificationStatus.JUDGED:
             # The Engine says it did not judge the claim. Reporting that as a
             # verdict would fabricate a finding, so it becomes a status of its
@@ -250,13 +259,15 @@ def compare_claim_to_cited_paper(
             confidence=_clamp_similarity(result.confidence),
             rationale=result.rationale,
         )
-    except Exception as exc:
+    except UserAIError:
+        raise
+    except Exception:
         # Safety net only. The Engine now reports its own failures as statuses
         # instead of raising, so anything arriving here is genuinely unexpected
         # — a provider SDK failing mid-flight, or a bug in this service.
         return CitationComparisonResponse(
             status=ComparisonStatus.LLM_FAILED,
-            message=f"The language model did not return a usable verdict ({exc}).",
+            message="The language model did not return a usable verdict.",
             source_document=source_document,
             evidence=evidence,
             **base,

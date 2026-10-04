@@ -107,9 +107,7 @@ def test_no_lookup_returns_explicit_failure_without_source_pdf_and_persists(clie
     assert client.get(f"/api/audit/{body['audit_id']}").json() == body
 
 
-def test_delete_waits_for_audit_and_removes_its_late_artifacts(
-    client, storage_paths, monkeypatch
-):
+def test_delete_waits_for_audit_and_removes_its_late_artifacts(client, storage_paths, monkeypatch):
     paper_id = upload_bib(client)
     audit_started = Event()
     release_audit = Event()
@@ -222,7 +220,7 @@ def test_llm_reference_metadata_is_persisted_reused_and_treated_as_recovered(
     )
     segmentation_calls = []
 
-    def segment(raw_references):
+    def segment(raw_references, *, ai_runtime=None):
         segmentation_calls.append(raw_references)
         return [
             SegmentationOutcome(
@@ -237,7 +235,7 @@ def test_llm_reference_metadata_is_persisted_reused_and_treated_as_recovered(
             )
         ]
 
-    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
+    monkeypatch.setattr(reference_input_service, "segment_with_user_ai", segment)
     lookup = FakeLookup(
         lookup_result(records=[external_record(title="A different external title")])
     )
@@ -287,6 +285,10 @@ def test_llm_fills_missing_parser_fields_without_erasing_valid_ones():
 
 
 def test_model_error_is_retried_then_success_is_cached(client, monkeypatch, storage_paths):
+    from backend.src import user_ai
+
+    monkeypatch.setattr(user_ai, "OpenAI", lambda **kwargs: SimpleNamespace(close=lambda: None))
+    ai_config = {"provider": "openai", "model": "test-model", "api_key": "test-key"}
     manuscript = persist_manuscript(storage_paths)
     raw = "Journal of Retrieval, 2024. J. Smith. Retrieval with citations."
     extraction_calls = []
@@ -300,7 +302,7 @@ def test_model_error_is_retried_then_success_is_cached(client, monkeypatch, stor
 
     segmentation_calls = []
 
-    def segment(raw_references):
+    def segment(raw_references, *, ai_runtime=None):
         segmentation_calls.append(raw_references)
         if len(segmentation_calls) == 1:
             return [
@@ -324,8 +326,7 @@ def test_model_error_is_retried_then_success_is_cached(client, monkeypatch, stor
         ]
 
     monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
-    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
-    monkeypatch.setattr(reference_input_service, "configured_llm_available", lambda: True)
+    monkeypatch.setattr(reference_input_service, "segment_with_user_ai", segment)
     monkeypatch.setattr(
         app.state,
         "bibliography_lookup",
@@ -333,15 +334,21 @@ def test_model_error_is_retried_then_success_is_cached(client, monkeypatch, stor
         raising=False,
     )
 
-    first = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    first = client.post(
+        "/api/audit", json={"manuscript_id": manuscript.paper_id, "ai_config": ai_config}
+    )
     assert first.status_code == 200
     saved_after_failure = json.loads(
         reference_path(manuscript.paper_id).read_text(encoding="utf-8")
     )
     assert saved_after_failure["references"][0]["metadata_status"] == "MODEL_ERROR"
 
-    second = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
-    third = client.post("/api/audit", json={"manuscript_id": manuscript.paper_id})
+    second = client.post(
+        "/api/audit", json={"manuscript_id": manuscript.paper_id, "ai_config": ai_config}
+    )
+    third = client.post(
+        "/api/audit", json={"manuscript_id": manuscript.paper_id, "ai_config": ai_config}
+    )
     assert second.status_code == third.status_code == 200
 
     saved_after_recovery = json.loads(
@@ -630,22 +637,38 @@ def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
     if legacy:
         artifact = reference_path(record.paper_id)
         artifact.parent.mkdir(parents=True, exist_ok=True)
-        artifact.write_text(json.dumps({
-            "source_file": record.stored_filename,
-            "references": [{"raw_text": raw, "number": 1, "page_start": 2}],
-        }), encoding="utf-8")
+        artifact.write_text(
+            json.dumps(
+                {
+                    "source_file": record.stored_filename,
+                    "references": [{"raw_text": raw, "number": 1, "page_start": 2}],
+                }
+            ),
+            encoding="utf-8",
+        )
 
     calls = []
 
     def extract(path):
         calls.append(path)
-        return SimpleNamespace(references=[SimpleNamespace(
-            raw_text=raw, number=1, page_start=2, page_end=2,
-            title=metadata.title, authors=metadata.authors, year=metadata.year,
-            venue=metadata.venue, doi=metadata.doi,
-        )], warnings=[])
+        return SimpleNamespace(
+            references=[
+                SimpleNamespace(
+                    raw_text=raw,
+                    number=1,
+                    page_start=2,
+                    page_end=2,
+                    title=metadata.title,
+                    authors=metadata.authors,
+                    year=metadata.year,
+                    venue=metadata.venue,
+                    doi=metadata.doi,
+                )
+            ],
+            warnings=[],
+        )
 
-    def segment(raw_references):
+    def segment(raw_references, *, ai_runtime=None):
         pytest.fail(f"complete Parser metadata must bypass the LLM: {raw_references}")
 
     queries = []
@@ -657,25 +680,31 @@ def test_pdf_metadata_reaches_the_provider_chain_and_survives_reload(
 
         def search(self, query, *, limit, timeout_seconds):
             queries.append(query)
-            return ProviderResponse(status="ok", candidates=[PublicationCandidate(
-                provider=self.name,
-                record_id="test-record",
-                title=query.title,
-                authors=list(query.authors),
-                year=query.year,
-                venue=query.venue,
-                kind="journal-article",
-                doi=query.doi,
-                url="https://example.org/publication",
-            )])
+            return ProviderResponse(
+                status="ok",
+                candidates=[
+                    PublicationCandidate(
+                        provider=self.name,
+                        record_id="test-record",
+                        title=query.title,
+                        authors=list(query.authors),
+                        year=query.year,
+                        venue=query.venue,
+                        kind="journal-article",
+                        doi=query.doi,
+                        url="https://example.org/publication",
+                    )
+                ],
+            )
 
     monkeypatch.setattr(reference_input_service, "extract_pdf_references", extract)
-    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
+    monkeypatch.setattr(reference_input_service, "segment_with_user_ai", segment)
     monkeypatch.setattr(
         app.state, "bibliography_lookup", ProviderChainLookup([EchoProvider()]), raising=False
     )
-    bodies = [client.post("/api/audit", json={"manuscript_id": record.paper_id}).json()
-              for _ in range(2)]
+    bodies = [
+        client.post("/api/audit", json={"manuscript_id": record.paper_id}).json() for _ in range(2)
+    ]
     assert len(calls) == (0 if legacy else 1)
     # Standard APA/IEEE metadata goes directly from Parser to the provider.
     assert [(q.title, q.authors, q.year) for q in queries] == [
@@ -722,16 +751,16 @@ def test_real_pdf_upload_to_audit(client, monkeypatch):
             queries.append(query)
             return ProviderResponse(status="ok", candidates=[])
 
-    def segment(raw_references):
+    def segment(raw_references, *, ai_runtime=None):
         pytest.fail(f"standard IEEE references must bypass the LLM: {raw_references}")
 
     monkeypatch.setattr(
         app.state, "bibliography_lookup", ProviderChainLookup([EmptyProvider()]), raising=False
     )
-    monkeypatch.setattr(reference_input_service, "segment_with_configured_llm", segment)
-    upload = client.post("/api/parse", files={"file": (
-        "audit-fixture.pdf", content, "application/pdf"
-    )})
+    monkeypatch.setattr(reference_input_service, "segment_with_user_ai", segment)
+    upload = client.post(
+        "/api/parse", files={"file": ("audit-fixture.pdf", content, "application/pdf")}
+    )
     assert upload.status_code == 200, upload.text
     assert upload.json()["status"] == "completed", upload.text
     response = client.post("/api/audit", json={"manuscript_id": upload.json()["paper_id"]})

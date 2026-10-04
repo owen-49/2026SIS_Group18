@@ -27,7 +27,7 @@ class VerificationServiceError(RuntimeError):
     """Raised when persisted data or Engine processing fails."""
 
 
-def verify_paper_claim(paper_id: str, claim: str) -> VerifyResponse:
+def verify_paper_claim(paper_id: str, claim: str, *, ai_runtime=None) -> VerifyResponse:
     """Verify a claim against parsed content for a real uploaded paper ID."""
     try:
         record = get_paper(paper_id)
@@ -39,9 +39,7 @@ def verify_paper_claim(paper_id: str, claim: str) -> VerifyResponse:
     if record.file_type != "pdf":
         raise InvalidPaperError("Only parsed PDF files can be verified.")
     if record.scope is PaperScope.VERIFY_SOURCE:
-        raise InvalidPaperError(
-            "Verify-only source PDFs can only be used for citation comparison."
-        )
+        raise InvalidPaperError("Verify-only source PDFs can only be used for citation comparison.")
     if record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
         raise PaperNotReadyError("Paper parsing has not completed.")
     if record.status == ParseStatus.FAILED:
@@ -53,7 +51,7 @@ def verify_paper_claim(paper_id: str, claim: str) -> VerifyResponse:
         document = load_parsed_document(Path(record.parsed_result_path))
         if document.paper_id != paper_id:
             raise VerificationServiceError("Parsed paper ID does not match the request.")
-        return verify_claim(claim, document)
+        return verify_claim(claim, document, ai_runtime=ai_runtime)
     except (ParsedDocumentStoreError, EngineAdapterError) as exc:
         raise VerificationServiceError("Unable to verify the claim.") from exc
     # ClaimNotJudgedError is deliberately absent from the tuple above. It is not
