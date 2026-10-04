@@ -1,0 +1,54 @@
+# Build from claimtrace/: docker build -f backend/Dockerfile.production .
+FROM python:3.11-slim-bookworm AS packages
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
+WORKDIR /build
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# CPU-only PyTorch avoids downloading NVIDIA runtime libraries on a CPU server.
+ARG TORCH_VERSION=2.6.0
+RUN pip install "torch==${TORCH_VERSION}" --index-url https://download.pytorch.org/whl/cpu
+COPY backend/deploy/constraints.txt /build/constraints.txt
+COPY parser /build/parser
+COPY engine /build/engine
+COPY backend/pyproject.toml /build/backend/pyproject.toml
+COPY backend/src /build/backend/src
+RUN pip install -c constraints.txt /build/parser /build/engine /build/backend \
+    && pip check \
+    && pip freeze > /opt/venv/installed-packages.txt
+
+FROM python:3.11-slim-bookworm AS runtime
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jre-headless libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 10001 claimtrace \
+    && useradd --uid 10001 --gid claimtrace --create-home claimtrace
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH="/app:/app/backend" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    CLAIMTRACE_ENV_FILE=/dev/null \
+    BACKEND_RELOAD=false \
+    UPLOAD_DIR=/data/uploads \
+    PAPERS_FILE=/data/uploads/papers.json \
+    PARSED_DIR=/data/uploads/parsed \
+    HF_HOME=/cache/huggingface \
+    XDG_CACHE_HOME=/cache \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    OMP_NUM_THREADS=2
+
+COPY --from=packages /opt/venv /opt/venv
+# Keep the backend namespace available for existing imports and future changes.
+COPY backend/src /app/backend/src
+COPY backend/deploy/entrypoint.py backend/deploy/manage_data.py /app/ops/
+RUN mkdir -p /data/uploads /cache/huggingface \
+    && chown -R claimtrace:claimtrace /data /cache
+
+WORKDIR /app
+USER 10001:10001
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=8).close()"
+ENTRYPOINT ["python", "/app/ops/entrypoint.py"]

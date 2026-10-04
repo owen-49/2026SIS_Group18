@@ -160,6 +160,7 @@ and the measured limits.
 | 端点 | 方法 | 用途 |
 |------|------|------|
 | `/health` | GET | 健康检查 |
+| `/ready` | GET | 本地部署就绪检查：Java、包发现和目录可写性；200 / 503，不调用外部 AI |
 | `/api/parse` | POST | 上传 PDF / .bib，返回 `paper_id` |
 | `/api/parse/bib` | POST | 重新解析并返回已保存的 BibTeX 条目 |
 | `/api/parse/{paper_id}` | GET | 查询解析状态 |

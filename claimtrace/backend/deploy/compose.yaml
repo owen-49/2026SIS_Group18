@@ -1,0 +1,65 @@
+name: claimtrace-backend
+
+x-runtime: &runtime
+  image: ${BACKEND_IMAGE:-claimtrace-backend:local}
+  build:
+    context: ../..
+    dockerfile: backend/Dockerfile.production
+  environment:
+    CLAIMTRACE_ENV_FILE: /dev/null
+    BACKEND_RELOAD: "false"
+    UPLOAD_DIR: /data/uploads
+    PAPERS_FILE: /data/uploads/papers.json
+    PARSED_DIR: /data/uploads/parsed
+    HF_HOME: /cache/huggingface
+    XDG_CACHE_HOME: /cache
+    CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+    MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-50}
+    METADATA_LOOKUP_TIMEOUT_SECONDS: ${METADATA_LOOKUP_TIMEOUT_SECONDS:-10}
+    REFERENCE_METADATA_TIMEOUT_SECONDS: ${REFERENCE_METADATA_TIMEOUT_SECONDS:-30}
+    PARSER_HYBRID: "off"
+    # Do not forward host/team credentials. BYOK belongs to Hongyang's branch.
+    CLAIMTRACE_LLM_PROVIDER: openai
+    OPENAI_API_KEY: ""
+    DEEPSEEK_API_KEY: ""
+    GEMINI_API_KEY: ""
+    ANTHROPIC_API_KEY: ""
+  volumes:
+    - data:/data
+    - model-cache:/cache
+  init: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  backend:
+    <<: *runtime
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=512m,mode=1777
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  maintenance:
+    <<: *runtime
+    profiles: [tools]
+    entrypoint: [python, /app/ops/manage_data.py]
+    healthcheck:
+      disable: true
+    volumes:
+      - data:/data
+      - "${BACKUP_DIR:-./backups}:/backups"
+    restart: "no"
+
+volumes:
+  data:
+  model-cache:
