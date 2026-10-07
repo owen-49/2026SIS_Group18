@@ -145,7 +145,7 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
     {audit && <>
       {audit.warnings.map((warning) => <section className="audit-notice panel" key={warning}><Icon name="document" size={17} /><div><strong>Audit warning</strong><p>{warning}</p></div></section>)}
       <section className="audit-summary panel">
-        <div className="audit-score"><div className="score-ring" style={{ background: `radial-gradient(circle at center,#fff 57%,transparent 58%), conic-gradient(#13846d 0 ${verifiedPercentage}%,#e6eeeb ${verifiedPercentage}%)` }}><strong>{verifiedPercentage}</strong><small>% verified</small></div><div><span className="eyebrow">{currentPaper?.original_filename || audit.input_paper_id}</span><h2>{audit.total_entries} references checked</h2><p>{summaryText}</p></div></div>
+        <div className="audit-score"><div className="score-ring" style={{ background: `radial-gradient(circle at center,#fff 57%,transparent 58%), conic-gradient(var(--brand) 0 ${verifiedPercentage}%,var(--line) ${verifiedPercentage}%)` }}><strong>{verifiedPercentage}</strong><small>% verified</small></div><div><span className="eyebrow">{currentPaper?.original_filename || audit.input_paper_id}</span><h2>{audit.total_entries} references checked</h2><p>{summaryText}</p></div></div>
         <div className="audit-count-grid">{Object.entries(statusLabels).map(([status, label]) => <div key={status}><strong>{audit.counts[status as AuditStatus] || 0}</strong><span>{label}</span></div>)}</div>
       </section>
       <section className="audit-results-grid">
