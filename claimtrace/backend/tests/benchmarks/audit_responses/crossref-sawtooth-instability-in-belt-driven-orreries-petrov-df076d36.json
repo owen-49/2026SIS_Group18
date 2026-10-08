@@ -1,0 +1,490 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Sawtooth+Instability+in+Belt-Driven+Orreries+petrov&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:54:02+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 772485,
+   "items": [
+    {
+     "DOI": "10.2172/763824",
+     "title": [
+      "Searching for Transverse Sawtooth in Strong Head-Tail Instability by Adding Landau Damping"
+     ],
+     "author": [
+      {
+       "family": ",",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2000,
+        7,
+        20
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.2172/763824"
+    },
+    {
+     "DOI": "10.1109/pac.1995.505803",
+     "title": [
+      "Simulations of sawtooth instability"
+     ],
+     "author": [
+      {
+       "given": "R.",
+       "family": "Baartman",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "M.",
+       "family": "D'Yachkov",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings Particle Accelerator Conference"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/pac.1995.505803"
+    },
+    {
+     "DOI": "10.1007/978-94-011-4758-3_13",
+     "title": [
+      "Sawtooth Instability in Tokamak Plasmas"
+     ],
+     "author": [
+      {
+       "given": "R. J.",
+       "family": "Hastie",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1998
+       ]
+      ]
+     },
+     "container-title": [
+      "Plasma Physics"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1007/978-94-011-4758-3_13"
+    },
+    {
+     "DOI": "10.2172/6906163",
+     "title": [
+      "Modeling of the sawtooth instability in tokamaks using a current viscosity term"
+     ],
+     "author": [
+      {
+       "given": "D.J.",
+       "family": "Ward",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "S.C.",
+       "family": "Jardin",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1988,
+        8,
+        1
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.2172/6906163"
+    },
+    {
+     "DOI": "10.2172/289897",
+     "title": [
+      "Global Confinement, Sawtooth Mixing, and Stochastic Diffusion Ripple Loss of Fast ICRF-driven H+ Minority Ions in TFTR"
+     ],
+     "author": [
+      {
+       "name": "Princeton Univ., NJ (United States). Plasma Physics Lab.",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "M",
+       "family": "Petrov",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "name": "USDOE Office of Energy Research, Washington, DC (United States)",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "name": "Zweben, S.J., PPPL",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "R",
+       "family": "Bell",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "R",
+       "family": "Budny",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "N",
+       "family": "Gorelenkov",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "S",
+       "family": "Medley",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1998,
+        7,
+        1
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.2172/289897"
+    },
+    {
+     "DOI": "10.1063/1.4973328",
+     "title": [
+      "Secondary fast reconnecting instability in the sawtooth crash"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0001-7489-8843",
+       "authenticated-orcid": false,
+       "given": "D.",
+       "family": "Del Sarto",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Université de Lorraine 1 Institut Jean Lamour, UMR 7198 CNRS – , F-54506 Vandoeuvre-lés-Nancy, France"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "M.",
+       "family": "Ottaviani",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "IRFM 2 CEA, , F-13108 Saint-Paul-lez-Durance, France"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2017,
+        1,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Physics of Plasmas"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1063/1.4973328"
+    },
+    {
+     "DOI": "10.1088/0741-3335/36/7a/031",
+     "title": [
+      "Ionization instability driven magnetic island belt, particle confinement and edge profiles"
+     ],
+     "author": [
+      {
+       "given": "A L",
+       "family": "Rogister",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1994,
+        7,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Plasma Physics and Controlled Fusion"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1088/0741-3335/36/7a/031"
+    },
+    {
+     "DOI": "10.1109/pac.1997.750781",
+     "title": [
+      "Sawtooth instability studies in the Stanford Linear Collider damping rings"
+     ],
+     "author": [
+      {
+       "given": "B.V.",
+       "family": "Podobedov",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "R.H.",
+       "family": "Siemann",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the 1997 Particle Accelerator Conference (Cat. No.97CH36167)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/pac.1997.750781"
+    },
+    {
+     "DOI": "10.1063/1.1377860",
+     "title": [
+      "Nonresonant suppression of the sawtooth instability by passing ions in tokamaks"
+     ],
+     "author": [
+      {
+       "given": "Avrilios",
+       "family": "Lazaros",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Association EURATOM-Hellenic Republic, National Technical University of Athens, Athens, Greece"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2001,
+        8,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Physics of Plasmas"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1063/1.1377860"
+    },
+    {
+     "DOI": "10.1023/a:1001728227899",
+     "title": [
+      "Sawtooth Instability in Tokamak Plasmas"
+     ],
+     "author": [
+      {
+       "given": "R. J.",
+       "family": "Hastie",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1997,
+        3
+       ]
+      ]
+     },
+     "container-title": [
+      "Astrophysics and Space Science"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1023/a:1001728227899"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

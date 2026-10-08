@@ -1,0 +1,273 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Catalogue+of+Extinct+Alphabets+of+the+Northern+Steppe+vasquez&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:31+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 409337,
+   "items": [
+    {
+     "DOI": "10.1017/cbo9781139207256.003",
+     "title": [
+      "CATALOGUE OF AUTHORS"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.003"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.007",
+     "title": [
+      "APPENDIX"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "other",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.007"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.006",
+     "title": [
+      "CATALOGUE OF WORKS IN EACH CLASS OF LANGUAGE"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.006"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.001",
+     "title": [
+      "ADVERTISEMENT"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.001"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256",
+     "title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "author": [
+      {
+       "given": "William",
+       "family": "Marsden",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "type": "monograph",
+     "URL": "https://doi.org/10.1017/cbo9781139207256"
+    },
+    {
+     "DOI": "10.1127/pala/0178",
+     "title": [
+      "Annotated Catalogue of Extinct Phoroidea (Diptera)"
+     ],
+     "author": [
+      {
+       "given": "Mélanie C. M.",
+       "family": "Herbert",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Brian V.",
+       "family": "Brown",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Mónica M.",
+       "family": "Solórzano-Kraemer",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2026,
+        6,
+        25
+       ]
+      ]
+     },
+     "container-title": [
+      "Palaeontographica Abteilung A"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1127/pala/0178"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.004",
+     "title": [
+      "ANONYMOUS WORKS"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.004"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.005",
+     "title": [
+      "CLASSIFICATION OF LANGUAGES"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.005"
+    },
+    {
+     "DOI": "10.1017/cbo9781139207256.002",
+     "title": [
+      "Explanations of Marks and Abbreviations used"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        6,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "A Catalogue of Dictionaries, Vocabularies, Grammars, and Alphabets"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/cbo9781139207256.002"
+    },
+    {
+     "DOI": "10.1201/b16901-5",
+     "title": [
+      "C"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2014,
+        4,
+        22
+       ]
+      ]
+     },
+     "container-title": [
+      "Snakes of the World"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1201/b16901-5"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

@@ -1,0 +1,292 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Lattice+Distortion+in+Hand-Blown+Cathedral+Glass+duquesne&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:54:07+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 724212,
+   "items": [
+    {
+     "DOI": "10.5040/9781501365171.1907",
+     "title": [
+      "hand-blown glass"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2022
+       ]
+      ]
+     },
+     "container-title": [
+      "The Fairchild Books Dictionary of Interior Design"
+     ],
+     "type": "other",
+     "URL": "https://doi.org/10.5040/9781501365171.1907"
+    },
+    {
+     "DOI": "10.1093/gao/9781884446054.article.t2072762",
+     "title": [
+      "Lamp-blown glass"
+     ],
+     "author": [
+      {
+       "given": "Gordon",
+       "family": "Campbell",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2014,
+        1,
+        22
+       ]
+      ]
+     },
+     "container-title": [
+      "Oxford Art Online"
+     ],
+     "type": "reference-book",
+     "URL": "https://doi.org/10.1093/gao/9781884446054.article.t2072762"
+    },
+    {
+     "DOI": "10.31274/itaa_proceedings-180814-1227",
+     "title": [
+      "Glass to Fabric: Dale Chihuly's Blown Glass Inspired Design"
+     ],
+     "author": [
+      {
+       "family": "Pasricha",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "St. Catherine University"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2015,
+        11,
+        12
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.31274/itaa_proceedings-180814-1227"
+    },
+    {
+     "DOI": "10.1163/1874-6772_seg_a41_1768",
+     "title": [
+      "Glass. Inscriptions on mould-blown glass vessels, 1st cent. A.D."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "Supplementum Epigraphicum Graecum"
+     ],
+     "type": "dataset",
+     "URL": "https://doi.org/10.1163/1874-6772_seg_a41_1768"
+    },
+    {
+     "DOI": "10.1163/1874-6772_seg_a35_1760bis",
+     "title": [
+      "Glass: inscriptions on mold-blown glass vessels, 1st cent. A.D."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "Supplementum Epigraphicum Graecum"
+     ],
+     "type": "dataset",
+     "URL": "https://doi.org/10.1163/1874-6772_seg_a35_1760bis"
+    },
+    {
+     "DOI": "10.1111/j.1151-2916.1945.tb14529.x",
+     "title": [
+      "CONTINUOUS TANK FOR HAND‐BLOWN GLASS *"
+     ],
+     "author": [
+      {
+       "given": "F. G.",
+       "family": "Schwalbe",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1945,
+        6
+       ]
+      ]
+     },
+     "container-title": [
+      "Journal of the American Ceramic Society"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1111/j.1151-2916.1945.tb14529.x"
+    },
+    {
+     "DOI": "10.15760/etd.5747",
+     "title": [
+      "Dudelsacks : sculptural extensions in blown glass"
+     ],
+     "author": [
+      {
+       "given": "Cristine",
+       "family": "Corcoran",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2000,
+        1,
+        1
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.15760/etd.5747"
+    },
+    {
+     "DOI": "10.1163/1874-6772_seg_a42_1766",
+     "title": [
+      "Glass. Inscriptions on mould-blown glass bottles, ca. 50-150 A.D."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "Supplementum Epigraphicum Graecum"
+     ],
+     "type": "dataset",
+     "URL": "https://doi.org/10.1163/1874-6772_seg_a42_1766"
+    },
+    {
+     "DOI": "10.71222/vs4dc163",
+     "title": [
+      "Hand-Blown Glass Trend Analysis"
+     ],
+     "author": [
+      {
+       "given": "Yilin",
+       "family": "Liang",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Sharul Azim Bin",
+       "family": "Sharudin",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        6,
+        9
+       ]
+      ]
+     },
+     "container-title": [
+      "International Journal of Literature and Arts Studies"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.71222/vs4dc163"
+    },
+    {
+     "DOI": "10.4159/harvard.9780674331297.c11",
+     "title": [
+      "CHAPTER Χ MECHANICAL REVOLUTION: THE PRESSED AND BLOWN GLASS INDUSTRIES"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "The Development of the American Glass Industry"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.4159/harvard.9780674331297.c11"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

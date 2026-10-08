@@ -1,0 +1,2203 @@
+{
+ "url": "https://api.openalex.org/works?filter=title.search%3ADialogueRNN%3A+An+attentive+RNN+for+emotion+detection+in+conversations&per-page=10",
+ "provider": "openalex",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "meta": {
+   "count": 2,
+   "db_response_time_ms": 10,
+   "page": 1,
+   "per_page": 10,
+   "groups_count": null,
+   "x_query": {
+    "oql": "get works where title has (DialogueRNN: An attentive RNN for emotion detection in conversations)",
+    "oqo": {
+     "get_rows": "works",
+     "filter_rows": [
+      {
+       "column_id": "display_name.search",
+       "value": "DialogueRNN: An attentive RNN for emotion detection in conversations",
+       "operator": "has"
+      }
+     ]
+    },
+    "url": "/works?filter=display_name.search:DialogueRNN: An attentive RNN for emotion detection in conversations&per_page=10"
+   },
+   "cost_usd": 0.001
+  },
+  "results": [
+   {
+    "id": "https://openalex.org/W2964300796",
+    "doi": "https://doi.org/10.1609/aaai.v33i01.33016818",
+    "title": "DialogueRNN: An Attentive RNN for Emotion Detection in Conversations",
+    "display_name": "DialogueRNN: An Attentive RNN for Emotion Detection in Conversations",
+    "relevance_score": 294.10492,
+    "publication_year": 2019,
+    "publication_date": "2019-07-17",
+    "ids": {
+     "openalex": "https://openalex.org/W2964300796",
+     "doi": "https://doi.org/10.1609/aaai.v33i01.33016818",
+     "mag": "2964300796"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "pmh:oai:ojs.aaai.org:article/4657",
+     "is_oa": true,
+     "landing_page_url": "https://ojs.aaai.org/index.php/AAAI/article/view/4657",
+     "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/4657/4535",
+     "source": {
+      "id": "https://openalex.org/S4306400155",
+      "display_name": "AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI))",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": "https://openalex.org/I2801652627",
+      "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+      "host_organization_lineage": [
+       "https://openalex.org/I2801652627"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "repository"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "submittedVersion",
+     "is_accepted": false,
+     "is_published": false,
+     "raw_source_name": "2159-5399",
+     "raw_type": "info:eu-repo/semantics/article"
+    },
+    "type": "article",
+    "indexed_in": [],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "green",
+     "oa_url": "https://ojs.aaai.org/index.php/AAAI/article/download/4657/4535",
+     "any_repository_has_fulltext": true
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5007003459",
+       "display_name": "Navonil Majumder",
+       "orcid": "https://orcid.org/0000-0002-1449-617X",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-1449-617X"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I59361560",
+        "display_name": "Instituto Politécnico Nacional",
+        "ror": "https://ror.org/059sp8j34",
+        "country_code": "MX",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ],
+      "countries": [
+       "MX"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Majumder, Navonil",
+      "raw_affiliation_strings": [
+       "Instituto Politécnico Nacional"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Instituto Politécnico Nacional",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5033376109",
+       "display_name": "Soujanya Poria",
+       "orcid": "https://orcid.org/0000-0001-6924-7931",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-6924-7931"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I172675005",
+        "display_name": "Nanyang Technological University",
+        "ror": "https://ror.org/02e7b5302",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Poria, Soujanya",
+      "raw_affiliation_strings": [
+       "Nanyang Technological University"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Nanyang Technological University",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5074760783",
+       "display_name": "Devamanyu Hazarika",
+       "orcid": "https://orcid.org/0000-0002-0241-7163",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-0241-7163"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I165932596",
+        "display_name": "National University of Singapore",
+        "ror": "https://ror.org/01tgyzw49",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I165932596"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Hazarika, Devamanyu",
+      "raw_affiliation_strings": [
+       "National University of Singapore"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "National University of Singapore",
+        "institution_ids": [
+         "https://openalex.org/I165932596"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5082450455",
+       "display_name": "Rada F. Mihalcea",
+       "orcid": "https://orcid.org/0000-0002-0767-6703",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-0767-6703"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I27837315",
+        "display_name": "University of Michigan",
+        "ror": "https://ror.org/00jmfr291",
+        "country_code": "US",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I27837315"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Mihalcea, Rada",
+      "raw_affiliation_strings": [
+       "University of Michigan"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "University of Michigan",
+        "institution_ids": [
+         "https://openalex.org/I27837315"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5049701126",
+       "display_name": "Alexander F. Gelbukh",
+       "orcid": "https://orcid.org/0000-0001-7845-9039",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-7845-9039"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I59361560",
+        "display_name": "Instituto Politécnico Nacional",
+        "ror": "https://ror.org/059sp8j34",
+        "country_code": "MX",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ],
+      "countries": [
+       "MX"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Gelbukh, Alexander",
+      "raw_affiliation_strings": [
+       "Instituto Politécnico Nacional"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Instituto Politécnico Nacional",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5100752356",
+       "display_name": "Erik Cambria",
+       "orcid": "https://orcid.org/0000-0002-3030-1280",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-3030-1280",
+        "https://orcid.org/0009-0009-3320-2526"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I172675005",
+        "display_name": "Nanyang Technological University",
+        "ror": "https://ror.org/02e7b5302",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Cambria, Erik",
+      "raw_affiliation_strings": [
+       "Nanyang Technological University"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Nanyang Technological University",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 3,
+    "institutions_distinct_count": 4,
+    "corresponding_author_ids": [],
+    "corresponding_institution_ids": [],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": 36.6537,
+    "has_fulltext": true,
+    "cited_by_count": 873,
+    "citation_normalized_percentile": {
+     "value": 0.99820003,
+     "is_in_top_1_percent": true,
+     "is_in_top_10_percent": true
+    },
+    "cited_by_percentile_year": {
+     "min": 99,
+     "max": 100
+    },
+    "biblio": {
+     "volume": null,
+     "issue": null,
+     "first_page": null,
+     "last_page": null
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T10664",
+     "display_name": "Sentiment Analysis and Opinion Mining",
+     "score": 0.9872999787330627,
+     "subfield": {
+      "id": "https://openalex.org/subfields/1702",
+      "display_name": "Artificial Intelligence"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/17",
+      "display_name": "Computer Science"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T10664",
+      "display_name": "Sentiment Analysis and Opinion Mining",
+      "score": 0.9872999787330627,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10667",
+      "display_name": "Emotion and Mood Recognition",
+      "score": 0.010999999940395355,
+      "subfield": {
+       "id": "https://openalex.org/subfields/3205",
+       "display_name": "Experimental and Cognitive Psychology"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/32",
+       "display_name": "Psychology"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/2",
+       "display_name": "Social Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T12031",
+      "display_name": "Speech and dialogue systems",
+      "score": 9.999999747378752e-05,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/emotion-recognition",
+      "display_name": "emotion recognition",
+      "score": 0.8159999847412109
+     },
+     {
+      "id": "https://openalex.org/keywords/conversation",
+      "display_name": "conversation",
+      "score": 0.6949999928474426
+     },
+     {
+      "id": "https://openalex.org/keywords/recurrent-neural-networks",
+      "display_name": "recurrent neural networks",
+      "score": 0.9190000295639038
+     },
+     {
+      "id": "https://openalex.org/keywords/attention-mechanism",
+      "display_name": "attention mechanism",
+      "score": 0.7919999957084656
+     },
+     {
+      "id": "https://openalex.org/keywords/loudspeaker-modeling",
+      "display_name": "speaker modeling",
+      "score": 0.6060000061988831
+     },
+     {
+      "id": "https://openalex.org/keywords/dialogue-modeling",
+      "display_name": "dialogue modeling",
+      "score": 0.5320000052452087
+     },
+     {
+      "id": "https://openalex.org/keywords/chat-history",
+      "display_name": "chat history",
+      "score": 0.5759999752044678
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C2777200299",
+      "wikidata": "https://www.wikidata.org/wiki/Q52943",
+      "display_name": "Conversation",
+      "level": 2,
+      "score": 0.8425774574279785
+     },
+     {
+      "id": "https://openalex.org/C2775852435",
+      "wikidata": "https://www.wikidata.org/wiki/Q258403",
+      "display_name": "Utterance",
+      "level": 2,
+      "score": 0.7883917093276978
+     },
+     {
+      "id": "https://openalex.org/C65059942",
+      "wikidata": "https://www.wikidata.org/wiki/Q270105",
+      "display_name": "Argumentation theory",
+      "level": 2,
+      "score": 0.7677335739135742
+     },
+     {
+      "id": "https://openalex.org/C774472",
+      "wikidata": "https://www.wikidata.org/wiki/Q6760393",
+      "display_name": "Margin (machine learning)",
+      "level": 2,
+      "score": 0.7455337643623352
+     },
+     {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.7355787754058838
+     },
+     {
+      "id": "https://openalex.org/C2988148770",
+      "wikidata": "https://www.wikidata.org/wiki/Q1339090",
+      "display_name": "Emotion detection",
+      "level": 3,
+      "score": 0.7047660946846008
+     },
+     {
+      "id": "https://openalex.org/C147168706",
+      "wikidata": "https://www.wikidata.org/wiki/Q1457734",
+      "display_name": "Recurrent neural network",
+      "level": 3,
+      "score": 0.6378039717674255
+     },
+     {
+      "id": "https://openalex.org/C518677369",
+      "wikidata": "https://www.wikidata.org/wiki/Q202833",
+      "display_name": "Social media",
+      "level": 2,
+      "score": 0.5236256718635559
+     },
+     {
+      "id": "https://openalex.org/C66402592",
+      "wikidata": "https://www.wikidata.org/wiki/Q2271421",
+      "display_name": "Sentiment analysis",
+      "level": 2,
+      "score": 0.5116131901741028
+     },
+     {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": "https://www.wikidata.org/wiki/Q11660",
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 0.458906352519989
+     },
+     {
+      "id": "https://openalex.org/C48103436",
+      "wikidata": "https://www.wikidata.org/wiki/Q599031",
+      "display_name": "State (computer science)",
+      "level": 2,
+      "score": 0.4219846725463867
+     },
+     {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": "https://www.wikidata.org/wiki/Q30642",
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 0.33864206075668335
+     },
+     {
+      "id": "https://openalex.org/C28490314",
+      "wikidata": "https://www.wikidata.org/wiki/Q189436",
+      "display_name": "Speech recognition",
+      "level": 1,
+      "score": 0.32214227318763733
+     },
+     {
+      "id": "https://openalex.org/C2777438025",
+      "wikidata": "https://www.wikidata.org/wiki/Q1339090",
+      "display_name": "Emotion recognition",
+      "level": 2,
+      "score": 0.3068961203098297
+     },
+     {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 0.26015058159828186
+     },
+     {
+      "id": "https://openalex.org/C119857082",
+      "wikidata": "https://www.wikidata.org/wiki/Q2539",
+      "display_name": "Machine learning",
+      "level": 1,
+      "score": 0.25460708141326904
+     },
+     {
+      "id": "https://openalex.org/C41895202",
+      "wikidata": "https://www.wikidata.org/wiki/Q8162",
+      "display_name": "Linguistics",
+      "level": 1,
+      "score": 0.23531562089920044
+     },
+     {
+      "id": "https://openalex.org/C50644808",
+      "wikidata": "https://www.wikidata.org/wiki/Q192776",
+      "display_name": "Artificial neural network",
+      "level": 2,
+      "score": 0.22668248414993286
+     },
+     {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": "https://www.wikidata.org/wiki/Q11024",
+      "display_name": "Communication",
+      "level": 1,
+      "score": 0.17792078852653503
+     },
+     {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": "https://www.wikidata.org/wiki/Q466",
+      "display_name": "World Wide Web",
+      "level": 1,
+      "score": 0.16862741112709045
+     },
+     {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": "https://www.wikidata.org/wiki/Q8366",
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 0.07705527544021606
+     },
+     {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": "https://www.wikidata.org/wiki/Q5891",
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 1,
+    "locations": [
+     {
+      "id": "pmh:oai:ojs.aaai.org:article/4657",
+      "is_oa": true,
+      "landing_page_url": "https://ojs.aaai.org/index.php/AAAI/article/view/4657",
+      "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/4657/4535",
+      "source": {
+       "id": "https://openalex.org/S4306400155",
+       "display_name": "AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI))",
+       "issn_l": null,
+       "issn": null,
+       "is_oa": false,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I2801652627",
+       "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+       "host_organization_lineage": [
+        "https://openalex.org/I2801652627"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": "2159-5399",
+      "raw_type": "info:eu-repo/semantics/article"
+     }
+    ],
+    "best_oa_location": {
+     "id": "pmh:oai:ojs.aaai.org:article/4657",
+     "is_oa": true,
+     "landing_page_url": "https://ojs.aaai.org/index.php/AAAI/article/view/4657",
+     "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/4657/4535",
+     "source": {
+      "id": "https://openalex.org/S4306400155",
+      "display_name": "AAAI Publications (The Association for the Advancement of Artificial Intelligence (AAAI))",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": "https://openalex.org/I2801652627",
+      "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+      "host_organization_lineage": [
+       "https://openalex.org/I2801652627"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "repository"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "submittedVersion",
+     "is_accepted": false,
+     "is_published": false,
+     "raw_source_name": "2159-5399",
+     "raw_type": "info:eu-repo/semantics/article"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [],
+    "study_designs": [],
+    "awards": [],
+    "funders": [],
+    "has_content": {
+     "grobid_xml": true,
+     "pdf": true
+    },
+    "content_urls": {
+     "pdf": "https://content.openalex.org/works/W2964300796.pdf",
+     "grobid_xml": "https://content.openalex.org/works/W2964300796.grobid-xml"
+    },
+    "referenced_works_count": 22,
+    "referenced_works": [
+     "https://openalex.org/W1522301498",
+     "https://openalex.org/W1551039219",
+     "https://openalex.org/W1601218598",
+     "https://openalex.org/W1832693441",
+     "https://openalex.org/W1924770834",
+     "https://openalex.org/W1994518960",
+     "https://openalex.org/W2033702744",
+     "https://openalex.org/W2131494463",
+     "https://openalex.org/W2132555391",
+     "https://openalex.org/W2133564696",
+     "https://openalex.org/W2146334809",
+     "https://openalex.org/W2149940198",
+     "https://openalex.org/W2158335606",
+     "https://openalex.org/W2738581557",
+     "https://openalex.org/W2740550900",
+     "https://openalex.org/W2767249564",
+     "https://openalex.org/W2787581402",
+     "https://openalex.org/W2805662932",
+     "https://openalex.org/W2951008357",
+     "https://openalex.org/W2963710346",
+     "https://openalex.org/W4297736515",
+     "https://openalex.org/W4303633609"
+    ],
+    "related_works": [
+     "https://openalex.org/W2336827033",
+     "https://openalex.org/W2314410016",
+     "https://openalex.org/W2922915988",
+     "https://openalex.org/W2505228240",
+     "https://openalex.org/W4389296211",
+     "https://openalex.org/W4319430321",
+     "https://openalex.org/W1967999477",
+     "https://openalex.org/W4240439755",
+     "https://openalex.org/W3047499479",
+     "https://openalex.org/W2173158698"
+    ],
+    "abstract_inverted_index": {
+     "Emotion": [
+      0
+     ],
+     "detection": [
+      1
+     ],
+     "in": [
+      2,
+      28,
+      41
+     ],
+     "conversations": [
+      3
+     ],
+     "is": [
+      4
+     ],
+     "a": [
+      5,
+      9,
+      58,
+      90
+     ],
+     "necessary": [
+      6
+     ],
+     "step": [
+      7
+     ],
+     "for": [
+      8,
+      81
+     ],
+     "number": [
+      10
+     ],
+     "of": [
+      11,
+      50,
+      69
+     ],
+     "applications,": [
+      12
+     ],
+     "including": [
+      13
+     ],
+     "opinion": [
+      14
+     ],
+     "mining": [
+      15
+     ],
+     "over": [
+      16
+     ],
+     "chat": [
+      17
+     ],
+     "history,": [
+      18
+     ],
+     "social": [
+      19
+     ],
+     "media": [
+      20
+     ],
+     "threads,": [
+      21
+     ],
+     "debates,": [
+      22
+     ],
+     "argumentation": [
+      23
+     ],
+     "mining,": [
+      24
+     ],
+     "understanding": [
+      25
+     ],
+     "consumer": [
+      26
+     ],
+     "feedback": [
+      27
+     ],
+     "live": [
+      29
+     ],
+     "conversations,": [
+      30
+     ],
+     "and": [
+      31,
+      77
+     ],
+     "so": [
+      32
+     ],
+     "on.": [
+      33
+     ],
+     "Currently": [
+      34
+     ],
+     "systems": [
+      35
+     ],
+     "do": [
+      36
+     ],
+     "not": [
+      37
+     ],
+     "treat": [
+      38
+     ],
+     "the": [
+      39,
+      42,
+      48,
+      70,
+      75,
+      87
+     ],
+     "parties": [
+      40
+     ],
+     "conversation": [
+      43,
+      76
+     ],
+     "individually": [
+      44
+     ],
+     "by": [
+      45,
+      89
+     ],
+     "adapting": [
+      46
+     ],
+     "to": [
+      47
+     ],
+     "speaker": [
+      49
+     ],
+     "each": [
+      51
+     ],
+     "utterance.": [
+      52
+     ],
+     "In": [
+      53
+     ],
+     "this": [
+      54,
+      79
+     ],
+     "paper,": [
+      55
+     ],
+     "we": [
+      56
+     ],
+     "describe": [
+      57
+     ],
+     "new": [
+      59
+     ],
+     "method": [
+      60
+     ],
+     "based": [
+      61
+     ],
+     "on": [
+      62,
+      93
+     ],
+     "recurrent": [
+      63
+     ],
+     "neural": [
+      64
+     ],
+     "networks": [
+      65
+     ],
+     "that": [
+      66
+     ],
+     "keeps": [
+      67
+     ],
+     "track": [
+      68
+     ],
+     "individual": [
+      71
+     ],
+     "party": [
+      72
+     ],
+     "states": [
+      73
+     ],
+     "throughout": [
+      74
+     ],
+     "uses": [
+      78
+     ],
+     "information": [
+      80
+     ],
+     "emotion": [
+      82
+     ],
+     "classification.": [
+      83
+     ],
+     "Our": [
+      84
+     ],
+     "model": [
+      85
+     ],
+     "outperforms": [
+      86
+     ],
+     "state-of-the-art": [
+      88
+     ],
+     "significant": [
+      91
+     ],
+     "margin": [
+      92
+     ],
+     "two": [
+      94
+     ],
+     "different": [
+      95
+     ],
+     "datasets.": [
+      96
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2026,
+      "cited_by_count": 112
+     },
+     {
+      "year": 2025,
+      "cited_by_count": 150
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 130
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 165
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 92
+     },
+     {
+      "year": 2021,
+      "cited_by_count": 118
+     },
+     {
+      "year": 2020,
+      "cited_by_count": 82
+     },
+     {
+      "year": 2019,
+      "cited_by_count": 24
+     }
+    ],
+    "updated_date": "2026-10-05T09:50:58.205359",
+    "created_date": "2025-10-10T00:00:00"
+   },
+   {
+    "id": "https://openalex.org/W2899099710",
+    "doi": "https://doi.org/10.1609/aaai.v33i01.33016818",
+    "title": "DialogueRNN: An Attentive RNN for Emotion Detection in Conversations",
+    "display_name": "DialogueRNN: An Attentive RNN for Emotion Detection in Conversations",
+    "relevance_score": 246.2614,
+    "publication_year": 2019,
+    "publication_date": "2019-07-17",
+    "ids": {
+     "openalex": "https://openalex.org/W2899099710",
+     "doi": "https://doi.org/10.1609/aaai.v33i01.33016818",
+     "mag": "2899099710"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "doi:10.1609/aaai.v33i01.33016818",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.1609/aaai.v33i01.33016818",
+     "pdf_url": null,
+     "source": {
+      "id": "https://openalex.org/S4210191458",
+      "display_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "issn_l": "2159-5399",
+      "issn": [
+       "2159-5399",
+       "2374-3468"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [
+       "jufo-2",
+       "norway-1"
+      ],
+      "host_organization": "https://openalex.org/P4310320058",
+      "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310320058"
+      ],
+      "host_organization_lineage_names": [
+       "Association for the Advancement of Artificial Intelligence"
+      ],
+      "type": "conference"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+     "raw_type": "journal-article"
+    },
+    "type": "conference-paper",
+    "indexed_in": [
+     "arxiv",
+     "crossref",
+     "datacite"
+    ],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "diamond",
+     "oa_url": "https://doi.org/10.1609/aaai.v33i01.33016818",
+     "any_repository_has_fulltext": true
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5007003459",
+       "display_name": "Navonil Majumder",
+       "orcid": "https://orcid.org/0000-0002-1449-617X",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-1449-617X"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I59361560",
+        "display_name": "Instituto Politécnico Nacional",
+        "ror": "https://ror.org/059sp8j34",
+        "country_code": "MX",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ],
+      "countries": [
+       "MX"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Navonil Majumder",
+      "raw_affiliation_strings": [
+       "Instituto Politécnico Nacional",
+       "Instituto Politecnico Nacional,"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Instituto Politécnico Nacional",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       },
+       {
+        "raw_affiliation_string": "Instituto Politecnico Nacional,",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5033376109",
+       "display_name": "Soujanya Poria",
+       "orcid": "https://orcid.org/0000-0001-6924-7931",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-6924-7931"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I172675005",
+        "display_name": "Nanyang Technological University",
+        "ror": "https://ror.org/02e7b5302",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Soujanya Poria",
+      "raw_affiliation_strings": [
+       "Nanyang Technological University",
+       "Nanyang Technological Univ"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Nanyang Technological University",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       },
+       {
+        "raw_affiliation_string": "Nanyang Technological Univ",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5074760783",
+       "display_name": "Devamanyu Hazarika",
+       "orcid": "https://orcid.org/0000-0002-0241-7163",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-0241-7163"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I165932596",
+        "display_name": "National University of Singapore",
+        "ror": "https://ror.org/01tgyzw49",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I165932596"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Devamanyu Hazarika",
+      "raw_affiliation_strings": [
+       "National University of Singapore",
+       "National University of Singapore,"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "National University of Singapore",
+        "institution_ids": [
+         "https://openalex.org/I165932596"
+        ]
+       },
+       {
+        "raw_affiliation_string": "National University of Singapore,",
+        "institution_ids": [
+         "https://openalex.org/I165932596"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5082450455",
+       "display_name": "Rada F. Mihalcea",
+       "orcid": "https://orcid.org/0000-0002-0767-6703",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-0767-6703"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I27837315",
+        "display_name": "University of Michigan",
+        "ror": "https://ror.org/00jmfr291",
+        "country_code": "US",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I27837315"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Rada Mihalcea",
+      "raw_affiliation_strings": [
+       "University of Michigan",
+       "†University of Michigan"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "University of Michigan",
+        "institution_ids": [
+         "https://openalex.org/I27837315"
+        ]
+       },
+       {
+        "raw_affiliation_string": "†University of Michigan",
+        "institution_ids": [
+         "https://openalex.org/I27837315"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5049701126",
+       "display_name": "Alexander F. Gelbukh",
+       "orcid": "https://orcid.org/0000-0001-7845-9039",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-7845-9039"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I59361560",
+        "display_name": "Instituto Politécnico Nacional",
+        "ror": "https://ror.org/059sp8j34",
+        "country_code": "MX",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ],
+      "countries": [
+       "MX"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Alexander Gelbukh",
+      "raw_affiliation_strings": [
+       "Instituto Politécnico Nacional",
+       "Instituto Politecnico Nacional,"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Instituto Politécnico Nacional",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       },
+       {
+        "raw_affiliation_string": "Instituto Politecnico Nacional,",
+        "institution_ids": [
+         "https://openalex.org/I59361560"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5100752356",
+       "display_name": "Erik Cambria",
+       "orcid": "https://orcid.org/0000-0002-3030-1280",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-3030-1280",
+        "https://orcid.org/0009-0009-3320-2526"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I172675005",
+        "display_name": "Nanyang Technological University",
+        "ror": "https://ror.org/02e7b5302",
+        "country_code": "SG",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ],
+      "countries": [
+       "SG"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Erik Cambria",
+      "raw_affiliation_strings": [
+       "Nanyang Technological University",
+       "Nanyang Technological Univ"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Nanyang Technological University",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       },
+       {
+        "raw_affiliation_string": "Nanyang Technological Univ",
+        "institution_ids": [
+         "https://openalex.org/I172675005"
+        ]
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 3,
+    "institutions_distinct_count": 4,
+    "corresponding_author_ids": [],
+    "corresponding_institution_ids": [],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": 3.2652,
+    "has_fulltext": true,
+    "cited_by_count": 78,
+    "citation_normalized_percentile": {
+     "value": 0.94234597,
+     "is_in_top_1_percent": false,
+     "is_in_top_10_percent": true
+    },
+    "cited_by_percentile_year": {
+     "min": 97,
+     "max": 100
+    },
+    "biblio": {
+     "volume": "33",
+     "issue": "01",
+     "first_page": "6818",
+     "last_page": "6825"
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T10664",
+     "display_name": "Sentiment Analysis and Opinion Mining",
+     "score": 0.9907000064849854,
+     "subfield": {
+      "id": "https://openalex.org/subfields/1702",
+      "display_name": "Artificial Intelligence"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/17",
+      "display_name": "Computer Science"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T10664",
+      "display_name": "Sentiment Analysis and Opinion Mining",
+      "score": 0.9907000064849854,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10667",
+      "display_name": "Emotion and Mood Recognition",
+      "score": 0.007899999618530273,
+      "subfield": {
+       "id": "https://openalex.org/subfields/3205",
+       "display_name": "Experimental and Cognitive Psychology"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/32",
+       "display_name": "Psychology"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/2",
+       "display_name": "Social Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T12031",
+      "display_name": "Speech and dialogue systems",
+      "score": 0.00019999999494757503,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/emotion-recognition",
+      "display_name": "emotion recognition",
+      "score": 0.8600000143051147
+     },
+     {
+      "id": "https://openalex.org/keywords/conversation",
+      "display_name": "conversation",
+      "score": 0.6669999957084656
+     },
+     {
+      "id": "https://openalex.org/keywords/recurrent-neural-networks",
+      "display_name": "recurrent neural networks",
+      "score": 0.925000011920929
+     },
+     {
+      "id": "https://openalex.org/keywords/attention-mechanism",
+      "display_name": "attention mechanism",
+      "score": 0.7559999823570251
+     },
+     {
+      "id": "https://openalex.org/keywords/loudspeaker-modeling",
+      "display_name": "speaker modeling",
+      "score": 0.6259999871253967
+     },
+     {
+      "id": "https://openalex.org/keywords/dialogue-modeling",
+      "display_name": "dialogue modeling",
+      "score": 0.5019999742507935
+     },
+     {
+      "id": "https://openalex.org/keywords/chat-history",
+      "display_name": "chat history",
+      "score": 0.5730000138282776
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C2777200299",
+      "wikidata": "https://www.wikidata.org/wiki/Q52943",
+      "display_name": "Conversation",
+      "level": 2,
+      "score": 0.8533559441566467
+     },
+     {
+      "id": "https://openalex.org/C2775852435",
+      "wikidata": "https://www.wikidata.org/wiki/Q258403",
+      "display_name": "Utterance",
+      "level": 2,
+      "score": 0.7972952127456665
+     },
+     {
+      "id": "https://openalex.org/C65059942",
+      "wikidata": "https://www.wikidata.org/wiki/Q270105",
+      "display_name": "Argumentation theory",
+      "level": 2,
+      "score": 0.7794402241706848
+     },
+     {
+      "id": "https://openalex.org/C774472",
+      "wikidata": "https://www.wikidata.org/wiki/Q6760393",
+      "display_name": "Margin (machine learning)",
+      "level": 2,
+      "score": 0.7793205380439758
+     },
+     {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.7187588214874268
+     },
+     {
+      "id": "https://openalex.org/C2988148770",
+      "wikidata": "https://www.wikidata.org/wiki/Q1339090",
+      "display_name": "Emotion detection",
+      "level": 3,
+      "score": 0.6832989454269409
+     },
+     {
+      "id": "https://openalex.org/C518677369",
+      "wikidata": "https://www.wikidata.org/wiki/Q202833",
+      "display_name": "Social media",
+      "level": 2,
+      "score": 0.5427141785621643
+     },
+     {
+      "id": "https://openalex.org/C147168706",
+      "wikidata": "https://www.wikidata.org/wiki/Q1457734",
+      "display_name": "Recurrent neural network",
+      "level": 3,
+      "score": 0.5377050042152405
+     },
+     {
+      "id": "https://openalex.org/C66402592",
+      "wikidata": "https://www.wikidata.org/wiki/Q2271421",
+      "display_name": "Sentiment analysis",
+      "level": 2,
+      "score": 0.5202423334121704
+     },
+     {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": "https://www.wikidata.org/wiki/Q11660",
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 0.4699074625968933
+     },
+     {
+      "id": "https://openalex.org/C48103436",
+      "wikidata": "https://www.wikidata.org/wiki/Q599031",
+      "display_name": "State (computer science)",
+      "level": 2,
+      "score": 0.4372820556163788
+     },
+     {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": "https://www.wikidata.org/wiki/Q30642",
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 0.34545648097991943
+     },
+     {
+      "id": "https://openalex.org/C2777438025",
+      "wikidata": "https://www.wikidata.org/wiki/Q1339090",
+      "display_name": "Emotion recognition",
+      "level": 2,
+      "score": 0.2881585359573364
+     },
+     {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 0.2643270492553711
+     },
+     {
+      "id": "https://openalex.org/C119857082",
+      "wikidata": "https://www.wikidata.org/wiki/Q2539",
+      "display_name": "Machine learning",
+      "level": 1,
+      "score": 0.25799012184143066
+     },
+     {
+      "id": "https://openalex.org/C41895202",
+      "wikidata": "https://www.wikidata.org/wiki/Q8162",
+      "display_name": "Linguistics",
+      "level": 1,
+      "score": 0.25481218099594116
+     },
+     {
+      "id": "https://openalex.org/C50644808",
+      "wikidata": "https://www.wikidata.org/wiki/Q192776",
+      "display_name": "Artificial neural network",
+      "level": 2,
+      "score": 0.23213264346122742
+     },
+     {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": "https://www.wikidata.org/wiki/Q11024",
+      "display_name": "Communication",
+      "level": 1,
+      "score": 0.19490119814872742
+     },
+     {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": "https://www.wikidata.org/wiki/Q466",
+      "display_name": "World Wide Web",
+      "level": 1,
+      "score": 0.1574588418006897
+     },
+     {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": "https://www.wikidata.org/wiki/Q8366",
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 0.08893537521362305
+     },
+     {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": "https://www.wikidata.org/wiki/Q5891",
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 4,
+    "locations": [
+     {
+      "id": "doi:10.1609/aaai.v33i01.33016818",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1609/aaai.v33i01.33016818",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4210191458",
+       "display_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+       "issn_l": "2159-5399",
+       "issn": [
+        "2159-5399",
+        "2374-3468"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [
+        "jufo-2",
+        "norway-1"
+       ],
+       "host_organization": "https://openalex.org/P4310320058",
+       "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+       "host_organization_lineage": [
+        "https://openalex.org/P4310320058"
+       ],
+       "host_organization_lineage_names": [
+        "Association for the Advancement of Artificial Intelligence"
+       ],
+       "type": "conference"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "raw_type": "journal-article"
+     },
+     {
+      "id": "pmh:oai:arXiv.org:1811.00405",
+      "is_oa": true,
+      "landing_page_url": "http://arxiv.org/abs/1811.00405",
+      "pdf_url": "https://arxiv.org/pdf/1811.00405",
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": null,
+      "raw_type": "text"
+     },
+     {
+      "id": "mag:2899099710",
+      "is_oa": true,
+      "landing_page_url": "http://export.arxiv.org/pdf/1811.00405",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": "arXiv (Cornell University)",
+      "raw_type": null
+     },
+     {
+      "id": "doi:10.48550/arxiv.1811.00405",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.48550/arxiv.1811.00405",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": null,
+      "is_accepted": false,
+      "is_published": null,
+      "raw_source_name": null,
+      "raw_type": "Preprint"
+     }
+    ],
+    "best_oa_location": {
+     "id": "doi:10.1609/aaai.v33i01.33016818",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.1609/aaai.v33i01.33016818",
+     "pdf_url": null,
+     "source": {
+      "id": "https://openalex.org/S4210191458",
+      "display_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "issn_l": "2159-5399",
+      "issn": [
+       "2159-5399",
+       "2374-3468"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [
+       "jufo-2",
+       "norway-1"
+      ],
+      "host_organization": "https://openalex.org/P4310320058",
+      "host_organization_name": "Association for the Advancement of Artificial Intelligence",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310320058"
+      ],
+      "host_organization_lineage_names": [
+       "Association for the Advancement of Artificial Intelligence"
+      ],
+      "type": "conference"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the AAAI Conference on Artificial Intelligence",
+     "raw_type": "journal-article"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [],
+    "study_designs": [],
+    "awards": [],
+    "funders": [],
+    "has_content": {
+     "grobid_xml": false,
+     "pdf": false
+    },
+    "content_urls": null,
+    "referenced_works_count": 39,
+    "referenced_works": [
+     "https://openalex.org/W1504610641",
+     "https://openalex.org/W1551039219",
+     "https://openalex.org/W1601218598",
+     "https://openalex.org/W1793121960",
+     "https://openalex.org/W1924770834",
+     "https://openalex.org/W1994518960",
+     "https://openalex.org/W2033702744",
+     "https://openalex.org/W2064675550",
+     "https://openalex.org/W2085662862",
+     "https://openalex.org/W2092206588",
+     "https://openalex.org/W2131494463",
+     "https://openalex.org/W2132555391",
+     "https://openalex.org/W2133564696",
+     "https://openalex.org/W2146334809",
+     "https://openalex.org/W2149940198",
+     "https://openalex.org/W2158335606",
+     "https://openalex.org/W2168493061",
+     "https://openalex.org/W2738581557",
+     "https://openalex.org/W2740550900",
+     "https://openalex.org/W2767103364",
+     "https://openalex.org/W2767249564",
+     "https://openalex.org/W2787145221",
+     "https://openalex.org/W2787581402",
+     "https://openalex.org/W2805662932",
+     "https://openalex.org/W2949541494",
+     "https://openalex.org/W2950527759",
+     "https://openalex.org/W2962718314",
+     "https://openalex.org/W2963710346",
+     "https://openalex.org/W2964091467",
+     "https://openalex.org/W2964121744",
+     "https://openalex.org/W6630333522",
+     "https://openalex.org/W6631190155",
+     "https://openalex.org/W6632955862",
+     "https://openalex.org/W6638318767",
+     "https://openalex.org/W6648948879",
+     "https://openalex.org/W6658889521",
+     "https://openalex.org/W6666761814",
+     "https://openalex.org/W7045496425",
+     "https://openalex.org/W7073743773"
+    ],
+    "related_works": [
+     "https://openalex.org/W2964300796",
+     "https://openalex.org/W3157029782",
+     "https://openalex.org/W3203226213",
+     "https://openalex.org/W3040953174",
+     "https://openalex.org/W3210375270",
+     "https://openalex.org/W3116679303",
+     "https://openalex.org/W2085662862",
+     "https://openalex.org/W3199412388",
+     "https://openalex.org/W2912128468",
+     "https://openalex.org/W3169157361",
+     "https://openalex.org/W3205498744",
+     "https://openalex.org/W3007282427",
+     "https://openalex.org/W2979364224",
+     "https://openalex.org/W3008323921",
+     "https://openalex.org/W55702791",
+     "https://openalex.org/W2952527214",
+     "https://openalex.org/W3107301387",
+     "https://openalex.org/W3026396438",
+     "https://openalex.org/W3134350555",
+     "https://openalex.org/W2792424712"
+    ],
+    "abstract_inverted_index": {
+     "Emotion": [
+      0
+     ],
+     "detection": [
+      1
+     ],
+     "in": [
+      2,
+      28,
+      41
+     ],
+     "conversations": [
+      3
+     ],
+     "is": [
+      4
+     ],
+     "a": [
+      5,
+      9,
+      58,
+      90
+     ],
+     "necessary": [
+      6
+     ],
+     "step": [
+      7
+     ],
+     "for": [
+      8,
+      81
+     ],
+     "number": [
+      10
+     ],
+     "of": [
+      11,
+      50,
+      69
+     ],
+     "applications,": [
+      12
+     ],
+     "including": [
+      13
+     ],
+     "opinion": [
+      14
+     ],
+     "mining": [
+      15
+     ],
+     "over": [
+      16
+     ],
+     "chat": [
+      17
+     ],
+     "history,": [
+      18
+     ],
+     "social": [
+      19
+     ],
+     "media": [
+      20
+     ],
+     "threads,": [
+      21
+     ],
+     "debates,": [
+      22
+     ],
+     "argumentation": [
+      23
+     ],
+     "mining,": [
+      24
+     ],
+     "understanding": [
+      25
+     ],
+     "consumer": [
+      26
+     ],
+     "feedback": [
+      27
+     ],
+     "live": [
+      29
+     ],
+     "conversations,": [
+      30
+     ],
+     "and": [
+      31,
+      77
+     ],
+     "so": [
+      32
+     ],
+     "on.": [
+      33
+     ],
+     "Currently": [
+      34
+     ],
+     "systems": [
+      35
+     ],
+     "do": [
+      36
+     ],
+     "not": [
+      37
+     ],
+     "treat": [
+      38
+     ],
+     "the": [
+      39,
+      42,
+      48,
+      70,
+      75,
+      87
+     ],
+     "parties": [
+      40
+     ],
+     "conversation": [
+      43,
+      76
+     ],
+     "individually": [
+      44
+     ],
+     "by": [
+      45,
+      89
+     ],
+     "adapting": [
+      46
+     ],
+     "to": [
+      47
+     ],
+     "speaker": [
+      49
+     ],
+     "each": [
+      51
+     ],
+     "utterance.": [
+      52
+     ],
+     "In": [
+      53
+     ],
+     "this": [
+      54,
+      79
+     ],
+     "paper,": [
+      55
+     ],
+     "we": [
+      56
+     ],
+     "describe": [
+      57
+     ],
+     "new": [
+      59
+     ],
+     "method": [
+      60
+     ],
+     "based": [
+      61
+     ],
+     "on": [
+      62,
+      93
+     ],
+     "recurrent": [
+      63
+     ],
+     "neural": [
+      64
+     ],
+     "networks": [
+      65
+     ],
+     "that": [
+      66
+     ],
+     "keeps": [
+      67
+     ],
+     "track": [
+      68
+     ],
+     "individual": [
+      71
+     ],
+     "party": [
+      72
+     ],
+     "states": [
+      73
+     ],
+     "throughout": [
+      74
+     ],
+     "uses": [
+      78
+     ],
+     "information": [
+      80
+     ],
+     "emotion": [
+      82
+     ],
+     "classification.": [
+      83
+     ],
+     "Our": [
+      84
+     ],
+     "model": [
+      85
+     ],
+     "outperforms": [
+      86
+     ],
+     "state-of-the-art": [
+      88
+     ],
+     "significant": [
+      91
+     ],
+     "margin": [
+      92
+     ],
+     "two": [
+      94
+     ],
+     "different": [
+      95
+     ],
+     "datasets.": [
+      96
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2025,
+      "cited_by_count": 13
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 12
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 19
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 11
+     },
+     {
+      "year": 2021,
+      "cited_by_count": 10
+     },
+     {
+      "year": 2020,
+      "cited_by_count": 9
+     },
+     {
+      "year": 2019,
+      "cited_by_count": 4
+     }
+    ],
+    "updated_date": "2026-09-26T08:19:03.415552",
+    "created_date": "2025-10-10T00:00:00"
+   }
+  ],
+  "group_by": []
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

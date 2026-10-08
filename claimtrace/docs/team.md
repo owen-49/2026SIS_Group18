@@ -51,11 +51,15 @@ not the charter's template.
 | 2 | A non-technical viewer understands the product value within 2 minutes of demo video | **none assigned** | The pitch artifacts exist (`Project pitch.pptx`, `Project pitch8.21.pdf`, `ClaimTrace-Pitch-Script-and-QA.md`). No comprehension check was run. |
 | 3 | Every member can point to one thing they learned their degree wouldn't have taught them | **none assigned** | Not collected anywhere. |
 | 4 | Parser Recall@5 ≥ 0.80 on held-out test PDFs | Parser | **Instrument exists, no data.** `engine/passage_eval.py` scores it and `engine/tests/benchmarks/CLAIM_PASSAGES.md` fixes the bars (Recall@5 ≥ 0.80 to proceed, < 0.50 to stop; Recall@1 ≥ 0.50). `claim_passages.json` is empty on purpose — the labels are the team's to write. |
-| 5 | Entailment accuracy ≥ 85% on 50-pair benchmark | Engine | **Instrument exists, no data.** Same harness: accuracy ≥ 0.80, F1 (Support vs Rest) ≥ 0.85, Cohen's Kappa ≥ 0.70. Needs 50 annotated pairs; none written. |
+| 5 | Entailment accuracy ≥ 85% on 50-pair benchmark | Engine | **Candidates exist, labels outstanding.** The charter's 50 is raised to 100 pairs (n=50 cannot separate 85% from 70%): `engine/tests/benchmarks/claim_passages.worksheet.json` holds 103 harvested claim/source candidates and their provenance, and `worksheet.html` is the page to label them on. Same harness and bars: accuracy ≥ 0.80, F1 (Support vs Rest) ≥ 0.85, Cohen's Kappa ≥ 0.70. |
 
 Criteria 4 and 5 are blocked on **annotation labour, not tooling**. The measurement code
-is built and tested; what is missing is a labelled set. That is a task someone can start
-today with no dependencies.
+is built and tested, and criterion 5's candidate set is now harvested and rendered as a
+worksheet; what is missing is the labels. Two people label the 103 candidates
+independently and `claim_worksheet.py --merge` reports agreement and kappa; once the
+conflicts are adjudicated, `--write` fills `claim_passages.json` with the pairs both
+annotators labelled the same way. The recipe is in `CLAIM_PASSAGES.md`. That is a task
+someone can start today with no dependencies.
 
 Criteria 1, 2 and 3 were the charter's "Solo: Product & Quality" row. **That role has no
 counterpart in the real four-group split**, so all three are currently unowned. They are
@@ -104,6 +108,24 @@ cd ../extension && node --test extension/*.test.cjs  # must be a glob, not a dir
 
 Never import from `backend/**` in `engine/` or `parser/` code or tests — the boundary is
 enforced in the Engine's tests.
+
+### Measurement commands
+
+Not tests, and never in CI: they need network, a key, or a quiet machine. The verify
+recipe and how to read the numbers are in `engine/tests/benchmarks/CLAIM_PASSAGES.md`.
+
+```sh
+cd claimtrace
+python backend/scripts/audit_benchmark.py --mode replay            # offline, frozen provider bytes
+python backend/scripts/verify_benchmark.py --estimate              # offline, what a live run would cost
+python backend/scripts/verify_benchmark.py --mode replay --check   # offline, score a recording
+python backend/scripts/audit_benchmark.py --mode timing            # structural N-scaling, injected latency
+```
+
+The audit replay reports `NOT SCORED` until the provider bytes behind every case are
+captured: eight fictional-title cases still need a real OpenAlex response, and OpenAlex's
+daily budget has been exhausted each time it was tried. The audit half of the baseline is
+therefore pending, not passing — the injection and the scoring are built and unit-tested.
 
 ---
 

@@ -1,0 +1,10 @@
+{
+  "url": "https://api.openalex.org/works?filter=title.search%3ATrunnion+Fatigue+in+Cast-Iron+Canal+Lock+Gates&per-page=10",
+  "provider": "openalex",
+  "source": "injected",
+  "captured_at": "",
+  "status_code": 500,
+  "error": "HTTP 500 Internal Server Error",
+  "body": null,
+  "note": "A live provider cannot be asked to fail on demand, so this answer is written by hand. The case asserts the safety invariant: a provider that failed must never be reported as a clean NOT_FOUND."
+}

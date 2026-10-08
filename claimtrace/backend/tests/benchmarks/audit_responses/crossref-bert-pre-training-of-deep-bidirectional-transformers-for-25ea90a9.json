@@ -1,0 +1,612 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Bert%3A+Pre-training+of+deep+bidirectional+transformers+for+language+understanding+devlin&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 3804457,
+   "items": [
+    {
+     "DOI": "10.18653/v1/n19-1423",
+     "title": [
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+     ],
+     "author": [
+      {
+       "given": "Jacob",
+       "family": "Devlin",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Ming-Wei",
+       "family": "Chang",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Kenton",
+       "family": "Lee",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Kristina",
+       "family": "Toutanova",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/n19-1423"
+    },
+    {
+     "DOI": "10.1109/tim.2024.3374300/mm1",
+     "title": [
+      "Spectrum-BERT: Pre-training of Deep Bidirectional Transformers for Spectral Classification of Chinese Liquors_supp1-3374300.docx"
+     ],
+     "author": [
+      {
+       "given": "Dongjie",
+       "family": "Zhu",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.1109/tim.2024.3374300/mm1"
+    },
+    {
+     "DOI": "10.2196/preprints.40992",
+     "title": [
+      "Over-Sampling Effect in Pre-Training for Bidirectional Encoder Representations from Transformers (BERT) to Localize Medical BERT and Enhance Biomedical BERT (Preprint)"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0001-7055-1009",
+       "authenticated-orcid": false,
+       "given": "Shoya",
+       "family": "Wada",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0003-3073-7823",
+       "authenticated-orcid": false,
+       "given": "Toshihiro",
+       "family": "Takeda",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Katsuki",
+       "family": "Okada",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-3083-5012",
+       "authenticated-orcid": false,
+       "given": "Shirou",
+       "family": "Manabe",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-6458-2685",
+       "authenticated-orcid": false,
+       "given": "Shozo",
+       "family": "Konishi",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-0158-383X",
+       "authenticated-orcid": false,
+       "given": "Jun",
+       "family": "Kamohara",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-9379-3924",
+       "authenticated-orcid": false,
+       "given": "Yasushi",
+       "family": "Matsumura",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2022,
+        7,
+        11
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.2196/preprints.40992"
+    },
+    {
+     "DOI": "10.18653/v1/2022.inlg-main.4",
+     "title": [
+      "Arabic Image Captioning using Pre-training of Deep Bidirectional Transformers"
+     ],
+     "author": [
+      {
+       "given": "Jonathan",
+       "family": "Emami",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Pierre",
+       "family": "Nugues",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Ashraf",
+       "family": "Elnagar",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Imad",
+       "family": "Afyouni",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2022
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the 15th International Conference on Natural Language Generation"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/2022.inlg-main.4"
+    },
+    {
+     "DOI": "10.1201/9781003170082-3",
+     "title": [
+      "Bidirectional Encoder Representations from Transformers (BERT)"
+     ],
+     "author": [
+      {
+       "given": "Uday",
+       "family": "Kamath",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Kenneth L.",
+       "family": "Graham",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Wael",
+       "family": "Emara",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2022,
+        4,
+        7
+       ]
+      ]
+     },
+     "container-title": [
+      "Transformers for Machine Learning"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1201/9781003170082-3"
+    },
+    {
+     "DOI": "10.1016/j.compbiomed.2021.104258",
+     "title": [
+      "FAD-BERT: Improved prediction of FAD binding sites using pre-training of deep bidirectional transformers"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0002-0227-3032",
+       "authenticated-orcid": false,
+       "given": "Quang-Thai",
+       "family": "Ho",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-5793-649X",
+       "authenticated-orcid": false,
+       "given": "Trinh-Trung-Duong",
+       "family": "Nguyen",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0003-4896-7926",
+       "authenticated-orcid": false,
+       "given": "Nguyen Quoc",
+       "family": "Khanh Le",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Yu-Yen",
+       "family": "Ou",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "Computers in Biology and Medicine"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/j.compbiomed.2021.104258"
+    },
+    {
+     "DOI": "10.7717/peerj-cs.4080/fig-6",
+     "title": [
+      "Figure 6: Overview of the IndoBERT pre-training and fine-tuning architecture based on BERT (adapted from Devlin et al., 2019)."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.7717/peerj-cs.4080/fig-6"
+    },
+    {
+     "DOI": "10.1002/cav.2190",
+     "title": [
+      "Trajectory‐BERT: Pre‐training and fine‐tuning bidirectional transformers for crowd trajectory enhancement"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0009-0008-7282-0936",
+       "authenticated-orcid": false,
+       "given": "Lingyu",
+       "family": "Li",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Key Laboratory of Digital Performance and Simulation Technology Beijing Institute of Technology  Beijing China"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Tianyu",
+       "family": "Huang",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Key Laboratory of Digital Performance and Simulation Technology Beijing Institute of Technology  Beijing China"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-9159-0373",
+       "authenticated-orcid": false,
+       "given": "Yihao",
+       "family": "Li",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Key Laboratory of Digital Performance and Simulation Technology Beijing Institute of Technology  Beijing China"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Peng",
+       "family": "Li",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Key Laboratory of Digital Performance and Simulation Technology Beijing Institute of Technology  Beijing China"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023,
+        5
+       ]
+      ]
+     },
+     "container-title": [
+      "Computer Animation and Virtual Worlds"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1002/cav.2190"
+    },
+    {
+     "DOI": "10.2139/ssrn.4474578",
+     "title": [
+      "Trajbert - Dssm: Deep Bidirectional Transformers for Vessel Trajectory Understanding and Destination Prediction"
+     ],
+     "author": [
+      {
+       "given": "Chengkai",
+       "family": "Zhang",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Zheng",
+       "family": "Liu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.2139/ssrn.4474578"
+    },
+    {
+     "DOI": "10.2139/ssrn.4521946",
+     "title": [
+      "Feel the Market: An Attempt to Identify Additional Factor in the Capital Asset Pricing Model (CAPM) Using Generative Pre-Trained Transformer (GPT) and Bidirectional Encoder Representations from Transformers (BERT)"
+     ],
+     "author": [
+      {
+       "given": "Christopher Lingwei",
+       "family": "Zhang",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.2139/ssrn.4521946"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

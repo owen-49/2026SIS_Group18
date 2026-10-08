@@ -1,0 +1,1216 @@
+{
+ "url": "https://api.openalex.org/works?filter=title.search%3ANeural+machine+translation+of+rare+words+with+subword+units&per-page=10",
+ "provider": "openalex",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "meta": {
+   "count": 1,
+   "db_response_time_ms": 11,
+   "page": 1,
+   "per_page": 10,
+   "groups_count": null,
+   "x_query": {
+    "oql": "get works where title has (Neural machine translation of rare words with subword units)",
+    "oqo": {
+     "get_rows": "works",
+     "filter_rows": [
+      {
+       "column_id": "display_name.search",
+       "value": "Neural machine translation of rare words with subword units",
+       "operator": "has"
+      }
+     ]
+    },
+    "url": "/works?filter=display_name.search:Neural machine translation of rare words with subword units&per_page=10"
+   },
+   "cost_usd": 0.001
+  },
+  "results": [
+   {
+    "id": "https://openalex.org/W1816313093",
+    "doi": "https://doi.org/10.18653/v1/p16-1162",
+    "title": "Neural Machine Translation of Rare Words with Subword Units",
+    "display_name": "Neural Machine Translation of Rare Words with Subword Units",
+    "relevance_score": 246.02939,
+    "publication_year": 2016,
+    "publication_date": "2016-01-01",
+    "ids": {
+     "openalex": "https://openalex.org/W1816313093",
+     "doi": "https://doi.org/10.18653/v1/p16-1162",
+     "mag": "1816313093"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "doi:10.18653/v1/p16-1162",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.18653/v1/p16-1162",
+     "pdf_url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+     "source": {
+      "id": "https://openalex.org/S4363608652",
+      "display_name": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": null,
+      "host_organization_name": null,
+      "host_organization_lineage": [],
+      "host_organization_lineage_names": [],
+      "type": "conference"
+     },
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+     "raw_type": "proceedings-article"
+    },
+    "type": "conference-paper",
+    "indexed_in": [
+     "arxiv",
+     "crossref",
+     "datacite"
+    ],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "hybrid",
+     "oa_url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+     "any_repository_has_fulltext": true
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5005771535",
+       "display_name": "Rico Sennrich",
+       "orcid": "https://orcid.org/0000-0002-1438-4741",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-1438-4741"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I98677209",
+        "display_name": "University of Edinburgh",
+        "ror": "https://ror.org/01nrxwf90",
+        "country_code": "GB",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I98677209"
+        ]
+       }
+      ],
+      "countries": [
+       "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Rico Sennrich",
+      "raw_affiliation_strings": [
+       "School of Informatics , University of Edinburgh",
+       "School of Informatics"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Informatics , University of Edinburgh",
+        "institution_ids": [
+         "https://openalex.org/I98677209"
+        ]
+       },
+       {
+        "raw_affiliation_string": "School of Informatics",
+        "institution_ids": []
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5110781707",
+       "display_name": "Barry Haddow",
+       "orcid": null,
+       "observed_orcids": []
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I98677209",
+        "display_name": "University of Edinburgh",
+        "ror": "https://ror.org/01nrxwf90",
+        "country_code": "GB",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I98677209"
+        ]
+       }
+      ],
+      "countries": [
+       "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Barry Haddow",
+      "raw_affiliation_strings": [
+       "School of Informatics , University of Edinburgh",
+       "School of Informatics"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Informatics , University of Edinburgh",
+        "institution_ids": [
+         "https://openalex.org/I98677209"
+        ]
+       },
+       {
+        "raw_affiliation_string": "School of Informatics",
+        "institution_ids": []
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5038456766",
+       "display_name": "Alexandra Birch",
+       "orcid": "https://orcid.org/0000-0002-9022-3405",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-9022-3405"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I98677209",
+        "display_name": "University of Edinburgh",
+        "ror": "https://ror.org/01nrxwf90",
+        "country_code": "GB",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I98677209"
+        ]
+       }
+      ],
+      "countries": [
+       "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Alexandra Birch",
+      "raw_affiliation_strings": [
+       "School of Informatics , University of Edinburgh",
+       "School of Informatics"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Informatics , University of Edinburgh",
+        "institution_ids": [
+         "https://openalex.org/I98677209"
+        ]
+       },
+       {
+        "raw_affiliation_string": "School of Informatics",
+        "institution_ids": []
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 1,
+    "corresponding_author_ids": [],
+    "corresponding_institution_ids": [
+     "https://openalex.org/I98677209"
+    ],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": 24.139,
+    "has_fulltext": true,
+    "cited_by_count": 539,
+    "citation_normalized_percentile": {
+     "value": 0.99607969,
+     "is_in_top_1_percent": true,
+     "is_in_top_10_percent": true
+    },
+    "cited_by_percentile_year": {
+     "min": 89,
+     "max": 100
+    },
+    "biblio": {
+     "volume": null,
+     "issue": null,
+     "first_page": "1715",
+     "last_page": "1725"
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T10181",
+     "display_name": "Natural Language Processing Techniques",
+     "score": 0.9911999702453613,
+     "subfield": {
+      "id": "https://openalex.org/subfields/1702",
+      "display_name": "Artificial Intelligence"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/17",
+      "display_name": "Computer Science"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T10181",
+      "display_name": "Natural Language Processing Techniques",
+      "score": 0.9911999702453613,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10028",
+      "display_name": "Topic Modeling",
+      "score": 0.005799999926239252,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10201",
+      "display_name": "Speech Recognition and Synthesis",
+      "score": 0.0010999999940395355,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/neural-machine-translation",
+      "display_name": "neural machine translation",
+      "score": 0.9229999780654907
+     },
+     {
+      "id": "https://openalex.org/keywords/subword-units",
+      "display_name": "subword units",
+      "score": 0.7639999985694885
+     },
+     {
+      "id": "https://openalex.org/keywords/rare-words",
+      "display_name": "rare words",
+      "score": 0.7139999866485596
+     },
+     {
+      "id": "https://openalex.org/keywords/out-of-vocabulary-words",
+      "display_name": "out-of-vocabulary words",
+      "score": 0.8859999775886536
+     },
+     {
+      "id": "https://openalex.org/keywords/word-segmentation",
+      "display_name": "word segmentation",
+      "score": 0.7160000205039978
+     },
+     {
+      "id": "https://openalex.org/keywords/byte-pair-encoding",
+      "display_name": "byte pair encoding",
+      "score": 0.9679999947547913
+     },
+     {
+      "id": "https://openalex.org/keywords/transliteration",
+      "display_name": "transliteration",
+      "score": 0.7689999938011169
+     },
+     {
+      "id": "https://openalex.org/keywords/compositional-translation",
+      "display_name": "compositional translation",
+      "score": 0.8700000047683716
+     },
+     {
+      "id": "https://openalex.org/keywords/loanwords",
+      "display_name": "loanwords",
+      "score": 0.6980000138282776
+     },
+     {
+      "id": "https://openalex.org/keywords/cognates",
+      "display_name": "cognates",
+      "score": 0.6110000014305115
+     },
+     {
+      "id": "https://openalex.org/keywords/english-german-translation",
+      "display_name": "English-German translation",
+      "score": 0.8989999890327454
+     },
+     {
+      "id": "https://openalex.org/keywords/english-russian-translation",
+      "display_name": "English-Russian translation",
+      "score": 0.9959999918937683
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.8482204675674438
+     },
+     {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": "https://www.wikidata.org/wiki/Q30642",
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 0.7432067394256592
+     },
+     {
+      "id": "https://openalex.org/C203005215",
+      "wikidata": "https://www.wikidata.org/wiki/Q79798",
+      "display_name": "Machine translation",
+      "level": 2,
+      "score": 0.7419054508209229
+     },
+     {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": "https://www.wikidata.org/wiki/Q11660",
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 0.6555970311164856
+     },
+     {
+      "id": "https://openalex.org/C2777601683",
+      "wikidata": "https://www.wikidata.org/wiki/Q6499736",
+      "display_name": "Vocabulary",
+      "level": 2,
+      "score": 0.5484902262687683
+     },
+     {
+      "id": "https://openalex.org/C520968082",
+      "wikidata": "https://www.wikidata.org/wiki/Q134550",
+      "display_name": "Transliteration",
+      "level": 2,
+      "score": 0.5111809372901917
+     },
+     {
+      "id": "https://openalex.org/C28490314",
+      "wikidata": "https://www.wikidata.org/wiki/Q189436",
+      "display_name": "Speech recognition",
+      "level": 1,
+      "score": 0.4840471148490906
+     },
+     {
+      "id": "https://openalex.org/C149364088",
+      "wikidata": "https://www.wikidata.org/wiki/Q185917",
+      "display_name": "Translation (biology)",
+      "level": 4,
+      "score": 0.4783203601837158
+     },
+     {
+      "id": "https://openalex.org/C90805587",
+      "wikidata": "https://www.wikidata.org/wiki/Q10944557",
+      "display_name": "Word (group theory)",
+      "level": 2,
+      "score": 0.44445717334747314
+     },
+     {
+      "id": "https://openalex.org/C98501671",
+      "wikidata": "https://www.wikidata.org/wiki/Q1948408",
+      "display_name": "Text segmentation",
+      "level": 3,
+      "score": 0.4321216642856598
+     },
+     {
+      "id": "https://openalex.org/C89600930",
+      "wikidata": "https://www.wikidata.org/wiki/Q1423946",
+      "display_name": "Segmentation",
+      "level": 2,
+      "score": 0.3018684983253479
+     },
+     {
+      "id": "https://openalex.org/C41895202",
+      "wikidata": "https://www.wikidata.org/wiki/Q8162",
+      "display_name": "Linguistics",
+      "level": 1,
+      "score": 0.17509505152702332
+     },
+     {
+      "id": "https://openalex.org/C104317684",
+      "wikidata": "https://www.wikidata.org/wiki/Q7187",
+      "display_name": "Gene",
+      "level": 2,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C105580179",
+      "wikidata": "https://www.wikidata.org/wiki/Q188928",
+      "display_name": "Messenger RNA",
+      "level": 3,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": "https://www.wikidata.org/wiki/Q5891",
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C55493867",
+      "wikidata": "https://www.wikidata.org/wiki/Q7094",
+      "display_name": "Biochemistry",
+      "level": 1,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 5,
+    "locations": [
+     {
+      "id": "doi:10.18653/v1/p16-1162",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.18653/v1/p16-1162",
+      "pdf_url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+      "source": {
+       "id": "https://openalex.org/S4363608652",
+       "display_name": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+       "issn_l": null,
+       "issn": null,
+       "is_oa": false,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": null,
+       "host_organization_name": null,
+       "host_organization_lineage": [],
+       "host_organization_lineage_names": [],
+       "type": "conference"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "raw_type": "proceedings-article"
+     },
+     {
+      "id": "pmh:oai:arXiv.org:1508.07909",
+      "is_oa": true,
+      "landing_page_url": "http://arxiv.org/abs/1508.07909",
+      "pdf_url": "https://arxiv.org/pdf/1508.07909",
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": null,
+      "raw_type": "text"
+     },
+     {
+      "id": "pmh:oai:pure.ed.ac.uk:openaire/cf383399-0ea9-4185-9d2a-e3d163e04809",
+      "is_oa": true,
+      "landing_page_url": "https://www.research.ed.ac.uk/en/publications/cf383399-0ea9-4185-9d2a-e3d163e04809",
+      "pdf_url": "https://www.research.ed.ac.uk/files/25478429/subword_1.pdf",
+      "source": {
+       "id": "https://openalex.org/S4306400321",
+       "display_name": "Edinburgh Research Explorer (University of Edinburgh)",
+       "issn_l": null,
+       "issn": null,
+       "is_oa": false,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I98677209",
+       "host_organization_name": "University of Edinburgh",
+       "host_organization_lineage": [
+        "https://openalex.org/I98677209"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": "Sennrich, R, Haddow, B & Birch, A 2016, Neural Machine Translation of Rare Words with Subword Units. in Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics. vol. 1: Long Papers, Berlin, Germany, pp. 1715-1725, 54th Annual Meeting of the Association for Computational Linguistics, Berlin, Germany, 7/08/16. https://doi.org/10.18653/v1/P16-1162",
+      "raw_type": "info:eu-repo/semantics/conferenceObject"
+     },
+     {
+      "id": "mag:1816313093",
+      "is_oa": true,
+      "landing_page_url": "http://export.arxiv.org/pdf/1508.07909",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": "arXiv (Cornell University)",
+      "raw_type": null
+     },
+     {
+      "id": "doi:10.48550/arxiv.1508.07909",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.48550/arxiv.1508.07909",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": null,
+      "is_accepted": false,
+      "is_published": null,
+      "raw_source_name": null,
+      "raw_type": "Preprint"
+     }
+    ],
+    "best_oa_location": {
+     "id": "doi:10.18653/v1/p16-1162",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.18653/v1/p16-1162",
+     "pdf_url": "https://www.aclweb.org/anthology/P16-1162.pdf",
+     "source": {
+      "id": "https://openalex.org/S4363608652",
+      "display_name": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": null,
+      "host_organization_name": null,
+      "host_organization_lineage": [],
+      "host_organization_lineage_names": [],
+      "type": "conference"
+     },
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+     "raw_type": "proceedings-article"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [
+     {
+      "score": 0.7900000214576721,
+      "id": "https://metadata.un.org/sdg/4",
+      "display_name": "Quality education"
+     }
+    ],
+    "study_designs": [],
+    "awards": [
+     {
+      "id": "https://openalex.org/G434337789",
+      "display_name": null,
+      "funder_award_id": "HORIZON2020",
+      "funder_id": "https://openalex.org/F4320320300",
+      "funder_display_name": "European Commission"
+     },
+     {
+      "id": "https://openalex.org/G8884546066",
+      "display_name": "QT21: Quality Translation 21",
+      "funder_award_id": "645452",
+      "funder_id": "https://openalex.org/F4320320300",
+      "funder_display_name": "European Commission"
+     }
+    ],
+    "funders": [
+     {
+      "id": "https://openalex.org/F4320320300",
+      "display_name": "European Commission",
+      "ror": "https://ror.org/00k4n6c32"
+     },
+     {
+      "id": "https://openalex.org/F4320321532",
+      "display_name": "Child Health Research Foundation",
+      "ror": "https://ror.org/04eak0r73"
+     },
+     {
+      "id": "https://openalex.org/F4320332195",
+      "display_name": "Samsung",
+      "ror": "https://ror.org/04w3jy968"
+     }
+    ],
+    "has_content": {
+     "grobid_xml": true,
+     "pdf": true
+    },
+    "content_urls": {
+     "pdf": "https://content.openalex.org/works/W1816313093.pdf",
+     "grobid_xml": "https://content.openalex.org/works/W1816313093.grobid-xml"
+    },
+    "referenced_works_count": 31,
+    "referenced_works": [
+     "https://openalex.org/W6908809",
+     "https://openalex.org/W46679369",
+     "https://openalex.org/W214028658",
+     "https://openalex.org/W1501139663",
+     "https://openalex.org/W1519942606",
+     "https://openalex.org/W1526344253",
+     "https://openalex.org/W1753482797",
+     "https://openalex.org/W1899794420",
+     "https://openalex.org/W1902237438",
+     "https://openalex.org/W2015350341",
+     "https://openalex.org/W2097532276",
+     "https://openalex.org/W2100664567",
+     "https://openalex.org/W2116211107",
+     "https://openalex.org/W2116599427",
+     "https://openalex.org/W2118434577",
+     "https://openalex.org/W2119202242",
+     "https://openalex.org/W2124807415",
+     "https://openalex.org/W2130942839",
+     "https://openalex.org/W2143134347",
+     "https://openalex.org/W2148708890",
+     "https://openalex.org/W2220350356",
+     "https://openalex.org/W2250342921",
+     "https://openalex.org/W2251012068",
+     "https://openalex.org/W2251139225",
+     "https://openalex.org/W2528305545",
+     "https://openalex.org/W2916548775",
+     "https://openalex.org/W2949445183",
+     "https://openalex.org/W2949679234",
+     "https://openalex.org/W2951559648",
+     "https://openalex.org/W2952097392",
+     "https://openalex.org/W2964308564"
+    ],
+    "related_works": [
+     "https://openalex.org/W2963403868",
+     "https://openalex.org/W2964308564",
+     "https://openalex.org/W2064675550",
+     "https://openalex.org/W2525778437",
+     "https://openalex.org/W2949888546",
+     "https://openalex.org/W1522301498",
+     "https://openalex.org/W2963341956",
+     "https://openalex.org/W2101105183",
+     "https://openalex.org/W2124807415",
+     "https://openalex.org/W2965373594",
+     "https://openalex.org/W2250539671",
+     "https://openalex.org/W1753482797",
+     "https://openalex.org/W1902237438",
+     "https://openalex.org/W2950635152",
+     "https://openalex.org/W2787560479",
+     "https://openalex.org/W2962784628",
+     "https://openalex.org/W2950133940",
+     "https://openalex.org/W2950577311",
+     "https://openalex.org/W2220350356",
+     "https://openalex.org/W2194775991"
+    ],
+    "abstract_inverted_index": {
+     "Neural": [
+      0
+     ],
+     "machine": [
+      1
+     ],
+     "translation": [
+      2,
+      12,
+      20,
+      47,
+      136
+     ],
+     "(NMT)": [
+      3
+     ],
+     "models": [
+      4,
+      108,
+      125
+     ],
+     "typically": [
+      5
+     ],
+     "operate": [
+      6
+     ],
+     "with": [
+      7
+     ],
+     "a": [
+      8,
+      28,
+      34,
+      110,
+      128
+     ],
+     "fixed": [
+      9
+     ],
+     "vocabulary,": [
+      10
+     ],
+     "but": [
+      11
+     ],
+     "is": [
+      13,
+      59
+     ],
+     "an": [
+      14
+     ],
+     "open-vocabulary": [
+      15,
+      46
+     ],
+     "problem.Previous": [
+      16
+     ],
+     "work": [
+      17
+     ],
+     "addresses": [
+      18
+     ],
+     "the": [
+      19,
+      41,
+      62,
+      97,
+      114,
+      133
+     ],
+     "of": [
+      21,
+      45,
+      56,
+      99
+     ],
+     "out-of-vocabulary": [
+      22
+     ],
+     "words": [
+      23,
+      53
+     ],
+     "by": [
+      24,
+      48,
+      141
+     ],
+     "backing": [
+      25
+     ],
+     "off": [
+      26
+     ],
+     "to": [
+      27,
+      143
+     ],
+     "dictionary.In": [
+      29
+     ],
+     "this": [
+      30
+     ],
+     "paper,": [
+      31
+     ],
+     "we": [
+      32
+     ],
+     "introduce": [
+      33
+     ],
+     "simpler": [
+      35
+     ],
+     "and": [
+      36,
+      51,
+      87,
+      89,
+      93,
+      109,
+      120,
+      139,
+      145
+     ],
+     "more": [
+      37
+     ],
+     "effective": [
+      38
+     ],
+     "approach,": [
+      39
+     ],
+     "making": [
+      40
+     ],
+     "NMT": [
+      42
+     ],
+     "model": [
+      43
+     ],
+     "capable": [
+      44
+     ],
+     "encoding": [
+      49,
+      117
+     ],
+     "rare": [
+      50
+     ],
+     "unknown": [
+      52
+     ],
+     "as": [
+      54
+     ],
+     "sequences": [
+      55
+     ],
+     "subword": [
+      57,
+      124
+     ],
+     "units.This": [
+      58
+     ],
+     "based": [
+      60,
+      112
+     ],
+     "on": [
+      61,
+      113
+     ],
+     "intuition": [
+      63
+     ],
+     "that": [
+      64,
+      123
+     ],
+     "various": [
+      65
+     ],
+     "word": [
+      66,
+      101
+     ],
+     "classes": [
+      67
+     ],
+     "are": [
+      68
+     ],
+     "translatable": [
+      69
+     ],
+     "via": [
+      70
+     ],
+     "smaller": [
+      71
+     ],
+     "units": [
+      72
+     ],
+     "than": [
+      73
+     ],
+     "words,": [
+      74
+     ],
+     "for": [
+      75,
+      132
+     ],
+     "instance": [
+      76
+     ],
+     "names": [
+      77
+     ],
+     "(via": [
+      78,
+      84,
+      91
+     ],
+     "character": [
+      79,
+      106
+     ],
+     "copying": [
+      80
+     ],
+     "or": [
+      81
+     ],
+     "transliteration),": [
+      82
+     ],
+     "compounds": [
+      83
+     ],
+     "compositional": [
+      85
+     ],
+     "translation),": [
+      86
+     ],
+     "cognates": [
+      88
+     ],
+     "loanwords": [
+      90
+     ],
+     "phonological": [
+      92
+     ],
+     "morphological": [
+      94
+     ],
+     "transformations).We": [
+      95
+     ],
+     "discuss": [
+      96
+     ],
+     "suitability": [
+      98
+     ],
+     "different": [
+      100
+     ],
+     "segmentation": [
+      102,
+      111
+     ],
+     "techniques,": [
+      103
+     ],
+     "including": [
+      104
+     ],
+     "simple": [
+      105
+     ],
+     "ngram": [
+      107
+     ],
+     "byte": [
+      115
+     ],
+     "pair": [
+      116
+     ],
+     "compression": [
+      118
+     ],
+     "algorithm,": [
+      119
+     ],
+     "empirically": [
+      121
+     ],
+     "show": [
+      122
+     ],
+     "improve": [
+      126
+     ],
+     "over": [
+      127
+     ],
+     "back-off": [
+      129
+     ],
+     "dictionary": [
+      130
+     ],
+     "baseline": [
+      131
+     ],
+     "WMT": [
+      134
+     ],
+     "15": [
+      135
+     ],
+     "tasks": [
+      137
+     ],
+     "English→German": [
+      138
+     ],
+     "English→Russian": [
+      140
+     ],
+     "up": [
+      142
+     ],
+     "1.1": [
+      144
+     ],
+     "1.3": [
+      146
+     ],
+     "BLEU,": [
+      147
+     ],
+     "respectively.": [
+      148
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2026,
+      "cited_by_count": 22
+     },
+     {
+      "year": 2025,
+      "cited_by_count": 25
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 45
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 57
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 64
+     },
+     {
+      "year": 2021,
+      "cited_by_count": 81
+     },
+     {
+      "year": 2020,
+      "cited_by_count": 108
+     },
+     {
+      "year": 2019,
+      "cited_by_count": 68
+     },
+     {
+      "year": 2018,
+      "cited_by_count": 41
+     },
+     {
+      "year": 2017,
+      "cited_by_count": 21
+     },
+     {
+      "year": 2016,
+      "cited_by_count": 6
+     },
+     {
+      "year": 2015,
+      "cited_by_count": 1
+     }
+    ],
+    "updated_date": "2026-10-06T10:28:23.643775",
+    "created_date": "2025-10-10T00:00:00"
+   }
+  ],
+  "group_by": []
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}
