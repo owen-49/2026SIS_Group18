@@ -1,6 +1,6 @@
 import { AISettings } from "./AISettings";
 import { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Icon, type IconName } from "./Icon";
 
 const navigation: { to: string; label: string; icon: IconName; end?: boolean }[] = [
@@ -9,10 +9,12 @@ const navigation: { to: string; label: string; icon: IconName; end?: boolean }[]
 ];
 
 export function AppShell() {
+  const { pathname } = useLocation();
+  const sectionName = pathname.startsWith("/verify") ? "Verify claims" : pathname.startsWith("/audit") ? "Batch audit" : pathname.startsWith("/docs") ? "Guide" : "Extension setup";
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${pathname.startsWith("/verify") ? " app-shell-verify" : ""}`}>
       <aside className={menuOpen ? "sidebar sidebar-open" : "sidebar"}>
         <div className="brand">
           <span className="brand-mark"><Icon name="shield" size={22} /></span>
@@ -36,8 +38,7 @@ export function AppShell() {
         </nav>
 
         <div className="sidebar-card">
-          <strong>ClaimTrace for Overleaf</strong>
-          <p>Review references as you write.</p>
+          <strong>Set up ClaimTrace in Overleaf</strong>
           <Link className="text-button" to="/extension-setup">Set up extension <Icon name="arrow" size={15} /></Link>
         </div>
 
@@ -50,6 +51,7 @@ export function AppShell() {
           <button className="icon-button mobile-menu" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <Icon name="menu" />
           </button>
+          <div className="topbar-context" aria-hidden="true">Workspace <span>/</span><strong>{sectionName}</strong></div>
           <AISettings />
           <Link className="help-button" to="/docs">Help <Icon name="external" size={13} /></Link>
         </header>

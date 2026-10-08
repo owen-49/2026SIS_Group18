@@ -9,9 +9,9 @@
   --ink: #15231e;
   --muted: #6f7f78;
   --subtle: #94a19b;
-  --brand: #087d69;
-  --brand-dark: #075e51;
-  --brand-soft: #e5f5f0;
+  --brand: #1d4d5d;
+  --brand-dark: #143a4a;
+  --brand-soft: #edf4f8;
   --navy: #102d2b;
   --paper: #fff;
   --canvas: #f4f7f5;
@@ -108,10 +108,10 @@ h1, h2, h3, .brand { font-family: "Manrope", "DM Sans", sans-serif; }
 
 .button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 17px; border: 1px solid transparent; border-radius: 9px; cursor: pointer; font-size: 12px; font-weight: 700; text-decoration: none; transition: 160ms ease; }
 .button:disabled { opacity: .55; cursor: wait; }
-.button-primary { color: #fff; background: var(--brand); box-shadow: 0 7px 15px rgba(8, 125, 105, .14); }
-.button-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
-.button-secondary { color: #22534a; background: #fff; border-color: #cadbd5; }
-.button-secondary:hover { color: var(--brand); border-color: #8ebdaf; }
+.button-primary { color: #f3fbff; background: linear-gradient(135deg, #1d4d5d 0%, #132f3d 100%); box-shadow: 0 10px 22px rgba(24, 62, 78, 0.18); }
+.button-primary:hover { background: linear-gradient(135deg, #163d4d 0%, #0f2735 100%); transform: translateY(-1px); }
+.button-secondary { color: #2a4d5d; background: #fff; border-color: #c7d9e3; }
+.button-secondary:hover { color: #153d4d; border-color: #8aa8ba; }
 .button-light { color: #123d35; background: #e9fff6; }
 .button-light:hover { background: #fff; }
 .button-ghost-light { color: #c5ded6; background: transparent; border-color: rgba(255,255,255,.18); }
