@@ -1,0 +1,511 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Thermal+Conductivity+of+Aerogel+Blankets+Under+Vacuum+lindqvist&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:43+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 2701086,
+   "items": [
+    {
+     "DOI": "10.1115/1.2424237",
+     "title": [
+      "Thermal Conductivity and Compressive Strain of Aerogel Insulation Blankets Under Applied Hydrostatic Pressure"
+     ],
+     "author": [
+      {
+       "given": "Erik R.",
+       "family": "Bardy",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Department of Mechanical Engineering, Grove City College, 100 Campus Drive, Grove City, PA 16127-2104"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Joseph C.",
+       "family": "Mollendorf",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Mechanical and Aerospace Engineering, State University of New York at Buffalo, 318 Jarvis Hall, Buffalo, NY 14260-2000; Department of Physiology and Biophysics Center for Research and Education in Special Environments, State University of New York at Buffalo, 124 Sherman Hall, Buffalo, NY 14214-3005"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "David R.",
+       "family": "Pendergast",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Mechanical and Aerospace Engineering, State University of New York at Buffalo, 318 Jarvis Hall, Buffalo, NY 14260-2000; Department of Physiology and Biophysics Center for Research and Education in Special Environments, State University of New York at Buffalo, 124 Sherman Hall, Buffalo, NY 14214-3005"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2006,
+        4,
+        21
+       ]
+      ]
+     },
+     "container-title": [
+      "Journal of Heat Transfer"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1115/1.2424237"
+    },
+    {
+     "DOI": "10.33915/etd.4596",
+     "title": [
+      "Mechanical degradation of thermal properties of flexible aerogel blankets"
+     ],
+     "author": [
+      {
+       "given": "Brice G.",
+       "family": "Gnahore",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "dissertation",
+     "URL": "https://doi.org/10.33915/etd.4596"
+    },
+    {
+     "DOI": "10.3390/en13040823",
+     "title": [
+      "Thermal Diffusion in Fibrous Aerogel Blankets"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0003-4757-5939",
+       "authenticated-orcid": false,
+       "given": "Ákos",
+       "family": "Lakatos",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Department of Building Services and Building Engineering, Faculty of Engineering, University of Debrecen, Ótemető str 2-4 1, 4028 Debrecen, Hungary"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-9923-8366",
+       "authenticated-orcid": false,
+       "given": "Anton",
+       "family": "Trník",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Physics, Faculty of Natural Sciences, Constantine the Philosopher University in Nitra, Tr. A Hlinku 1, 94974 Nitra, Slovakia"
+        },
+        {
+         "name": "Department of Materials Engineering and Chemistry, Faculty of Civil Engineering, Czech Technical University in Prague, Thákurova 7, 16629 Prague, Czech Republic"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020,
+        2,
+        13
+       ]
+      ]
+     },
+     "container-title": [
+      "Energies"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.3390/en13040823"
+    },
+    {
+     "DOI": "10.1111/jace.20267",
+     "title": [
+      "A scalable vacuum‐assisted method for production of aerogel blankets for thermal insulation"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0002-6999-8548",
+       "authenticated-orcid": false,
+       "given": "Abdullah",
+       "family": "Tav",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Department of Polymeric Materials Bursa Uludag University Bursa Turkey"
+        },
+        {
+         "name": "Turkish Aerospace, R&amp;D and Technology Directorate Advanced Composite Materials Technology Center Ankara Turkey"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0003-3784-0495",
+       "authenticated-orcid": false,
+       "given": "Yahya",
+       "family": "Oz",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Turkish Aerospace, R&amp;D and Technology Directorate Advanced Composite Materials Technology Center Ankara Turkey"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-8727-5829",
+       "authenticated-orcid": false,
+       "given": "Halil I.",
+       "family": "Akyildiz",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Textile Engineering Bursa Uludag University Bursa Turkey"
+        },
+        {
+         "name": "UNAM‐National Nanotechnology Center Bilkent University Ankara Turkey"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2024,
+        11,
+        22
+       ]
+      ]
+     },
+     "container-title": [
+      "Journal of the American Ceramic Society"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1111/jace.20267"
+    },
+    {
+     "DOI": "10.18186/thermal.834034",
+     "title": [
+      "CHARACTERIZATION OF AEROGEL BASED THERMAL INSULATION BLANKETS, ECONOMICS, AND APPLICATIONS FOR DOMESTIC WATER HEATERS"
+     ],
+     "author": [
+      {
+       "given": "Emadeddin",
+       "family": "TANBOUR",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Eastern Michigan University"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020,
+        12,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Journal of Thermal Engineering"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.18186/thermal.834034"
+    },
+    {
+     "DOI": "10.1016/j.vacuum.2020.109825",
+     "title": [
+      "Facile synthesis of highly flexible polymethylsilsesquioxane aerogel monoliths with low density, low thermal conductivity and superhydrophobicity"
+     ],
+     "author": [
+      {
+       "given": "Tan",
+       "family": "Guo",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0003-1799-610X",
+       "authenticated-orcid": false,
+       "given": "Shan",
+       "family": "Yun",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Yanxing",
+       "family": "Li",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Zhang",
+       "family": "Chen",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Chuanxiang",
+       "family": "Cao",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Yanfeng",
+       "family": "Gao",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Vacuum"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/j.vacuum.2020.109825"
+    },
+    {
+     "DOI": "10.1021/acs.chemmater.2c02133.s001",
+     "title": [
+      "Carbon Aerogel with High Thermal Conductivity Enabled by Shrinkage Control"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.1021/acs.chemmater.2c02133.s001"
+    },
+    {
+     "DOI": "10.1016/0042-207x(53)90302-9",
+     "title": [
+      "Thermal conductivity of glass wool at low temperatures under low pressure of the air"
+     ],
+     "author": [
+      {
+       "given": "O.",
+       "family": "van Paemel",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1953,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "Vacuum"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/0042-207x(53)90302-9"
+    },
+    {
+     "DOI": "10.1016/j.enbuild.2018.12.041",
+     "title": [
+      "Thermal bridges of metal fasteners for aerogel-enhanced blankets"
+     ],
+     "author": [
+      {
+       "given": "Umberto",
+       "family": "Berardi",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Lakatos",
+       "family": "Ákos",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        2
+       ]
+      ]
+     },
+     "container-title": [
+      "Energy and Buildings"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/j.enbuild.2018.12.041"
+    },
+    {
+     "DOI": "10.1016/0042-207x(60)90357-2",
+     "title": [
+      "177. Thermal conductivity. XIV. Conductivity of multicomponent systems."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1960,
+        6
+       ]
+      ]
+     },
+     "container-title": [
+      "Vacuum"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/0042-207x(60)90357-2"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

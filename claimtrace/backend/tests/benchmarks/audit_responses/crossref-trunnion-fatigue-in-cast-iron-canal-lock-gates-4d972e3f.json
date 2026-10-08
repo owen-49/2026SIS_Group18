@@ -1,0 +1,359 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Trunnion+Fatigue+in+Cast-Iron+Canal+Lock+Gates+halloran&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:58+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 819645,
+   "items": [
+    {
+     "DOI": "10.1038/scientificamerican12311853-124l",
+     "title": [
+      "Cast-Iron Canal Lock"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1853,
+        12,
+        31
+       ]
+      ]
+     },
+     "container-title": [
+      "Scientific American"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1038/scientificamerican12311853-124l"
+    },
+    {
+     "DOI": "10.12999/awwa.c560.00",
+     "title": [
+      "AWWA C560-00 Cast-Iron Slide Gates"
+     ],
+     "author": [
+      {
+       "name": "American Water Works Association",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "standard",
+     "URL": "https://doi.org/10.12999/awwa.c560.00"
+    },
+    {
+     "DOI": "10.12999/awwa.c501.87",
+     "title": [
+      "AWWA C501-87 Cast-Iron Sluice Gates"
+     ],
+     "author": [
+      {
+       "name": "American Water Works Association",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "standard",
+     "URL": "https://doi.org/10.12999/awwa.c501.87"
+    },
+    {
+     "DOI": "10.12999/awwa.c560.14",
+     "title": [
+      "AWWA C560-14 Cast-Iron Slide Gates"
+     ],
+     "author": [
+      {
+       "name": "American Water Works Association",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "standard",
+     "URL": "https://doi.org/10.12999/awwa.c560.14"
+    },
+    {
+     "DOI": "10.12999/awwa.c560.21",
+     "title": [
+      "AWWA C560-21 Cast-Iron Slide Gates"
+     ],
+     "author": [
+      {
+       "name": "American Water Works Association",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "standard",
+     "URL": "https://doi.org/10.12999/awwa.c560.21"
+    },
+    {
+     "DOI": "10.12999/awwa.c560.07",
+     "title": [
+      "AWWA C560-07 Cast-Iron Slide Gates"
+     ],
+     "author": [
+      {
+       "name": "American Water Works Association",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "standard",
+     "URL": "https://doi.org/10.12999/awwa.c560.07"
+    },
+    {
+     "DOI": "10.3384/diss.diva-150783",
+     "title": [
+      "Residual stresses, fatigue and deformation in cast iron"
+     ],
+     "author": [
+      {
+       "given": "Mattias",
+       "family": "Lundberg",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "dissertation",
+     "URL": "https://doi.org/10.3384/diss.diva-150783"
+    },
+    {
+     "DOI": "10.1016/b978-008044064-4/50011-6",
+     "title": [
+      "Nodular Cast Iron"
+     ],
+     "author": [
+      {
+       "given": "Yukitaka",
+       "family": "Murakami",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2002
+       ]
+      ]
+     },
+     "container-title": [
+      "Metal Fatigue"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1016/b978-008044064-4/50011-6"
+    },
+    {
+     "DOI": "10.1016/0142-1123(79)90011-2",
+     "title": [
+      "A realistic computer-based fatigue comparison of spheroidal graphite cast iron and cast steel"
+     ],
+     "author": [
+      {
+       "given": "P",
+       "family": "WATSON",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "B",
+       "family": "DABELL",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1979,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "International Journal of Fatigue"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/0142-1123(79)90011-2"
+    },
+    {
+     "DOI": "10.1080/09534962.1995.11819184",
+     "title": [
+      "Development of a white cast iron of fracture toughness 40 MPa√m"
+     ],
+     "author": [
+      {
+       "given": "A.",
+       "family": "Kootsookos",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Department of Mining and Metallurgy, University of Queensland, St Lucia, Queensland 4072, Australia"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "J. D.",
+       "family": "Gates",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Mining and Metallurgy, University of Queensland, St Lucia, Queensland 4072, Australia"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "R. A.",
+       "family": "Eaton",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Mount Isa Mines Ltd, Mount Isa, Queensland, Australia"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1995,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Cast Metals"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1080/09534962.1995.11819184"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

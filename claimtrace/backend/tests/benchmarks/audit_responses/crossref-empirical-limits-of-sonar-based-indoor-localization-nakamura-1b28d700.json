@@ -1,0 +1,690 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Empirical+Limits+of+Sonar-Based+Indoor+Localization+nakamura&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:50+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 7626909,
+   "items": [
+    {
+     "DOI": "10.1109/irds.2002.1041426",
+     "title": [
+      "Robust geometric-based localization in indoor environments using sonar range sensors"
+     ],
+     "author": [
+      {
+       "given": "J.",
+       "family": "Kim",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "R.A.",
+       "family": "Pearce",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "N.M.",
+       "family": "Amato",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "IEEE/RSJ International Conference on Intelligent Robots and System"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/irds.2002.1041426"
+    },
+    {
+     "DOI": "10.1109/infocom.2015.7218637",
+     "title": [
+      "Fundamental limits of RSS fingerprinting based indoor localization"
+     ],
+     "author": [
+      {
+       "given": "Yutian",
+       "family": "Wen",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Xiaohua",
+       "family": "Tian",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Xinbing",
+       "family": "Wang",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Songwu",
+       "family": "Lu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2015,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "2015 IEEE Conference on Computer Communications (INFOCOM)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/infocom.2015.7218637"
+    },
+    {
+     "DOI": "10.1007/s00500-006-0069-3",
+     "title": [
+      "A New Sonar-based Landmark for Localization in Indoor Environments"
+     ],
+     "author": [
+      {
+       "given": "A.",
+       "family": "Poncela",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "C.",
+       "family": "Urdiales",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "C. de",
+       "family": "Trazegnies",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "F.",
+       "family": "Sandoval",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2006,
+        3,
+        3
+       ]
+      ]
+     },
+     "container-title": [
+      "Soft Computing"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1007/s00500-006-0069-3"
+    },
+    {
+     "DOI": "10.1109/apcc.2009.5375589",
+     "title": [
+      "Empirical evaluation of RFID-based indoor localization with human body effect"
+     ],
+     "author": [
+      {
+       "given": "Nichapat",
+       "family": "Pathanawongthum",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Panarat",
+       "family": "Cherntanomwong",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2009,
+        10
+       ]
+      ]
+     },
+     "container-title": [
+      "2009 15th Asia-Pacific Conference on Communications"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/apcc.2009.5375589"
+    },
+    {
+     "DOI": "10.1109/gncc42960.2018.9018955",
+     "title": [
+      "An IMU/Sonar-based Extended Kalman Filter for Mini-UAV Localization in Indoor Environment"
+     ],
+     "author": [
+      {
+       "given": "Xiangqian",
+       "family": "Shu",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Lingyu",
+       "family": "Yang",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Xiaoke",
+       "family": "Feng",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jing",
+       "family": "Zhang",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2018,
+        8
+       ]
+      ]
+     },
+     "container-title": [
+      "2018 IEEE CSAA Guidance, Navigation and Control Conference (CGNCC)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/gncc42960.2018.9018955"
+    },
+    {
+     "DOI": "10.1115/detc2005-85269",
+     "title": [
+      "A New Approach to Sonar Based Indoor Mapping Localization"
+     ],
+     "author": [
+      {
+       "given": "A.",
+       "family": "Meghdari",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "K.",
+       "family": "Kobravi",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "H.",
+       "family": "Safyallah",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "M.",
+       "family": "Moeeni",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Y.",
+       "family": "Khatami",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "H.",
+       "family": "Khasteh",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Sharif University of Technology, Tehran, Iran"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2005,
+        1,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Volume 7: 29th Mechanisms and Robotics Conference, Parts A and B"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1115/detc2005-85269"
+    },
+    {
+     "DOI": "10.15760/etd.6514",
+     "title": [
+      "Matching Points to Lines: Sonar-based Localization for the PSUBOT"
+     ],
+     "author": [
+      {
+       "given": "Kevin",
+       "family": "Stanton",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2000,
+        1,
+        1
+       ]
+      ]
+     },
+     "type": "report",
+     "URL": "https://doi.org/10.15760/etd.6514"
+    },
+    {
+     "DOI": "10.1109/ipin51156.2021.9662547",
+     "title": [
+      "Indoor Localization Method For a Microphone Using a Single Speaker"
+     ],
+     "author": [
+      {
+       "given": "Masanari",
+       "family": "Nakamura",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Kento",
+       "family": "Fujimoto",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Hiroaki",
+       "family": "Murakami",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Hiromichi",
+       "family": "Hashizume",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Masanori",
+       "family": "Sugimoto",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        11,
+        29
+       ]
+      ]
+     },
+     "container-title": [
+      "2021 International Conference on Indoor Positioning and Indoor Navigation (IPIN)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/ipin51156.2021.9662547"
+    },
+    {
+     "DOI": "10.1109/ipin.2013.6817879",
+     "title": [
+      "Smart phone localization method using dual-carrier acoustic waves"
+     ],
+     "author": [
+      {
+       "given": "Takayuki",
+       "family": "Akiyama",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Masanari",
+       "family": "Nakamura",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Masanori",
+       "family": "Sugimoto",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Hiromich",
+       "family": "Hashizume",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2013,
+        10
+       ]
+      ]
+     },
+     "container-title": [
+      "International Conference on Indoor Positioning and Indoor Navigation"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/ipin.2013.6817879"
+    },
+    {
+     "DOI": "10.1109/urai.2014.7057437",
+     "title": [
+      "Development of advanced grid map building model based on sonar geometric reliability for indoor mobile robot localization"
+     ],
+     "author": [
+      {
+       "given": "Se-Jin",
+       "family": "Lee",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Kyoungmin",
+       "family": "Lee",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jae-Bok",
+       "family": "Song",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2014,
+        11
+       ]
+      ]
+     },
+     "container-title": [
+      "2014 11th International Conference on Ubiquitous Robots and Ambient Intelligence (URAI)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/urai.2014.7057437"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

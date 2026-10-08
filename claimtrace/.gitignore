@@ -31,6 +31,14 @@ coverage/
 # Runtime uploads
 uploads/
 
+# Verify worksheet build artifacts. The annotation target
+# (claim_passages.worksheet.json and its .meta.json) is tracked; these are
+# regenerated from it and from the cached harvest.
+engine/tests/benchmarks/worksheet.html
+engine/tests/benchmarks/worksheet_passages.json
+backend/tests/benchmarks/harvest/
+backend/tests/benchmarks/corpus/
+
 # PDF test data (large files)
 parser/tests/test_data/*.pdf
 !parser/tests/test_data/.gitkeep

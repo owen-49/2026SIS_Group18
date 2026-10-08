@@ -1,0 +1,10 @@
+{
+  "url": "https://api.openalex.org/works?filter=title.search%3AMarlinspike+Splice+Strength+in+Hemp+Hawsers&per-page=10",
+  "provider": "openalex",
+  "source": "injected",
+  "captured_at": "",
+  "status_code": 500,
+  "error": "HTTP 500 Internal Server Error",
+  "body": null,
+  "note": "Written by hand. Paired with the crossref pin below, both providers fail and the reference must still not be reported as NOT_FOUND."
+}

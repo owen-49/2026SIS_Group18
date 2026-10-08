@@ -1,0 +1,1651 @@
+{
+ "url": "https://api.openalex.org/works?filter=title.search%3ADirected+acyclic+graph+network+for+conversational+emotion+recognition&per-page=10",
+ "provider": "openalex",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "meta": {
+   "count": 2,
+   "db_response_time_ms": 11,
+   "page": 1,
+   "per_page": 10,
+   "groups_count": null,
+   "x_query": {
+    "oql": "get works where title has (Directed acyclic graph network for conversational emotion recognition)",
+    "oqo": {
+     "get_rows": "works",
+     "filter_rows": [
+      {
+       "column_id": "display_name.search",
+       "value": "Directed acyclic graph network for conversational emotion recognition",
+       "operator": "has"
+      }
+     ]
+    },
+    "url": "/works?filter=display_name.search:Directed acyclic graph network for conversational emotion recognition&per_page=10"
+   },
+   "cost_usd": 0.001
+  },
+  "results": [
+   {
+    "id": "https://openalex.org/W3175552668",
+    "doi": "https://doi.org/10.18653/v1/2021.acl-long.123",
+    "title": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+    "display_name": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+    "relevance_score": 231.24763,
+    "publication_year": 2021,
+    "publication_date": "2021-01-01",
+    "ids": {
+     "openalex": "https://openalex.org/W3175552668",
+     "doi": "https://doi.org/10.18653/v1/2021.acl-long.123",
+     "mag": "3175552668"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "doi:10.18653/v1/2021.acl-long.123",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.18653/v1/2021.acl-long.123",
+     "pdf_url": null,
+     "source": null,
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+     "raw_type": "proceedings-article"
+    },
+    "type": "conference-paper",
+    "indexed_in": [
+     "crossref"
+    ],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "gold",
+     "oa_url": "https://doi.org/10.18653/v1/2021.acl-long.123",
+     "any_repository_has_fulltext": null
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5108481711",
+       "display_name": "Weizhou Shen",
+       "orcid": "https://orcid.org/0000-0001-9180-0043",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-9180-0043"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Weizhou Shen",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering, Sun Yat-sen University, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering, Sun Yat-sen University, China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5034168839",
+       "display_name": "Siyue Wu",
+       "orcid": "https://orcid.org/0000-0003-1199-906X",
+       "observed_orcids": [
+        "https://orcid.org/0000-0003-1199-906X"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Siyue Wu",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering, Sun Yat-sen University, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering, Sun Yat-sen University, China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5103982594",
+       "display_name": "Yunyi Yang",
+       "orcid": "https://orcid.org/0009-0003-2964-5582",
+       "observed_orcids": [
+        "https://orcid.org/0009-0003-2964-5582"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": true,
+      "raw_author_name": "Yunyi Yang",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering, Sun Yat-sen University, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering, Sun Yat-sen University, China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5040062188",
+       "display_name": "Xiaojun Quan",
+       "orcid": "https://orcid.org/0000-0002-8385-1083",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-8385-1083"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Xiaojun Quan",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering, Sun Yat-sen University, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering, Sun Yat-sen University, China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 1,
+    "corresponding_author_ids": [
+     "https://openalex.org/A5103982594"
+    ],
+    "corresponding_institution_ids": [
+     "https://openalex.org/I157773358"
+    ],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": 22.7812,
+    "has_fulltext": true,
+    "cited_by_count": 277,
+    "citation_normalized_percentile": {
+     "value": 0.99717745,
+     "is_in_top_1_percent": true,
+     "is_in_top_10_percent": true
+    },
+    "cited_by_percentile_year": {
+     "min": 93,
+     "max": 100
+    },
+    "biblio": {
+     "volume": null,
+     "issue": null,
+     "first_page": "1551",
+     "last_page": "1560"
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T10664",
+     "display_name": "Sentiment Analysis and Opinion Mining",
+     "score": 0.6265000104904175,
+     "subfield": {
+      "id": "https://openalex.org/subfields/1702",
+      "display_name": "Artificial Intelligence"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/17",
+      "display_name": "Computer Science"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T10664",
+      "display_name": "Sentiment Analysis and Opinion Mining",
+      "score": 0.6265000104904175,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10667",
+      "display_name": "Emotion and Mood Recognition",
+      "score": 0.35350000858306885,
+      "subfield": {
+       "id": "https://openalex.org/subfields/3205",
+       "display_name": "Experimental and Cognitive Psychology"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/32",
+       "display_name": "Psychology"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/2",
+       "display_name": "Social Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T12488",
+      "display_name": "Mental Health via Writing",
+      "score": 0.004600000102072954,
+      "subfield": {
+       "id": "https://openalex.org/subfields/3207",
+       "display_name": "Social Psychology"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/32",
+       "display_name": "Psychology"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/2",
+       "display_name": "Social Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/emotion-recognition-in-conversation",
+      "display_name": "emotion recognition in conversation",
+      "score": 0.9570000171661377
+     },
+     {
+      "id": "https://openalex.org/keywords/directed-acyclic-graphs",
+      "display_name": "directed acyclic graphs",
+      "score": 0.7950000166893005
+     },
+     {
+      "id": "https://openalex.org/keywords/graph-neural-networks",
+      "display_name": "graph neural networks",
+      "score": 0.531000018119812
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.6839402318000793
+     },
+     {
+      "id": "https://openalex.org/C74197172",
+      "wikidata": "https://www.wikidata.org/wiki/Q1195339",
+      "display_name": "Directed acyclic graph",
+      "level": 2,
+      "score": 0.5350476503372192
+     },
+     {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": "https://www.wikidata.org/wiki/Q30642",
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 0.5311735272407532
+     },
+     {
+      "id": "https://openalex.org/C18555067",
+      "wikidata": "https://www.wikidata.org/wiki/Q8375051",
+      "display_name": "Joint (building)",
+      "level": 2,
+      "score": 0.5240797400474548
+     },
+     {
+      "id": "https://openalex.org/C155092808",
+      "wikidata": "https://www.wikidata.org/wiki/Q182557",
+      "display_name": "Computational linguistics",
+      "level": 2,
+      "score": 0.5038549304008484
+     },
+     {
+      "id": "https://openalex.org/C2777438025",
+      "wikidata": "https://www.wikidata.org/wiki/Q1339090",
+      "display_name": "Emotion recognition",
+      "level": 2,
+      "score": 0.49412801861763
+     },
+     {
+      "id": "https://openalex.org/C142853389",
+      "wikidata": "https://www.wikidata.org/wiki/Q744778",
+      "display_name": "Association (psychology)",
+      "level": 2,
+      "score": 0.4885922074317932
+     },
+     {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": "https://www.wikidata.org/wiki/Q11660",
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 0.4610068202018738
+     },
+     {
+      "id": "https://openalex.org/C132525143",
+      "wikidata": "https://www.wikidata.org/wiki/Q141488",
+      "display_name": "Graph",
+      "level": 2,
+      "score": 0.4146215319633484
+     },
+     {
+      "id": "https://openalex.org/C28490314",
+      "wikidata": "https://www.wikidata.org/wiki/Q189436",
+      "display_name": "Speech recognition",
+      "level": 1,
+      "score": 0.37440261244773865
+     },
+     {
+      "id": "https://openalex.org/C80444323",
+      "wikidata": "https://www.wikidata.org/wiki/Q2878974",
+      "display_name": "Theoretical computer science",
+      "level": 1,
+      "score": 0.24036690592765808
+     },
+     {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 0.1656140387058258
+     },
+     {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": "https://www.wikidata.org/wiki/Q8366",
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 0.1213054358959198
+     },
+     {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": "https://www.wikidata.org/wiki/Q11023",
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 0.09937319159507751
+     },
+     {
+      "id": "https://openalex.org/C170154142",
+      "wikidata": "https://www.wikidata.org/wiki/Q150737",
+      "display_name": "Architectural engineering",
+      "level": 1,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C542102704",
+      "wikidata": "https://www.wikidata.org/wiki/Q183257",
+      "display_name": "Psychotherapist",
+      "level": 1,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 1,
+    "locations": [
+     {
+      "id": "doi:10.18653/v1/2021.acl-long.123",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.18653/v1/2021.acl-long.123",
+      "pdf_url": null,
+      "source": null,
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+      "raw_type": "proceedings-article"
+     }
+    ],
+    "best_oa_location": {
+     "id": "doi:10.18653/v1/2021.acl-long.123",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.18653/v1/2021.acl-long.123",
+     "pdf_url": null,
+     "source": null,
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+     "raw_type": "proceedings-article"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [
+     {
+      "id": "https://metadata.un.org/sdg/4",
+      "display_name": "Quality education",
+      "score": 0.7799999713897705
+     }
+    ],
+    "study_designs": [],
+    "awards": [],
+    "funders": [],
+    "has_content": {
+     "pdf": false,
+     "grobid_xml": false
+    },
+    "content_urls": null,
+    "referenced_works_count": 39,
+    "referenced_works": [
+     "https://openalex.org/W2092206588",
+     "https://openalex.org/W2104246439",
+     "https://openalex.org/W2146334809",
+     "https://openalex.org/W2204696980",
+     "https://openalex.org/W2604314403",
+     "https://openalex.org/W2626778328",
+     "https://openalex.org/W2749002090",
+     "https://openalex.org/W2761590056",
+     "https://openalex.org/W2766453196",
+     "https://openalex.org/W2805662932",
+     "https://openalex.org/W2891359673",
+     "https://openalex.org/W2895615590",
+     "https://openalex.org/W2896457183",
+     "https://openalex.org/W2939362715",
+     "https://openalex.org/W2942465004",
+     "https://openalex.org/W2943963359",
+     "https://openalex.org/W2955429306",
+     "https://openalex.org/W2963341956",
+     "https://openalex.org/W2963544536",
+     "https://openalex.org/W2963647655",
+     "https://openalex.org/W2963858333",
+     "https://openalex.org/W2963935794",
+     "https://openalex.org/W2964015378",
+     "https://openalex.org/W2964230360",
+     "https://openalex.org/W2964300796",
+     "https://openalex.org/W2965373594",
+     "https://openalex.org/W2965453734",
+     "https://openalex.org/W2970431814",
+     "https://openalex.org/W2970597249",
+     "https://openalex.org/W2971222961",
+     "https://openalex.org/W2986920492",
+     "https://openalex.org/W3089860869",
+     "https://openalex.org/W3092186768",
+     "https://openalex.org/W3099056802",
+     "https://openalex.org/W3123369446",
+     "https://openalex.org/W3173751215",
+     "https://openalex.org/W3205498744",
+     "https://openalex.org/W4299547686",
+     "https://openalex.org/W4385245566"
+    ],
+    "related_works": [
+     "https://openalex.org/W2731094954",
+     "https://openalex.org/W2789273959",
+     "https://openalex.org/W4302345037",
+     "https://openalex.org/W2952978498",
+     "https://openalex.org/W2951616510",
+     "https://openalex.org/W1998712144",
+     "https://openalex.org/W3122467582",
+     "https://openalex.org/W1763561501",
+     "https://openalex.org/W4292730466",
+     "https://openalex.org/W2354764436"
+    ],
+    "abstract_inverted_index": {
+     "Weizhou": [
+      0
+     ],
+     "Shen,": [
+      1
+     ],
+     "Siyue": [
+      2
+     ],
+     "Wu,": [
+      3
+     ],
+     "Yunyi": [
+      4
+     ],
+     "Yang,": [
+      5
+     ],
+     "Xiaojun": [
+      6
+     ],
+     "Quan.": [
+      7
+     ],
+     "Proceedings": [
+      8
+     ],
+     "of": [
+      9,
+      14
+     ],
+     "the": [
+      10,
+      15,
+      21
+     ],
+     "59th": [
+      11
+     ],
+     "Annual": [
+      12
+     ],
+     "Meeting": [
+      13
+     ],
+     "Association": [
+      16
+     ],
+     "for": [
+      17
+     ],
+     "Computational": [
+      18
+     ],
+     "Linguistics": [
+      19
+     ],
+     "and": [
+      20
+     ],
+     "11th": [
+      22
+     ],
+     "International": [
+      23
+     ],
+     "Joint": [
+      24
+     ],
+     "Conference": [
+      25
+     ],
+     "on": [
+      26
+     ],
+     "Natural": [
+      27
+     ],
+     "Language": [
+      28
+     ],
+     "Processing": [
+      29
+     ],
+     "(Volume": [
+      30
+     ],
+     "1:": [
+      31
+     ],
+     "Long": [
+      32
+     ],
+     "Papers).": [
+      33
+     ],
+     "2021.": [
+      34
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2026,
+      "cited_by_count": 26
+     },
+     {
+      "year": 2025,
+      "cited_by_count": 66
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 67
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 95
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 21
+     },
+     {
+      "year": 2021,
+      "cited_by_count": 2
+     }
+    ],
+    "updated_date": "2026-10-05T09:50:58.205359",
+    "created_date": "2025-10-10T00:00:00"
+   },
+   {
+    "id": "https://openalex.org/W3164774158",
+    "doi": "https://doi.org/10.48550/arxiv.2105.12907",
+    "title": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+    "display_name": "Directed Acyclic Graph Network for Conversational Emotion Recognition",
+    "relevance_score": 180.35501,
+    "publication_year": 2021,
+    "publication_date": "2021-05-27",
+    "ids": {
+     "openalex": "https://openalex.org/W3164774158",
+     "doi": "https://doi.org/10.48550/arxiv.2105.12907",
+     "mag": "3164774158"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "pmh:oai:arXiv.org:2105.12907",
+     "is_oa": true,
+     "landing_page_url": "http://arxiv.org/abs/2105.12907",
+     "pdf_url": "https://arxiv.org/pdf/2105.12907",
+     "source": {
+      "id": "https://openalex.org/S4306400194",
+      "display_name": "arXiv (Cornell University)",
+      "issn_l": "2331-8422",
+      "issn": [
+       "2331-8422"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": "https://openalex.org/I205783295",
+      "host_organization_name": "Cornell University",
+      "host_organization_lineage": [
+       "https://openalex.org/I205783295"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "repository"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "submittedVersion",
+     "is_accepted": false,
+     "is_published": false,
+     "raw_source_name": null,
+     "raw_type": "text"
+    },
+    "type": "preprint",
+    "indexed_in": [
+     "arxiv",
+     "datacite"
+    ],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "green",
+     "oa_url": "https://arxiv.org/pdf/2105.12907",
+     "any_repository_has_fulltext": true
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5108481711",
+       "display_name": "Weizhou Shen",
+       "orcid": "https://orcid.org/0000-0001-9180-0043",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-9180-0043"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Shen, Weizhou",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering , Sun Yat-sen University , China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering , Sun Yat-sen University , China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5034168839",
+       "display_name": "Siyue Wu",
+       "orcid": "https://orcid.org/0000-0003-1199-906X",
+       "observed_orcids": [
+        "https://orcid.org/0000-0003-1199-906X"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Wu, Siyue",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering , Sun Yat-sen University , China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering , Sun Yat-sen University , China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5103982594",
+       "display_name": "Yunyi Yang",
+       "orcid": "https://orcid.org/0009-0003-2964-5582",
+       "observed_orcids": [
+        "https://orcid.org/0009-0003-2964-5582"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Yang, Yunyi",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering , Sun Yat-sen University , China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering , Sun Yat-sen University , China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5040062188",
+       "display_name": "Xiaojun Quan",
+       "orcid": "https://orcid.org/0000-0002-8385-1083",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-8385-1083"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I157773358",
+        "display_name": "Sun Yat-sen University",
+        "ror": "https://ror.org/0064kty71",
+        "country_code": "CN",
+        "type": "education",
+        "lineage": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ],
+      "countries": [
+       "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Quan, Xiaojun",
+      "raw_affiliation_strings": [
+       "School of Computer Science and Engineering , Sun Yat-sen University , China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "School of Computer Science and Engineering , Sun Yat-sen University , China",
+        "institution_ids": [
+         "https://openalex.org/I157773358"
+        ]
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 1,
+    "corresponding_author_ids": [],
+    "corresponding_institution_ids": [
+     "https://openalex.org/I157773358"
+    ],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": null,
+    "has_fulltext": true,
+    "cited_by_count": 14,
+    "citation_normalized_percentile": null,
+    "cited_by_percentile_year": null,
+    "biblio": {
+     "volume": null,
+     "issue": null,
+     "first_page": null,
+     "last_page": null
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T10667",
+     "display_name": "Emotion and Mood Recognition",
+     "score": 0.8823000192642212,
+     "subfield": {
+      "id": "https://openalex.org/subfields/3205",
+      "display_name": "Experimental and Cognitive Psychology"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/32",
+      "display_name": "Psychology"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/2",
+      "display_name": "Social Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T10667",
+      "display_name": "Emotion and Mood Recognition",
+      "score": 0.8823000192642212,
+      "subfield": {
+       "id": "https://openalex.org/subfields/3205",
+       "display_name": "Experimental and Cognitive Psychology"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/32",
+       "display_name": "Psychology"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/2",
+       "display_name": "Social Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T10664",
+      "display_name": "Sentiment Analysis and Opinion Mining",
+      "score": 0.10029999911785126,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T12031",
+      "display_name": "Speech and dialogue systems",
+      "score": 0.0044999998062849045,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1702",
+       "display_name": "Artificial Intelligence"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/17",
+       "display_name": "Computer Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/emotion-recognition-in-conversation",
+      "display_name": "emotion recognition in conversation",
+      "score": 0.9739999771118164
+     },
+     {
+      "id": "https://openalex.org/keywords/directed-acyclic-graphs",
+      "display_name": "directed acyclic graphs",
+      "score": 0.9449999928474426
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C74197172",
+      "wikidata": "https://www.wikidata.org/wiki/Q1195339",
+      "display_name": "Directed acyclic graph",
+      "level": 2,
+      "score": 0.9244357943534851
+     },
+     {
+      "id": "https://openalex.org/C2777200299",
+      "wikidata": "https://www.wikidata.org/wiki/Q52943",
+      "display_name": "Conversation",
+      "level": 2,
+      "score": 0.8613395690917969
+     },
+     {
+      "id": "https://openalex.org/C146380142",
+      "wikidata": "https://www.wikidata.org/wiki/Q1137726",
+      "display_name": "Directed graph",
+      "level": 2,
+      "score": 0.7343467473983765
+     },
+     {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.7049956321716309
+     },
+     {
+      "id": "https://openalex.org/C132525143",
+      "wikidata": "https://www.wikidata.org/wiki/Q141488",
+      "display_name": "Graph",
+      "level": 2,
+      "score": 0.5276317000389099
+     },
+     {
+      "id": "https://openalex.org/C2779343474",
+      "wikidata": "https://www.wikidata.org/wiki/Q3109175",
+      "display_name": "Context (archaeology)",
+      "level": 2,
+      "score": 0.4922284185886383
+     },
+     {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": "https://www.wikidata.org/wiki/Q11660",
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 0.44068199396133423
+     },
+     {
+      "id": "https://openalex.org/C148067565",
+      "wikidata": "https://www.wikidata.org/wiki/Q3323718",
+      "display_name": "Moral graph",
+      "level": 5,
+      "score": 0.42177578806877136
+     },
+     {
+      "id": "https://openalex.org/C50644808",
+      "wikidata": "https://www.wikidata.org/wiki/Q192776",
+      "display_name": "Artificial neural network",
+      "level": 2,
+      "score": 0.41297537088394165
+     },
+     {
+      "id": "https://openalex.org/C80444323",
+      "wikidata": "https://www.wikidata.org/wiki/Q2878974",
+      "display_name": "Theoretical computer science",
+      "level": 1,
+      "score": 0.3850744962692261
+     },
+     {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": "https://www.wikidata.org/wiki/Q30642",
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 0.3574106693267822
+     },
+     {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": "https://www.wikidata.org/wiki/Q8366",
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 0.19422152638435364
+     },
+     {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 0.18700271844863892
+     },
+     {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": "https://www.wikidata.org/wiki/Q11024",
+      "display_name": "Communication",
+      "level": 1,
+      "score": 0.14476275444030762
+     },
+     {
+      "id": "https://openalex.org/C22149727",
+      "wikidata": "https://www.wikidata.org/wiki/Q7940747",
+      "display_name": "Voltage graph",
+      "level": 4,
+      "score": 0.08549419045448303
+     },
+     {
+      "id": "https://openalex.org/C203776342",
+      "wikidata": "https://www.wikidata.org/wiki/Q1378376",
+      "display_name": "Line graph",
+      "level": 3,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C151730666",
+      "wikidata": "https://www.wikidata.org/wiki/Q7205",
+      "display_name": "Paleontology",
+      "level": 1,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 2,
+    "locations": [
+     {
+      "id": "pmh:oai:arXiv.org:2105.12907",
+      "is_oa": true,
+      "landing_page_url": "http://arxiv.org/abs/2105.12907",
+      "pdf_url": "https://arxiv.org/pdf/2105.12907",
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": null,
+      "raw_type": "text"
+     },
+     {
+      "id": "doi:10.48550/arxiv.2105.12907",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.48550/arxiv.2105.12907",
+      "pdf_url": null,
+      "source": {
+       "id": "https://openalex.org/S4306400194",
+       "display_name": "arXiv (Cornell University)",
+       "issn_l": "2331-8422",
+       "issn": [
+        "2331-8422"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [],
+       "host_organization": "https://openalex.org/I205783295",
+       "host_organization_name": "Cornell University",
+       "host_organization_lineage": [
+        "https://openalex.org/I205783295"
+       ],
+       "host_organization_lineage_names": [],
+       "type": "repository"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": null,
+      "is_accepted": false,
+      "is_published": null,
+      "raw_source_name": null,
+      "raw_type": "Preprint"
+     }
+    ],
+    "best_oa_location": {
+     "id": "pmh:oai:arXiv.org:2105.12907",
+     "is_oa": true,
+     "landing_page_url": "http://arxiv.org/abs/2105.12907",
+     "pdf_url": "https://arxiv.org/pdf/2105.12907",
+     "source": {
+      "id": "https://openalex.org/S4306400194",
+      "display_name": "arXiv (Cornell University)",
+      "issn_l": "2331-8422",
+      "issn": [
+       "2331-8422"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [],
+      "host_organization": "https://openalex.org/I205783295",
+      "host_organization_name": "Cornell University",
+      "host_organization_lineage": [
+       "https://openalex.org/I205783295"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "repository"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "submittedVersion",
+     "is_accepted": false,
+     "is_published": false,
+     "raw_source_name": null,
+     "raw_type": "text"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [
+     {
+      "id": "https://metadata.un.org/sdg/4",
+      "display_name": "Quality education",
+      "score": 0.5
+     }
+    ],
+    "study_designs": [],
+    "awards": [],
+    "funders": [],
+    "has_content": {
+     "pdf": false,
+     "grobid_xml": false
+    },
+    "content_urls": null,
+    "referenced_works_count": 32,
+    "referenced_works": [
+     "https://openalex.org/W2092206588",
+     "https://openalex.org/W2104246439",
+     "https://openalex.org/W2146334809",
+     "https://openalex.org/W2204696980",
+     "https://openalex.org/W2519887557",
+     "https://openalex.org/W2604314403",
+     "https://openalex.org/W2626778328",
+     "https://openalex.org/W2749002090",
+     "https://openalex.org/W2766453196",
+     "https://openalex.org/W2788420618",
+     "https://openalex.org/W2805662932",
+     "https://openalex.org/W2891359673",
+     "https://openalex.org/W2895615590",
+     "https://openalex.org/W2943963359",
+     "https://openalex.org/W2955429306",
+     "https://openalex.org/W2963341956",
+     "https://openalex.org/W2963544536",
+     "https://openalex.org/W2963647655",
+     "https://openalex.org/W2963935794",
+     "https://openalex.org/W2964230360",
+     "https://openalex.org/W2964300796",
+     "https://openalex.org/W2965373594",
+     "https://openalex.org/W2970431814",
+     "https://openalex.org/W2970597249",
+     "https://openalex.org/W2970991073",
+     "https://openalex.org/W2986920492",
+     "https://openalex.org/W3089860869",
+     "https://openalex.org/W3092186768",
+     "https://openalex.org/W3099056802",
+     "https://openalex.org/W3110738190",
+     "https://openalex.org/W3123369446",
+     "https://openalex.org/W3205498744"
+    ],
+    "related_works": [
+     "https://openalex.org/W4287028074",
+     "https://openalex.org/W3191289342",
+     "https://openalex.org/W2354764436",
+     "https://openalex.org/W2350111251",
+     "https://openalex.org/W2146569528",
+     "https://openalex.org/W2948792952",
+     "https://openalex.org/W2372211403",
+     "https://openalex.org/W2084763084",
+     "https://openalex.org/W4288723498",
+     "https://openalex.org/W3164774158"
+    ],
+    "abstract_inverted_index": {
+     "The": [
+      0,
+      106
+     ],
+     "modeling": [
+      1
+     ],
+     "of": [
+      2,
+      24,
+      63,
+      112,
+      120
+     ],
+     "conversational": [
+      3
+     ],
+     "context": [
+      4
+     ],
+     "plays": [
+      5
+     ],
+     "a": [
+      6,
+      21,
+      29,
+      41,
+      45,
+      74
+     ],
+     "vital": [
+      7
+     ],
+     "role": [
+      8
+     ],
+     "in": [
+      9
+     ],
+     "emotion": [
+      10
+     ],
+     "recognition": [
+      11
+     ],
+     "from": [
+      12
+     ],
+     "conversation": [
+      13,
+      85
+     ],
+     "(ERC).": [
+      14
+     ],
+     "In": [
+      15,
+      56
+     ],
+     "this": [
+      16,
+      54,
+      113
+     ],
+     "paper,": [
+      17
+     ],
+     "we": [
+      18
+     ],
+     "put": [
+      19
+     ],
+     "forward": [
+      20
+     ],
+     "novel": [
+      22
+     ],
+     "idea": [
+      23
+     ],
+     "encoding": [
+      25
+     ],
+     "the": [
+      26,
+      37,
+      61,
+      80,
+      110,
+      118,
+      121
+     ],
+     "utterances": [
+      27
+     ],
+     "with": [
+      28,
+      98
+     ],
+     "directed": [
+      30,
+      46,
+      122
+     ],
+     "acyclic": [
+      31,
+      47,
+      123
+     ],
+     "graph": [
+      32,
+      124
+     ],
+     "(DAG)": [
+      33
+     ],
+     "to": [
+      34,
+      52,
+      59,
+      78
+     ],
+     "better": [
+      35
+     ],
+     "model": [
+      36,
+      79,
+      115
+     ],
+     "intrinsic": [
+      38
+     ],
+     "structure": [
+      39
+     ],
+     "within": [
+      40
+     ],
+     "conversation,": [
+      42
+     ],
+     "and": [
+      43,
+      68,
+      87,
+      116
+     ],
+     "design": [
+      44
+     ],
+     "neural": [
+      48,
+      66,
+      70
+     ],
+     "network,": [
+      49
+     ],
+     "namely": [
+      50
+     ],
+     "DAG-ERC,": [
+      51
+     ],
+     "implement": [
+      53
+     ],
+     "idea.": [
+      55
+     ],
+     "an": [
+      57
+     ],
+     "attempt": [
+      58
+     ],
+     "combine": [
+      60
+     ],
+     "strengths": [
+      62
+     ],
+     "conventional": [
+      64
+     ],
+     "graph-based": [
+      65
+     ],
+     "models": [
+      67,
+      100
+     ],
+     "recurrence-based": [
+      69
+     ],
+     "models,": [
+      71
+     ],
+     "DAG-ERC": [
+      72
+     ],
+     "provides": [
+      73
+     ],
+     "more": [
+      75
+     ],
+     "intuitive": [
+      76
+     ],
+     "way": [
+      77
+     ],
+     "information": [
+      81
+     ],
+     "flow": [
+      82
+     ],
+     "between": [
+      83
+     ],
+     "long-distance": [
+      84
+     ],
+     "background": [
+      86
+     ],
+     "nearby": [
+      88
+     ],
+     "context.": [
+      89
+     ],
+     "Extensive": [
+      90
+     ],
+     "experiments": [
+      91
+     ],
+     "are": [
+      92
+     ],
+     "conducted": [
+      93
+     ],
+     "on": [
+      94
+     ],
+     "four": [
+      95
+     ],
+     "ERC": [
+      96
+     ],
+     "benchmarks": [
+      97
+     ],
+     "state-of-the-art": [
+      99
+     ],
+     "employed": [
+      101
+     ],
+     "as": [
+      102
+     ],
+     "baselines": [
+      103
+     ],
+     "for": [
+      104,
+      126
+     ],
+     "comparison.": [
+      105
+     ],
+     "empirical": [
+      107
+     ],
+     "results": [
+      108
+     ],
+     "demonstrate": [
+      109
+     ],
+     "superiority": [
+      111
+     ],
+     "new": [
+      114
+     ],
+     "confirm": [
+      117
+     ],
+     "motivation": [
+      119
+     ],
+     "architecture": [
+      125
+     ],
+     "ERC.": [
+      127
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2026,
+      "cited_by_count": 1
+     },
+     {
+      "year": 2025,
+      "cited_by_count": 3
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 4
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 4
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 2
+     }
+    ],
+    "updated_date": "2026-09-30T09:27:27.532063",
+    "created_date": "2025-10-10T00:00:00"
+   }
+  ],
+  "group_by": []
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

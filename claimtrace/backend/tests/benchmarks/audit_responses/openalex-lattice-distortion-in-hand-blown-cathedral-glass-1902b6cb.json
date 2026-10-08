@@ -1,0 +1,10 @@
+{
+  "url": "https://api.openalex.org/works?filter=title.search%3ALattice+Distortion+in+Hand-Blown+Cathedral+Glass&per-page=10",
+  "provider": "openalex",
+  "source": "injected",
+  "captured_at": "",
+  "status_code": 429,
+  "error": "HTTP 429 Too Many Requests",
+  "body": null,
+  "note": "Written by hand. A throttle is a failure, not an answer: this is the case that keeps the chain from reading its own rate limit as evidence the work does not exist."
+}

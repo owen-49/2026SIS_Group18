@@ -1,0 +1,447 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=On+the+Hydrodynamics+of+Paper+Airplanes+in+Zero+Gravity+okonkwo&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:39+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 753393,
+   "items": [
+    {
+     "DOI": "10.2514/6.2000-4317",
+     "title": [
+      "Zero-gravity flight of paper airplanes"
+     ],
+     "author": [
+      {
+       "given": "John",
+       "family": "Bain",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "NRC/NASA, Johnson Space Center, Houston, TX"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2000,
+        8,
+        14
+       ]
+      ]
+     },
+     "container-title": [
+      "Atmospheric Flight Mechanics Conference"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.2514/6.2000-4317"
+    },
+    {
+     "DOI": "10.4271/2004-01-1803",
+     "title": [
+      "Preliminary Design Considerations for Zero Greenhouse Gas Emission Airplanes"
+     ],
+     "author": [
+      {
+       "given": "William H.",
+       "family": "Wentz",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Wichita State University"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Ahmed S.",
+       "family": "Mohamed",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Cessna Aircraft Company"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2004,
+        4,
+        20
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/2004-01-1803"
+    },
+    {
+     "DOI": "10.4271/2005-01-3035",
+     "title": [
+      "Hydrodynamics of Packed Bed Reactor in Low Gravity"
+     ],
+     "author": [
+      {
+       "given": "Brian J.",
+       "family": "Motil",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "NASA Glenn Research Center"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Henry K.",
+       "family": "Nahra",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "NASA Glenn Research Center"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Vemuri",
+       "family": "Balakotaiah",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2005,
+        7,
+        11
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/2005-01-3035"
+    },
+    {
+     "DOI": "10.54097/2zsems34",
+     "title": [
+      "The Effect of Wing Stiffness and Centre of Gravity on the Glide Performance of Paper Airplanes"
+     ],
+     "author": [
+      {
+       "given": "Xiaoyu",
+       "family": "Han",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "St. Edward’s School, Oxford, United Kingdom"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        12,
+        30
+       ]
+      ]
+     },
+     "container-title": [
+      "Highlights in Science, Engineering and Technology"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.54097/2zsems34"
+    },
+    {
+     "DOI": "10.4271/921160",
+     "title": [
+      "Zero Gravity Phase Separator Technologies - Past, Present and Future"
+     ],
+     "author": [
+      {
+       "given": "W. Clark",
+       "family": "Dean",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1992,
+        7,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/921160"
+    },
+    {
+     "DOI": "10.4271/820837",
+     "title": [
+      "Zero Gravity and Life Support Systems — Friends or Foes?"
+     ],
+     "author": [
+      {
+       "given": "Raymond B.",
+       "family": "Trusch",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1982,
+        2,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/820837"
+    },
+    {
+     "DOI": "10.4271/690638",
+     "title": [
+      "A Hydrophobic-Hydrophilic Zero Gravity Liquid Gas Phase Separator"
+     ],
+     "author": [
+      {
+       "given": "C. G.",
+       "family": "Saunders",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Langley Research Center, NASA"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1969,
+        2,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/690638"
+    },
+    {
+     "DOI": "10.4271/690644",
+     "title": [
+      "Zero-Gravity Testing of a Waste Management System"
+     ],
+     "author": [
+      {
+       "given": "Bert",
+       "family": "Cooper",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Fairchild Hiller"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "J. V.",
+       "family": "Wagner",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fairchild Hiller"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1969,
+        2,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/690644"
+    },
+    {
+     "DOI": "10.4271/871521",
+     "title": [
+      "A Zero-Gravity Thermodynamic Vent System for a Liquid Hydrogen Tank"
+     ],
+     "author": [
+      {
+       "given": "David",
+       "family": "Halsey",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1987,
+        7,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "SAE Technical Paper Series"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.4271/871521"
+    },
+    {
+     "DOI": "10.31234/osf.io/6cyfa",
+     "title": [
+      "Taking risks by flying paper airplanes"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0002-5396-3711",
+       "authenticated-orcid": true,
+       "given": "Antonio",
+       "family": "Alfonso",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2024,
+        1,
+        17
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.31234/osf.io/6cyfa"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

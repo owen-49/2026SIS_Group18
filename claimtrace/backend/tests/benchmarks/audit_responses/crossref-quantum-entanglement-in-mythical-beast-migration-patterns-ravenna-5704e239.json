@@ -1,0 +1,327 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Quantum+Entanglement+in+Mythical+Beast+Migration+Patterns+ravenna&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:28+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 1680817,
+   "items": [
+    {
+     "DOI": "10.4324/9781351179690-2",
+     "title": [
+      "The Sustainable City: A Mythical Beast?"
+     ],
+     "author": [
+      {
+       "given": "Peter",
+       "family": "Hall",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2018,
+        5,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "Green Community"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.4324/9781351179690-2"
+    },
+    {
+     "DOI": "10.7208/chicago/9780226195520.001.0001",
+     "title": [
+      "The Phoenix"
+     ],
+     "author": [
+      {
+       "given": "Joseph",
+       "family": "Nigg",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2016
+       ]
+      ]
+     },
+     "type": "monograph",
+     "URL": "https://doi.org/10.7208/chicago/9780226195520.001.0001"
+    },
+    {
+     "DOI": "10.2139/ssrn.3677666",
+     "title": [
+      "The Declaratory Form of Legislation: The (Long Overdue) Time to Slay this Mythical Beast"
+     ],
+     "author": [
+      {
+       "given": "Joe",
+       "family": "McIntyre",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2018
+       ]
+      ]
+     },
+     "container-title": [
+      "SSRN Electronic Journal"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.2139/ssrn.3677666"
+    },
+    {
+     "DOI": "10.1515/9783110213591.2.131",
+     "title": [
+      "Draco litterarius. Some Thoughts on an Imaginary Beast"
+     ],
+     "author": [
+      {
+       "given": "Thomas",
+       "family": "Honegger",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2009,
+        6,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "Animals and Mythical Creatures in the Middle Ages"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1515/9783110213591.2.131"
+    },
+    {
+     "DOI": "10.2307/jj.30347502.6",
+     "title": [
+      "The Nature of the Mythical Beast:"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2014,
+        7,
+        15
+       ]
+      ]
+     },
+     "container-title": [
+      "Mythography"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.2307/jj.30347502.6"
+    },
+    {
+     "DOI": "10.1484/j.emd.2.300912",
+     "title": [
+      "Playing the serpent: devil, virgin or mythical beast?"
+     ],
+     "author": [
+      {
+       "given": "Sydney",
+       "family": "Higgins",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1998,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "European Medieval Drama"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1484/j.emd.2.300912"
+    },
+    {
+     "DOI": "10.1088/2053-2563/ab2b33ch24",
+     "title": [
+      "Quantum entanglement and quantum computing"
+     ],
+     "author": [
+      {
+       "given": "F J",
+       "family": "Duarte",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        10
+       ]
+      ]
+     },
+     "container-title": [
+      "Fundamentals of Quantum Entanglement"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1088/2053-2563/ab2b33ch24"
+    },
+    {
+     "DOI": "10.1017/9781139207010.017",
+     "title": [
+      "Quantum entanglement"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2017,
+        8,
+        31
+       ]
+      ]
+     },
+     "container-title": [
+      "Geometry of Quantum States"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1017/9781139207010.017"
+    },
+    {
+     "DOI": "10.1093/oso/9780198527626.003.0008",
+     "title": [
+      "Entanglement"
+     ],
+     "author": [
+      {
+       "given": "Stephen",
+       "family": "Barnett",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2009,
+        5,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "Quantum Information"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1093/oso/9780198527626.003.0008"
+    },
+    {
+     "DOI": "10.5772/55829",
+     "title": [
+      "Detecting Quantum Entanglement: Positive Maps and Entanglement Witnesses"
+     ],
+     "author": [
+      {
+       "given": "Dariusz",
+       "family": "Chruciski",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2013,
+        7,
+        24
+       ]
+      ]
+     },
+     "container-title": [
+      "Open Systems, Entanglement and Quantum Optics"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.5772/55829"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

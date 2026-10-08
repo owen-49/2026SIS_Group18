@@ -95,6 +95,17 @@ class AnnotatedPair:
         citing_paper: The paper the claim is taken from, when it is not the
             source. Informational.
         notes: The annotator's one-sentence justification.
+        pair_id: A stable join key for the pair, e.g.
+            ``"<citing_paper>:<paragraph>:<marker>"``. Two annotators' files are
+            aligned on it, and a recording is keyed by it. Empty when the pair
+            was written before this field existed; nothing derives it, because a
+            derived key that changed with the claim text would silently
+            re-identify a pair mid-annotation.
+        citation_marker: The marker as the citing paper writes it --- ``"[30]"``,
+            ``"(Wei, 2022)"``, ``"\\cite{wei2022emergent}"`` --- for a harness
+            that resolves the cited paper through the API instead of being
+            handed its id. Empty for pairs scored inside the engine, which
+            already knows the source paper.
     """
 
     claim: str
@@ -104,6 +115,8 @@ class AnnotatedPair:
     annotator: str = ""
     citing_paper: str = ""
     notes: str = ""
+    pair_id: str = ""
+    citation_marker: str = ""
 
 
 @dataclass
@@ -222,6 +235,8 @@ def _pair_from(item: Any, path: Any) -> AnnotatedPair:
         annotator=str(item.get("annotator", "")),
         citing_paper=str(item.get("citing_paper", "")),
         notes=str(item.get("notes", "")),
+        pair_id=str(item.get("pair_id", "")),
+        citation_marker=str(item.get("citation_marker", "")),
     )
 
 

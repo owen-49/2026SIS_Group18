@@ -298,6 +298,29 @@ def test_a_pair_file_round_trips(tmp_path):
     assert pair.annotator == "SL"
 
 
+def test_the_marker_and_join_key_round_trip(tmp_path):
+    path = _write(
+        tmp_path,
+        [
+            {
+                "claim": "There has been extensive previous work ... memory layers [30].",
+                "label": "SUPPORT",
+                "pair_id": "92574678:39:30",
+                "citation_marker": "[30]",
+            }
+        ],
+    )
+    pair = load_pairs(path)[0]
+    assert pair.pair_id == "92574678:39:30"
+    assert pair.citation_marker == "[30]"
+
+
+def test_a_pair_written_before_the_join_key_existed_loads_with_empty_defaults(tmp_path):
+    pair = load_pairs(_write(tmp_path, [{"claim": "c", "label": "SUPPORT"}]))[0]
+    assert pair.pair_id == ""
+    assert pair.citation_marker == ""
+
+
 def test_a_lowercase_label_is_accepted_and_normalised(tmp_path):
     assert load_pairs(_write(tmp_path, [{"claim": "c", "label": "partial"}]))[0].label == "PARTIAL"
 

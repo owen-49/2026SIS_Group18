@@ -1,0 +1,736 @@
+{
+  "cases": [
+    {
+      "case_id": "bert-exact",
+      "input_kind": "bib",
+      "bib_key": "bert-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "lookup_attempts": [
+          "openalex:found"
+        ],
+        "notes": "Every required field states the record's own value and the title, author names and venue normalise equal, so the exact gate admits VERIFIED. audited: the record is openalex W2963341956, which the chain reaches without asking Crossref."
+      },
+      "bib_source": "@inproceedings{bert-exact,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "bert-doi-stated",
+      "input_kind": "bib",
+      "bib_key": "bert-doi-stated",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "lookup_attempts": [
+          "openalex:found"
+        ],
+        "attempt_details": {
+          "openalex": "doi identifies this record exactly"
+        },
+        "notes": "The reference states the record's DOI, so the identity pre-pass selects on the identifier before any title comparison. The state is the same as bert-exact and the attempt is still a single `openalex:found`, so the route is asserted through the attempt's detail; without that this case would pass on the title search."
+      },
+      "bib_source": "@inproceedings{bert-doi-stated,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)},\n  doi={10.18653/v1/n19-1423}\n}"
+    },
+    {
+      "case_id": "bert-doi-year-veto-bypassed",
+      "input_kind": "bib",
+      "bib_key": "bert-doi-year-veto-bypassed",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "year": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "attempt_details": {
+          "openalex": "doi identifies this record exactly"
+        },
+        "notes": "The identifier pre-pass deliberately bypasses the year veto, so a DOI match reaches the comparison even with a year three out, and the year then disagrees. A reference without the DOI at this year is review rather than NOT_FOUND (bert-year-plus-three), and that difference is the evidence the veto was skipped."
+      },
+      "bib_source": "@inproceedings{bert-doi-year-veto-bypassed,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2022},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)},\n  doi={10.18653/v1/n19-1423}\n}"
+    },
+    {
+      "case_id": "graves-exact",
+      "input_kind": "bib",
+      "bib_key": "graves-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "lookup_attempts": [
+          "openalex:found"
+        ],
+        "notes": "Agreement on a three-author conference paper."
+      },
+      "bib_source": "@inproceedings{graves-exact,\n  title={Neural machine translation of rare words with subword units},\n  author={ Sennrich, Rico and Haddow, Barry and Birch, Alexandra },\n  year={2016},\n  booktitle={Annual Meeting of the Association for Computational Linguistics (ACL)}\n}"
+    },
+    {
+      "case_id": "dagerc-exact",
+      "input_kind": "bib",
+      "bib_key": "dagerc-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "The venue is the record's full proceedings string, which is what a DOI export writes and what the naive reference does not."
+      },
+      "bib_source": "@inproceedings{dagerc-exact,\n  title={Directed acyclic graph network for conversational emotion recognition},\n  author={ Shen, Weizhou and Wu, Siyue and Yang, Yunyi and Quan, Xiaojun },\n  year={2021},\n  booktitle={Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)}\n}"
+    },
+    {
+      "case_id": "batchnorm-exact",
+      "input_kind": "bib",
+      "bib_key": "batchnorm-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "The selected record is the arXiv preprint, so the reference has to name the repository to verify: a published venue here is a MISMATCH (batchnorm-venue-published)."
+      },
+      "bib_source": "@inproceedings{batchnorm-exact,\n  title={Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift},\n  author={ Ioffe, Sergey and Szegedy, Christian },\n  year={2015},\n  booktitle={arXiv (Cornell University)}\n}"
+    },
+    {
+      "case_id": "dialoguernn-exact",
+      "input_kind": "bib",
+      "bib_key": "dialoguernn-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "Six authors, so the exact gate's equal-count requirement is exercised."
+      },
+      "bib_source": "@inproceedings{dialoguernn-exact,\n  title={DialogueRNN: An attentive RNN for emotion detection in conversations},\n  author={ Majumder, Navonil and Poria, Soujanya and Hazarika, Devamanyu and Mihalcea, Rada F. and Gelbukh, Alexander F. and Cambria, Erik },\n  year={2019},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence}\n}"
+    },
+    {
+      "case_id": "moses-exact",
+      "input_kind": "bib",
+      "bib_key": "moses-exact",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "Fourteen authors. A reference naming eleven of them is METADATA_MISMATCH (moses-author-count), which is the same record read two ways."
+      },
+      "bib_source": "@inproceedings{moses-exact,\n  title={Moses: Open source toolkit for statistical machine translation},\n  author={ Koehn, Philipp and Hoang, Hieu and Birch, Alexandra and Callison-Burch, Chris and Federico, Marcello and Bertoldi, Nicola and Cowan, Brooke and Shen, Wade and Moran, Christine and Zens, Richard and Dyer, Chris and Bojar, Ondřej and Constantin, Alexandra and Herbst, Evan V. },\n  year={2007},\n  booktitle={Edinburgh Research Explorer (University of Edinburgh)}\n}"
+    },
+    {
+      "case_id": "bert-year-plus-one",
+      "input_kind": "bib",
+      "bib_key": "bert-year-plus-one",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "year": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "YEAR_TOLERANCE is 1, so a year 1 out is still an eligible record and the difference is reported rather than the record rejected."
+      },
+      "bib_source": "@inproceedings{bert-year-plus-one,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2020},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "bert-year-minus-one",
+      "input_kind": "bib",
+      "bib_key": "bert-year-minus-one",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "year": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "YEAR_TOLERANCE is 1, so a year 1 out is still an eligible record and the difference is reported rather than the record rejected."
+      },
+      "bib_source": "@inproceedings{bert-year-minus-one,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2018},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "graves-year-minus-one",
+      "input_kind": "bib",
+      "bib_key": "graves-year-minus-one",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "year": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "YEAR_TOLERANCE is 1, so a year 1 out is still an eligible record and the difference is reported rather than the record rejected."
+      },
+      "bib_source": "@inproceedings{graves-year-minus-one,\n  title={Neural machine translation of rare words with subword units},\n  author={ Sennrich, Rico and Haddow, Barry and Birch, Alexandra },\n  year={2015},\n  booktitle={Annual Meeting of the Association for Computational Linguistics (ACL)}\n}"
+    },
+    {
+      "case_id": "dagerc-year-plus-one",
+      "input_kind": "bib",
+      "bib_key": "dagerc-year-plus-one",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "year": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "YEAR_TOLERANCE is 1, so a year 1 out is still an eligible record and the difference is reported rather than the record rejected."
+      },
+      "bib_source": "@inproceedings{dagerc-year-plus-one,\n  title={Directed acyclic graph network for conversational emotion recognition},\n  author={ Shen, Weizhou and Wu, Siyue and Yang, Yunyi and Quan, Xiaojun },\n  year={2022},\n  booktitle={Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)}\n}"
+    },
+    {
+      "case_id": "bert-surname-changed",
+      "input_kind": "bib",
+      "bib_key": "bert-surname-changed",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "authors": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "The first author's surname differs, so the author check fails on its first comparison. The Crossref query would change with the surname, but the chain settles on OpenAlex and never asks it."
+      },
+      "bib_source": "@inproceedings{bert-surname-changed,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlyn, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "moses-author-count",
+      "input_kind": "bib",
+      "bib_key": "moses-author-count",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "authors": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "Eleven authors against fourteen: the count differs by three, past the one the author rule tolerates, so the field is a MISMATCH. The reference is otherwise identical to moses-exact."
+      },
+      "bib_source": "@inproceedings{moses-author-count,\n  title={Moses: Open source toolkit for statistical machine translation},\n  author={ Koehn, Philipp and Hoang, Hieu and Birch, Alexandra and Callison-Burch, Chris and Federico, Marcello and Bertoldi, Nicola and Cowan, Brooke and Shen, Wade and Moran, Christine and Zens, Richard and Dyer, Chris },\n  year={2007},\n  booktitle={Edinburgh Research Explorer (University of Edinburgh)}\n}"
+    },
+    {
+      "case_id": "bert-given-name-changed",
+      "input_kind": "bib",
+      "bib_key": "bert-given-name-changed",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "fields_agree_not_exact",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "The author *field* check reads surnames alone, so it reports MATCH; the exact gate compares the given names both sides state and withholds VERIFIED. This is the case that separates the two author rules."
+      },
+      "bib_source": "@inproceedings{bert-given-name-changed,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Jun and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "bert-venue-other-conference",
+      "input_kind": "bib",
+      "bib_key": "bert-venue-other-conference",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A stated venue whose similarity to the record's is below the 0.8 threshold. A BibTeX venue is user-supplied, so this is a difference in the reference."
+      },
+      "bib_source": "@inproceedings{bert-venue-other-conference,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Proceedings of the International Conference on Learning Representations}\n}"
+    },
+    {
+      "case_id": "bert-venue-abbreviated",
+      "input_kind": "bib",
+      "bib_key": "bert-venue-abbreviated",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A stated venue whose similarity to the record's is below the 0.8 threshold. A BibTeX venue is user-supplied, so this is a difference in the reference."
+      },
+      "bib_source": "@inproceedings{bert-venue-abbreviated,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={NAACL-HLT}\n}"
+    },
+    {
+      "case_id": "dagerc-venue-other-conference",
+      "input_kind": "bib",
+      "bib_key": "dagerc-venue-other-conference",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A stated venue whose similarity to the record's is below the 0.8 threshold. A BibTeX venue is user-supplied, so this is a difference in the reference."
+      },
+      "bib_source": "@inproceedings{dagerc-venue-other-conference,\n  title={Directed acyclic graph network for conversational emotion recognition},\n  author={ Shen, Weizhou and Wu, Siyue and Yang, Yunyi and Quan, Xiaojun },\n  year={2021},\n  booktitle={Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing}\n}"
+    },
+    {
+      "case_id": "graves-venue-abbreviated",
+      "input_kind": "bib",
+      "bib_key": "graves-venue-abbreviated",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A stated venue whose similarity to the record's is below the 0.8 threshold. A BibTeX venue is user-supplied, so this is a difference in the reference."
+      },
+      "bib_source": "@inproceedings{graves-venue-abbreviated,\n  title={Neural machine translation of rare words with subword units},\n  author={ Sennrich, Rico and Haddow, Barry and Birch, Alexandra },\n  year={2016},\n  booktitle={Proceedings of ACL 2016}\n}"
+    },
+    {
+      "case_id": "batchnorm-venue-published",
+      "input_kind": "bib",
+      "bib_key": "batchnorm-venue-published",
+      "expected": {
+        "status": "METADATA_MISMATCH",
+        "because": "field_differs_stated",
+        "field_checks": {
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A stated venue whose similarity to the record's is below the 0.8 threshold. A BibTeX venue is user-supplied, so this is a difference in the reference."
+      },
+      "bib_source": "@inproceedings{batchnorm-venue-published,\n  title={Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift},\n  author={ Ioffe, Sergey and Szegedy, Christian },\n  year={2015},\n  booktitle={Proceedings of the 32nd International Conference on Machine Learning}\n}"
+    },
+    {
+      "case_id": "bert-venue-close",
+      "input_kind": "bib",
+      "bib_key": "bert-venue-close",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "fields_agree_not_exact",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "The venue is the record's minus its parenthesised acronym: similar enough (0.96) for the field check to report MATCH, not equal enough for the exact gate. The state the contract gives is review, not a mismatch."
+      },
+      "bib_source": "@inproceedings{bert-venue-close,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2019},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies}\n}"
+    },
+    {
+      "case_id": "bert-year-plus-two",
+      "input_kind": "bib",
+      "bib_key": "bert-year-plus-two",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "A year 2 out is past YEAR_TOLERANCE, so every record of this work in every provider is rejected before any field is compared and no field checks are reported. OpenAlex's answer holds a 2020 record as well as the 2019 one, and 2020 is within tolerance of 2021, so a contender survives the veto and the chain reports ambiguity."
+      },
+      "bib_source": "@inproceedings{bert-year-plus-two,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2021},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "bert-year-plus-three",
+      "input_kind": "bib",
+      "bib_key": "bert-year-plus-three",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:ambiguous"
+        ],
+        "notes": "A year 3 out is past YEAR_TOLERANCE, so every record of this work in every provider is rejected before any field is compared and no field checks are reported. At 2022 OpenAlex rejects both of its records (three and two years out) and completes negative, but Crossref's answer holds four records sharing the title, one of them within tolerance, so the run as a whole is ambiguous."
+      },
+      "bib_source": "@inproceedings{bert-year-plus-three,\n  title={Bert: Pre-training of deep bidirectional transformers for language understanding},\n  author={ Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina },\n  year={2022},\n  booktitle={Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)}\n}"
+    },
+    {
+      "case_id": "graves-year-plus-four",
+      "input_kind": "bib",
+      "bib_key": "graves-year-plus-four",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:ambiguous"
+        ],
+        "notes": "A year 4 out is past YEAR_TOLERANCE, so every record of this work in every provider is rejected before any field is compared and no field checks are reported. Same shape as bert-year-plus-three: the first provider completes negative and the second offers contenders, and a contender anywhere makes the state review."
+      },
+      "bib_source": "@inproceedings{graves-year-plus-four,\n  title={Neural machine translation of rare words with subword units},\n  author={ Sennrich, Rico and Haddow, Barry and Birch, Alexandra },\n  year={2020},\n  booktitle={Annual Meeting of the Association for Computational Linguistics (ACL)}\n}"
+    },
+    {
+      "case_id": "dialoguernn-year-minus-five",
+      "input_kind": "bib",
+      "bib_key": "dialoguernn-year-minus-five",
+      "expected": {
+        "status": "NOT_FOUND",
+        "because": "no_acceptable_record",
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:not_found"
+        ],
+        "reason_contains": "does not prove fabrication",
+        "notes": "A five-year gap rejects every record both providers return (OpenAlex holds two, Crossref twelve), so no contender is left and the search completes negative with no field checks -- the invariant that NOT_FOUND carries none is checked here. This is the case the plan expected the smaller gaps to be; it takes a gap large enough that no record survives, and the reason must say a negative search is not evidence of fabrication."
+      },
+      "bib_source": "@inproceedings{dialoguernn-year-minus-five,\n  title={DialogueRNN: An attentive RNN for emotion detection in conversations},\n  author={ Majumder, Navonil and Poria, Soujanya and Hazarika, Devamanyu and Mihalcea, Rada F. and Gelbukh, Alexander F. and Cambria, Erik },\n  year={2014},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence}\n}"
+    },
+    {
+      "case_id": "batchnorm-decoy-year",
+      "input_kind": "bib",
+      "bib_key": "batchnorm-decoy-year",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:ambiguous"
+        ],
+        "forbidden_record_ids": [
+          "openalex:W1836465849",
+          "openalex:W2949117887"
+        ],
+        "notes": "The OpenAlex response holds two records with this exact title, for 2015 and 2024, and a 2019 reference rejects both -- so OpenAlex completes negative. Crossref's answer for the same title holds records whose years are within tolerance, so the chain still reports ambiguity rather than absence, and the forbidden ids assert that no record was selected on the way. Dropping the year veto would leave one exact match and reach METADATA_MISMATCH, which is what makes this case discriminating rather than a repeat of the forged ones."
+      },
+      "bib_source": "@inproceedings{batchnorm-decoy-year,\n  title={Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift},\n  author={ Ioffe, Sergey and Szegedy, Christian },\n  year={2019},\n  booktitle={arXiv (Cornell University)}\n}"
+    },
+    {
+      "case_id": "forged-quantum",
+      "input_kind": "bib",
+      "bib_key": "forged-quantum",
+      "expected": {
+        "status": "NOT_FOUND",
+        "because": "no_acceptable_record",
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:not_found"
+        ],
+        "notes": "A work that does not exist, whose title shares no informative token with anything the providers hold, so every provider completes and returns nothing."
+      },
+      "bib_source": "@inproceedings{forged-quantum,\n  title={Quantum Entanglement in Mythical Beast Migration Patterns},\n  author={ Ravenna, Marco },\n  year={2011}\n}"
+    },
+    {
+      "case_id": "forged-alphabets",
+      "input_kind": "bib",
+      "bib_key": "forged-alphabets",
+      "expected": {
+        "status": "NOT_FOUND",
+        "because": "no_acceptable_record",
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:not_found"
+        ],
+        "notes": "A work that does not exist, whose title shares no informative token with anything the providers hold, so every provider completes and returns nothing."
+      },
+      "bib_source": "@inproceedings{forged-alphabets,\n  title={Catalogue of Extinct Alphabets of the Northern Steppe},\n  author={ Vasquez, Ines },\n  year={1998}\n}"
+    },
+    {
+      "case_id": "forged-histogram",
+      "input_kind": "bib",
+      "bib_key": "forged-histogram",
+      "expected": {
+        "status": "NOT_FOUND",
+        "because": "no_acceptable_record",
+        "lookup_attempts": [
+          "openalex:not_found",
+          "crossref:not_found"
+        ],
+        "notes": "A work that does not exist, whose title shares no informative token with anything the providers hold, so every provider completes and returns nothing."
+      },
+      "bib_source": "@inproceedings{forged-histogram,\n  title={Adaptive Binning for Streaming Histogram Sketches},\n  author={ Oyelaran, Bisi },\n  year={2013}\n}"
+    },
+    {
+      "case_id": "forged-airplanes",
+      "input_kind": "bib",
+      "bib_key": "forged-airplanes",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "Also does not exist, but its title shares an informative token ('paper', 'vacuum', 'survey', 'sonar') with records the providers hold, so the identity rule offers contenders rather than concluding absence. Recorded because it is the real behaviour on a fabricated reference, and it is the safe direction: NOT_FOUND requires an unshared title."
+      },
+      "bib_source": "@inproceedings{forged-airplanes,\n  title={On the Hydrodynamics of Paper Airplanes in Zero Gravity},\n  author={ Okonkwo, Adaeze },\n  year={2003}\n}"
+    },
+    {
+      "case_id": "forged-aerogel",
+      "input_kind": "bib",
+      "bib_key": "forged-aerogel",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "Also does not exist, but its title shares an informative token ('paper', 'vacuum', 'survey', 'sonar') with records the providers hold, so the identity rule offers contenders rather than concluding absence. Recorded because it is the real behaviour on a fabricated reference, and it is the safe direction: NOT_FOUND requires an unshared title."
+      },
+      "bib_source": "@inproceedings{forged-aerogel,\n  title={Thermal Conductivity of Aerogel Blankets Under Vacuum},\n  author={ Lindqvist, Petra },\n  year={2016}\n}"
+    },
+    {
+      "case_id": "forged-marginalia",
+      "input_kind": "bib",
+      "bib_key": "forged-marginalia",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "Also does not exist, but its title shares an informative token ('paper', 'vacuum', 'survey', 'sonar') with records the providers hold, so the identity rule offers contenders rather than concluding absence. Recorded because it is the real behaviour on a fabricated reference, and it is the safe direction: NOT_FOUND requires an unshared title."
+      },
+      "bib_source": "@inproceedings{forged-marginalia,\n  title={A Survey of Unpublished Footnotes in Medieval Marginalia},\n  author={ Achterberg, Joost },\n  year={1987}\n}"
+    },
+    {
+      "case_id": "forged-sonar",
+      "input_kind": "bib",
+      "bib_key": "forged-sonar",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "Also does not exist, but its title shares an informative token ('paper', 'vacuum', 'survey', 'sonar') with records the providers hold, so the identity rule offers contenders rather than concluding absence. Recorded because it is the real behaviour on a fabricated reference, and it is the safe direction: NOT_FOUND requires an unshared title."
+      },
+      "bib_source": "@inproceedings{forged-sonar,\n  title={Empirical Limits of Sonar-Based Indoor Localization},\n  author={ Nakamura, Hiro },\n  year={2009}\n}"
+    },
+    {
+      "case_id": "batchnorm-short-title",
+      "input_kind": "bib",
+      "bib_key": "batchnorm-short-title",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "candidates_required": true,
+        "lookup_attempts": [
+          "openalex:ambiguous",
+          "crossref:ambiguous"
+        ],
+        "notes": "A truncated real title: no exact match, several records share its tokens, and the reference names no venue to separate them, so the chain hands back candidates."
+      },
+      "bib_source": "@inproceedings{batchnorm-short-title,\n  title={Batch Normalization},\n  author={ Ioffe, Sergey },\n  year={2015}\n}"
+    },
+    {
+      "case_id": "provider-500",
+      "input_kind": "bib",
+      "bib_key": "provider-500",
+      "expected": {
+        "status": "LOOKUP_FAILED",
+        "because": "provider_failed",
+        "lookup_attempts": [
+          "openalex:failed",
+          "crossref:not_found",
+          "metadata_providers:failed"
+        ],
+        "attempt_errors": {
+          "openalex": "OPENALEX_HTTP_500"
+        },
+        "reason_contains": "some sources were not searched",
+        "notes": "The provider answers are injected (see the pins marked source=injected): a live provider cannot be asked to fail on demand. This is the safety invariant that a failed lookup is never reported as NOT_FOUND. Crossref's answer for this title holds nothing eligible, so the surviving provider's search completed negative and the reference's existence stays unchecked: the state is the contract's LOOKUP_FAILED, never NOT_FOUND."
+      },
+      "bib_source": "@inproceedings{provider-500,\n  title={Trunnion Fatigue in Cast-Iron Canal Lock Gates},\n  author={ Halloran, Niamh },\n  year={2004}\n}"
+    },
+    {
+      "case_id": "provider-transport",
+      "input_kind": "bib",
+      "bib_key": "provider-transport",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "lookup_attempts": [
+          "openalex:failed",
+          "crossref:ambiguous"
+        ],
+        "attempt_errors": {
+          "openalex": "OPENALEX_TRANSPORT"
+        },
+        "reason_contains": "some sources were not searched",
+        "candidates_required": true,
+        "notes": "The provider answers are injected (see the pins marked source=injected): a live provider cannot be asked to fail on demand. This is the safety invariant that a failed lookup is never reported as NOT_FOUND. A transport failure (status 0) is the case that separates 'no response arrived' from 'the provider answered with an error'. Crossref offers contenders for this title, so the state is review rather than LOOKUP_FAILED -- but the reason must still disclose that one source was never searched, which is the whole reason the state is not a conclusion."
+      },
+      "bib_source": "@inproceedings{provider-transport,\n  title={Sawtooth Instability in Belt-Driven Orreries},\n  author={ Petrov, Anton },\n  year={1993}\n}"
+    },
+    {
+      "case_id": "provider-throttled",
+      "input_kind": "bib",
+      "bib_key": "provider-throttled",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "ambiguous_records",
+        "lookup_attempts": [
+          "openalex:failed",
+          "crossref:ambiguous"
+        ],
+        "attempt_errors": {
+          "openalex": "OPENALEX_RATE_LIMITED"
+        },
+        "reason_contains": "some sources were not searched",
+        "candidates_required": true,
+        "notes": "The provider answers are injected (see the pins marked source=injected): a live provider cannot be asked to fail on demand. This is the safety invariant that a failed lookup is never reported as NOT_FOUND. A 429 is the provider refusing to answer, which is a failure and not evidence: the chain must not read its own rate limit as 'this work does not exist'. Same shape as provider-transport, with the error code the only thing distinguishing them."
+      },
+      "bib_source": "@inproceedings{provider-throttled,\n  title={Lattice Distortion in Hand-Blown Cathedral Glass},\n  author={ Duquesne, Amelie },\n  year={1979}\n}"
+    },
+    {
+      "case_id": "provider-both-failed",
+      "input_kind": "bib",
+      "bib_key": "provider-both-failed",
+      "expected": {
+        "status": "LOOKUP_FAILED",
+        "because": "provider_failed",
+        "lookup_attempts": [
+          "openalex:failed",
+          "crossref:failed",
+          "metadata_providers:failed"
+        ],
+        "attempt_errors": {
+          "openalex": "OPENALEX_HTTP_500",
+          "crossref": "CROSSREF_HTTP_500"
+        },
+        "reason_contains": "some sources were not searched",
+        "notes": "The provider answers are injected (see the pins marked source=injected): a live provider cannot be asked to fail on demand. This is the safety invariant that a failed lookup is never reported as NOT_FOUND. Both providers fail, so nothing was searched and the state is LOOKUP_FAILED. The Crossref pin for this case is injected too: the live query returns 459,669 results, which would leave this case as 'one provider failed' instead."
+      },
+      "bib_source": "@inproceedings{provider-both-failed,\n  title={Marlinspike Splice Strength in Hemp Hawsers},\n  author={ Brennan, Cormac },\n  year={1968}\n}"
+    },
+    {
+      "case_id": "bib-no-title",
+      "input_kind": "bib",
+      "bib_key": "bib-no-title",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "no_searchable_title",
+        "notes": "The pre-lookup guard stops an entry with no title before any provider is asked, so the result carries no attempt at all. Searching on an empty title would return whatever the provider ranks first."
+      },
+      "bib_source": "@inproceedings{bib-no-title,\n  title={},\n  author={ Ashworth, Peter },\n  year={2017}\n}"
+    },
+    {
+      "case_id": "pdf-venue-recovered",
+      "input_kind": "pdf",
+      "raw_text_contains": "Ferrand",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "field_differs_recovered",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MISMATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "A field the raw-text heuristic recovered, not one the reference states. The difference withholds VERIFIED but must not assert the reference is wrong, so the state is review and the check's detail says where the value came from."
+      },
+      "reference": {
+        "raw_text": "Zhao, L. and Ferrand, M. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. In NAACL-HLT, 2019.",
+        "title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+        "authors": [
+          "Jacob Devlin",
+          "Ming-Wei Chang",
+          "Kenton Lee",
+          "Kristina Toutanova"
+        ],
+        "year": 2019,
+        "venue": "NAACL-HLT",
+        "metadata_source": "raw_text_heuristic"
+      }
+    },
+    {
+      "case_id": "pdf-agrees",
+      "input_kind": "pdf",
+      "raw_text_contains": "Toutanova, K. BERT",
+      "expected": {
+        "status": "VERIFIED",
+        "because": "fields_agree",
+        "field_checks": {
+          "title": "MATCH",
+          "authors": "MATCH",
+          "year": "MATCH",
+          "venue": "MATCH"
+        },
+        "matched_provider": "openalex",
+        "notes": "Recovered metadata is not second class: when every recovered value agrees the exact gate passes and the state is VERIFIED, which is the counterpart to pdf-venue-recovered."
+      },
+      "reference": {
+        "raw_text": "Devlin, J., Chang, M.-W., Lee, K. and Toutanova, K. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT), 2019.",
+        "title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+        "authors": [
+          "Jacob Devlin",
+          "Ming-Wei Chang",
+          "Kenton Lee",
+          "Kristina Toutanova"
+        ],
+        "year": 2019,
+        "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)",
+        "metadata_source": "raw_text_heuristic"
+      }
+    },
+    {
+      "case_id": "pdf-no-title",
+      "input_kind": "pdf",
+      "raw_text_contains": "annotation tooling",
+      "expected": {
+        "status": "NEEDS_REVIEW",
+        "because": "no_searchable_title",
+        "notes": "The same guard as the BibTeX case, reached through the PDF form: no title was recovered, so no provider is asked."
+      },
+      "reference": {
+        "raw_text": "[12] Unpublished working notes on annotation tooling, circulated in 1998.",
+        "metadata_source": "raw_text_heuristic"
+      }
+    }
+  ]
+}

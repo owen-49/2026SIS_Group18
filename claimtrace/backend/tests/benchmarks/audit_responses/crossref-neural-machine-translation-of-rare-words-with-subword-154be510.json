@@ -1,0 +1,593 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Neural+machine+translation+of+rare+words+with+subword+units+sennrich&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 2537647,
+   "items": [
+    {
+     "DOI": "10.18653/v1/p16-1162",
+     "title": [
+      "Neural Machine Translation of Rare Words with Subword Units"
+     ],
+     "author": [
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Barry",
+       "family": "Haddow",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Alexandra",
+       "family": "Birch",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2016
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/p16-1162"
+    },
+    {
+     "DOI": "10.18653/v1/2020.wmt-1.64",
+     "title": [
+      "Subword Segmentation and a Single Bridge Language Affect Zero-Shot Neural Machine Translation"
+     ],
+     "author": [
+      {
+       "given": "Annette",
+       "family": "Rios",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Mathias",
+       "family": "Müller",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the Fifth Conference on Machine Translation"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/2020.wmt-1.64"
+    },
+    {
+     "DOI": "10.1007/s10791-025-09633-y",
+     "title": [
+      "Controlled beam search for neural machine translation using subword units leveraging phrase-based statistical machine translation outputs"
+     ],
+     "author": [
+      {
+       "given": "Emre",
+       "family": "Satir",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Hasan",
+       "family": "Bulut",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2026,
+        1,
+        21
+       ]
+      ]
+     },
+     "container-title": [
+      "Discover Computing"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1007/s10791-025-09633-y"
+    },
+    {
+     "DOI": "10.3390/s21196509",
+     "title": [
+      "A Transformer-Based Neural Machine Translation Model for Arabic Dialects That Utilizes Subword Units"
+     ],
+     "author": [
+      {
+       "given": "Laith H.",
+       "family": "Baniata",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "School of Computer Science and Engineering, Kyungpook National University, 80 Daehak-ro, Buk-gu, Daegu 41566, Korea"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Isaac. K. E.",
+       "family": "Ampomah",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Computer Science, Durham University, Stockton Road, Durham DH1 3LE, UK"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-9447-3022",
+       "authenticated-orcid": false,
+       "given": "Seyoung",
+       "family": "Park",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "School of Computer Science and Engineering, Kyungpook National University, 80 Daehak-ro, Buk-gu, Daegu 41566, Korea"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        9,
+        29
+       ]
+      ]
+     },
+     "container-title": [
+      "Sensors"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.3390/s21196509"
+    },
+    {
+     "DOI": "10.18653/v1/w16-2209",
+     "title": [
+      "Linguistic Input Features Improve Neural Machine Translation"
+     ],
+     "author": [
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Barry",
+       "family": "Haddow",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2016
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the First Conference on Machine Translation: Volume 1,\n          Research Papers"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/w16-2209"
+    },
+    {
+     "DOI": "10.18653/v1/w17-4702",
+     "title": [
+      "Improving Word Sense Disambiguation in Neural Machine Translation\n            with Sense Embeddings"
+     ],
+     "author": [
+      {
+       "given": "Annette",
+       "family": "Rios Gonzales",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Laura",
+       "family": "Mascarell",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2017
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the Second Conference on Machine Translation"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/w17-4702"
+    },
+    {
+     "DOI": "10.18653/v1/w17-4710",
+     "title": [
+      "Deep architectures for Neural Machine Translation"
+     ],
+     "author": [
+      {
+       "given": "Antonio Valerio",
+       "family": "Miceli Barone",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jindřich",
+       "family": "Helcl",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Barry",
+       "family": "Haddow",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Alexandra",
+       "family": "Birch",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2017
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the Second Conference on Machine Translation"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/w17-4710"
+    },
+    {
+     "DOI": "10.1201/9781003096771-4",
+     "title": [
+      "Utilizing Lexical Similarity by Using Subword Translation Units"
+     ],
+     "author": [
+      {
+       "given": "Anoop",
+       "family": "Kunchukuttan",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Pushpak",
+       "family": "Bhattacharyya",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        6,
+        18
+       ]
+      ]
+     },
+     "container-title": [
+      "Machine Translation and Transliteration Involving Related and Low-resource Languages"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1201/9781003096771-4"
+    },
+    {
+     "DOI": "10.18653/v1/w19-5211",
+     "title": [
+      "Widening the Representation Bottleneck in Neural Machine Translation with Lexical Shortcuts"
+     ],
+     "author": [
+      {
+       "given": "Denis",
+       "family": "Emelin",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Ivan",
+       "family": "Titov",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the Fourth Conference on Machine Translation (Volume 1: Research Papers)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/w19-5211"
+    },
+    {
+     "DOI": "10.18653/v1/w16-2323",
+     "title": [
+      "Edinburgh Neural Machine Translation Systems for WMT 16"
+     ],
+     "author": [
+      {
+       "given": "Rico",
+       "family": "Sennrich",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Barry",
+       "family": "Haddow",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Alexandra",
+       "family": "Birch",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2016
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the First Conference on Machine Translation: Volume 2,\n          Shared Task Papers"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/w16-2323"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

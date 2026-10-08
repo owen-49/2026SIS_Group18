@@ -1,0 +1,285 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=A+Survey+of+Unpublished+Footnotes+in+Medieval+Marginalia+achterberg&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:46+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 963840,
+   "items": [
+    {
+     "DOI": "10.7146/kkf.v26i2-3.110550",
+     "title": [
+      "footnotes and marginalia"
+     ],
+     "author": [
+      {
+       "given": "Maren Storlien",
+       "family": "Syltevik",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2017,
+        11,
+        27
+       ]
+      ]
+     },
+     "container-title": [
+      "Kvinder, Køn &amp; Forskning"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.7146/kkf.v26i2-3.110550"
+    },
+    {
+     "DOI": "10.3280/para2012-003006",
+     "title": [
+      "Charles Darwin's unpublished material. The marginalia"
+     ],
+     "author": [
+      {
+       "given": "Mario A.",
+       "family": "Di Gregorio",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2012,
+        12
+       ]
+      ]
+     },
+     "container-title": [
+      "PARADIGMI"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.3280/para2012-003006"
+    },
+    {
+     "DOI": "10.1515/9783111560229-011",
+     "title": [
+      "Tommaso Campanella’s Marginalia on Aristotle"
+     ],
+     "author": [
+      {
+       "given": "Valentina",
+       "family": "Zaffino",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        12,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Thinking in the Margins"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1515/9783111560229-011"
+    },
+    {
+     "DOI": "10.3406/rht.2001.1501",
+     "title": [
+      "Livineius' unpublished Euripidean marginalia"
+     ],
+     "author": [
+      {
+       "given": "Luigi",
+       "family": "Battezzato",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2001
+       ]
+      ]
+     },
+     "container-title": [
+      "Revue d'histoire des textes"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.3406/rht.2001.1501"
+    },
+    {
+     "DOI": "10.3138/9781442629356-006",
+     "title": [
+      "Marginalia"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2016,
+        12,
+        31
+       ]
+      ]
+     },
+     "container-title": [
+      "Two Medieval Occitan Toll Registers from Tarascon"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.3138/9781442629356-006"
+    },
+    {
+     "DOI": "10.2307/3715770",
+     "title": [
+      "Some Unpublished Harvey Marginalia"
+     ],
+     "author": [
+      {
+       "given": "Samuel A.",
+       "family": "Tannenbaum",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        1930,
+        7
+       ]
+      ]
+     },
+     "container-title": [
+      "The Modern Language Review"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.2307/3715770"
+    },
+    {
+     "DOI": "10.1515/9783111560229-toc",
+     "title": [
+      "Content"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        12,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Thinking in the Margins"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1515/9783111560229-toc"
+    },
+    {
+     "DOI": "10.1515/9783111560229-fm",
+     "title": [
+      "Frontmatter"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        12,
+        1
+       ]
+      ]
+     },
+     "container-title": [
+      "Thinking in the Margins"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.1515/9783111560229-fm"
+    },
+    {
+     "DOI": "10.1515/9783111560229",
+     "title": [
+      "Thinking in the Margins"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        11,
+        6
+       ]
+      ]
+     },
+     "type": "edited-book",
+     "URL": "https://doi.org/10.1515/9783111560229"
+    },
+    {
+     "DOI": "10.2307/j.ctv174nd.25",
+     "title": [
+      "FOOTNOTES"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "A Survey of the Derivational Postbases of Labrador Inuttut (Eskimo)"
+     ],
+     "type": "book-chapter",
+     "URL": "https://doi.org/10.2307/j.ctv174nd.25"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}

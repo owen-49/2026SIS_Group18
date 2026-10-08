@@ -1,0 +1,10 @@
+{
+  "url": "https://api.crossref.org/works?query.bibliographic=Marlinspike+Splice+Strength+in+Hemp+Hawsers+brennan&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+  "provider": "crossref",
+  "source": "injected",
+  "captured_at": "",
+  "status_code": 500,
+  "error": "HTTP 500 Internal Server Error",
+  "body": null,
+  "note": "Written by hand over a recorded answer: the live query returned 459,669 results, so leaving it recorded would make this case 'one provider failed' rather than 'both failed'. The recording it replaces is recoverable by deleting this file and running --mode record."
+}

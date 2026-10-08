@@ -1,0 +1,533 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Batch+Normalization%3A+Accelerating+Deep+Network+Training+by+Reducing+Internal+Covariate+Shift+ioffe&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 87138,
+   "items": [
+    {
+     "DOI": "10.14429/dsj.74.19475",
+     "title": [
+      "Accelerating deep network training for radar identification using batch normalization"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0001-8482-3191",
+       "authenticated-orcid": false,
+       "given": "Preeti",
+       "family": "Gupta",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "family": "Pooja Jain",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "family": "O.G. Kakde",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2024,
+        11,
+        25
+       ]
+      ]
+     },
+     "container-title": [
+      "Defence Science Journal"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.14429/dsj.74.19475"
+    },
+    {
+     "DOI": "10.1109/tnnls.2020.3026784",
+     "title": [
+      "Revisiting Internal Covariate Shift for Batch Normalization"
+     ],
+     "author": [
+      {
+       "given": "Muhammad",
+       "family": "Awais",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-7126-8969",
+       "authenticated-orcid": false,
+       "given": "Md. Tauhid",
+       "family": "Bin Iqbal",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0003-2677-3186",
+       "authenticated-orcid": false,
+       "given": "Sung-Ho",
+       "family": "Bae",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        11
+       ]
+      ]
+     },
+     "container-title": [
+      "IEEE Transactions on Neural Networks and Learning Systems"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1109/tnnls.2020.3026784"
+    },
+    {
+     "DOI": "10.21203/rs.3.rs-1027530/v1",
+     "title": [
+      "BNDNN: Batch Normalization Based Deep Neural Network for Predicting Flood in Urban Areas"
+     ],
+     "author": [
+      {
+       "given": "Vinay",
+       "family": "Dubey",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Delhi Technological University"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0001-7763-291X",
+       "authenticated-orcid": false,
+       "given": "Rahul",
+       "family": "Katarya",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Delhi Technological University"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        11,
+        1
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.21203/rs.3.rs-1027530/v1"
+    },
+    {
+     "DOI": "10.5220/0011725900003417",
+     "title": [
+      "The Effect of Covariate Shift and Network Training on Out-of-Distribution Detection"
+     ],
+     "author": [
+      {
+       "given": "Simon",
+       "family": "Mariani",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "University of Amsterdam, Amsterdam, The Netherlands, --- Select a Country ---"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Sander",
+       "family": "Klomp",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Eindhoven University of Technology, Eindhoven, The Netherlands, --- Select a Country ---"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Rob",
+       "family": "Romijnders",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "University of Amsterdam, Amsterdam, The Netherlands, --- Select a Country ---"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Peter",
+       "family": "N. de With",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Eindhoven University of Technology, Eindhoven, The Netherlands, --- Select a Country ---"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the 18th International Joint Conference on Computer Vision, Imaging and Computer Graphics Theory and Applications"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.5220/0011725900003417"
+    },
+    {
+     "DOI": "10.31979/etd.j9av-t3hy",
+     "title": [
+      "Empirical Evaluation of the Shift and Scale Parameters in Batch Normalization"
+     ],
+     "author": [
+      {
+       "given": "Yashna",
+       "family": "Peerthum",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "San Jose State University"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "dissertation",
+     "URL": "https://doi.org/10.31979/etd.j9av-t3hy"
+    },
+    {
+     "DOI": "10.2139/ssrn.6345538",
+     "title": [
+      "Reducing Measurement Error through IPW-Correction under Covariate Shift: Satellite Based Poverty-Estimation"
+     ],
+     "author": [
+      {
+       "given": "Jiyan",
+       "family": "Arikan",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2026
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.2139/ssrn.6345538"
+    },
+    {
+     "DOI": "10.3389/fnins.2021.773954",
+     "title": [
+      "Revisiting Batch Normalization for Training Low-Latency Deep Spiking Neural Networks From Scratch"
+     ],
+     "author": [
+      {
+       "given": "Youngeun",
+       "family": "Kim",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Priyadarshini",
+       "family": "Panda",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        12,
+        9
+       ]
+      ]
+     },
+     "container-title": [
+      "Frontiers in Neuroscience"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.3389/fnins.2021.773954"
+    },
+    {
+     "DOI": "10.2139/ssrn.6428111",
+     "title": [
+      "Mitigating Covariate Shift and Structural Breaks via Dynamic Rank-Based Normalization: A Statistical Framework with Applications to Credit Risk"
+     ],
+     "author": [
+      {
+       "given": "Brent",
+       "family": "Oeyen",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2026
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.2139/ssrn.6428111"
+    },
+    {
+     "DOI": "10.1609/aaai.v33i01.33011682",
+     "title": [
+      "Generalized Batch Normalization: Towards Accelerating Deep Neural Networks"
+     ],
+     "author": [
+      {
+       "given": "Xiaoyong",
+       "family": "Yuan",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Zheng",
+       "family": "Feng",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Matthew",
+       "family": "Norton",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Xiaolin",
+       "family": "Li",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        7,
+        17
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the AAAI Conference on Artificial Intelligence"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1609/aaai.v33i01.33011682"
+    },
+    {
+     "DOI": "10.1109/cvpr42600.2020.00849",
+     "title": [
+      "An Internal Covariate Shift Bounding Algorithm for Deep Neural Networks by Unitizing Layers’ Outputs"
+     ],
+     "author": [
+      {
+       "given": "You",
+       "family": "Huang",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Yuanlong",
+       "family": "Yu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020,
+        6
+       ]
+      ]
+     },
+     "container-title": [
+      "2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/cvpr42600.2020.00849"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

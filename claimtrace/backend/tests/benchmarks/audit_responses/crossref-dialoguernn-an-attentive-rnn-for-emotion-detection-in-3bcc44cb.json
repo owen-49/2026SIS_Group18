@@ -1,0 +1,527 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=DialogueRNN%3A+An+attentive+RNN+for+emotion+detection+in+conversations+majumder&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:26:54+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 1739912,
+   "items": [
+    {
+     "DOI": "10.1609/aaai.v33i01.33016818",
+     "title": [
+      "DialogueRNN: An Attentive RNN for Emotion Detection in Conversations"
+     ],
+     "author": [
+      {
+       "given": "Navonil",
+       "family": "Majumder",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Soujanya",
+       "family": "Poria",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Devamanyu",
+       "family": "Hazarika",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Rada",
+       "family": "Mihalcea",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Alexander",
+       "family": "Gelbukh",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Erik",
+       "family": "Cambria",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        7,
+        17
+       ]
+      ]
+     },
+     "container-title": [
+      "Proceedings of the AAAI Conference on Artificial Intelligence"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1609/aaai.v33i01.33016818"
+    },
+    {
+     "DOI": "10.1109/taai48200.2019.8959913",
+     "title": [
+      "Deep Learning for Multimodal Emotion Recognition-Attentive Residual Disconnected RNN"
+     ],
+     "author": [
+      {
+       "given": "Erick",
+       "family": "Chandra",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jane Yung-jen",
+       "family": "Hsu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        11
+       ]
+      ]
+     },
+     "container-title": [
+      "2019 International Conference on Technologies and Applications of Artiﬁcial Intelligence (TAAI)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/taai48200.2019.8959913"
+    },
+    {
+     "DOI": "10.1109/icaccs51430.2021.9441740",
+     "title": [
+      "Conversations Sentiment and Intent Categorization Using Context RNN for Emotion Recognition"
+     ],
+     "author": [
+      {
+       "given": "Rifqi",
+       "family": "Majid",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Heru Agus",
+       "family": "Santoso",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        3,
+        19
+       ]
+      ]
+     },
+     "container-title": [
+      "2021 7th International Conference on Advanced Computing and Communication Systems (ICACCS)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/icaccs51430.2021.9441740"
+    },
+    {
+     "DOI": "10.1109/iscas48785.2022.9938005",
+     "title": [
+      "Multimodal Attentive Learning for Real-time Explainable Emotion Recognition in Conversations"
+     ],
+     "author": [
+      {
+       "given": "Balaji",
+       "family": "Arumugam",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "The State University of New York at Buffalo,NY,USA"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Sreyasee Das",
+       "family": "Bhattacharjee",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "The State University of New York at Buffalo,NY,USA"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Junsong",
+       "family": "Yuan",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "The State University of New York at Buffalo,NY,USA"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2022,
+        5,
+        28
+       ]
+      ]
+     },
+     "container-title": [
+      "2022 IEEE International Symposium on Circuits and Systems (ISCAS)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/iscas48785.2022.9938005"
+    },
+    {
+     "DOI": "10.1007/springerreference_301799",
+     "title": [
+      "Consciousness and Emotion: Attentive vs. Pre-attentive Elaboration of Face Processing"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "container-title": [
+      "SpringerReference"
+     ],
+     "type": "reference-entry",
+     "URL": "https://doi.org/10.1007/springerreference_301799"
+    },
+    {
+     "DOI": "10.31979/etd.zw2y-3x9g",
+     "title": [
+      "MULTIMODAL EMOTION DETECTION IN CONVERSATIONS AND DIALOGUES"
+     ],
+     "author": [
+      {
+       "given": "Abhinay",
+       "family": "Jatoth",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "dissertation",
+     "URL": "https://doi.org/10.31979/etd.zw2y-3x9g"
+    },
+    {
+     "DOI": "10.1613/jair.1.15301",
+     "title": [
+      "Multi-Modal Attentive Prompt Learning for Few-shot Emotion Recognition in Conversations"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0002-5940-3440",
+       "authenticated-orcid": false,
+       "given": "Xingwei",
+       "family": "Liang",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Geng",
+       "family": "Tu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Jiachen",
+       "family": "Du",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Ruifeng",
+       "family": "Xu",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2024,
+        3,
+        4
+       ]
+      ]
+     },
+     "container-title": [
+      "Journal of Artificial Intelligence Research"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1613/jair.1.15301"
+    },
+    {
+     "DOI": "10.18653/v1/2020.findings-emnlp.224",
+     "title": [
+      "COSMIC: COmmonSense knowledge for eMotion Identification in Conversations"
+     ],
+     "author": [
+      {
+       "given": "Deepanway",
+       "family": "Ghosal",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Navonil",
+       "family": "Majumder",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Alexander",
+       "family": "Gelbukh",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Rada",
+       "family": "Mihalcea",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Soujanya",
+       "family": "Poria",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020
+       ]
+      ]
+     },
+     "container-title": [
+      "Findings of the Association for Computational Linguistics: EMNLP 2020"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.18653/v1/2020.findings-emnlp.224"
+    },
+    {
+     "DOI": "10.7717/peerjcs.2202/fig-5",
+     "title": [
+      "Figure 5: Illustration the RNN based emotion extraction module."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.7717/peerjcs.2202/fig-5"
+    },
+    {
+     "DOI": "10.31227/osf.io/wa3vp",
+     "title": [
+      "RNN-based Dimensional Speech Emotion Recognition"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0003-1560-2824",
+       "authenticated-orcid": true,
+       "given": "Bagus Tris",
+       "family": "Atmaja",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2020,
+        2,
+        4
+       ]
+      ]
+     },
+     "type": "posted-content",
+     "URL": "https://doi.org/10.31227/osf.io/wa3vp"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ },
+ "note": "Recovered from the archived metadata sweep of 2026-10-08; the request was live and the body is what the provider returned."
+}

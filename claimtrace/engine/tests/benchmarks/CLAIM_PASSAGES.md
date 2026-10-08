@@ -40,13 +40,64 @@ and it is the most actionable label for an author.
 
 ### Working recipe
 
-The corpus comes from the parsed papers under `backend/uploads/parsed/`, so the
-source paper must be **in the library** before its passage can be marked. Upload
-the cited PDFs first.
+The candidate claims come from Semantic Scholar's citation contexts: sentences
+that real papers wrote about a work in this repository, harvested once and
+frozen into `claim_passages.worksheet.json`. `backend/scripts/claim_worksheet.py`
+builds it, attaches the retriever's top five passages for each claim, and renders
+`worksheet.html`, a local page to label them on:
 
-Then, for each citing manuscript:
+```bash
+# already done once; re-running needs network and re-fetches nothing it has
+python backend/scripts/claim_worksheet.py --harvest --prefetch --html
+```
 
-1. Read it and pick ten sentences that cite a paper you have uploaded.
+Each candidate is one row: the claim, the paper that cites, five candidate
+passages from the cited paper, four label buttons, a box for the deciding
+passage, and a box for one sentence of reasoning. Label them, click *Export
+filled pairs*, and send the file back. Two people label the set independently;
+the sheets are compared by `pair_id`:
+
+```bash
+python backend/scripts/claim_worksheet.py --merge alice.json bob.json
+```
+
+That prints raw agreement and Cohen's kappa over the pairs both labelled, names
+the conflicts, and reports whether the two annotators marked the same passage —
+which matters more than it looks, because the marked passage is what Recall@5 is
+scored against. Conflicts stay unlabelled until they are adjudicated; a
+half-agreed label is worse than an admitted one.
+
+Reading the merge costs nothing. Writing does, so it is a second command, run
+after the conflicting pairs have been adjudicated (label them in the sheets and
+merge again, or leave them out — they stay unlabelled either way):
+
+```bash
+python backend/scripts/claim_worksheet.py --merge alice.json bob.json --write
+```
+
+`--write` fills `claim_passages.json` with the pairs both annotators labelled the
+same way and prints what it held back. Only a pair both sheets labelled gets in;
+a pair neither reached, or one they labelled differently, is left out rather than
+guessed at, so the file can be filled in more than once as annotation finishes.
+A pair where the two sheets marked different passages is kept with the first
+sheet's passage and counted — the label still counts, and the conflict is printed
+rather than buried. Pairs already in the file under another `pair_id`, including
+the hand-written manual-route pairs below, are preserved.
+
+**If the deciding passage is not among the five shown, paste it in anyway.** The
+retriever's top five are a convenience, not the answer key. A passage that is not
+among the candidates is recorded as a retrieval miss, and that is the measurement
+working — a sheet that offered only retrieved passages would manufacture a
+perfect recall figure.
+
+The manual route below still applies to the one in-library citation, and to any
+pair whose source is not in the harvested set.
+
+For a citation the corpus can support directly: the source paper must be parsed
+(there is text under `backend/uploads/parsed/`), so upload the cited PDF first,
+then:
+
+1. Read the citing manuscript and pick ten sentences that cite a parsed paper.
 2. For each one, open the cited paper and find the passage that decides it.
 3. Write the pair into `claim_passages.json`:
 
@@ -117,6 +168,57 @@ python tests/benchmarks/passage_harness.py --mode replay
 `--mode replay` is the one to read. It needs no network and no key, both halves
 can be re-scored as annotations are corrected, and `--output report.json` writes
 the same numbers as JSON for the weekly report.
+
+### Against the API instead of the engine
+
+The harness above hands the engine the corpus directly. `backend/scripts/verify_benchmark.py`
+measures what the product answers: the same pairs, the same arithmetic, but every
+verdict and every passage comes from `POST /api/verify/citation` over HTTP, against a
+real uvicorn on loopback and a live provider. Run it from `claimtrace/`:
+
+```bash
+# free: no key, no network. What would be sent, what it would cost, what would abstain
+python backend/scripts/verify_benchmark.py --estimate
+
+# the same, priced against the worksheet's 103 candidates while annotation is unfinished
+python backend/scripts/verify_benchmark.py --estimate \
+    --pairs engine/tests/benchmarks/claim_passages.worksheet.json
+
+# the paid run. The key is typed at the prompt and never written to a file or an env var
+python backend/scripts/verify_benchmark.py --mode record --confirm-calls 103
+
+# score the recording: offline, deterministic, no key, no network
+python backend/scripts/verify_benchmark.py --mode replay --check
+```
+
+`--estimate` reads the pairs file — the measurement target — so it prices the annotated
+set, not the worksheet; until the annotation lands it is the worksheet that has pairs in
+it, and `--pairs` is how to price that. It prints which request each pair sends, whether
+its source has to be registered first, how many model calls the run will make, and which
+pairs are predicted to abstain. `--mode record` refuses to start unless `--confirm-calls`
+equals the number the estimate printed, so a pair set that grew since the estimate cannot
+be paid for by accident. Pairs are sent by `source_paper_id`, so a paper that is parsed in
+the library but not registered as a Verify source is uploaded from its own PDF first
+(`--no-register` refuses instead). A recording lands in `recorded_claims/` in the shape
+the harness reads, so one paid run feeds both instruments:
+
+```bash
+cd claimtrace/engine
+python tests/benchmarks/passage_harness.py --mode replay
+```
+
+The API's non-`COMPARED` statuses — a source that could not be found, a model that
+failed — are abstentions here too: the same `score_verdicts` counts them beside accuracy
+rather than against it, and the report prints the status histogram. `--check` asserts
+what makes a recording readable as evidence: a verdict appears only under `COMPARED`,
+evidence ranks run from 1, every pair has its duration, and the file holds no key-shaped
+string.
+
+The same command also prints the timings — HTTP wall clock with the first call held out
+(the embedding model's load is seconds against a median in the hundreds of
+milliseconds), grouped by status, by depth and by source size, with the model residual
+reported beside the in-process retriever component. **These are baseline numbers, not a
+pass/fail**: no latency bar is set, and none should be read into them.
 
 ## How to read the report
 

@@ -1,0 +1,10 @@
+{
+  "url": "https://api.openalex.org/works?filter=title.search%3ASawtooth+Instability+in+Belt-Driven+Orreries&per-page=10",
+  "provider": "openalex",
+  "source": "injected",
+  "captured_at": "",
+  "status_code": 0,
+  "error": "request failed: [Errno 8] nodename nor servname provided, or not known",
+  "body": null,
+  "note": "Written by hand: status 0 is what http_get_json reports when no response arrived at all, which is the only thing that separates a transport failure from an HTTP error."
+}

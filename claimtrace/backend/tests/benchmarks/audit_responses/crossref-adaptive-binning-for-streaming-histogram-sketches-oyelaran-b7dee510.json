@@ -1,0 +1,530 @@
+{
+ "url": "https://api.crossref.org/works?query.bibliographic=Adaptive+Binning+for+Streaming+Histogram+Sketches+oyelaran&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+ "provider": "crossref",
+ "source": "captured",
+ "captured_at": "2026-10-08T06:53:35+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+   "facets": {},
+   "total-results": 609097,
+   "items": [
+    {
+     "DOI": "10.32614/cran.package.data.sketches",
+     "title": [
+      "data.sketches: Probabilistic Streaming Data Sketches"
+     ],
+     "author": [
+      {
+       "given": "Pedro",
+       "family": "Baltazar",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2026,
+        7,
+        9
+       ]
+      ]
+     },
+     "container-title": [
+      "CRAN: Contributed Packages"
+     ],
+     "type": "dataset",
+     "URL": "https://doi.org/10.32614/cran.package.data.sketches"
+    },
+    {
+     "DOI": "10.4018/ijskd.324164",
+     "title": [
+      "Novel Adaptive Histogram Binning-Based Lesion Segmentation for Discerning Severity in COVID-19 Chest CT Scan Images"
+     ],
+     "author": [
+      {
+       "given": "S.",
+       "family": "Nivetha",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Department of Computer Science, Periyar University, Salem, India"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "H. Hannah",
+       "family": "Inbarani",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Department of Computer Science, Periyar University, Salem, India"
+        }
+       ],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023,
+        6,
+        9
+       ]
+      ]
+     },
+     "container-title": [
+      "International Journal of Sociotechnology and Knowledge Development"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.4018/ijskd.324164"
+    },
+    {
+     "DOI": "10.1021/acs.jpca.0c10724.s001",
+     "title": [
+      "A Minimal, Adaptive Binning Scheme for Weighted Ensemble Simulations"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.1021/acs.jpca.0c10724.s001"
+    },
+    {
+     "DOI": "10.1109/vis49827.2021.9623301",
+     "title": [
+      "Histogram binning revisited with a focus on human perception"
+     ],
+     "author": [
+      {
+       "given": "Raphael",
+       "family": "Sahann",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Torsten",
+       "family": "Muller",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      },
+      {
+       "given": "Johanna",
+       "family": "Schmidt",
+       "sequence": "additional",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2021,
+        10
+       ]
+      ]
+     },
+     "container-title": [
+      "2021 IEEE Visualization Conference (VIS)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/vis49827.2021.9623301"
+    },
+    {
+     "DOI": "10.3390/engproc2024065014",
+     "title": [
+      "Additive Manufacturing Powder Particle Size Distributions: Comparison of Histogram Binning Methods"
+     ],
+     "author": [
+      {
+       "given": "Courtney",
+       "family": "Gallagher",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Faculty of Computing, Engineering and the Built Environment, Ulster University, Londonderry BT48 7JL, UK"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-4551-1272",
+       "authenticated-orcid": false,
+       "given": "Emmett",
+       "family": "Kerr",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Faculty of Computing, Engineering and the Built Environment, Ulster University, Londonderry BT48 7JL, UK"
+        },
+        {
+         "name": "Department of Electronic and Mechanical Engineering, Atlantic Technological University Donegal, F92 FC93 Letterkenny, Ireland"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "ORCID": "https://orcid.org/0000-0002-5015-0192",
+       "authenticated-orcid": false,
+       "given": "Shaun",
+       "family": "McFadden",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Faculty of Computing, Engineering and the Built Environment, Ulster University, Londonderry BT48 7JL, UK"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2024,
+        3,
+        25
+       ]
+      ]
+     },
+     "container-title": [
+      "The 39th International Manufacturing Conference"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.3390/engproc2024065014"
+    },
+    {
+     "DOI": "10.1016/j.dsp.2019.102581",
+     "title": [
+      "Optimal data-based binning for histograms and histogram-based probability density models"
+     ],
+     "author": [
+      {
+       "ORCID": "https://orcid.org/0000-0001-7702-3807",
+       "authenticated-orcid": false,
+       "given": "Kevin H.",
+       "family": "Knuth",
+       "sequence": "first",
+       "affiliation": [],
+       "role": [
+        {
+         "vocabulary": "crossref",
+         "role": "author"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2019,
+        12
+       ]
+      ]
+     },
+     "container-title": [
+      "Digital Signal Processing"
+     ],
+     "type": "journal-article",
+     "URL": "https://doi.org/10.1016/j.dsp.2019.102581"
+    },
+    {
+     "DOI": "10.1109/iscas46773.2023.10181483",
+     "title": [
+      "A Fully Integrated dToF System-on-Chip with High Precision Using Adaptive Optical Power Control and Shifted Histogram-Bin Binning"
+     ],
+     "author": [
+      {
+       "given": "Hengwei",
+       "family": "Yu",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Shenglong",
+       "family": "Zhuo",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Yifan",
+       "family": "Wu",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "The college of electronics and information engineering, Tongji University,Shanghai,China,200092"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Long",
+       "family": "Wang",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "PhotonIC Technologies,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jiqing",
+       "family": "Xu",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Jier",
+       "family": "Wang",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Zhihong",
+       "family": "Lin",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Patrick Yin",
+       "family": "Chiang",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Fudan University,State Key Laboratory of ASIC &#x0026; System,Shanghai,China,201203"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2023,
+        5,
+        21
+       ]
+      ]
+     },
+     "container-title": [
+      "2023 IEEE International Symposium on Circuits and Systems (ISCAS)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/iscas46773.2023.10181483"
+    },
+    {
+     "DOI": "10.7717/peerj-cs.2440/table-16",
+     "title": [
+      "Algorithm 3 : Contrast limited adaptive histogram equalization (CLAHE)"
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.7717/peerj-cs.2440/table-16"
+    },
+    {
+     "DOI": "10.7554/elife.27119.007",
+     "title": [
+      "Figure 6. Adaptive binning demonstrates maintained power law organization during transient activity epochs in premotor cortex."
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        null
+       ]
+      ]
+     },
+     "type": "component",
+     "URL": "https://doi.org/10.7554/elife.27119.007"
+    },
+    {
+     "DOI": "10.1109/satml64287.2025.00038",
+     "title": [
+      "Streaming Private Continual Counting via Binning"
+     ],
+     "author": [
+      {
+       "given": "Joel Daniel",
+       "family": "Andersson",
+       "sequence": "first",
+       "affiliation": [
+        {
+         "name": "Basic Algorithms Research Copenhagen University of Copenhagen,Copenhagen,Denmark"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      },
+      {
+       "given": "Rasmus",
+       "family": "Pagh",
+       "sequence": "additional",
+       "affiliation": [
+        {
+         "name": "Basic Algorithms Research Copenhagen University of Copenhagen,Copenhagen,Denmark"
+        }
+       ],
+       "role": [
+        {
+         "role": "author",
+         "vocabulary": "crossref"
+        }
+       ]
+      }
+     ],
+     "issued": {
+      "date-parts": [
+       [
+        2025,
+        4,
+        9
+       ]
+      ]
+     },
+     "container-title": [
+      "2025 IEEE Conference on Secure and Trustworthy Machine Learning (SaTML)"
+     ],
+     "type": "proceedings-article",
+     "URL": "https://doi.org/10.1109/satml64287.2025.00038"
+    }
+   ],
+   "items-per-page": 10,
+   "query": {
+    "start-index": 0,
+    "search-terms": null
+   }
+  }
+ }
+}
