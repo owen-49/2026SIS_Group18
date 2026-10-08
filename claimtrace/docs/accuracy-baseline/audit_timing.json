@@ -1,0 +1,139 @@
+{
+  "contract_version": 2,
+  "kind": "audit-timing",
+  "generated_at": "2026-10-08T07:56:34+00:00",
+  "boundary": "real uvicorn on 127.0.0.1, in-process pins: the HTTP boundary is inside the measurement and the network is not",
+  "latency_seconds": 0.05,
+  "mix": {
+    "bert-exact": 0.5,
+    "dialoguernn-year-minus-five": 0.3,
+    "provider-500": 0.2
+  },
+  "scaling": [
+    {
+      "size": 5,
+      "repeats": 5,
+      "requests": 8,
+      "seconds": [
+        0.4413,
+        0.4463,
+        0.4485,
+        0.4518,
+        0.4543
+      ],
+      "min": 0.4413,
+      "median": 0.4485,
+      "max": 0.4543,
+      "parse_seconds": 0.0037,
+      "seconds_per_entry": 0.0897,
+      "seconds_per_request": 0.0561
+    },
+    {
+      "size": 10,
+      "repeats": 5,
+      "requests": 15,
+      "seconds": [
+        0.8253,
+        0.8314,
+        0.8334,
+        0.8369,
+        0.8395
+      ],
+      "min": 0.8253,
+      "median": 0.8334,
+      "max": 0.8395,
+      "parse_seconds": 0.0103,
+      "seconds_per_entry": 0.0833,
+      "seconds_per_request": 0.0556
+    },
+    {
+      "size": 20,
+      "repeats": 5,
+      "requests": 30,
+      "seconds": [
+        1.6466,
+        1.6543,
+        1.6576,
+        1.661,
+        1.6662
+      ],
+      "min": 1.6466,
+      "median": 1.6576,
+      "max": 1.6662,
+      "parse_seconds": 0.0074,
+      "seconds_per_entry": 0.0829,
+      "seconds_per_request": 0.0553
+    },
+    {
+      "size": 40,
+      "repeats": 5,
+      "requests": 60,
+      "seconds": [
+        3.2831,
+        3.3004,
+        3.311,
+        3.3116,
+        3.3266
+      ],
+      "min": 3.2831,
+      "median": 3.311,
+      "max": 3.3266,
+      "parse_seconds": 0.0093,
+      "seconds_per_entry": 0.0828,
+      "seconds_per_request": 0.0552
+    },
+    {
+      "size": 80,
+      "repeats": 5,
+      "requests": 120,
+      "seconds": [
+        6.5154,
+        6.5666,
+        6.5736,
+        6.6348,
+        6.6373
+      ],
+      "min": 6.5154,
+      "median": 6.5736,
+      "max": 6.6373,
+      "parse_seconds": 0.0124,
+      "seconds_per_entry": 0.0822,
+      "seconds_per_request": 0.0548
+    }
+  ],
+  "slopes": [
+    {
+      "sizes": [
+        5,
+        10
+      ],
+      "seconds_per_request": 0.055,
+      "latency": 0.05
+    },
+    {
+      "sizes": [
+        10,
+        20
+      ],
+      "seconds_per_request": 0.0549,
+      "latency": 0.05
+    },
+    {
+      "sizes": [
+        20,
+        40
+      ],
+      "seconds_per_request": 0.0551,
+      "latency": 0.05
+    },
+    {
+      "sizes": [
+        40,
+        80
+      ],
+      "seconds_per_request": 0.0544,
+      "latency": 0.05
+    }
+  ],
+  "problems": []
+}

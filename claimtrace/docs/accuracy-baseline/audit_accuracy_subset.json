@@ -1,0 +1,585 @@
+{
+  "contract_version": 2,
+  "generated_at": "2026-10-08T07:55:20+00:00",
+  "forms": [
+    {
+      "input_kind": "bib",
+      "cases": 31,
+      "results": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0,
+        "status_accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_state": {
+          "VERIFIED": {
+            "support": 7,
+            "predicted": 7,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "METADATA_MISMATCH": {
+            "support": 12,
+            "predicted": 12,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEEDS_REVIEW": {
+            "support": 9,
+            "predicted": 9,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NOT_FOUND": {
+            "support": 1,
+            "predicted": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "LOOKUP_FAILED": {
+            "support": 2,
+            "predicted": 2,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "confusion": {
+          "VERIFIED": {
+            "VERIFIED": 7
+          },
+          "METADATA_MISMATCH": {
+            "METADATA_MISMATCH": 12
+          },
+          "NEEDS_REVIEW": {
+            "NEEDS_REVIEW": 9
+          },
+          "NOT_FOUND": {
+            "NOT_FOUND": 1
+          },
+          "LOOKUP_FAILED": {
+            "LOOKUP_FAILED": 2
+          }
+        },
+        "field_accuracy": {
+          "title": {
+            "checked": 9,
+            "correct": 9,
+            "accuracy": 1.0
+          },
+          "authors": {
+            "checked": 11,
+            "correct": 11,
+            "accuracy": 1.0
+          },
+          "year": {
+            "checked": 14,
+            "correct": 14,
+            "accuracy": 1.0
+          },
+          "venue": {
+            "checked": 14,
+            "correct": 14,
+            "accuracy": 1.0
+          },
+          "doi": {
+            "checked": 0,
+            "correct": 0,
+            "accuracy": null
+          }
+        },
+        "field_confusion": {
+          "title": {
+            "MATCH->MATCH": 9
+          },
+          "authors": {
+            "MATCH->MATCH": 9,
+            "MISMATCH->MISMATCH": 2
+          },
+          "year": {
+            "MATCH->MATCH": 9,
+            "MISMATCH->MISMATCH": 5
+          },
+          "venue": {
+            "MATCH->MATCH": 9,
+            "MISMATCH->MISMATCH": 5
+          },
+          "doi": {}
+        },
+        "actual_statuses": {
+          "VERIFIED": 7,
+          "METADATA_MISMATCH": 12,
+          "NEEDS_REVIEW": 9,
+          "NOT_FOUND": 1,
+          "LOOKUP_FAILED": 2
+        },
+        "safety": {
+          "passed": true,
+          "total_results": 31,
+          "not_found_with_incomplete_search": [],
+          "lookup_failed_without_a_failure": [],
+          "skipped_lookup_without_review": [],
+          "verified_without_a_record": [],
+          "not_found_with_field_checks": []
+        },
+        "scores": [
+          {
+            "case_id": "bert-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-doi-stated",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-doi-year-veto-bypassed",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "graves-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "dagerc-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "batchnorm-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "dialoguernn-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "moses-exact",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-year-plus-one",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-year-minus-one",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "graves-year-minus-one",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "dagerc-year-plus-one",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-surname-changed",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "moses-author-count",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-given-name-changed",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-venue-other-conference",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-venue-abbreviated",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "dagerc-venue-other-conference",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "graves-venue-abbreviated",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "batchnorm-venue-published",
+            "passed": true,
+            "expected_status": "METADATA_MISMATCH",
+            "actual_status": "METADATA_MISMATCH",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-venue-close",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-year-plus-two",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bert-year-plus-three",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "graves-year-plus-four",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "dialoguernn-year-minus-five",
+            "passed": true,
+            "expected_status": "NOT_FOUND",
+            "actual_status": "NOT_FOUND",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "batchnorm-decoy-year",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "provider-500",
+            "passed": true,
+            "expected_status": "LOOKUP_FAILED",
+            "actual_status": "LOOKUP_FAILED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "provider-transport",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "provider-throttled",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "provider-both-failed",
+            "passed": true,
+            "expected_status": "LOOKUP_FAILED",
+            "actual_status": "LOOKUP_FAILED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "bib-no-title",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          }
+        ]
+      }
+    },
+    {
+      "input_kind": "pdf",
+      "cases": 3,
+      "results": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "status_accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_state": {
+          "VERIFIED": {
+            "support": 1,
+            "predicted": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "METADATA_MISMATCH": {
+            "support": 0,
+            "predicted": 0,
+            "precision": null,
+            "recall": null,
+            "f1": null
+          },
+          "NEEDS_REVIEW": {
+            "support": 2,
+            "predicted": 2,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NOT_FOUND": {
+            "support": 0,
+            "predicted": 0,
+            "precision": null,
+            "recall": null,
+            "f1": null
+          },
+          "LOOKUP_FAILED": {
+            "support": 0,
+            "predicted": 0,
+            "precision": null,
+            "recall": null,
+            "f1": null
+          }
+        },
+        "confusion": {
+          "VERIFIED": {
+            "VERIFIED": 1
+          },
+          "METADATA_MISMATCH": {},
+          "NEEDS_REVIEW": {
+            "NEEDS_REVIEW": 2
+          },
+          "NOT_FOUND": {},
+          "LOOKUP_FAILED": {}
+        },
+        "field_accuracy": {
+          "title": {
+            "checked": 2,
+            "correct": 2,
+            "accuracy": 1.0
+          },
+          "authors": {
+            "checked": 2,
+            "correct": 2,
+            "accuracy": 1.0
+          },
+          "year": {
+            "checked": 2,
+            "correct": 2,
+            "accuracy": 1.0
+          },
+          "venue": {
+            "checked": 2,
+            "correct": 2,
+            "accuracy": 1.0
+          },
+          "doi": {
+            "checked": 0,
+            "correct": 0,
+            "accuracy": null
+          }
+        },
+        "field_confusion": {
+          "title": {
+            "MATCH->MATCH": 2
+          },
+          "authors": {
+            "MATCH->MATCH": 2
+          },
+          "year": {
+            "MATCH->MATCH": 2
+          },
+          "venue": {
+            "MISMATCH->MISMATCH": 1,
+            "MATCH->MATCH": 1
+          },
+          "doi": {}
+        },
+        "actual_statuses": {
+          "NEEDS_REVIEW": 2,
+          "VERIFIED": 1
+        },
+        "safety": {
+          "passed": true,
+          "total_results": 3,
+          "not_found_with_incomplete_search": [],
+          "lookup_failed_without_a_failure": [],
+          "skipped_lookup_without_review": [],
+          "verified_without_a_record": [],
+          "not_found_with_field_checks": []
+        },
+        "scores": [
+          {
+            "case_id": "pdf-venue-recovered",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "pdf-agrees",
+            "passed": true,
+            "expected_status": "VERIFIED",
+            "actual_status": "VERIFIED",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          },
+          {
+            "case_id": "pdf-no-title",
+            "passed": true,
+            "expected_status": "NEEDS_REVIEW",
+            "actual_status": "NEEDS_REVIEW",
+            "mechanism_ok": true,
+            "detail": "as expected"
+          }
+        ]
+      }
+    }
+  ],
+  "pins": {
+    "total": 26,
+    "sources": {
+      "captured": 21,
+      "injected": 5
+    },
+    "used": [
+      "https://api.crossref.org/works?query.bibliographic=Batch+Normalization%3A+Accelerating+Deep+Network+Training+by+Reducing+Internal+Covariate+Shift+ioffe&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Bert%3A+Pre-training+of+deep+bidirectional+transformers+for+language+understanding+devlin&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=DialogueRNN%3A+An+attentive+RNN+for+emotion+detection+in+conversations+majumder&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Lattice+Distortion+in+Hand-Blown+Cathedral+Glass+duquesne&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Marlinspike+Splice+Strength+in+Hemp+Hawsers+brennan&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Neural+machine+translation+of+rare+words+with+subword+units+sennrich&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Sawtooth+Instability+in+Belt-Driven+Orreries+petrov&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Trunnion+Fatigue+in+Cast-Iron+Canal+Lock+Gates+halloran&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.openalex.org/works?filter=title.search%3ABatch+Normalization%3A+Accelerating+Deep+Network+Training+by+Reducing+Internal+Covariate+Shift&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ABert%3A+Pre-training+of+deep+bidirectional+transformers+for+language+understanding&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ADialogueRNN%3A+An+attentive+RNN+for+emotion+detection+in+conversations&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ADirected+acyclic+graph+network+for+conversational+emotion+recognition&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ALattice+Distortion+in+Hand-Blown+Cathedral+Glass&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3AMarlinspike+Splice+Strength+in+Hemp+Hawsers&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3AMoses%3A+Open+source+toolkit+for+statistical+machine+translation&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ANeural+machine+translation+of+rare+words+with+subword+units&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ASawtooth+Instability+in+Belt-Driven+Orreries&per-page=10",
+      "https://api.openalex.org/works?filter=title.search%3ATrunnion+Fatigue+in+Cast-Iron+Canal+Lock+Gates&per-page=10"
+    ],
+    "unused": [
+      "https://api.crossref.org/works?query.bibliographic=A+Survey+of+Unpublished+Footnotes+in+Medieval+Marginalia+achterberg&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Adaptive+Binning+for+Streaming+Histogram+Sketches+oyelaran&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Batch+Normalization+ioffe&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Catalogue+of+Extinct+Alphabets+of+the+Northern+Steppe+vasquez&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Empirical+Limits+of+Sonar-Based+Indoor+Localization+nakamura&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=On+the+Hydrodynamics+of+Paper+Airplanes+in+Zero+Gravity+okonkwo&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Quantum+Entanglement+in+Mythical+Beast+Migration+Patterns+ravenna&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL",
+      "https://api.crossref.org/works?query.bibliographic=Thermal+Conductivity+of+Aerogel+Blankets+Under+Vacuum+lindqvist&rows=10&select=DOI%2Ctitle%2Cauthor%2Cissued%2Ccontainer-title%2Ctype%2CURL"
+    ],
+    "missing": []
+  },
+  "requests": {
+    "total": 41,
+    "distinct": 18
+  },
+  "fixture": {
+    "cases_total": 42,
+    "cases_scored": 34,
+    "cases_pending": [
+      "forged-quantum",
+      "forged-alphabets",
+      "forged-histogram",
+      "forged-airplanes",
+      "forged-aerogel",
+      "forged-marginalia",
+      "forged-sonar",
+      "batchnorm-short-title"
+    ],
+    "pins_total": 26,
+    "pins_captured": 21,
+    "pins_injected": 5,
+    "pins_missing": 8,
+    "requests_whole_fixture": 49,
+    "requests_scored": 41
+  }
+}
