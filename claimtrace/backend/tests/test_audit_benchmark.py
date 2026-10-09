@@ -7,7 +7,9 @@ fail is not being checked.
 """
 
 import json
+import os
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
 from backend.scripts.audit_eval import (
@@ -1555,6 +1557,75 @@ def test_a_live_run_stopped_by_its_budget_is_not_a_measurement():
     text = audit_benchmark.render_live(report)
     assert "NOT A MEASUREMENT" in text
     assert "--max-calls stopped 2 request(s)" in text
+
+
+def test_the_live_report_says_whether_a_provider_key_was_configured():
+    """A keyless run is bounded by the provider's budget, and the report has to
+    say so: measured, an anonymous run of this corpus answered 70 requests and
+    then took 429 for every one after it, so what it reports past that point
+    describes a throttled client rather than the chain."""
+    from backend.scripts import audit_benchmark
+
+    anonymous = audit_benchmark.render_live(audit_benchmark.LiveReport(delay=1.0))
+    assert "provider key : NONE" in anonymous
+
+    keyed = audit_benchmark.LiveReport(delay=1.0, authenticated=True)
+    assert "provider key : OpenAlex API key configured" in audit_benchmark.render_live(keyed)
+    payload = audit_benchmark.payload_live(keyed, SimpleNamespace(delay=1.0, timeout=10.0))
+    assert payload["openalex_authenticated"] is True
+
+
+def test_the_live_environment_lets_the_provider_key_through(tmp_path, monkeypatch):
+    """The metadata lookup's free key is the one credential the run may hold.
+
+    It has to be read out of the developer's .env by the benchmark, because the
+    application is pointed at /dev/null for that file -- and the paid keys stay
+    cleared alongside it, so no case can quietly become a billed one.
+    """
+    from backend.scripts import audit_benchmark
+
+    env_file = tmp_path / ".env"
+    env_file.write_text("OPENALEX_API_KEY=from-the-file\nOPENAI_API_KEY=sk-paid\n")
+    monkeypatch.setattr(audit_benchmark, "ENV_FILE", env_file)
+    monkeypatch.delenv("OPENALEX_API_KEY", raising=False)
+
+    # patch.dict restores the environment after the call: _environment writes
+    # to os.environ directly, so a leaked UPLOAD_DIR would follow this test
+    # into every test that runs after it.
+    with patch.dict("os.environ", {}):
+        audit_benchmark._environment(tmp_path)
+        assert os.environ["OPENALEX_API_KEY"] == "from-the-file"
+        assert "OPENAI_API_KEY" not in os.environ
+
+
+def test_a_key_already_in_the_environment_wins_over_the_env_file(tmp_path, monkeypatch):
+    """The application loads .env with override=False; the benchmark matches it,
+    so an exported key is not silently replaced by a stale one on disk."""
+    from backend.scripts import audit_benchmark
+
+    env_file = tmp_path / ".env"
+    env_file.write_text("OPENALEX_API_KEY=from-the-file\n")
+    monkeypatch.setattr(audit_benchmark, "ENV_FILE", env_file)
+
+    with patch.dict("os.environ", {"OPENALEX_API_KEY": "from-the-shell"}):
+        audit_benchmark._environment(tmp_path)
+        assert os.environ["OPENALEX_API_KEY"] == "from-the-shell"
+
+
+def test_a_missing_or_blank_key_leaves_the_run_anonymous(tmp_path, monkeypatch):
+    from backend.scripts import audit_benchmark
+
+    monkeypatch.setattr(audit_benchmark, "ENV_FILE", tmp_path / "absent.env")
+    monkeypatch.delenv("OPENALEX_API_KEY", raising=False)
+
+    with patch.dict("os.environ", {}):
+        audit_benchmark._environment(tmp_path)
+        assert "OPENALEX_API_KEY" not in os.environ
+
+        (tmp_path / "blank.env").write_text("OPENALEX_API_KEY=\n")
+        monkeypatch.setattr(audit_benchmark, "ENV_FILE", tmp_path / "blank.env")
+        audit_benchmark._environment(tmp_path)
+        assert "OPENALEX_API_KEY" not in os.environ
 
 
 def test_a_live_timing_is_the_provider_s_time_and_not_the_pacing(monkeypatch):

@@ -199,6 +199,15 @@ def test_build_url_carries_the_contact_address_when_one_is_configured():
     assert params["mailto"] == ["someone@example.org"]
 
 
+def test_build_url_never_carries_the_api_key():
+    # The key goes in a header instead: the live benchmark logs every request
+    # URL it fetched into a report meant to be committed.
+    with patch.dict("os.environ", {"OPENALEX_API_KEY": "opaque-key"}):
+        url = build_url(ReferenceQuery(title="x"), 10)
+    assert "opaque-key" not in url
+    assert "api_key" not in url
+
+
 # --- Transport ----------------------------------------------------------------
 
 
@@ -216,6 +225,26 @@ def test_search_passes_the_limit_and_timeout_through():
     _, call = _search({"results": []}, limit=4, timeout_seconds=3.5)
     assert "per-page=4" in call.call_args.args[0]
     assert call.call_args.kwargs["timeout_seconds"] == 3.5
+
+
+def test_search_sends_a_configured_key_as_a_bearer_header():
+    with patch.dict("os.environ", {"OPENALEX_API_KEY": "opaque-key"}):
+        _, call = _search({"results": []})
+    assert call.call_args.kwargs["headers"] == {"Authorization": "Bearer opaque-key"}
+
+
+def test_search_sends_no_authorization_without_a_key():
+    # Anonymous is a working configuration: the request is answered out of the
+    # budget OpenAlex shares per address, and it must not carry an empty header.
+    with patch.dict("os.environ", {}, clear=True):
+        _, call = _search({"results": []})
+    assert call.call_args.kwargs["headers"] == {}
+
+
+def test_a_key_left_blank_is_no_key():
+    with patch.dict("os.environ", {"OPENALEX_API_KEY": "   "}):
+        _, call = _search({"results": []})
+    assert call.call_args.kwargs["headers"] == {}
 
 
 def test_search_without_a_title_does_not_make_a_request():

@@ -69,6 +69,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlsplit
 
+from dotenv import dotenv_values
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "engine"), str(ROOT / "parser")]
 
@@ -77,6 +79,7 @@ from engine import crossref_lookup, openalex_lookup  # noqa: E402
 
 CASE_FILE = ROOT / "backend" / "tests" / "benchmarks" / "audit_cases.json"
 RESPONSE_DIR = ROOT / "backend" / "tests" / "benchmarks" / "audit_responses"
+ENV_FILE = ROOT / ".env"
 
 PROVIDERS = ("openalex", "crossref")
 
@@ -479,7 +482,9 @@ def _environment(workdir: Path) -> None:
     error instead of a benchmark that quietly reads a developer's uploads.
 
     The provider keys are cleared so that a case whose artifact does not pin
-    ``metadata_version`` cannot turn the run into a paid one.
+    ``metadata_version`` cannot turn the run into a paid one. The metadata
+    provider's own free key is the one exception, per
+    :func:`_export_provider_key`.
     """
     upload = workdir / "uploads"
     os.environ.update(
@@ -496,6 +501,32 @@ def _environment(workdir: Path) -> None:
     )
     for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY"):
         os.environ.pop(name, None)
+    _export_provider_key()
+
+
+def _export_provider_key() -> None:
+    """Let the metadata provider's key through from the developer's own .env.
+
+    The one credential this run is allowed to hold is the free, non-LLM key the
+    metadata lookup uses; every paid key above is cleared so that no case can
+    quietly become a billed one. It has to be read out of the file rather than
+    left to the application, because ``CLAIMTRACE_ENV_FILE`` points the
+    application at ``os.devnull`` for exactly the clearing above.
+
+    A key already in the environment wins, matching the application's own
+    ``load_dotenv(..., override=False)``. Without a key the run is still valid,
+    only bounded: OpenAlex meters anonymous requests to a daily budget shared
+    by every client behind the same address, and a corpus-sized run exhausts it
+    partway through, which is reported as such rather than silently scored.
+    """
+    name = openalex_lookup.API_KEY_ENV_VAR
+    if os.environ.get(name, "").strip():
+        return
+    value = ""
+    if ENV_FILE.is_file():
+        value = (dotenv_values(ENV_FILE).get(name) or "").strip()
+    if value:
+        os.environ[name] = value
 
 
 def _assert_environment(workdir: Path) -> None:
@@ -750,6 +781,15 @@ class LiveReport:
     requests: list[dict[str, Any]] = field(default_factory=list)
     budget_exhausted: list[str] = field(default_factory=list)
     delay: float = 0.0
+    authenticated: bool = False
+    """Whether the provider key was configured when the run started.
+
+    Reported beside the states because it decides how much of a run there is.
+    An anonymous run of this corpus answered 70 requests and then took ``429``
+    for every one after it; the states it reported past that point describe a
+    throttled client, not the chain, and reading them as accuracy would be
+    reading the provider's quota.
+    """
 
 
 def load_corpus_artifacts(paths: list[Path]) -> list[tuple[Path, Any]]:
@@ -864,7 +904,11 @@ def run_live(artifacts: list[tuple[Path, Any]], args) -> LiveReport:
         return http_get_json
 
     _patch_providers(live("openalex"), live("crossref"))
-    report = LiveReport(budget_exhausted=exhausted, delay=args.delay)
+    report = LiveReport(
+        budget_exhausted=exhausted,
+        delay=args.delay,
+        authenticated=bool(openalex_lookup.auth_headers()),
+    )
     with TestClient(app) as client:
         for _, artifact in artifacts:
             before = len(captures)
@@ -924,6 +968,13 @@ def render_live(report: LiveReport) -> str:
     lines = [
         "== bibliography audit, live corpus (real providers) ==",
         f"papers       : {len(report.papers)}   references: {entries}",
+        "provider key : "
+        + (
+            "OpenAlex API key configured, so requests draw on that key's own budget"
+            if report.authenticated
+            else "NONE -- anonymous OpenAlex requests share a daily budget per address, "
+            "and a corpus this size outran it: 70 requests answered, then 429s"
+        ),
         "states       : "
         + "  ".join(f"{name}={count}" for name, count in sorted(totals["statuses"].items())),
         "",
@@ -1016,6 +1067,7 @@ def payload_live(report: LiveReport, args) -> dict:
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "delay": args.delay,
         "timeout_seconds": args.timeout,
+        "openalex_authenticated": report.authenticated,
         "papers": [
             {
                 "paper_id": paper.paper_id,

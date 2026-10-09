@@ -22,6 +22,10 @@ Design notes:
   ``display_name``), and selecting a renamed field yields null rather than an
   error -- which would silently empty a venue while the request still succeeded.
   The page size keeps the response bounded instead.
+- The API key travels as an ``Authorization: Bearer`` header when one is
+  configured, never as ``?api_key=``. OpenAlex serves both, but request URLs are
+  logged: the live benchmark writes every URL it fetched into a report meant to
+  be committed, so a key in the query string would be published with it.
 
 Field reference: https://docs.openalex.org/api-entities/works
 """
@@ -43,6 +47,21 @@ from .title_matching import normalize_doi
 NAME = "openalex"
 ENDPOINT = "https://api.openalex.org/works"
 
+API_KEY_ENV_VAR = "OPENALEX_API_KEY"
+"""Where an OpenAlex API key is read from, when the deployment has one.
+
+Optional, and read here rather than through a backend setting, because the
+provider client is the engine's -- the same arrangement as
+:data:`engine.metadata_lookup.CONTACT_ENV_VAR`.
+
+Without a key a request draws on a daily budget shared by every anonymous
+client behind the same network address, which a corpus-sized audit run runs
+out partway through. Measured on the 140-reference corpus: 70 requests
+answered, then every remaining one answered ``429`` with a ``retry-after``
+just under a day, leaving 91 requests unanswered and the run's verdicts
+unusable. A free key multiplies that budget.
+"""
+
 
 class OpenAlexLookup:
     """The OpenAlex provider."""
@@ -63,10 +82,23 @@ class OpenAlexLookup:
             build_url(query, limit),
             timeout_seconds=timeout_seconds,
             user_agent=default_user_agent(),
+            headers=auth_headers(),
         )
         if result.body is None:
             return provider_response_for_failure(result, error_prefix="OPENALEX")
         return ProviderResponse(status="ok", candidates=map_items(result.body))
+
+
+def auth_headers() -> dict[str, str]:
+    """Return the headers that carry a configured API key, or none.
+
+    Empty when no key is configured, which is a working configuration: the
+    request is anonymous and OpenAlex answers it out of the shared daily
+    budget. The value is stripped so that a line left blank in ``.env`` is no
+    key at all rather than an empty bearer token.
+    """
+    key = os.getenv(API_KEY_ENV_VAR, "").strip()
+    return {"Authorization": f"Bearer {key}"} if key else {}
 
 
 def build_url(query: ReferenceQuery, limit: int) -> str:
