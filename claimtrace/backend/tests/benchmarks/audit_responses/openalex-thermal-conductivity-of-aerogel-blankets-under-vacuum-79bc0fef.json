@@ -1,0 +1,1243 @@
+{
+ "url": "https://api.openalex.org/works?filter=title.search%3AThermal+Conductivity+of+Aerogel+Blankets+Under+Vacuum&per-page=10",
+ "provider": "openalex",
+ "source": "captured",
+ "captured_at": "2026-10-09T00:35:49+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "meta": {
+   "count": 1,
+   "db_response_time_ms": 13,
+   "page": 1,
+   "per_page": 10,
+   "groups_count": null,
+   "x_query": {
+    "oql": "get works where title has (Thermal Conductivity of Aerogel Blankets Under Vacuum)",
+    "oqo": {
+     "get_rows": "works",
+     "filter_rows": [
+      {
+       "column_id": "display_name.search",
+       "value": "Thermal Conductivity of Aerogel Blankets Under Vacuum",
+       "operator": "has"
+      }
+     ]
+    },
+    "url": "/works?filter=display_name.search:Thermal Conductivity of Aerogel Blankets Under Vacuum&per_page=10"
+   },
+   "cost_usd": 0.001
+  },
+  "results": [
+   {
+    "id": "https://openalex.org/W2775945319",
+    "doi": "https://doi.org/10.1088/1757-899x/278/1/012198",
+    "title": "Thermal conductivity of aerogel blanket insulation under cryogenic-vacuum conditions in different gas environments",
+    "display_name": "Thermal conductivity of aerogel blanket insulation under cryogenic-vacuum conditions in different gas environments",
+    "relevance_score": 43.592815,
+    "publication_year": 2017,
+    "publication_date": "2017-12-01",
+    "ids": {
+     "openalex": "https://openalex.org/W2775945319",
+     "doi": "https://doi.org/10.1088/1757-899x/278/1/012198",
+     "mag": "2775945319"
+    },
+    "language": "en",
+    "primary_location": {
+     "id": "doi:10.1088/1757-899x/278/1/012198",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.1088/1757-899x/278/1/012198",
+     "pdf_url": "https://iopscience.iop.org/article/10.1088/1757-899X/278/1/012198/pdf",
+     "source": {
+      "id": "https://openalex.org/S4210189194",
+      "display_name": "IOP Conference Series Materials Science and Engineering",
+      "issn_l": "1757-8981",
+      "issn": [
+       "1757-8981",
+       "1757-899X"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [
+       "jufo-1"
+      ],
+      "host_organization": "https://openalex.org/P4310320083",
+      "host_organization_name": "IOP Publishing",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310320083",
+       "https://openalex.org/P4310311669"
+      ],
+      "host_organization_lineage_names": [
+       "IOP Publishing",
+       "Institute of Physics"
+      ],
+      "type": "conference"
+     },
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "IOP Conference Series: Materials Science and Engineering",
+     "raw_type": "journal-article"
+    },
+    "type": "conference-paper",
+    "indexed_in": [
+     "crossref"
+    ],
+    "open_access": {
+     "is_oa": true,
+     "oa_status": "diamond",
+     "oa_url": "https://iopscience.iop.org/article/10.1088/1757-899X/278/1/012198/pdf",
+     "any_repository_has_fulltext": false
+    },
+    "authorships": [
+     {
+      "author_position": "first",
+      "author": {
+       "id": "https://openalex.org/A5006518397",
+       "display_name": "James E. Fesmire",
+       "orcid": null,
+       "observed_orcids": []
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I2799863703",
+        "display_name": "Kennedy Space Center",
+        "ror": "https://ror.org/03kjpzv42",
+        "country_code": "US",
+        "type": "facility",
+        "lineage": [
+         "https://openalex.org/I2799863703",
+         "https://openalex.org/I4210124779"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": true,
+      "raw_author_name": "J E Fesmire",
+      "raw_affiliation_strings": [
+       "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899",
+        "institution_ids": [
+         "https://openalex.org/I2799863703"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5048961679",
+       "display_name": "J B Ancipink",
+       "orcid": null,
+       "observed_orcids": []
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I2799863703",
+        "display_name": "Kennedy Space Center",
+        "ror": "https://ror.org/03kjpzv42",
+        "country_code": "US",
+        "type": "facility",
+        "lineage": [
+         "https://openalex.org/I2799863703",
+         "https://openalex.org/I4210124779"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "J B Ancipink",
+      "raw_affiliation_strings": [
+       "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899",
+        "institution_ids": [
+         "https://openalex.org/I2799863703"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5064914156",
+       "display_name": "Adam M. Swanger",
+       "orcid": "https://orcid.org/0000-0002-1487-592X",
+       "observed_orcids": [
+        "https://orcid.org/0000-0002-1487-592X"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I2799863703",
+        "display_name": "Kennedy Space Center",
+        "ror": "https://ror.org/03kjpzv42",
+        "country_code": "US",
+        "type": "facility",
+        "lineage": [
+         "https://openalex.org/I2799863703",
+         "https://openalex.org/I4210124779"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "A M Swanger",
+      "raw_affiliation_strings": [
+       "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "NASA Kennedy Space Center, Cryogenics Test Laboratory, UB-R1, KSC, FL 32899",
+        "institution_ids": [
+         "https://openalex.org/I2799863703"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "middle",
+      "author": {
+       "id": "https://openalex.org/A5101837074",
+       "display_name": "Susan M. White",
+       "orcid": "https://orcid.org/0000-0001-8859-9027",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-8859-9027"
+       ]
+      },
+      "institutions": [
+       {
+        "id": "https://openalex.org/I4210091820",
+        "display_name": "Aspen Aerogels (United States)",
+        "ror": "https://ror.org/00d53ja24",
+        "country_code": "US",
+        "type": "company",
+        "lineage": [
+         "https://openalex.org/I4210091820"
+        ]
+       }
+      ],
+      "countries": [
+       "US"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "S White",
+      "raw_affiliation_strings": [
+       "Aspen Aerogels, Inc., 30 Forbes Rd, Bldg. B, Northborough, MA 01532 USA"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "Aspen Aerogels, Inc., 30 Forbes Rd, Bldg. B, Northborough, MA 01532 USA",
+        "institution_ids": [
+         "https://openalex.org/I4210091820"
+        ]
+       }
+      ]
+     },
+     {
+      "author_position": "last",
+      "author": {
+       "id": "https://openalex.org/A5090042172",
+       "display_name": "DAVID W. YARBROUGH",
+       "orcid": "https://orcid.org/0000-0001-6383-4385",
+       "observed_orcids": [
+        "https://orcid.org/0000-0001-6383-4385"
+       ]
+      },
+      "institutions": [],
+      "countries": [],
+      "is_corresponding": false,
+      "raw_author_name": "D Yarbrough",
+      "raw_affiliation_strings": [
+       "R&D Services, Inc., PO Box 2400, Cookeville, TN 38501 USA"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+       {
+        "raw_affiliation_string": "R&D Services, Inc., PO Box 2400, Cookeville, TN 38501 USA",
+        "institution_ids": []
+       }
+      ]
+     }
+    ],
+    "institutions": [],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 2,
+    "corresponding_author_ids": [
+     "https://openalex.org/A5006518397"
+    ],
+    "corresponding_institution_ids": [
+     "https://openalex.org/I2799863703"
+    ],
+    "apc_list": null,
+    "apc_paid": null,
+    "fwci": 3.811,
+    "has_fulltext": true,
+    "cited_by_count": 17,
+    "citation_normalized_percentile": {
+     "value": 0.93090452,
+     "is_in_top_1_percent": false,
+     "is_in_top_10_percent": true
+    },
+    "cited_by_percentile_year": {
+     "min": 88,
+     "max": 98
+    },
+    "biblio": {
+     "volume": "278",
+     "issue": null,
+     "first_page": "012198",
+     "last_page": "012198"
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "is_xpac": false,
+    "primary_topic": {
+     "id": "https://openalex.org/T12195",
+     "display_name": "Aerogels and thermal insulation",
+     "score": 0.9375,
+     "subfield": {
+      "id": "https://openalex.org/subfields/1607",
+      "display_name": "Spectroscopy"
+     },
+     "field": {
+      "id": "https://openalex.org/fields/16",
+      "display_name": "Chemistry"
+     },
+     "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+     }
+    },
+    "topics": [
+     {
+      "id": "https://openalex.org/T12195",
+      "display_name": "Aerogels and thermal insulation",
+      "score": 0.9375,
+      "subfield": {
+       "id": "https://openalex.org/subfields/1607",
+       "display_name": "Spectroscopy"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/16",
+       "display_name": "Chemistry"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T13200",
+      "display_name": "Spacecraft and Cryogenic Technologies",
+      "score": 0.057500001043081284,
+      "subfield": {
+       "id": "https://openalex.org/subfields/2202",
+       "display_name": "Aerospace Engineering"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/22",
+       "display_name": "Engineering"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     },
+     {
+      "id": "https://openalex.org/T11277",
+      "display_name": "Thermal properties of materials",
+      "score": 0.0010000000474974513,
+      "subfield": {
+       "id": "https://openalex.org/subfields/2505",
+       "display_name": "Materials Chemistry"
+      },
+      "field": {
+       "id": "https://openalex.org/fields/25",
+       "display_name": "Materials Science"
+      },
+      "domain": {
+       "id": "https://openalex.org/domains/3",
+       "display_name": "Physical Sciences"
+      }
+     }
+    ],
+    "keywords": [
+     {
+      "id": "https://openalex.org/keywords/thermal-conductivity",
+      "display_name": "thermal conductivity",
+      "score": 0.8560000061988831
+     },
+     {
+      "id": "https://openalex.org/keywords/silica-aerogel",
+      "display_name": "silica aerogel",
+      "score": 0.8600000143051147
+     },
+     {
+      "id": "https://openalex.org/keywords/low-density-porous-materials",
+      "display_name": "low-density porous materials",
+      "score": 0.7269999980926514
+     },
+     {
+      "id": "https://openalex.org/keywords/residual-gas-composition",
+      "display_name": "residual gas composition",
+      "score": 0.8050000071525574
+     },
+     {
+      "id": "https://openalex.org/keywords/gas-conduction",
+      "display_name": "gas conduction",
+      "score": 0.6520000100135803
+     },
+     {
+      "id": "https://openalex.org/keywords/radiation-heat-transfer",
+      "display_name": "radiation heat transfer",
+      "score": 0.675000011920929
+     },
+     {
+      "id": "https://openalex.org/keywords/mars-exploration",
+      "display_name": "Mars exploration",
+      "score": 0.6859999895095825
+     }
+    ],
+    "concepts": [
+     {
+      "id": "https://openalex.org/C2780012831",
+      "wikidata": "https://www.wikidata.org/wiki/Q381490",
+      "display_name": "Aerogel",
+      "level": 2,
+      "score": 0.8890146017074585
+     },
+     {
+      "id": "https://openalex.org/C97346530",
+      "wikidata": "https://www.wikidata.org/wiki/Q487005",
+      "display_name": "Thermal conductivity",
+      "level": 2,
+      "score": 0.7178435921669006
+     },
+     {
+      "id": "https://openalex.org/C192562407",
+      "wikidata": "https://www.wikidata.org/wiki/Q228736",
+      "display_name": "Materials science",
+      "level": 0,
+      "score": 0.702176570892334
+     },
+     {
+      "id": "https://openalex.org/C159985019",
+      "wikidata": "https://www.wikidata.org/wiki/Q181790",
+      "display_name": "Composite material",
+      "level": 1,
+      "score": 0.6226363778114319
+     },
+     {
+      "id": "https://openalex.org/C172100665",
+      "wikidata": "https://www.wikidata.org/wiki/Q7465774",
+      "display_name": "Thermal conduction",
+      "level": 2,
+      "score": 0.6130169034004211
+     },
+     {
+      "id": "https://openalex.org/C107766110",
+      "wikidata": "https://www.wikidata.org/wiki/Q973879",
+      "display_name": "Vacuum insulated panel",
+      "level": 4,
+      "score": 0.5877094864845276
+     },
+     {
+      "id": "https://openalex.org/C50517652",
+      "wikidata": "https://www.wikidata.org/wiki/Q179635",
+      "display_name": "Heat transfer",
+      "level": 2,
+      "score": 0.5198481678962708
+     },
+     {
+      "id": "https://openalex.org/C64839514",
+      "wikidata": "https://www.wikidata.org/wiki/Q918306",
+      "display_name": "Thermal insulation",
+      "level": 3,
+      "score": 0.5166866779327393
+     },
+     {
+      "id": "https://openalex.org/C30646810",
+      "wikidata": "https://www.wikidata.org/wiki/Q185648",
+      "display_name": "Torr",
+      "level": 2,
+      "score": 0.45210617780685425
+     },
+     {
+      "id": "https://openalex.org/C2779261148",
+      "wikidata": "https://www.wikidata.org/wiki/Q5852",
+      "display_name": "Blanket",
+      "level": 2,
+      "score": 0.4325036406517029
+     },
+     {
+      "id": "https://openalex.org/C97355855",
+      "wikidata": "https://www.wikidata.org/wiki/Q11473",
+      "display_name": "Thermodynamics",
+      "level": 1,
+      "score": 0.17284488677978516
+     },
+     {
+      "id": "https://openalex.org/C2779227376",
+      "wikidata": "https://www.wikidata.org/wiki/Q6505497",
+      "display_name": "Layer (electronics)",
+      "level": 2,
+      "score": 0.0
+     },
+     {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 0.0
+     }
+    ],
+    "mesh": [],
+    "locations_count": 1,
+    "locations": [
+     {
+      "id": "doi:10.1088/1757-899x/278/1/012198",
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1088/1757-899x/278/1/012198",
+      "pdf_url": "https://iopscience.iop.org/article/10.1088/1757-899X/278/1/012198/pdf",
+      "source": {
+       "id": "https://openalex.org/S4210189194",
+       "display_name": "IOP Conference Series Materials Science and Engineering",
+       "issn_l": "1757-8981",
+       "issn": [
+        "1757-8981",
+        "1757-899X"
+       ],
+       "is_oa": true,
+       "is_in_doaj": false,
+       "is_core": false,
+       "listed_in": [
+        "jufo-1"
+       ],
+       "host_organization": "https://openalex.org/P4310320083",
+       "host_organization_name": "IOP Publishing",
+       "host_organization_lineage": [
+        "https://openalex.org/P4310320083",
+        "https://openalex.org/P4310311669"
+       ],
+       "host_organization_lineage_names": [
+        "IOP Publishing",
+        "Institute of Physics"
+       ],
+       "type": "conference"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "IOP Conference Series: Materials Science and Engineering",
+      "raw_type": "journal-article"
+     }
+    ],
+    "best_oa_location": {
+     "id": "doi:10.1088/1757-899x/278/1/012198",
+     "is_oa": true,
+     "landing_page_url": "https://doi.org/10.1088/1757-899x/278/1/012198",
+     "pdf_url": "https://iopscience.iop.org/article/10.1088/1757-899X/278/1/012198/pdf",
+     "source": {
+      "id": "https://openalex.org/S4210189194",
+      "display_name": "IOP Conference Series Materials Science and Engineering",
+      "issn_l": "1757-8981",
+      "issn": [
+       "1757-8981",
+       "1757-899X"
+      ],
+      "is_oa": true,
+      "is_in_doaj": false,
+      "is_core": false,
+      "listed_in": [
+       "jufo-1"
+      ],
+      "host_organization": "https://openalex.org/P4310320083",
+      "host_organization_name": "IOP Publishing",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310320083",
+       "https://openalex.org/P4310311669"
+      ],
+      "host_organization_lineage_names": [
+       "IOP Publishing",
+       "Institute of Physics"
+      ],
+      "type": "conference"
+     },
+     "license": "cc-by",
+     "license_id": "https://openalex.org/licenses/cc-by",
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "IOP Conference Series: Materials Science and Engineering",
+     "raw_type": "journal-article"
+    },
+    "sustainable_development_goals": [],
+    "sustainable_development_goals_aurora": [],
+    "study_designs": [],
+    "awards": [],
+    "funders": [],
+    "has_content": {
+     "grobid_xml": true,
+     "pdf": true
+    },
+    "content_urls": {
+     "pdf": "https://content.openalex.org/works/W2775945319.pdf",
+     "grobid_xml": "https://content.openalex.org/works/W2775945319.grobid-xml"
+    },
+    "referenced_works_count": 14,
+    "referenced_works": [
+     "https://openalex.org/W45328102",
+     "https://openalex.org/W1568587915",
+     "https://openalex.org/W1971794945",
+     "https://openalex.org/W2002647478",
+     "https://openalex.org/W2019127621",
+     "https://openalex.org/W2046727851",
+     "https://openalex.org/W2065699364",
+     "https://openalex.org/W2114286186",
+     "https://openalex.org/W2130927046",
+     "https://openalex.org/W2132317725",
+     "https://openalex.org/W2531369999",
+     "https://openalex.org/W2991679001",
+     "https://openalex.org/W3185359977",
+     "https://openalex.org/W4388956526"
+    ],
+    "related_works": [
+     "https://openalex.org/W2006399102",
+     "https://openalex.org/W2765943644",
+     "https://openalex.org/W2017512475",
+     "https://openalex.org/W3028333603",
+     "https://openalex.org/W267110555",
+     "https://openalex.org/W3135468006",
+     "https://openalex.org/W4210338709",
+     "https://openalex.org/W2560159347",
+     "https://openalex.org/W2120032755",
+     "https://openalex.org/W781528682"
+    ],
+    "abstract_inverted_index": {
+     "Thermal": [
+      0
+     ],
+     "conductivity": [
+      1,
+      189
+     ],
+     "of": [
+      2,
+      27,
+      46,
+      62,
+      89,
+      133,
+      193
+     ],
+     "low-density": [
+      3
+     ],
+     "materials": [
+      4,
+      53
+     ],
+     "in": [
+      5,
+      207
+     ],
+     "thermal": [
+      6,
+      167,
+      188
+     ],
+     "insulation": [
+      7,
+      195
+     ],
+     "systems": [
+      8,
+      196,
+      206,
+      235
+     ],
+     "varies": [
+      9
+     ],
+     "dramatically": [
+      10
+     ],
+     "with": [
+      11,
+      79,
+      236
+     ],
+     "the": [
+      12,
+      41,
+      59,
+      101,
+      149,
+      154,
+      171,
+      186,
+      208
+     ],
+     "environment:": [
+      13
+     ],
+     "cold": [
+      14
+     ],
+     "vacuum": [
+      15,
+      98,
+      115,
+      156
+     ],
+     "pressure,": [
+      16
+     ],
+     "residual": [
+      17
+     ],
+     "gas": [
+      18,
+      87,
+      140
+     ],
+     "composition,": [
+      19
+     ],
+     "and": [
+      20,
+      49,
+      65,
+      126,
+      142,
+      165,
+      177,
+      204,
+      231
+     ],
+     "boundary": [
+      21,
+      60
+     ],
+     "temperatures.": [
+      22
+     ],
+     "Using": [
+      23
+     ],
+     "a": [
+      24,
+      71
+     ],
+     "reference": [
+      25
+     ],
+     "material": [
+      26
+     ],
+     "aerogel": [
+      28,
+      47,
+      81,
+      172
+     ],
+     "composite": [
+      29,
+      173
+     ],
+     "blanket": [
+      30,
+      82,
+      174
+     ],
+     "(reinforcement": [
+      31
+     ],
+     "fibers": [
+      32
+     ],
+     "surrounded": [
+      33
+     ],
+     "by": [
+      34
+     ],
+     "silica": [
+      35
+     ],
+     "aerogel),": [
+      36
+     ],
+     "an": [
+      37,
+      80
+     ],
+     "experimental": [
+      38
+     ],
+     "basis": [
+      39
+     ],
+     "for": [
+      40,
+      160,
+      170,
+      181,
+      216,
+      224
+     ],
+     "physical": [
+      42
+     ],
+     "heat": [
+      43,
+      76,
+      134,
+      151,
+      162
+     ],
+     "transmission": [
+      44
+     ],
+     "model": [
+      45,
+      129
+     ],
+     "composites": [
+      48
+     ],
+     "other": [
+      50
+     ],
+     "low-density,": [
+      51
+     ],
+     "porous": [
+      52
+     ],
+     "is": [
+      54,
+      68,
+      124
+     ],
+     "suggested.": [
+      55
+     ],
+     "Cryogenic-vacuum": [
+      56
+     ],
+     "testing": [
+      57
+     ],
+     "between": [
+      58
+     ],
+     "temperatures": [
+      61
+     ],
+     "78": [
+      63
+     ],
+     "K": [
+      64,
+      67
+     ],
+     "293": [
+      66
+     ],
+     "performed": [
+      69
+     ],
+     "using": [
+      70
+     ],
+     "one": [
+      72
+     ],
+     "meter": [
+      73
+     ],
+     "cylindrical,": [
+      74
+     ],
+     "absolute": [
+      75
+     ],
+     "flow": [
+      77
+     ],
+     "calorimeter": [
+      78
+     ],
+     "specimen": [
+      83
+     ],
+     "exposed": [
+      84
+     ],
+     "to": [
+      85,
+      110,
+      121,
+      128,
+      148,
+      179
+     ],
+     "different": [
+      86
+     ],
+     "environments": [
+      88
+     ],
+     "nitrogen,": [
+      90
+     ],
+     "helium,": [
+      91
+     ],
+     "argon,": [
+      92
+     ],
+     "or": [
+      93,
+      240
+     ],
+     "CO": [
+      94,
+      211
+     ],
+     "2": [
+      95,
+      212
+     ],
+     ".": [
+      96
+     ],
+     "Cold": [
+      97
+     ],
+     "pressures": [
+      99
+     ],
+     "include": [
+      100,
+      201
+     ],
+     "full": [
+      102
+     ],
+     "range": [
+      103
+     ],
+     "from": [
+      104,
+      117
+     ],
+     "1": [
+      105
+     ],
+     "×": [
+      106
+     ],
+     "10": [
+      107,
+      122
+     ],
+     "-5": [
+      108
+     ],
+     "torr": [
+      109,
+      120,
+      210
+     ],
+     "760": [
+      111
+     ],
+     "torr.": [
+      112
+     ],
+     "The": [
+      113
+     ],
+     "soft": [
+      114,
+      155
+     ],
+     "region,": [
+      116
+     ],
+     "about": [
+      118
+     ],
+     "0.1": [
+      119
+     ],
+     "torr,": [
+      123
+     ],
+     "complex": [
+      125
+     ],
+     "difficult": [
+      127
+     ],
+     "because": [
+      130
+     ],
+     "all": [
+      131
+     ],
+     "modes": [
+      132
+     ],
+     "transfer": [
+      135,
+      163
+     ],
+     "–": [
+      136,
+      144
+     ],
+     "solid": [
+      137
+     ],
+     "conduction,": [
+      138,
+      141
+     ],
+     "radiation,": [
+      139
+     ],
+     "convection": [
+      143
+     ],
+     "are": [
+      145,
+      158,
+      175,
+      197
+     ],
+     "significant": [
+      146
+     ],
+     "contributors": [
+      147
+     ],
+     "total": [
+      150
+     ],
+     "flow.": [
+      152
+     ],
+     "Therefore,": [
+      153
+     ],
+     "tests": [
+      157
+     ],
+     "emphasized": [
+      159
+     ],
+     "both": [
+      161
+     ],
+     "analysis": [
+      164
+     ],
+     "practical": [
+      166
+     ],
+     "data.": [
+      168
+     ],
+     "Results": [
+      169
+     ],
+     "analyzed": [
+      176
+     ],
+     "compared": [
+      178
+     ],
+     "data": [
+      180
+     ],
+     "its": [
+      182
+     ],
+     "component": [
+      183
+     ],
+     "materials.": [
+      184
+     ],
+     "With": [
+      185
+     ],
+     "new": [
+      187
+     ],
+     "data,": [
+      190
+     ],
+     "future": [
+      191
+     ],
+     "applications": [
+      192
+     ],
+     "aerogel-based": [
+      194
+     ],
+     "also": [
+      198
+     ],
+     "surveyed.": [
+      199
+     ],
+     "These": [
+      200
+     ],
+     "Mars": [
+      202
+     ],
+     "exploration": [
+      203
+     ],
+     "surface": [
+      205
+     ],
+     "5": [
+      209
+     ],
+     "environment,": [
+      213
+     ],
+     "field": [
+      214
+     ],
+     "joints": [
+      215
+     ],
+     "vacuum-jacketed": [
+      217
+     ],
+     "cryogenic": [
+      218,
+      225
+     ],
+     "piping": [
+      219
+     ],
+     "systems,": [
+      220
+     ],
+     "common": [
+      221
+     ],
+     "bulkhead": [
+      222
+     ],
+     "panels": [
+      223
+     ],
+     "tanks": [
+      226
+     ],
+     "on": [
+      227
+     ],
+     "space": [
+      228
+     ],
+     "launch": [
+      229
+     ],
+     "vehicles,": [
+      230
+     ],
+     "liquid": [
+      232
+     ],
+     "hydrogen": [
+      233
+     ],
+     "cryofuel": [
+      234
+     ],
+     "helium": [
+      237
+     ],
+     "purged": [
+      238
+     ],
+     "conduits": [
+      239
+     ],
+     "enclosures.": [
+      241
+     ]
+    },
+    "counts_by_year": [
+     {
+      "year": 2026,
+      "cited_by_count": 2
+     },
+     {
+      "year": 2025,
+      "cited_by_count": 2
+     },
+     {
+      "year": 2024,
+      "cited_by_count": 2
+     },
+     {
+      "year": 2023,
+      "cited_by_count": 3
+     },
+     {
+      "year": 2022,
+      "cited_by_count": 5
+     },
+     {
+      "year": 2021,
+      "cited_by_count": 1
+     },
+     {
+      "year": 2020,
+      "cited_by_count": 1
+     },
+     {
+      "year": 2018,
+      "cited_by_count": 1
+     }
+    ],
+    "updated_date": "2026-09-22T06:50:58.402377",
+    "created_date": "2025-10-10T00:00:00"
+   }
+  ],
+  "group_by": []
+ }
+}

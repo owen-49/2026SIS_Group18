@@ -1,0 +1,34 @@
+{
+ "url": "https://api.openalex.org/works?filter=title.search%3AEmpirical+Limits+of+Sonar-Based+Indoor+Localization&per-page=10",
+ "provider": "openalex",
+ "source": "captured",
+ "captured_at": "2026-10-09T00:35:56+00:00",
+ "status_code": 200,
+ "error": "",
+ "body": {
+  "meta": {
+   "count": 0,
+   "db_response_time_ms": 9,
+   "page": 1,
+   "per_page": 10,
+   "groups_count": null,
+   "x_query": {
+    "oql": "get works where title has (Empirical Limits of Sonar-Based Indoor Localization)",
+    "oqo": {
+     "get_rows": "works",
+     "filter_rows": [
+      {
+       "column_id": "display_name.search",
+       "value": "Empirical Limits of Sonar-Based Indoor Localization",
+       "operator": "has"
+      }
+     ]
+    },
+    "url": "/works?filter=display_name.search:Empirical Limits of Sonar-Based Indoor Localization&per_page=10"
+   },
+   "cost_usd": 0.001
+  },
+  "results": [],
+  "group_by": []
+ }
+}
