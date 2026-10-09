@@ -187,6 +187,60 @@ def test_a_doi_in_the_entry_does_not_supply_the_year():
     assert query.year is None
 
 
+def test_an_arxiv_identifier_in_a_url_broken_after_the_scheme_is_not_a_year():
+    # From the corpus. The space stops the URL rule matching its fragment, so
+    # the identifier reaches the year scan -- whose four-digit window reads
+    # "1911" -- and the entry reports 1911 for a 2019 paper.
+    query = parse_reference_text(
+        "[39] Luca Massarelli, Fabio Petroni, Aleksandra Piktus, Myle Ott, Tim "
+        "Rocktäschel, Vassilis Plachouras, Fabrizio Silvestri, and Sebastian Riedel. "
+        "How decoding strategies affect the veriﬁability of generated text. arXiv "
+        "preprint arXiv:1911.03587, 2019. URL https: //arxiv.org/abs/1911.03587."
+    )
+    assert query.year == 2019
+    assert query.arxiv_id == "1911.03587"
+
+
+def test_an_arxiv_identifier_in_a_url_broken_after_the_host_is_not_a_year():
+    # From the corpus: the space sits after "//" instead, leaving
+    # "arxiv.org/abs/1905.00537" in the text as an ordinary token.
+    query = parse_reference_text(
+        "[61] Alex Wang, Yada Pruksachatkun, Nikita Nangia, Amanpreet Singh, Julian "
+        "Michael, Felix Hill, Omer Levy, and Samuel Bowman. SuperGLUE: A Stickier "
+        "Benchmark for GeneralPurpose Language Understanding. Advances in Neural "
+        "Information Processing Systems 32, 2019. URL https:// "
+        "arxiv.org/abs/1905.00537."
+    )
+    assert query.year == 2019
+    assert query.arxiv_id == "1905.00537"
+
+
+def test_an_arxiv_identifier_after_a_url_broken_inside_its_path_is_not_a_year():
+    # From the corpus: the URL rule matches up to the space and leaves the
+    # identifier standing alone, where it reads as the year 2002.
+    query = parse_reference_text(
+        "[52] Adam Roberts, Colin Raffel, and Noam Shazeer. How much knowledge can you "
+        "pack into the parameters of a language model? arXiv e-prints, 2020. URL "
+        "https://arxiv.org/abs/ 2002.08910."
+    )
+    assert query.year == 2020
+    # The identifier is not recovered from this entry either: the same space
+    # hides it from the identifier rule, so the entry yields no arxiv_id.
+    assert query.arxiv_id == ""
+
+
+def test_a_bare_arxiv_identifier_is_not_a_year_when_the_entry_has_none():
+    # From the corpus: a truncated entry whose only four-digit run is the
+    # identifier. Read as a date it reports 2004; the entry says no year at all.
+    query = parse_reference_text(
+        "[57] James H. Thorne and Andreas Vlachos. Avoiding catastrophic forgetting in "
+        "mitigating model biases in sentence-pair classiﬁcation with elastic weight "
+        "consolidation. ArXiv, abs/2004.14366,"
+    )
+    assert query.year is None
+    assert query.arxiv_id == "2004.14366"
+
+
 def test_a_run_of_initials_does_not_end_the_author_list():
     # "O.K." is four characters, so a single-letter initial test misses it and
     # the title comes out as "Li". Found by running the parser over all 155

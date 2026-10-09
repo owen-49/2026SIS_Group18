@@ -7,6 +7,7 @@ from engine.title_matching import (
     normalize_doi,
     normalize_title,
     normalize_venue,
+    starts_arxiv_id,
     title_similarity,
     title_tokens,
     venue_match_share,
@@ -135,4 +136,21 @@ def test_extract_arxiv_id_from_colon_and_abs_forms():
     assert extract_arxiv_id("arXiv:1710.10723v2") == "1710.10723"
     assert extract_arxiv_id("CoRR, abs/1308.3432") == "1308.3432"
     assert extract_arxiv_id("http://arxiv.org/abs/1710.10723") == "1710.10723"
+    # The old form's subcategory is part of the identifier.
+    assert extract_arxiv_id("arXiv:cs.AI/0701001") == "cs.AI/0701001"
     assert extract_arxiv_id("no identifier here") == ""
+
+
+def test_starts_arxiv_id_tests_the_position_and_not_the_text():
+    # The caller scans for years, so what matters is the digits at the position
+    # it is looking at, and that a year followed by other text is not one.
+    text = "ArXiv, abs/2004.07159, 2020."
+    assert starts_arxiv_id(text, text.index("2004")) is True
+    assert starts_arxiv_id(text, text.index("2020")) is False
+    # The version suffix is not part of the head that is tested.
+    assert starts_arxiv_id("1911.03587v2", 0) is True
+    # A space inside the identifier takes it out of the shape, as does a shorter
+    # run of digits after the dot; neither is an identifier the caller can skip.
+    assert starts_arxiv_id("2002. 08910", 0) is False
+    assert starts_arxiv_id("2002.089", 0) is False
+    assert starts_arxiv_id("no identifier", 0) is False
