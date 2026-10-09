@@ -7,6 +7,7 @@ fail is not being checked.
 """
 
 import json
+from types import SimpleNamespace
 
 import pytest
 from backend.scripts.audit_eval import (
@@ -1400,3 +1401,179 @@ def test_a_constant_offset_does_not_move_the_slope():
     )
     assert problems == [], problems
     assert [row["seconds_per_request"] for row in slopes] == [0.0571, 0.0567, 0.055, 0.055]
+
+
+# --- The live tier --------------------------------------------------------------
+#
+# The live tier has no expected states to score against, so what there is to
+# test is that it reads a real response honestly: the counts it prints, the
+# budget it refuses to spend past, and the one number a live run can get wrong
+# without anyone noticing -- provider time that is really this harness' own
+# pacing, which would report the operator's --delay as the product's latency.
+
+
+def _live_paper(*results, wall_seconds=1.0, requests=1):
+    from backend.scripts import audit_benchmark
+
+    return audit_benchmark.LivePaper(
+        paper_id="11111111-1111-1111-1111-111111111111",
+        source_file="paper.pdf",
+        metadata_version=3,
+        response=_response(*results),
+        wall_seconds=wall_seconds,
+        requests=requests,
+    )
+
+
+def test_a_corpus_artifact_is_validated_through_the_store_model(tmp_path):
+    from backend.scripts import audit_benchmark
+
+    good = tmp_path / "good.references.json"
+    good.write_text(
+        json.dumps(
+            {
+                "metadata_version": 3,
+                "source_file": "paper.pdf",
+                "paper_id": "11111111-1111-1111-1111-111111111111",
+                "references": [{"raw_text": "[1] A. Author. A title. 2020.", "number": 1}],
+            }
+        )
+    )
+    loaded = audit_benchmark.load_corpus_artifacts([good])
+    assert [artifact.paper_id for _, artifact in loaded] == ["11111111-1111-1111-1111-111111111111"]
+
+    nameless = tmp_path / "nameless.references.json"
+    nameless.write_text(
+        json.dumps({"metadata_version": 3, "source_file": "p.pdf", "references": []})
+    )
+    with pytest.raises(ValueError, match="no paper_id"):
+        audit_benchmark.load_corpus_artifacts([nameless])
+
+    # The store names the artifact after the paper id, so one paper twice is one
+    # artifact overwriting another rather than two papers measured.
+    with pytest.raises(ValueError, match="already in this run"):
+        audit_benchmark.load_corpus_artifacts([good, good])
+
+
+def test_live_mode_refuses_to_start_without_the_corpus():
+    from backend.scripts import audit_benchmark
+
+    with pytest.raises(SystemExit):
+        audit_benchmark.main(["--mode", "live"])
+
+
+def test_the_live_report_counts_states_attempts_and_each_code_once():
+    from backend.scripts import audit_benchmark
+
+    results = [
+        _result(
+            "a",
+            AuditStatus.VERIFIED,
+            # Every required field: a VERIFIED without them is the very
+            # invariant the safety check exists to break on.
+            field_checks=[_check(name, "MATCH") for name in _REQUIRED],
+            matched_record=_record(),
+            attempts=[_attempt("openalex", "found")],
+        ),
+        _result(
+            "b",
+            AuditStatus.LOOKUP_FAILED,
+            attempts=[
+                _attempt("openalex", "failed", "OPENALEX_TRANSPORT"),
+                _attempt("crossref", "failed", "CROSSREF_TRANSPORT"),
+                # The adapter's own closing attempt: it restates a provider's
+                # code, so counting it again would report one failed request as
+                # two.
+                _attempt("metadata_providers", "failed", "OPENALEX_TRANSPORT"),
+            ],
+        ),
+    ]
+    report = audit_benchmark.LiveReport(
+        papers=[_live_paper(*results, wall_seconds=2.5, requests=3)],
+        requests=[
+            {
+                "url": "u1",
+                "provider": "openalex",
+                "status_code": 200,
+                "error": "",
+                "seconds": 0.5,
+            },
+            {
+                "url": "u2",
+                "provider": "crossref",
+                "status_code": 200,
+                "error": "",
+                "seconds": 0.7,
+            },
+            {
+                "url": "u3",
+                "provider": "openalex",
+                "status_code": 0,
+                "error": "the host did not answer",
+                "seconds": 1.0,
+            },
+        ],
+        delay=1.0,
+    )
+    text = audit_benchmark.render_live(report)
+    assert "LOOKUP_FAILED=1  VERIFIED=1" in text
+    assert "  openalex   failed=1  found=1" in text
+    assert "  chain      failed=1" in text
+    assert "OPENALEX_TRANSPORT=1" in text
+    assert "CROSSREF_TRANSPORT=1" in text
+    assert "3 total, 3 distinct, 1 unanswered" in text
+    assert "safety       : all invariants hold over 2 result(s)" in text
+
+    payload = audit_benchmark.payload_live(report, SimpleNamespace(delay=1.0, timeout=10.0))
+    assert payload["summary"]["states"] == {"LOOKUP_FAILED": 1, "VERIFIED": 1}
+    assert payload["summary"]["error_codes"] == {
+        "CROSSREF_TRANSPORT": 1,
+        "OPENALEX_TRANSPORT": 1,
+    }
+    assert payload["summary"]["requests"] == {
+        "total": 3,
+        "distinct": 3,
+        "unanswered": 1,
+        "by_provider": {"crossref": 1, "openalex": 2},
+    }
+    assert payload["summary"]["timing"]["median_provider_seconds"] == 0.7
+    # What a person checking a verdict by hand needs is in the file: the fields
+    # the chain searched with, and the record it compared them against.
+    verified = next(entry for entry in payload["entries"] if entry["status"] == "VERIFIED")
+    assert verified["matched_record"]["record_id"] == "W1"
+    assert verified["field_checks"][0]["field_name"] == "title"
+
+
+def test_a_live_run_stopped_by_its_budget_is_not_a_measurement():
+    from backend.scripts import audit_benchmark
+
+    report = audit_benchmark.LiveReport(
+        papers=[_live_paper(_result("a", AuditStatus.NOT_FOUND), requests=0)],
+        budget_exhausted=["u1", "u2"],
+        delay=1.0,
+    )
+    text = audit_benchmark.render_live(report)
+    assert "NOT A MEASUREMENT" in text
+    assert "--max-calls stopped 2 request(s)" in text
+
+
+def test_a_live_timing_is_the_provider_s_time_and_not_the_pacing(monkeypatch):
+    """The bug this pins: timing around the paced wrapper bills the operator's
+    own --delay to the provider, and a run that paced itself to 5s a request
+    would report a 5s provider."""
+    import engine.metadata_lookup as metadata_lookup
+    from backend.scripts import audit_benchmark
+
+    class _Answer:
+        status_code = 200
+        body = {"ok": True}
+        error = ""
+
+    monkeypatch.setattr(metadata_lookup, "http_get_json", lambda url, **kwargs: _Answer())
+    captures: dict = {}
+    timings: list = []
+    call = audit_benchmark.recording_transport("openalex", captures, 10, 0.2, timings)
+    call("u1")
+    call("u2")
+    assert [url for url, _ in timings] == ["u1", "u2"]
+    assert all(seconds < 0.2 for _, seconds in timings), timings

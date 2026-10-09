@@ -2,6 +2,8 @@
 
 Usage: python backend/scripts/audit_benchmark.py --mode replay
        python backend/scripts/audit_benchmark.py --mode record
+       python backend/scripts/audit_benchmark.py --mode live --references \
+           backend/uploads/parsed/<paper>.references.json
 
 The controlled tier answers one question: given a reference and the records the
 providers returned for it, does the audit reach the state the contract says it
@@ -37,6 +39,14 @@ Design notes:
   route are inside the measurement rather than assumed. The application is
   imported after the environment points at a temporary store, which is why this
   has to run as its own process; :func:`_assert_environment` checks that it did.
+- ``--mode live`` is the other half of the story: the same route, but over the
+  corpus's own reference artifacts and the real providers. It has no expected
+  states -- there is nothing to score against, because nobody has read those 140
+  references and said what the answer is -- so it reports what the chain did
+  (states, attempts, error codes), checks the safety invariants over real data,
+  and stops there. A person checking a slice by hand is what turns any of it
+  into an accuracy figure, and the report carries every entry's searched fields
+  and compared records so that check can be made from the file alone.
 """
 
 from __future__ import annotations
@@ -51,6 +61,7 @@ import sys
 import tempfile
 import threading
 import time
+from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
@@ -292,7 +303,13 @@ def transport(provider: str, pins: dict[str, Pin], misses: list[str], latency: f
     return http_get_json
 
 
-def recording_transport(provider: str, captures: dict[str, Pin], budget: int, delay: float):
+def recording_transport(
+    provider: str,
+    captures: dict[str, Pin],
+    budget: int,
+    delay: float,
+    timings: list[tuple[str, float]] | None = None,
+):
     """Return a wrapper that performs the real request and keeps the response.
 
     Paced, because the first attempt at this fixture was not: OpenAlex answers a
@@ -302,6 +319,11 @@ def recording_transport(provider: str, captures: dict[str, Pin], budget: int, de
     ``failed``, and the run still looked like it had recorded a fixture. The
     delay is what makes the difference between recording providers and
     recording my own request rate.
+
+    ``timings``, when given, collects each request's own duration -- taken after
+    the sleep, so the number is the provider's time and not this harness' own
+    pacing. The live tier reports it; the controlled tier has nobody to report
+    to, since its latency is the injected sleep.
     """
     from engine.metadata_lookup import http_get_json as real_http_get_json
 
@@ -313,7 +335,10 @@ def recording_transport(provider: str, captures: dict[str, Pin], budget: int, de
             )
         if delay and captures:
             time.sleep(delay)
+        started = time.perf_counter()
         result = real_http_get_json(url, **kwargs)
+        if timings is not None:
+            timings.append((url, time.perf_counter() - started))
         captures[url] = Pin(
             url=url,
             provider=provider,
@@ -690,6 +715,370 @@ def record(cases: list[Case], existing: dict[str, Pin], args) -> int:
             print("\nNothing was overwritten. Re-run with --accept-drift to replace them.")
             return 1
     return 0
+
+
+# ── The live tier ─────────────────────────────────────────────────
+
+
+LIVE_TIMEOUT_SECONDS = 10.0
+"""The product's own per-operation provider timeout (``config.py``).
+
+The controlled tier runs at 30 because its requests never leave the process and
+its latency is injected; the live tier is meant to be the product, so it runs at
+the product's number and reports the timeouts that number produces rather than
+hiding them behind a longer one.
+"""
+
+
+@dataclass
+class LivePaper:
+    """One corpus artifact's audit, as the route returned it."""
+
+    paper_id: str
+    source_file: str
+    metadata_version: int
+    response: Any
+    wall_seconds: float
+    requests: int
+
+
+@dataclass
+class LiveReport:
+    """What a live run collected: the responses, the request log, and the cap."""
+
+    papers: list[LivePaper] = field(default_factory=list)
+    requests: list[dict[str, Any]] = field(default_factory=list)
+    budget_exhausted: list[str] = field(default_factory=list)
+    delay: float = 0.0
+
+
+def load_corpus_artifacts(paths: list[Path]) -> list[tuple[Path, Any]]:
+    """Load the corpus's own reference artifacts, through the store's model.
+
+    Validated rather than read as plain JSON, because these artifacts are the
+    audit's input: one the store would reject has to fail here, where it is a
+    path someone typed, and not halfway through a run that has already spent
+    requests. The artifacts travel unchanged -- their raw text, their structured
+    fields, and the ``metadata_version`` that decides whether the Parser's
+    legacy enrichment runs. Rebuilding them here would measure this harness's
+    idea of the corpus instead of the corpus.
+    """
+    from backend.src.storage.reference_store import StoredReferenceList
+
+    artifacts = []
+    seen: set[str] = set()
+    for path in paths:
+        artifact = StoredReferenceList.model_validate_json(path.read_text(encoding="utf-8"))
+        if artifact.paper_id is None:
+            raise ValueError(f"{path}: the artifact names no paper_id, so the store cannot hold it")
+        if artifact.paper_id in seen:
+            raise ValueError(f"{path}: paper {artifact.paper_id} is already in this run")
+        seen.add(artifact.paper_id)
+        artifacts.append((path, artifact))
+    return artifacts
+
+
+def seed_corpus(artifacts: list[tuple[Path, Any]]) -> None:
+    """Write each artifact and its paper record into the temporary store.
+
+    The record's name fields take the artifact's own ``source_file``, because
+    the route checks that the artifact answers the paper it is filed under. The
+    stored path points into the temporary upload directory and no file is
+    written there: nothing opens it, and a corpus PDF is not this harness's to
+    copy.
+    """
+    from backend.src.models import PaperRecord, PaperScope, ParseStatus
+    from backend.src.storage import paper_store
+    from backend.src.storage.reference_store import save_references
+
+    upload = Path(os.environ["UPLOAD_DIR"])
+    for _, artifact in artifacts:
+        name = Path(artifact.source_file).name
+        save_references(artifact.paper_id, artifact)
+        now = datetime.now(UTC)
+        paper_store.create_paper(
+            PaperRecord(
+                paper_id=artifact.paper_id,
+                original_filename=name,
+                stored_filename=name,
+                file_path=str(upload / name),
+                file_type="pdf",
+                scope=PaperScope.LIBRARY,
+                file_size=0,
+                status=ParseStatus.COMPLETED,
+                pages=1,
+                paragraph_count=0,
+                created_at=now,
+                updated_at=now,
+            )
+        )
+
+
+def run_live(artifacts: list[tuple[Path, Any]], args) -> LiveReport:
+    """Audit each corpus artifact over the real route, against the real providers.
+
+    Every request is paced by ``--delay`` and every response is kept in memory
+    while the run lasts, so that a person checking a verdict by hand can see
+    what the provider actually answered. The bodies are not persisted: the
+    records the audit mapped them into travel in the report, and those are what
+    the verdicts were computed from.
+
+    ``--max-calls`` is not a courtesy here, as it is in record mode; it is the
+    only thing standing between a corpus that grew and a provider bill nobody
+    agreed to. Reaching it does not end the run -- the remaining entries are
+    audited with no request sent and the report says so -- because a run that
+    stopped midway would leave the operator guessing how far it got.
+    """
+    from backend.src.audit_models import BibliographyAuditResponse
+    from backend.src.main import app
+    from engine.metadata_lookup import HttpResult
+    from fastapi.testclient import TestClient
+
+    seed_corpus(artifacts)
+
+    captures: dict[str, Pin] = {}
+    log: list[dict[str, Any]] = []
+    timings: list[tuple[str, float]] = []
+    exhausted: list[str] = []
+
+    def live(provider: str):
+        inner = recording_transport(provider, captures, args.max_calls, args.delay, timings)
+
+        def http_get_json(url, **kwargs):
+            if len(captures) >= args.max_calls:
+                exhausted.append(url)
+                return HttpResult(status_code=0, error=f"--max-calls {args.max_calls} reached")
+            before = len(timings)
+            result = inner(url, **kwargs)
+            log.append(
+                {
+                    "url": url,
+                    "provider": provider,
+                    "status_code": result.status_code,
+                    "error": result.error,
+                    "seconds": round(sum(seconds for _, seconds in timings[before:]), 3),
+                }
+            )
+            return result
+
+        return http_get_json
+
+    _patch_providers(live("openalex"), live("crossref"))
+    report = LiveReport(budget_exhausted=exhausted, delay=args.delay)
+    with TestClient(app) as client:
+        for _, artifact in artifacts:
+            before = len(captures)
+            started = time.perf_counter()
+            response = client.post("/api/audit", json={"manuscript_id": artifact.paper_id})
+            response.raise_for_status()
+            report.papers.append(
+                LivePaper(
+                    paper_id=artifact.paper_id,
+                    source_file=artifact.source_file,
+                    metadata_version=artifact.metadata_version,
+                    response=BibliographyAuditResponse.model_validate(response.json()),
+                    wall_seconds=time.perf_counter() - started,
+                    requests=len(captures) - before,
+                )
+            )
+    report.requests = log
+    return report
+
+
+def _live_totals(report: LiveReport) -> dict[str, Any]:
+    """The counts both the text report and the JSON are read off."""
+    results = [result for paper in report.papers for result in paper.response.results]
+    return {
+        "results": results,
+        "statuses": Counter(result.status.value for result in results),
+        "attempts": Counter(
+            f"{attempt.provider}:{attempt.outcome}"
+            for result in results
+            for attempt in result.lookup_attempts
+        ),
+        "codes": Counter(
+            attempt.error_code
+            for result in results
+            for attempt in result.lookup_attempts
+            # The chain's closing attempt restates a provider's code; counting it
+            # too would report one transport failure as two.
+            if attempt.error_code and attempt.provider != CHAIN_ATTEMPT
+        ),
+        "checks": Counter(check.status for result in results for check in result.field_checks),
+        "safety": audit_eval.check_safety(results),
+        "providers": Counter(item["provider"] for item in report.requests),
+        "seconds": sorted(item["seconds"] for item in report.requests),
+        "unanswered": [item for item in report.requests if item["error"]],
+    }
+
+
+def render_live(report: LiveReport) -> str:
+    """The corpus's states, what the chain did to reach them, and what it cost."""
+    totals = _live_totals(report)
+    results = totals["results"]
+    entries = len(results)
+
+    def share(count: int) -> str:
+        return f"{count / entries * 100:5.1f}%" if entries else "   n/a"
+
+    lines = [
+        "== bibliography audit, live corpus (real providers) ==",
+        f"papers       : {len(report.papers)}   references: {entries}",
+        "states       : "
+        + "  ".join(f"{name}={count}" for name, count in sorted(totals["statuses"].items())),
+        "",
+        f"per state (count / share of the {entries} result(s)):",
+    ]
+    for status in sorted(audit_eval.STATES):
+        count = totals["statuses"].get(status, 0)
+        lines.append(f"  {status:18s} {count:5d}   {share(count)}")
+    lines.append("")
+    lines.append("lookup attempts (what the chain did, per provider and in conclusion):")
+    for provider, label in [(name, name) for name in PROVIDERS] + [(CHAIN_ATTEMPT, "chain")]:
+        row = [
+            f"{name.split(':', 1)[1]}={count}"
+            for name, count in sorted(totals["attempts"].items())
+            if name.startswith(f"{provider}:")
+        ]
+        lines.append(f"  {label:10s} " + ("  ".join(row) or "(no attempt)"))
+    if totals["codes"]:
+        lines.append(
+            "error codes  : "
+            + "  ".join(f"{name}={count}" for name, count in sorted(totals["codes"].items()))
+        )
+    if totals["checks"]:
+        lines.append(
+            "field checks : "
+            + "  ".join(f"{name}={count}" for name, count in sorted(totals["checks"].items()))
+        )
+    safety = totals["safety"]
+    if safety.passed:
+        lines.append(f"safety       : all invariants hold over {safety.total_results} result(s)")
+    else:
+        lines.append(f"safety       : {len(safety.violations)} VIOLATION(S) -- this is a bug")
+        lines += [f"    {entry_id}" for entry_id in safety.violations]
+    lines.append("")
+
+    seconds = totals["seconds"]
+    median = seconds[len(seconds) // 2] if seconds else 0.0
+    by_provider = "  ".join(
+        f"{name}={count}" for name, count in sorted(totals["providers"].items())
+    )
+    requests_line = (
+        f"requests     : {len(report.requests)} total, "
+        f"{len({item['url'] for item in report.requests})} distinct, "
+        f"{len(totals['unanswered'])} unanswered"
+    )
+    if by_provider:
+        requests_line += f"  ({by_provider})"
+    lines += [
+        requests_line,
+        f"time         : wall {sum(p.wall_seconds for p in report.papers):.1f}s; provider "
+        f"calls {sum(seconds):.1f}s (median {median:.3f}s, max {max(seconds, default=0):.3f}s); "
+        f"the rest is this run's {report.delay:g}s pacing and local work, not provider latency",
+        "per paper    :",
+    ]
+    lines += [
+        f"  {paper.paper_id}  {len(paper.response.results):4d} entries  "
+        f"{paper.wall_seconds:7.1f}s  {paper.requests:4d} requests"
+        for paper in report.papers
+    ]
+    lines += [
+        f"    unanswered: {item['provider']} {item['error']}" for item in totals["unanswered"]
+    ]
+    if report.budget_exhausted:
+        lines.append(
+            f"\n  NOT A MEASUREMENT: --max-calls stopped {len(report.budget_exhausted)} "
+            "request(s), so the entries below them were audited with no provider call. "
+            "Raise the budget and run again."
+        )
+    return "\n".join(lines)
+
+
+def payload_live(report: LiveReport, args) -> dict:
+    """The live run as JSON: the summary, every entry, and the request log.
+
+    Every entry carries the fields the chain searched with and the records it
+    compared them against, so a verdict can be checked by hand from this file
+    alone. The provider bodies are not here; the mapped records are, and those
+    are what the comparison read.
+    """
+    totals = _live_totals(report)
+    safety = totals["safety"]
+    seconds = totals["seconds"]
+
+    def record(item):
+        return item.model_dump(mode="json") if item is not None else None
+
+    return {
+        "contract_version": 1,
+        "kind": "audit-live-corpus",
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "delay": args.delay,
+        "timeout_seconds": args.timeout,
+        "papers": [
+            {
+                "paper_id": paper.paper_id,
+                "source_file": paper.source_file,
+                "metadata_version": paper.metadata_version,
+                "entries": len(paper.response.results),
+                "status": paper.response.status,
+                "wall_seconds": round(paper.wall_seconds, 2),
+                "requests": paper.requests,
+            }
+            for paper in report.papers
+        ],
+        "summary": {
+            "entries": len(totals["results"]),
+            "states": dict(sorted(totals["statuses"].items())),
+            "attempts": dict(sorted(totals["attempts"].items())),
+            "error_codes": dict(sorted(totals["codes"].items())),
+            "field_checks": dict(sorted(totals["checks"].items())),
+            "safety": {
+                "total_results": safety.total_results,
+                "passed": safety.passed,
+                "not_found_with_incomplete_search": safety.not_found_with_incomplete_search,
+                "not_found_with_field_checks": safety.not_found_with_field_checks,
+                "lookup_failed_without_a_failure": safety.lookup_failed_without_a_failure,
+                "skipped_lookup_without_review": safety.skipped_lookup_without_review,
+                "verified_without_a_record": safety.verified_without_a_record,
+            },
+            "requests": {
+                "total": len(report.requests),
+                "distinct": len({item["url"] for item in report.requests}),
+                "unanswered": len(totals["unanswered"]),
+                "by_provider": dict(sorted(totals["providers"].items())),
+            },
+            "timing": {
+                "wall_seconds": round(sum(p.wall_seconds for p in report.papers), 2),
+                "provider_seconds": round(sum(seconds), 3),
+                "median_provider_seconds": seconds[len(seconds) // 2] if seconds else None,
+                "max_provider_seconds": max(seconds, default=None),
+            },
+            "budget_exhausted": len(report.budget_exhausted),
+        },
+        "entries": [
+            {
+                "paper_id": paper.paper_id,
+                "entry_id": result.entry.entry_id,
+                "number": result.entry.number,
+                "status": result.status.value,
+                "reason": result.reason,
+                "metadata_source": result.entry.metadata_source,
+                "searched": result.entry.metadata.model_dump(mode="json"),
+                "field_checks": [check.model_dump(mode="json") for check in result.field_checks],
+                "lookup_attempts": [
+                    attempt.model_dump(mode="json") for attempt in result.lookup_attempts
+                ],
+                "matched_record": record(result.matched_record),
+                "candidates": [record(item) for item in result.candidates],
+            }
+            for paper in report.papers
+            for result in paper.response.results
+        ],
+        "requests": report.requests,
+        "warnings": [warning for paper in report.papers for warning in paper.response.warnings],
+    }
 
 
 # ── Reporting ─────────────────────────────────────────────────────
@@ -1075,22 +1464,39 @@ def timing(cases: list[Case], pins: dict[str, Pin], args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=["replay", "record", "timing"], default="replay")
+    parser.add_argument("--mode", choices=["replay", "record", "timing", "live"], default="replay")
     parser.add_argument("--cases", type=Path, default=CASE_FILE)
     parser.add_argument("--responses", type=Path, default=RESPONSE_DIR)
     parser.add_argument("--report", type=Path, help="write the run as JSON")
     parser.add_argument(
+        "--references",
+        type=Path,
+        nargs="+",
+        help="live mode: the corpus's own reference artifacts to audit, one or more "
+        "``*.references.json`` under ``uploads/parsed``. They are copied into the "
+        "temporary store unchanged, so their paper ids are local to this run.",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=LIVE_TIMEOUT_SECONDS,
+        help="live mode only: seconds per provider socket operation. Defaults to the "
+        "product's own setting, because the live tier means to be the product; the "
+        "controlled tier raises it instead, since its latency is injected",
+    )
+    parser.add_argument(
         "--delay",
         type=float,
         default=1.0,
-        help="record mode only: seconds between provider requests, so a run paces itself "
-        "below the provider's rate limit instead of recording its own 429s",
+        help="record and live modes: seconds between provider requests, so a run paces "
+        "itself below the provider's rate limit instead of recording its own 429s",
     )
     parser.add_argument(
         "--max-calls",
         type=int,
         default=120,
-        help="record mode only: refuse to make more than this many provider requests",
+        help="record and live modes: refuse to make more than this many provider requests. "
+        "Live mode audits the rest of the corpus with no request sent and says so",
     )
     parser.add_argument(
         "--accept-drift",
@@ -1117,19 +1523,46 @@ def main(argv: list[str] | None = None) -> int:
         "for the network so the curve is not dominated by machine noise",
     )
     args = parser.parse_args(argv)
+    if args.mode == "live" and not args.references:
+        parser.error("--mode live audits the corpus's own artifacts; pass --references")
 
-    cases = load_benchmark_cases(args.cases)
-    existing = load_pins(args.responses)
-    counts = ", ".join(
-        f"{kind}={sum(1 for case in cases if case.input_kind == kind)}" for kind in ("bib", "pdf")
-    )
-    print(f"{len(cases)} case(s): {counts}; {len(existing)} pinned response(s)")
+    if args.mode == "live":
+        cases: list[Case] = []
+        existing: dict[str, Pin] = {}
+    else:
+        cases = load_benchmark_cases(args.cases)
+        existing = load_pins(args.responses)
+        counts = ", ".join(
+            f"{kind}={sum(1 for case in cases if case.input_kind == kind)}"
+            for kind in ("bib", "pdf")
+        )
+        print(f"{len(cases)} case(s): {counts}; {len(existing)} pinned response(s)")
 
     with tempfile.TemporaryDirectory(prefix="audit-benchmark-") as temporary:
         workdir = Path(temporary)
         (workdir / "uploads").mkdir()
         _environment(workdir)
+        # Before anything reads the settings, because they are read once and
+        # cached: a later write would leave the run at the controlled tier's
+        # inflated timeout while claiming to be the product's.
+        if args.mode == "live":
+            os.environ["METADATA_LOOKUP_TIMEOUT_SECONDS"] = str(args.timeout)
         _assert_environment(workdir)
+        if args.mode == "live":
+            artifacts = load_corpus_artifacts(args.references)
+            total = sum(len(artifact.references) for _, artifact in artifacts)
+            print(f"{len(artifacts)} corpus artifact(s); {total} reference(s)")
+            report_live = run_live(artifacts, args)
+            print()
+            print(render_live(report_live))
+            if args.report:
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                payload = payload_live(report_live, args)
+                args.report.write_text(
+                    json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+                )
+                print(f"\nwrote {args.report}")
+            return 1 if report_live.budget_exhausted else 0
         if args.mode == "record":
             status = record(cases, existing, args)
             if status:
