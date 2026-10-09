@@ -122,10 +122,17 @@ python backend/scripts/verify_benchmark.py --mode replay --check   # offline, sc
 python backend/scripts/audit_benchmark.py --mode timing            # structural N-scaling, injected latency
 ```
 
-The audit replay reports `NOT SCORED` until the provider bytes behind every case are
-captured: eight fictional-title cases still need a real OpenAlex response, and OpenAlex's
-daily budget has been exhausted each time it was tried. The audit half of the baseline is
-therefore pending, not passing — the injection and the scoring are built and unit-tested.
+The audit replay scores every constructed case: 36 of 39 bib-form cases pass and all
+three PDF-form cases do. The three that fail — `forged-airplanes`, `forged-marginalia`
+and `forged-sonar` — are red on the same mechanism rather than on their state: the case
+expects `openalex:ambiguous` and the captured bytes answer `openalex:not_found`. That is
+a decision for a person, not for a silent fixture edit.
+
+The live tier needs no fixtures but does need OpenAlex to answer, and without a key it
+draws on a daily budget shared by every client behind the same address: measured, a
+140-reference run had 70 requests answered and then took `429` until the next UTC
+midnight. A free `OPENALEX_API_KEY` in `.env` (`openalex.org/settings/api`) multiplies
+that budget; the live report prints whether the run had one.
 
 ---
 
