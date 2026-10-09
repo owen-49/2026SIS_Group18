@@ -45,12 +45,18 @@ STOP_WORDS = frozenset(
 
 _DOI_PREFIXES = ("https://doi.org/", "http://doi.org/", "http://dx.doi.org/", "doi:")
 _DOI_RE = re.compile(r"10\.\d{4,9}/[^\s\"'<>]+")
-_ARXIV_ID = r"(?:\d{4}\.\d{4,5}|[a-z][a-z-]*(?:\.[A-Z]{2})?/\d{7})"
+_ARXIV_NUMERIC_ID = r"\d{4}\.\d{4,5}"
+_ARXIV_OLD_ID = r"[a-z][a-z-]*(?:\.[A-Z]{2})?/\d{7}"
+_ARXIV_ID = rf"(?:{_ARXIV_NUMERIC_ID}|{_ARXIV_OLD_ID})"
 # The separator also covers the DataCite form OpenAlex reports for preprints,
 # ``10.48550/arXiv.1312.5663``, where the identifier follows a dot.
 _ARXIV_RE = re.compile(rf"arxiv[:\s.]*({_ARXIV_ID})(?:v\d+)?", re.IGNORECASE)
 _ARXIV_ABS_RE = re.compile(rf"abs/({_ARXIV_ID})(?:v\d+)?", re.IGNORECASE)
 _ARXIV_VERSION_RE = re.compile(r"v\d+$", re.IGNORECASE)
+# The numeric form alone, matched at a position rather than searched for: its
+# opening digits read as a year (``1911.03587``). The older ``cs/0701001`` form
+# opens with letters, so it cannot be one.
+_ARXIV_NUMERIC_HEAD_RE = re.compile(_ARXIV_NUMERIC_ID)
 
 
 def normalize_title(title: str) -> str:
@@ -188,3 +194,15 @@ def extract_arxiv_id(text: str) -> str:
         if match:
             return _ARXIV_VERSION_RE.sub("", match.group(1))
     return ""
+
+
+def starts_arxiv_id(text: str, position: int) -> bool:
+    """Return whether an arXiv identifier begins at ``position`` in ``text``.
+
+    The numeric form opens with four digits shaped like a year -- ``1911.03587``
+    reads as 1911 to anyone scanning for one -- so
+    :func:`engine.reference_text.parse_reference_text` asks this before it
+    counts a candidate as a date. Only the identifier's head is tested; the
+    version suffix plays no part.
+    """
+    return _ARXIV_NUMERIC_HEAD_RE.match(text, position) is not None

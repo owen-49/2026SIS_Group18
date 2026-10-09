@@ -18,10 +18,15 @@ Design notes:
   lists contain initials: ``Marius Muja and David G. Lowe. Scalable nearest
   neighbor algorithms...`` ends the author list at ``Lowe``, not at ``G``. A
   period preceded by a single letter is treated as an initial and skipped.
-- The year is taken from the last four-digit year in the entry, after URL and
-  ``doi:`` fragments are removed so an identifier's digits cannot be mistaken
-  for a date. Some entries put the year before the title rather than at the end,
-  and taking the last year gets both without a separate rule.
+- The year is taken from the last four-digit year in the entry, skipping two
+  things that are not years. URL and ``doi:`` fragments are removed so their
+  digits cannot read as one, and a candidate that begins an arXiv identifier is
+  skipped: ``1911.03587`` opens with four digits shaped like a year, and entries
+  carry the identifier where the removal rules do not reach it --
+  ``ArXiv, abs/2004.07159`` bare, and ``URL https: //arxiv.org/abs/1911.03587``
+  inside a URL that a space after the scheme has broken up. Some entries put the
+  year before the title rather than at the end, and taking the last year gets
+  both without a separate rule.
 - A venue that turns out to be an identifier is discarded rather than kept.
   ``arXiv:1710.10723 [cs]`` is what one entry yields in the venue position, and
   keeping it would let a non-name participate in the venue tie-break.
@@ -32,7 +37,7 @@ Design notes:
 import re
 
 from .identity import ReferenceQuery
-from .title_matching import extract_arxiv_id, extract_doi
+from .title_matching import extract_arxiv_id, extract_doi, starts_arxiv_id
 
 # ``[5]``, ``(5)``, ``5.`` and ``5)`` all occur at the start of an entry, and
 # the marker is not part of the first author's name.
@@ -104,7 +109,15 @@ def _authors(text: str) -> list[str]:
 
 
 def _year(text: str) -> int | None:
-    years = _YEAR_RE.findall(_strip_identifiers(text))
+    stripped = _strip_identifiers(text)
+    # Each candidate is tested where it sits rather than the identifier being
+    # cut out of the text first: the same string goes on to supply the title and
+    # the venue, and removing a fragment moves text between those fields.
+    years = [
+        match.group()
+        for match in _YEAR_RE.finditer(stripped)
+        if not starts_arxiv_id(stripped, match.start())
+    ]
     return int(years[-1]) if years else None
 
 
