@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-10T23:41:09.377419+00:00",
+  "revision": "1d4ffe52aa7f0326b4cc2e8e1857537052999bae",
+  "mode": "plan",
+  "scope": "Seeded parsed source; citation resolution, embedding, retrieval and judgement. PDF parsing and Audit extraction are outside this suite.",
+  "configuration": {
+    "provider": null,
+    "model": null,
+    "region": null,
+    "workspace": null
+  },
+  "budget": {
+    "max_calls": 0,
+    "calls_attempted": 0
+  },
+  "cases": [
+    {
+      "provider": "openai",
+      "case_id": "support",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "SUPPORT",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    },
+    {
+      "provider": "openai",
+      "case_id": "contradict",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "CONTRADICT",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    },
+    {
+      "provider": "openai",
+      "case_id": "not_found",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "NOT_FOUND",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    },
+    {
+      "provider": "deepseek",
+      "case_id": "support",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "SUPPORT",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    },
+    {
+      "provider": "deepseek",
+      "case_id": "contradict",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "CONTRADICT",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    },
+    {
+      "provider": "deepseek",
+      "case_id": "not_found",
+      "selected": false,
+      "expected": {
+        "http_status": 200,
+        "status": "COMPARED",
+        "verdict": "NOT_FOUND",
+        "source_paper_id": "src-transformer"
+      },
+      "actual": null,
+      "outcome": "untested",
+      "reason": "not_selected",
+      "duration_seconds": null
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "untested": 6
+  },
+  "selected_summary": {
+    "passed": 0,
+    "failed": 0,
+    "untested": 0
+  }
+}
