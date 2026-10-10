@@ -15,3 +15,9 @@ Browser tests used intercepted API responses. No live paid provider calls or liv
 Suggested reply:
 
 Thanks! I checked the settings UI and Audit flow in PR #60. The provider options and automatic AI configuration work in the frontend tests. I found and fixed two frontend issues locally: Qwen workspace validation in Chrome and the display of sanitized validation errors. All 45 browser tests, lint, and build now pass. These checks used mocked API responses; live provider testing is still pending. Siyuan can continue with the formal review.
+
+## AI settings follow-up
+
+Save configuration stays enabled and validates on submission, with field-specific feedback and focus on the first invalid input. Read actual form input values to support browser autofill without React change events. Selecting the same provider/region preserves the draft; switching to a different one still clears credentials. Added Show/Hide key, a close button, a purple/graphite modal header, gentle motion with reduced-motion support, and a sticky footer for narrow windows. Verify page layout is unchanged.
+
+Validation: 47 mocked Chrome integration tests pass, lint and build pass, desktop and 390px browser visuals checked, and the mobile Save button remains within the viewport. Live provider calls remain untested.

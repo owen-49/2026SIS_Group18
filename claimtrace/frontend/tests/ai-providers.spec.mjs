@@ -116,3 +116,38 @@ test("Qwen workspace rejects invalid DNS labels before saving", async ({ page })
   await dialog.getByRole("button", { name: "Save configuration" }).click();
   await expect(dialog).not.toBeVisible();
 });
+
+
+test("Save stays available and explains missing fields", async ({ page }) => {
+  await page.route("**/api/papers", route => route.fulfill({ json: { total: 0, papers: [] } }));
+  await page.goto("/audit");
+  await page.getByRole("button", { name: /^AI settings/ }).click();
+  const dialog = page.getByRole("dialog", { name: "AI settings", exact: true });
+  const save = dialog.getByRole("button", { name: "Save configuration" });
+  await expect(save).toBeEnabled();
+  await dialog.getByLabel("API key", { exact: true }).fill("offline-key");
+  await save.click();
+  await expect(dialog.getByRole("alert")).toContainText("model ID");
+  await expect(dialog.getByLabel("Model", { exact: true })).toBeFocused();
+  await dialog.getByLabel("Model", { exact: true }).fill("account-model");
+  await dialog.getByRole("button", { name: "Show API key", exact: true }).click();
+  await expect(dialog.getByLabel("API key", { exact: true })).toHaveAttribute("type", "text");
+  await dialog.getByRole("button", { name: "Hide API key", exact: true }).click();
+  await save.click();
+  await expect(dialog).not.toBeVisible();
+  await page.getByRole("button", { name: /^AI settings/ }).click();
+  await expect(dialog.getByLabel("API key", { exact: true })).toHaveAttribute("type", "password");
+});
+
+test("Save reads browser-filled inputs without React change events", async ({ page }) => {
+  await page.route("**/api/papers", route => route.fulfill({ json: { total: 0, papers: [] } }));
+  await page.goto("/audit");
+  await page.getByRole("button", { name: /^AI settings/ }).click();
+  const dialog = page.getByRole("dialog", { name: "AI settings", exact: true });
+  await dialog.getByLabel("Model", { exact: true }).evaluate(el => { el.value = "autofilled-model"; });
+  await dialog.getByLabel("API key", { exact: true }).evaluate(el => { el.value = "offline-autofilled-key"; });
+  await dialog.getByRole("button", { name: "Save configuration" }).click();
+  await expect(dialog).not.toBeVisible();
+  const saved = await page.evaluate(async () => (await import("/src/data/aiSettings.ts")).getAISettings());
+  expect(saved.config).toEqual({ provider: "openai", model: "autofilled-model", api_key: "offline-autofilled-key" });
+});
