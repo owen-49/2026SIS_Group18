@@ -2,11 +2,11 @@ import { useSyncExternalStore } from "react";
 import type { AIConfig } from "../types/api";
 
 // Deliberately memory-only: never persist credentials to browser storage.
-let settings: { config: AIConfig | null; auditEnabled: boolean } = { config: null, auditEnabled: false };
+let settings: { config: AIConfig | null } = { config: null };
 const listeners = new Set<() => void>();
 export const getAISettings = () => settings;
-export function setAISettings(config: AIConfig | null, auditEnabled = false) {
-  settings = { config: config ? { ...config } : null, auditEnabled: Boolean(config && auditEnabled) };
+export function setAISettings(config: AIConfig | null) {
+  settings = { config: config ? { ...config } : null };
   listeners.forEach((listener) => listener());
 }
 function subscribe(listener: () => void) {

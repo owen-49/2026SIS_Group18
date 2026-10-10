@@ -4,6 +4,10 @@ from dataclasses import dataclass, field
 from types import SimpleNamespace
 from typing import Any
 
+import httpx
+
+from .ai_providers import normalize_completion, prepare_completion
+
 
 class UserAIError(RuntimeError):
     """An upstream failure represented without provider payloads or secrets."""
@@ -15,6 +19,8 @@ class UserAIError(RuntimeError):
 
 def safe_provider_error(exc: Exception) -> UserAIError:
     status = getattr(exc, "status_code", None)
+    if status is None and isinstance(exc, httpx.HTTPStatusError):
+        status = exc.response.status_code
     name = type(exc).__name__
     if status == 401:
         return UserAIError("AI_AUTH_FAILED", "The user's AI credentials were rejected.")
@@ -33,7 +39,7 @@ def safe_provider_error(exc: Exception) -> UserAIError:
         return UserAIError("AI_RATE_LIMITED", "The user's AI provider rate limited the request.")
     if status == 404:
         return UserAIError("AI_MODEL_UNAVAILABLE", "The requested AI model is unavailable.")
-    if isinstance(exc, TimeoutError) or name == "APITimeoutError":
+    if isinstance(exc, (TimeoutError, httpx.TimeoutException)) or name == "APITimeoutError":
         return UserAIError("AI_TIMEOUT", "The user's AI provider did not respond in time.")
     return UserAIError("AI_PROVIDER_FAILED", "The user's AI provider could not complete the call.")
 
@@ -50,6 +56,7 @@ class UserAIRuntime:
     raw_client: Any = field(repr=False)
     model: str
     timeout_seconds: float = 30.0
+    provider: str = "openai"
     failure: UserAIError | None = field(default=None, init=False, repr=False)
 
     @property
@@ -62,7 +69,11 @@ class UserAIRuntime:
         kwargs["model"] = self.model
         kwargs["timeout"] = self.timeout_seconds
         try:
-            return self.raw_client.chat.completions.create(**kwargs)
+            params = prepare_completion(self.provider, self.model, kwargs)
+            result = self.raw_client.chat.completions.create(**params)
+            if hasattr(result, "choices"):
+                return normalize_completion(self.provider, result)
+            return result
         except Exception as exc:
             self.failure = safe_provider_error(exc)
             raise self.failure from None

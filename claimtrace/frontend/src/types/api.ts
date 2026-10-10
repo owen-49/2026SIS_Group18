@@ -1,5 +1,7 @@
 export interface AIConfig {
-  provider: "openai" | "deepseek";
+  provider: import("../data/aiProviders").AIProvider;
+  region?: string;
+  workspace?: string;
   model: string;
   api_key: string;
 }
