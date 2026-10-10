@@ -102,9 +102,10 @@ For Audit, add the same `ai_config` alongside `manuscript_id`. Without configura
 the Parser and raw text remain available, and incomplete extraction is reported in
 warnings. An Audit without AI is an external metadata check, not a semantic verdict.
 
-The first version accepts `openai` and `deepseek`. The backend fixes the respective
-destinations to `https://api.openai.com/v1` and `https://api.deepseek.com/v1`.
-`base_url` and other configuration fields are rejected. `model` must be a nonempty
+The provider values, optional `region` and Qwen `workspace` fields are documented in
+[user AI providers](user-ai-providers.md). The frontend always includes saved configuration
+in Audit, with no separate checkbox. The backend uses fixed official destinations.
+`base_url` and unknown configuration fields are rejected. `model` must be a nonempty
 string; users must choose a model their account supports that accepts chat completions
 and JSON responses. Provider/model compatibility must be tested with the user's account.
 
@@ -119,7 +120,7 @@ request serialisation excludes `ai_config`, validation errors omit raw input, an
 exception payloads are replaced with safe messages before reaching API responses or
 persisted diagnostics. Send keys in JSON over HTTPS outside local testing; never put
 them in URLs, logs or examples. Deployment must also keep request-body and SDK HTTP
-debug logging disabled. Frontend key storage is outside this backend change.
+debug logging disabled. Frontend keys remain in memory only and clear on refresh or explicit removal.
 
 | HTTP | `detail.code` | Meaning |
 | :--- | :--- | :--- |
@@ -329,3 +330,8 @@ answer. Do not "fix" this into an empty 200.
 PR 53 remains a draft until the frontend supplies ai_config to both Verify entry points and offers user AI configuration for Audit metadata extraction. Coordinate this work with JunLi before requesting final approval and merging. Missing Audit configuration retains Parser fields and raw text and returns a warning explaining how to enable AI extraction.
 
 DeepSeek upstream HTTP 402 maps to AI_QUOTA_EXCEEDED with backend HTTP 429. Version 3 reference retries send only NO_CLIENT, MODEL_ERROR and INVALID_RESPONSE entries; successful SEGMENTED entries remain cached even when venue is absent.
+
+
+## User AI provider expansion
+
+See [user AI providers](user-ai-providers.md) for the 17 provider values, region presets, native Claude adapter and validation limits. The web app now automatically includes saved AI configuration in Audit; the incomplete reference AI checkbox is removed. Missing configuration retains deterministic Audit and its existing warnings. Verify continues to require user configuration.

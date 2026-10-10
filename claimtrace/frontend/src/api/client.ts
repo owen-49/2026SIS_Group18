@@ -236,7 +236,7 @@ export async function runAudit(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...(inputType === "bib" ? { bib_paper_id: inputPaperId } : { manuscript_id: inputPaperId }),
-      ...(getAISettings().auditEnabled ? { ai_config: requireAIConfig() } : {}),
+      ...(getAISettings().config ? { ai_config: requireAIConfig() } : {}),
     }),
   });
   const result = await readResponse<AuditResponse>(response);

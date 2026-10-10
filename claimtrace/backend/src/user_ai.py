@@ -1,23 +1,32 @@
 """User AI configuration, request lifetime and safe API errors."""
 
 from contextlib import contextmanager
-from typing import Literal
 
 from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from openai import OpenAI
-from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator, model_validator
 
+from .services.ai_providers import AIProvider, AnthropicMessagesClient, endpoint_for
 from .services.user_ai_runtime import UserAIError, UserAIRuntime
 
 
 class UserAIConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    provider: Literal["openai", "deepseek"]
+    provider: AIProvider
+    region: str | None = Field(default=None, max_length=32)
+    workspace: str | None = Field(
+        default=None, pattern=r"^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"
+    )
     model: str = Field(min_length=1, max_length=200)
     api_key: SecretStr = Field(min_length=1, max_length=4096)
+
+    @model_validator(mode="after")
+    def valid_destination(self):
+        endpoint_for(self.provider, self.region, self.workspace)
+        return self
 
     @field_validator("model")
     @classmethod
@@ -43,20 +52,24 @@ def user_ai_session(config: UserAIConfig | None, *, required=False):
         yield None
         return
     # Official destinations only. Never read environment keys or base URLs.
-    base_url = {
-        "openai": "https://api.openai.com/v1",
-        "deepseek": "https://api.deepseek.com/v1",
-    }[config.provider]
+    base_url = endpoint_for(config.provider, config.region, config.workspace)
     try:
-        client = OpenAI(
-            api_key=config.api_key.get_secret_value(),
-            base_url=base_url,
-            timeout=30.0,
-            max_retries=0,
-        )
+        if config.provider == AIProvider.ANTHROPIC:
+            client = AnthropicMessagesClient(
+                api_key=config.api_key.get_secret_value(),
+                base_url=base_url,
+                timeout=30.0,
+            )
+        else:
+            client = OpenAI(
+                api_key=config.api_key.get_secret_value(),
+                base_url=base_url,
+                timeout=30.0,
+                max_retries=0,
+            )
     except Exception:
         raise UserAIError("AI_CONFIG_INVALID", "Unable to initialise the user AI client.") from None
-    runtime = UserAIRuntime(client, config.model)
+    runtime = UserAIRuntime(client, config.model, provider=config.provider)
     try:
         yield runtime
     finally:

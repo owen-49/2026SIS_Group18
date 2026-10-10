@@ -191,7 +191,7 @@ for (const [status, code] of [[422,'AI_CONFIG_REQUIRED'],[422,'INVALID_REQUEST']
   });
 }
 
-test('Audit sends optional AI configuration and legacy Verify requires it', async ({ page }) => {
+test('Audit automatically sends configured AI credentials and legacy Verify requires them', async ({ page }) => {
   await setup(page, { configured: false });
   const auditRequests=[];
   await page.route('**/api/audit', route => { auditRequests.push(route.request().postDataJSON()); return route.fulfill({json:{contract_version:2,audit_id:'a',input_paper_id:'manuscript',input_type:'pdf',status:'completed',total_entries:0,counts:{},results:[],warnings:[]}}); });
@@ -201,7 +201,7 @@ test('Audit sends optional AI configuration and legacy Verify requires it', asyn
   await page.getByRole('button',{name:'Run audit',exact:true}).click();
   await expect.poll(()=>auditRequests.length).toBe(1);
   expect(auditRequests[0]).not.toHaveProperty('ai_config');
-  await configureAI(page,{provider:'deepseek',model:'deepseek-test',key:'fake-deepseek-key',audit:true});
+  await configureAI(page,{provider:'deepseek',model:'deepseek-test',key:'fake-deepseek-key'});
   await page.getByRole('button',{name:'Run audit',exact:true}).click();
   await expect.poll(()=>auditRequests.length).toBe(2);
   expect(auditRequests[1].ai_config.provider).toBe('deepseek');
