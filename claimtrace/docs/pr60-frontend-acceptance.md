@@ -10,7 +10,7 @@ Two reproduced frontend defects are fixed:
 
 Original tests: 43 passed. Both new regressions failed before fixes. After fixes: 45 Chrome tests passed; lint, production build and git diff --check passed.
 
-Browser tests used intercepted API responses. No live paid provider calls or live backend end-to-end verification was performed. Formal review remains with Siyuan. Fixes are committed locally on codex/pr60-frontend-acceptance and are not yet pushed to PR #60.
+Browser tests used intercepted API responses. No live paid provider calls or live backend end-to-end verification was performed. Formal review remains with Siyuan. Frontend fixes and AI settings refinements are included on backend/ai-provider-expansion, the source branch of PR #60.
 
 Suggested reply:
 
