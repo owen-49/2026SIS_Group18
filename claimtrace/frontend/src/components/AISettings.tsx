@@ -142,7 +142,7 @@ export function AISettings() {
                 aria-label="Qwen workspace ID"
                 value={workspace}
                 onChange={(event) => setWorkspace(event.target.value)}
-                pattern="[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?"
+                pattern="[a-zA-Z0-9](?:(?:[a-zA-Z0-9]|-){0,61}[a-zA-Z0-9])?"
                 autoComplete="off"
               />
             </label>

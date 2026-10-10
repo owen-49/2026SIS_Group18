@@ -95,3 +95,24 @@ test("changing provider or region clears credentials and preserves region in req
   );
   expect(cleared.config).toBeNull();
 });
+
+
+test("Qwen workspace rejects invalid DNS labels before saving", async ({ page }) => {
+  await page.route("**/api/papers", route => route.fulfill({ json: { total: 0, papers: [] } }));
+  await page.goto("/audit");
+  await page.getByRole("button", { name: /^AI settings/ }).click();
+  const dialog = page.getByRole("dialog", { name: "AI settings", exact: true });
+  await dialog.getByLabel("Provider", { exact: true }).selectOption("qwen");
+  await dialog.getByLabel("Model", { exact: true }).fill("qwen-plus");
+  await dialog.getByLabel("API key", { exact: true }).fill("offline-key");
+  const workspace = dialog.getByLabel("Qwen workspace ID", { exact: true });
+  for (const invalid of ["bad.workspace", "-workspace", "workspace-", "a".repeat(64)]) {
+    await workspace.fill(invalid);
+    expect(await workspace.evaluate(el => el.checkValidity())).toBe(false);
+    await dialog.getByRole("button", { name: "Save configuration" }).click();
+    await expect(dialog).toBeVisible();
+  }
+  await workspace.fill("valid-workspace");
+  await dialog.getByRole("button", { name: "Save configuration" }).click();
+  await expect(dialog).not.toBeVisible();
+});

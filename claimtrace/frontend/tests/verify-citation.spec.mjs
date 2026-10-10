@@ -214,3 +214,16 @@ test('Audit automatically sends configured AI credentials and legacy Verify requ
   const error = await page.evaluate(async()=>{const {verifyClaim}=await import('/src/api/client.ts');try{await verifyClaim('test','source-pdf');return '';}catch(e){return e.message;}});
   expect(error).toContain('AI settings');
 });
+
+
+test('sanitized validation errors retain their code without exposing request values', async ({ page }) => {
+  await setup(page);
+  await highlight(page);
+  await page.route('**/api/verify/citation', route => route.fulfill({ status: 422, json: {
+    detail: { code: 'INVALID_REQUEST', errors: [{ loc: ['body', 'ai_config', 'api_key'], type: 'value_error' }] }
+  } }));
+  await analyze(page).click();
+  await expect(page.getByRole('alert')).toContainText('INVALID_REQUEST');
+  await expect(page.getByRole('alert')).toContainText('AI settings');
+  await expect(analyze(page)).toBeEnabled();
+});
