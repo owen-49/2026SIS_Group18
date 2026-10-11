@@ -155,6 +155,14 @@ def make_report(args) -> dict:
             "workspace": args.workspace,
         },
         "budget": {"max_calls": args.max_calls or 0, "calls_attempted": 0},
+        "generation": (
+            {
+                "max_output_tokens": getattr(args, "max_output_tokens", None) or 512,
+                "thinking": "disabled",
+            }
+            if args.provider == "deepseek"
+            else None
+        ),
         "cases": rows,
     }
 
@@ -227,7 +235,7 @@ class CallBudget:
 
 
 @contextmanager
-def enforce_budget(budget: CallBudget):
+def enforce_budget(budget: CallBudget, *, provider=None, max_output_tokens=None):
     """Count the actual runtime calls, including any unexpected extra AI step."""
     from backend.src.services.user_ai_runtime import UserAIError, UserAIRuntime
 
@@ -244,7 +252,24 @@ def enforce_budget(budget: CallBudget):
                 )
                 raise runtime.failure
             budget.attempted += 1
-        return original(runtime, **kwargs)
+        if provider == "deepseek":
+            limit = max_output_tokens or 512
+            kwargs["max_tokens"] = min(kwargs.get("max_tokens") or limit, limit)
+            kwargs["extra_body"] = {
+                **kwargs.get("extra_body", {}),
+                "thinking": {"type": "disabled"},
+            }
+            kwargs.pop("reasoning_effort", None)
+        result = original(runtime, **kwargs)
+        if provider == "deepseek":
+            # Current main predates PR #60's partial-generation rejection.
+            choices = getattr(result, "choices", None)
+            if not choices or getattr(choices[0], "finish_reason", None) != "stop":
+                runtime.failure = UserAIError(
+                    "AI_PROVIDER_FAILED", "The provider did not complete the acceptance response."
+                )
+                raise runtime.failure
+        return result
 
     with patch.object(UserAIRuntime, "create", bounded_create):
         yield
@@ -359,7 +384,12 @@ def run_live(report: dict, config: dict, budget: CallBudget) -> None:
     # No lifespan context: acceptance must never run startup deletion recovery.
     client = TestClient(app)
     try:
-        with enforce_budget(budget):
+        generation = report.get("generation") or {}
+        with enforce_budget(
+            budget,
+            provider=config["provider"],
+            max_output_tokens=generation.get("max_output_tokens"),
+        ):
             for row in report["cases"]:
                 if not row["selected"]:
                     continue
@@ -429,6 +459,11 @@ def main(argv=None) -> int:
     arguments.add_argument("--case", action="append", choices=[case.case_id for case in CASES])
     arguments.add_argument("--live", action="store_true")
     arguments.add_argument("--max-calls", type=int)
+    arguments.add_argument(
+        "--max-output-tokens",
+        type=int,
+        help="DeepSeek acceptance only: 1-4096 output tokens per call (default: 512).",
+    )
     arguments.add_argument("--report", type=Path, default=Path("verify-acceptance-report.json"))
     args = arguments.parse_args(argv)
     if args.live and (
@@ -437,6 +472,12 @@ def main(argv=None) -> int:
         arguments.error("--live requires --provider, --model and a positive --max-calls budget")
     if args.max_calls is not None and args.max_calls < 0:
         arguments.error("--max-calls cannot be negative")
+    if args.max_output_tokens is not None and (
+        args.provider != "deepseek" or not 1 <= args.max_output_tokens <= 4096
+    ):
+        arguments.error(
+            "--max-output-tokens requires --provider deepseek and a value from 1 to 4096"
+        )
     report = make_report(args)
     budget = CallBudget(args.max_calls or 0)
     if args.live:
