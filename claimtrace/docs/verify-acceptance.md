@@ -28,7 +28,9 @@ errors stop the account run, leaving later cases untested.
 The account owner has authorized DeepSeek live acceptance with a relaxed budget.
 The first comparison uses DeepSeek Flash, six cases in each of two modes (normally
 12 calls), with a shared 20-call cap. Account credentials must still be supplied
-locally. No live provider acceptance results are claimed until a run completes.
+locally. The first authorized live run completed: **12 passed, 0 failed, 0 selected
+untested**, using 12 calls. See the [DeepSeek live validation record](verify-acceptance-deepseek-live.md)
+for actual/expected results, token usage and the limits of this smoke comparison.
 
 DeepSeek acceptance defaults to non-thinking mode with 2048 generated tokens.
 `--thinking low`, `high` or `max` enables thinking with an 8192-token default.
