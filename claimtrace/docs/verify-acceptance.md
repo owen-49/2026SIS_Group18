@@ -24,6 +24,15 @@ errors stop the account run, leaving later cases untested.
 Current account/budget agreement: pending. No live provider acceptance results
 are claimed by this change.
 
+DeepSeek acceptance defaults to non-thinking mode and at most 512 output tokens
+per call. `--max-output-tokens` can select a cap from 1 to 4096 for DeepSeek;
+the report's `generation` section records the cap and disabled thinking.
+These are harness overrides, not changes to the application's request defaults.
+Incomplete completions fail even when they contain parseable JSON. Parameters
+follow the [official DeepSeek Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/).
+The call cap resets on each invocation: track total attempts across first runs
+and reruns when agreeing an overall six-call budget.
+
 ## Plan without calls
 
 Run from `claimtrace/` with the backend, Parser and Engine dependencies installed:
@@ -44,7 +53,7 @@ Example syntax only; these commands do not establish an account or budget:
 
 ```sh
 python backend/scripts/acceptance_citation_comparison.py --live \
-  --provider deepseek --model deepseek-chat --max-calls 3 \
+  --provider deepseek --model deepseek-flash --max-calls 3 --max-output-tokens 512 \
   --report verify-deepseek.json
 
 # After PR #60 is integrated, with an agreed regional Qwen account:
@@ -104,7 +113,7 @@ report redaction, call limits, stopping accounts, continuation after a verdict
 mismatch and storage restoration. These tests do not certify live accounts or
 real embedding quality.
 
-## Validation record — 2026-10-11
+## Initial validation record — 2026-10-11
 
 | Checkout and checks | Result |
 | --- | --- |
@@ -119,3 +128,10 @@ fixtures. The planning runs exercise report generation only. No real provider
 accounts, real model inference, paid calls or deployed-server acceptance were
 used in this validation. Existing FastAPI startup and Starlette/AnyIO
 deprecation warnings remain.
+
+DeepSeek follow-up: offline request checks cover the output cap, disabled
+thinking, invalid cap rejection and partial-generation rejection. Real account
+acceptance remains untested; compare account usage before/after the run to record
+the provider's billed cost.
+Focused follow-up checks: main 33 passed and 2 skipped; with PR #60's adapters,
+all 35 harness checks passed.
