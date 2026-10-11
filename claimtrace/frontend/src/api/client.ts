@@ -17,8 +17,11 @@ async function readResponse<T>(response: Response): Promise<T> {
   try {
     const body = (await response.json()) as { detail?: string | Array<{ msg?: string }> | { message?: string; code?: string } };
     if (typeof body.detail === "string") message = body.detail;
-    if (body.detail && !Array.isArray(body.detail) && typeof body.detail === "object" && body.detail.message) {
-      message = body.detail.code ? `${body.detail.code}: ${body.detail.message}` : body.detail.message;
+    if (body.detail && !Array.isArray(body.detail) && typeof body.detail === "object") {
+      const detailMessage = body.detail.message || (body.detail.code === "INVALID_REQUEST"
+        ? "Check your request and AI settings, then try again."
+        : message);
+      message = body.detail.code ? `${body.detail.code}: ${detailMessage}` : detailMessage;
     }
     if (Array.isArray(body.detail)) {
       const details = body.detail.map((item) => item.msg).filter(Boolean).join("; ");
@@ -236,7 +239,7 @@ export async function runAudit(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...(inputType === "bib" ? { bib_paper_id: inputPaperId } : { manuscript_id: inputPaperId }),
-      ...(getAISettings().auditEnabled ? { ai_config: requireAIConfig() } : {}),
+      ...(getAISettings().config ? { ai_config: requireAIConfig() } : {}),
     }),
   });
   const result = await readResponse<AuditResponse>(response);

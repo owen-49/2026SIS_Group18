@@ -36,8 +36,9 @@ bibliographic records and field differences.
 Legacy `source_paper_ids` is accepted but ignored, with a response warning.
 
 Optional `ai_config` enables user-funded LLM segmentation of incomplete PDF reference
-metadata. It has `provider`, `model` and `api_key`; only OpenAI and DeepSeek official
-addresses are supported. No configuration means no paid LLM call, including on claim
+metadata. It has `provider`, `model` and `api_key`, with optional region and Qwen
+workspace presets. The 17 supported provider adapters and official destinations are
+documented in [user AI providers](user-ai-providers.md). No configuration means no paid LLM call, including on claim
 discovery; Parser/raw text and the OpenAlex/Crossref chain remain available. A team
 environment key is never a fallback. Provider failures return safe HTTP errors after
 preserving parsed reference artifacts. Invalid model responses preserve the input and
@@ -372,3 +373,8 @@ unchanged by the Audit work.
   "source_paper_ids": ["<uploaded pdf id>"]
 }
 ```
+
+
+## User AI provider expansion
+
+See [user AI providers](user-ai-providers.md) for the 17 provider values, region presets, native Claude adapter and validation limits. The web app now automatically includes saved AI configuration in Audit; the incomplete reference AI checkbox is removed. Missing configuration retains deterministic Audit and its existing warnings. Verify continues to require user configuration.
