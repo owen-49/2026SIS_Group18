@@ -20,7 +20,7 @@ def report_for(provider="openai", *, limit=3, cases=None):
             model="account-model",
             region=None,
             workspace=None,
-            case=cases,
+            case=cases or ["support", "contradict", "not_found"],
             live=True,
             max_calls=limit,
         )
@@ -133,7 +133,7 @@ def test_plan_never_prompts_or_runs_live_and_returns_incomplete(tmp_path, monkey
     assert report["summary"] == {
         "passed": 0,
         "failed": 0,
-        "untested": len(acceptance.available_providers()) * 3,
+        "untested": len(acceptance.available_providers()) * len(acceptance.CASES),
     }
     assert report["mode"] == "plan"
     assert report["budget"]["calls_attempted"] == 0
@@ -166,7 +166,11 @@ def test_live_without_interactive_credentials_is_untested(tmp_path, monkeypatch)
         == 2
     )
     report = json.loads(target.read_text())
-    assert report["selected_summary"] == {"passed": 0, "failed": 0, "untested": 3}
+    assert report["selected_summary"] == {
+        "passed": 0,
+        "failed": 0,
+        "untested": len(acceptance.CASES),
+    }
     assert report["budget"]["calls_attempted"] == 0
 
 
@@ -236,7 +240,7 @@ def test_full_offline_chain_checks_all_verdicts_and_restores_stores(
     monkeypatch,
 ):
     calls, replies = offline_wire
-    replies.extend(case.expected_verdict for case in acceptance.CASES)
+    replies.extend(case.expected_verdict for case in acceptance.CASES[:3])
     original_paths = (
         paper_store.PAPERS_FILE,
         parsed_document_store.PARSED_DIR,
@@ -256,6 +260,12 @@ def test_full_offline_chain_checks_all_verdicts_and_restores_stores(
                 "account-model",
                 "--max-calls",
                 "3",
+                "--case",
+                "support",
+                "--case",
+                "contradict",
+                "--case",
+                "not_found",
                 "--report",
                 str(target),
             ]
@@ -264,7 +274,10 @@ def test_full_offline_chain_checks_all_verdicts_and_restores_stores(
     )
     report = json.loads(target.read_text())
     assert report["selected_summary"] == {"passed": 3, "failed": 0, "untested": 0}
-    assert report["summary"]["untested"] == (len(acceptance.available_providers()) - 1) * 3
+    assert (
+        report["summary"]["untested"]
+        == len(acceptance.available_providers()) * len(acceptance.CASES) - 3
+    )
     assert len(calls) == report["budget"]["calls_attempted"] == 3
     assert "offline-secret" not in target.read_text()
     assert original_paths == (
@@ -388,7 +401,11 @@ def test_invalid_region_is_untested_without_prompt_or_call(tmp_path, monkeypatch
     )
     report = json.loads(target.read_text())
     assert report["budget"]["calls_attempted"] == 0
-    assert report["selected_summary"] == {"passed": 0, "failed": 0, "untested": 3}
+    assert report["selected_summary"] == {
+        "passed": 0,
+        "failed": 0,
+        "untested": len(acceptance.CASES),
+    }
 
 
 @pytest.mark.skipif(
@@ -429,7 +446,10 @@ def test_qwen_region_workspace_and_selected_case_reach_actual_route(
     )
     report = json.loads(target.read_text())
     assert report["selected_summary"] == {"passed": 1, "failed": 0, "untested": 0}
-    assert report["summary"]["untested"] == len(acceptance.available_providers()) * 3 - 1
+    assert (
+        report["summary"]["untested"]
+        == len(acceptance.available_providers()) * len(acceptance.CASES) - 1
+    )
     assert str(calls[0].url) == (
         "https://workspace123.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions"
     )
@@ -515,6 +535,7 @@ def test_deepseek_budget_parameters_and_report(offline_wire, tmp_path, monkeypat
     assert json.loads(target.read_text())["generation"] == {
         "max_output_tokens": cap,
         "thinking": "disabled",
+        "default_token_caps": {"disabled": 2048, "enabled": 8192},
     }
 
 
@@ -558,11 +579,11 @@ def test_capped_deepseek_never_accepts_partial_json(offline_wire, finish):
     assert row["outcome"] == "failed"
     assert row["actual"]["error_code"] == "AI_PROVIDER_FAILED"
     assert len(calls) == 1
-    assert json.loads(calls[0].content)["max_tokens"] == 512
+    assert json.loads(calls[0].content)["max_tokens"] == 2048
 
 
 @pytest.mark.parametrize(
-    "provider,cap", [("openai", "512"), ("deepseek", "0"), ("deepseek", "4097")]
+    "provider,cap", [("openai", "512"), ("deepseek", "0"), ("deepseek", "32769")]
 )
 def test_invalid_output_limit_cannot_start_live(provider, cap):
     with pytest.raises(SystemExit) as error:
@@ -579,4 +600,138 @@ def test_invalid_output_limit_cannot_start_live(provider, cap):
                 cap,
             ]
         )
+    assert error.value.code == 2
+
+
+def test_compare_thinking_shares_budget_and_reports_usage(offline_wire, tmp_path, monkeypatch):
+    calls, replies = offline_wire
+    for mode in ("disabled", "low"):
+        replies.append(
+            httpx.Response(
+                200,
+                json={
+                    "id": "offline",
+                    "object": "chat.completion",
+                    "created": 0,
+                    "model": "deepseek-flash",
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 50,
+                        "total_tokens": 150,
+                        "completion_tokens_details": {
+                            "reasoning_tokens": 20 if mode == "low" else 0
+                        },
+                    },
+                    "choices": [
+                        {
+                            "index": 0,
+                            "finish_reason": "stop",
+                            "message": {
+                                "role": "assistant",
+                                "content": '{"label":"SUPPORT","rationale":"private"}',
+                                "reasoning_content": "private-thinking",
+                            },
+                        }
+                    ],
+                },
+            )
+        )
+    monkeypatch.setattr(acceptance.sys.stdin, "isatty", lambda: True)
+    prompts = []
+    monkeypatch.setattr(
+        acceptance.getpass, "getpass", lambda prompt: prompts.append(prompt) or "offline-secret"
+    )
+    target = tmp_path / "comparison.json"
+    assert (
+        acceptance.main(
+            [
+                "--live",
+                "--provider",
+                "deepseek",
+                "--model",
+                "deepseek-flash",
+                "--compare-thinking",
+                "--max-calls",
+                "2",
+                "--report",
+                str(target),
+            ]
+        )
+        == 2
+    )
+    report = json.loads(target.read_text())
+    assert len(calls) == 2 and len(prompts) == 1
+    assert report["selected_summary"] == {
+        "passed": 2,
+        "failed": 0,
+        "untested": len(acceptance.CASES) * 2 - 2,
+    }
+    disabled, thinking = [json.loads(call.content) for call in calls]
+    assert disabled["thinking"] == {"type": "disabled"} and disabled["max_tokens"] == 2048
+    assert thinking["thinking"] == {"type": "enabled"} and thinking["max_tokens"] == 8192
+    assert thinking["reasoning_effort"] == "low" and "temperature" not in thinking
+    assert report["usage"] == {
+        "calls_with_usage": 2,
+        "calls_without_usage": 0,
+        "prompt_tokens": 200,
+        "completion_tokens": 100,
+        "reasoning_tokens": 20,
+        "total_tokens": 300,
+    }
+    assert report["mode_comparison"]["low"]["usage"]["reasoning_tokens"] == 20
+    assert report["evidence_comparison"]["support"] is True
+    assert "private" not in target.read_text() and "offline-secret" not in target.read_text()
+
+
+@pytest.mark.parametrize("mode", ["low", "high", "max"])
+def test_thinking_effort_reaches_sdk_and_reports_unknown_usage(
+    offline_wire, tmp_path, monkeypatch, mode
+):
+    calls, replies = offline_wire
+    replies.append("SUPPORT")
+    monkeypatch.setattr(acceptance.sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr(acceptance.getpass, "getpass", lambda prompt: "offline-secret")
+    target = tmp_path / "thinking.json"
+    assert (
+        acceptance.main(
+            [
+                "--live",
+                "--provider",
+                "deepseek",
+                "--model",
+                "deepseek-flash",
+                "--thinking",
+                mode,
+                "--case",
+                "support",
+                "--max-calls",
+                "1",
+                "--max-output-tokens",
+                "16384",
+                "--report",
+                str(target),
+            ]
+        )
+        == 0
+    )
+    body = json.loads(calls[0].content)
+    assert body["reasoning_effort"] == mode and body["max_tokens"] == 16384
+    assert body["thinking"] == {"type": "enabled"}
+    report = json.loads(target.read_text())
+    assert report["usage"]["total_tokens"] is None
+    assert report["usage"]["calls_without_usage"] == 1
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        ["--provider", "openai", "--thinking", "low"],
+        ["--provider", "openai", "--compare-thinking"],
+        ["--provider", "deepseek", "--compare-thinking", "--thinking", "high"],
+    ],
+)
+def test_invalid_thinking_options_fail_before_prompt(options, monkeypatch):
+    monkeypatch.setattr(acceptance.getpass, "getpass", lambda prompt: pytest.fail("No prompt"))
+    with pytest.raises(SystemExit) as error:
+        acceptance.main(options)
     assert error.value.code == 2
