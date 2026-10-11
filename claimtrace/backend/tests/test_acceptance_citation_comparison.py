@@ -480,3 +480,103 @@ def test_native_claude_acceptance_is_counted_and_checked(offline_wire, monkeypat
     assert selected[0]["actual"]["verdict"] == "SUPPORT"
     assert len(calls) == budget.attempted == 1
     assert calls[0].url.path == "/v1/messages"
+
+
+@pytest.mark.parametrize("cap", [256, 1024])
+def test_deepseek_budget_parameters_and_report(offline_wire, tmp_path, monkeypatch, cap):
+    calls, replies = offline_wire
+    replies.append("SUPPORT")
+    monkeypatch.setattr(acceptance.sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr(acceptance.getpass, "getpass", lambda prompt: "offline-secret")
+    target = tmp_path / "deepseek.json"
+    assert (
+        acceptance.main(
+            [
+                "--live",
+                "--provider",
+                "deepseek",
+                "--model",
+                "deepseek-flash",
+                "--case",
+                "support",
+                "--max-calls",
+                "1",
+                "--max-output-tokens",
+                str(cap),
+                "--report",
+                str(target),
+            ]
+        )
+        == 0
+    )
+    body = json.loads(calls[0].content)
+    assert body["max_tokens"] == cap
+    assert body["thinking"] == {"type": "disabled"}
+    assert json.loads(target.read_text())["generation"] == {
+        "max_output_tokens": cap,
+        "thinking": "disabled",
+    }
+
+
+@pytest.mark.parametrize("finish", ["length", "content_filter", None])
+def test_capped_deepseek_never_accepts_partial_json(offline_wire, finish):
+    calls, replies = offline_wire
+    replies.append(
+        httpx.Response(
+            200,
+            json={
+                "id": "offline",
+                "object": "chat.completion",
+                "created": 0,
+                "model": "deepseek-flash",
+                "choices": [
+                    {
+                        "index": 0,
+                        "finish_reason": finish,
+                        "message": {
+                            "role": "assistant",
+                            "content": '{"label":"SUPPORT","rationale":"valid JSON"}',
+                        },
+                    }
+                ],
+            },
+        )
+    )
+    report = report_for("deepseek", cases=["support"], limit=1)
+    budget = acceptance.CallBudget(1)
+    with acceptance.scratch_library():
+        acceptance.run_live(
+            report,
+            {
+                "provider": "deepseek",
+                "model": "deepseek-flash",
+                "api_key": "offline-secret",
+            },
+            budget,
+        )
+    row = next(row for row in report["cases"] if row["selected"])
+    assert row["outcome"] == "failed"
+    assert row["actual"]["error_code"] == "AI_PROVIDER_FAILED"
+    assert len(calls) == 1
+    assert json.loads(calls[0].content)["max_tokens"] == 512
+
+
+@pytest.mark.parametrize(
+    "provider,cap", [("openai", "512"), ("deepseek", "0"), ("deepseek", "4097")]
+)
+def test_invalid_output_limit_cannot_start_live(provider, cap):
+    with pytest.raises(SystemExit) as error:
+        acceptance.main(
+            [
+                "--live",
+                "--provider",
+                provider,
+                "--model",
+                "m",
+                "--max-calls",
+                "1",
+                "--max-output-tokens",
+                cap,
+            ]
+        )
+    assert error.value.code == 2
