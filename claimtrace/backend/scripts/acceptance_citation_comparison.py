@@ -8,6 +8,7 @@ is outside this suite. See docs/verify-acceptance.md for scope and exit codes.
 
 import argparse
 import getpass
+import hashlib
 import json
 import os
 import subprocess
@@ -15,7 +16,7 @@ import sys
 import tempfile
 import time
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
@@ -71,6 +72,24 @@ CASES = (
         "NOT_FOUND",
         "The paper reports that the method reduced carbon emissions by forty percent.",
     ),
+    AcceptanceCase(
+        "partial_tasks",
+        "PARTIAL",
+        "Self-attention relates positions within a single sequence and has been "
+        "demonstrated to work successfully on every possible task.",
+    ),
+    AcceptanceCase(
+        "causal_not_found",
+        "NOT_FOUND",
+        "The paper establishes that using self-attention causes a forty percent "
+        "reduction in carbon emissions compared with recurrent networks.",
+    ),
+    AcceptanceCase(
+        "training_contradict",
+        "CONTRADICT",
+        "The authors trained the base Transformer for 100,000 steps on only one "
+        "NVIDIA P100 GPU rather than eight GPUs.",
+    ),
 )
 
 SAFE_ERROR_CODES = {
@@ -110,6 +129,8 @@ def available_providers() -> list[str]:
 
 def make_report(args) -> dict:
     selected_cases = args.case or [case.case_id for case in CASES]
+    thinking = getattr(args, "thinking", None) or "disabled"
+    compare = getattr(args, "compare_thinking", False)
     rows = []
     for provider in available_providers():
         for case in CASES:
@@ -131,6 +152,11 @@ def make_report(args) -> dict:
                     "duration_seconds": None,
                 }
             )
+            if provider == "deepseek":
+                modes = ("disabled", "low") if compare else (thinking,)
+                template = rows.pop()
+                for mode in modes:
+                    rows.append({**template, "thinking": mode})
     try:
         revision = subprocess.run(
             ["git", "rev-parse", "HEAD"],
@@ -142,9 +168,10 @@ def make_report(args) -> dict:
     except OSError:
         revision = None
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(UTC).isoformat(),
         "revision": revision or None,
+        "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "mode": "live" if args.live else "plan",
         "scope": "Seeded parsed source; citation resolution, embedding, retrieval and judgement. "
         "PDF parsing and Audit extraction are outside this suite.",
@@ -157,8 +184,9 @@ def make_report(args) -> dict:
         "budget": {"max_calls": args.max_calls or 0, "calls_attempted": 0},
         "generation": (
             {
-                "max_output_tokens": getattr(args, "max_output_tokens", None) or 512,
-                "thinking": "disabled",
+                "max_output_tokens": getattr(args, "max_output_tokens", None),
+                "thinking": "compare" if compare else thinking,
+                "default_token_caps": {"disabled": 2048, "enabled": 8192},
             }
             if args.provider == "deepseek"
             else None
@@ -181,6 +209,7 @@ def evaluate(case: AcceptanceCase, response) -> dict:
             "verdict": None,
             "evidence_count": 0,
             "error_code": None,
+            "evidence_sha256": None,
         },
     }
     actual = result["actual"]
@@ -225,6 +254,10 @@ def evaluate(case: AcceptanceCase, response) -> dict:
         result["reason"] = "verdict_mismatch"
     else:
         result.update(outcome="passed", reason="matched")
+    if parsed.evidence:
+        actual["evidence_sha256"] = hashlib.sha256(
+            json.dumps([item.passage_text for item in parsed.evidence]).encode("utf-8")
+        ).hexdigest()
     return result
 
 
@@ -232,10 +265,45 @@ def evaluate(case: AcceptanceCase, response) -> dict:
 class CallBudget:
     limit: int
     attempted: int = 0
+    usage: list[dict] = field(default_factory=list)
+
+
+def token_usage(result) -> dict:
+    usage = getattr(result, "usage", None)
+    details = getattr(usage, "completion_tokens_details", None)
+    values = {
+        "prompt_tokens": getattr(usage, "prompt_tokens", None),
+        "completion_tokens": getattr(usage, "completion_tokens", None),
+        "reasoning_tokens": getattr(details, "reasoning_tokens", None),
+        "total_tokens": getattr(usage, "total_tokens", None),
+    }
+    return {
+        name: value if type(value) is int and value >= 0 else None for name, value in values.items()
+    }
+
+
+def usage_summary(records) -> dict:
+    return {
+        "calls_with_usage": sum(
+            item.get("calls_with_usage", int(item.get("total_tokens") is not None))
+            for item in records
+        ),
+        "calls_without_usage": sum(
+            item.get("calls_without_usage", int(item.get("total_tokens") is None))
+            for item in records
+        ),
+        **{
+            name: (sum(values) if values else None)
+            for name in ("prompt_tokens", "completion_tokens", "reasoning_tokens", "total_tokens")
+            for values in [[item[name] for item in records if item.get(name) is not None]]
+        },
+    }
 
 
 @contextmanager
-def enforce_budget(budget: CallBudget, *, provider=None, max_output_tokens=None):
+def enforce_budget(
+    budget: CallBudget, *, provider=None, max_output_tokens=None, thinking="disabled"
+):
     """Count the actual runtime calls, including any unexpected extra AI step."""
     from backend.src.services.user_ai_runtime import UserAIError, UserAIRuntime
 
@@ -253,14 +321,23 @@ def enforce_budget(budget: CallBudget, *, provider=None, max_output_tokens=None)
                 raise runtime.failure
             budget.attempted += 1
         if provider == "deepseek":
-            limit = max_output_tokens or 512
+            limit = max_output_tokens or (2048 if thinking == "disabled" else 8192)
             kwargs["max_tokens"] = min(kwargs.get("max_tokens") or limit, limit)
             kwargs["extra_body"] = {
                 **kwargs.get("extra_body", {}),
-                "thinking": {"type": "disabled"},
+                "thinking": {"type": "disabled" if thinking == "disabled" else "enabled"},
             }
-            kwargs.pop("reasoning_effort", None)
-        result = original(runtime, **kwargs)
+            if thinking == "disabled":
+                kwargs.pop("reasoning_effort", None)
+            else:
+                kwargs["reasoning_effort"] = thinking
+                kwargs.pop("temperature", None)
+        try:
+            result = original(runtime, **kwargs)
+        except Exception:
+            budget.usage.append(token_usage(None))
+            raise
+        budget.usage.append(token_usage(result))
         if provider == "deepseek":
             # Current main predates PR #60's partial-generation rejection.
             choices = getattr(result, "choices", None)
@@ -375,7 +452,7 @@ def seed(upload_dir: Path) -> None:
     )
 
 
-def run_live(report: dict, config: dict, budget: CallBudget) -> None:
+def run_live(report: dict, config: dict, budget: CallBudget, *, report_path=None) -> None:
     from backend.src.main import app
     from fastapi.testclient import TestClient
 
@@ -385,12 +462,13 @@ def run_live(report: dict, config: dict, budget: CallBudget) -> None:
     client = TestClient(app)
     try:
         generation = report.get("generation") or {}
-        with enforce_budget(
-            budget,
-            provider=config["provider"],
-            max_output_tokens=generation.get("max_output_tokens"),
-        ):
-            for row in report["cases"]:
+        for row in report["cases"]:
+            with enforce_budget(
+                budget,
+                provider=config["provider"],
+                max_output_tokens=generation.get("max_output_tokens"),
+                thinking=row.get("thinking", "disabled"),
+            ):
                 if not row["selected"]:
                     continue
                 if stop_reason or budget.attempted >= budget.limit:
@@ -398,6 +476,7 @@ def run_live(report: dict, config: dict, budget: CallBudget) -> None:
                     continue
                 case = cases[row["case_id"]]
                 started = time.perf_counter()
+                usage_start = len(budget.usage)
                 try:
                     response = client.post(
                         "/api/verify/citation",
@@ -415,17 +494,22 @@ def run_live(report: dict, config: dict, budget: CallBudget) -> None:
                     row.update(outcome="failed", reason="request_exception")
                 finally:
                     row["duration_seconds"] = round(time.perf_counter() - started, 3)
+                    row["usage"] = usage_summary(budget.usage[usage_start:])
                 code = (row["actual"] or {}).get("error_code")
                 if code in STOP_ERROR_CODES:
                     stop_reason = "provider_unavailable"
                 elif code == "ACCEPTANCE_BUDGET_EXHAUSTED":
                     row.update(outcome="untested", reason="budget_exhausted")
                     stop_reason = "budget_exhausted"
+                if report_path is not None:
+                    report["budget"]["calls_attempted"] = budget.attempted
+                    report["usage"] = usage_summary(budget.usage)
+                    write_report(report, report_path, quiet=True)
     finally:
         client.close()
 
 
-def write_report(report: dict, target: Path) -> int:
+def write_report(report: dict, target: Path, *, quiet=False) -> int:
     def counts(rows):
         return {
             outcome: sum(row["outcome"] == outcome for row in rows)
@@ -435,16 +519,50 @@ def write_report(report: dict, target: Path) -> int:
     report["summary"] = counts(report["cases"])
     selected = counts([row for row in report["cases"] if row["selected"]])
     report["selected_summary"] = selected
+    if report.get("generation"):
+        modes = sorted({row["thinking"] for row in report["cases"] if row["selected"]})
+        report["mode_comparison"] = {}
+        for mode in modes:
+            rows = [row for row in report["cases"] if row["selected"] and row["thinking"] == mode]
+            durations = [
+                row["duration_seconds"] for row in rows if row["duration_seconds"] is not None
+            ]
+            report["mode_comparison"][mode] = {
+                **counts(rows),
+                "completed_comparisons": sum(
+                    (row["actual"] or {}).get("status") == "COMPARED" for row in rows
+                ),
+                "mean_duration_seconds": round(sum(durations) / len(durations), 3)
+                if durations
+                else None,
+                "usage": usage_summary([row["usage"] for row in rows if "usage" in row]),
+            }
+        report["evidence_comparison"] = {}
+        for case in CASES:
+            hashes = [
+                (row["actual"] or {}).get("evidence_sha256")
+                for row in report["cases"]
+                if row["selected"] and row["case_id"] == case.case_id
+            ]
+            report["evidence_comparison"][case.case_id] = (
+                len(set(hashes)) == 1 if len(hashes) > 1 and all(hashes) else None
+            )
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     for row in report["cases"]:
+        if quiet:
+            break
+        if any(item["selected"] for item in report["cases"]) and not row["selected"]:
+            continue
         actual = (row["actual"] or {}).get("verdict") or "-"
         print(
-            f"{row['provider']:12} {row['case_id']:10} {row['outcome']:8} "
+            f"{row['provider']:12} {row.get('thinking', '-'):8} "
+            f"{row['case_id']:20} {row['outcome']:8} "
             f"expected={row['expected']['verdict']:10} actual={actual:10} {row['reason']}"
         )
-    print(f"Matrix: {report['summary']}; selected: {selected}")
-    print(f"Provider calls attempted: {report['budget']['calls_attempted']}; report: {target}")
+    if not quiet:
+        print(f"Matrix: {report['summary']}; selected: {selected}")
+        print(f"Provider calls attempted: {report['budget']['calls_attempted']}; report: {target}")
     if selected["failed"]:
         return 1
     return 2 if selected["untested"] or not sum(selected.values()) else 0
@@ -462,7 +580,17 @@ def main(argv=None) -> int:
     arguments.add_argument(
         "--max-output-tokens",
         type=int,
-        help="DeepSeek acceptance only: 1-4096 output tokens per call (default: 512).",
+        help="DeepSeek only: 1-32768 generated tokens; default 2048 disabled / 8192 thinking.",
+    )
+    arguments.add_argument(
+        "--thinking",
+        choices=("disabled", "low", "high", "max"),
+        help="DeepSeek thinking effort; default disabled.",
+    )
+    arguments.add_argument(
+        "--compare-thinking",
+        action="store_true",
+        help="DeepSeek: compare disabled and low on the same cases and shared budget.",
     )
     arguments.add_argument("--report", type=Path, default=Path("verify-acceptance-report.json"))
     args = arguments.parse_args(argv)
@@ -473,16 +601,23 @@ def main(argv=None) -> int:
     if args.max_calls is not None and args.max_calls < 0:
         arguments.error("--max-calls cannot be negative")
     if args.max_output_tokens is not None and (
-        args.provider != "deepseek" or not 1 <= args.max_output_tokens <= 4096
+        args.provider != "deepseek" or not 1 <= args.max_output_tokens <= 32768
     ):
         arguments.error(
-            "--max-output-tokens requires --provider deepseek and a value from 1 to 4096"
+            "--max-output-tokens requires --provider deepseek and a value from 1 to 32768"
         )
+    if (args.thinking or args.compare_thinking) and args.provider != "deepseek":
+        arguments.error("Thinking options require --provider deepseek")
+    if args.thinking and args.compare_thinking:
+        arguments.error("Select --thinking or --compare-thinking, not both")
     report = make_report(args)
+    report["run_status"] = "awaiting_credentials" if args.live else "planned"
     budget = CallBudget(args.max_calls or 0)
     if args.live:
         from backend.src.user_ai import UserAIConfig
         from pydantic import ValidationError
+
+        write_report(report, args.report, quiet=True)
 
         config = {"provider": args.provider, "model": args.model}
         for name in ("region", "workspace"):
@@ -499,9 +634,10 @@ def main(argv=None) -> int:
                 if row["selected"]:
                     row["reason"] = "configuration_or_credentials_unavailable"
         else:
+            report["run_status"] = "running"
             try:
                 with scratch_library():
-                    run_live(report, {**config, "api_key": key}, budget)
+                    run_live(report, {**config, "api_key": key}, budget, report_path=args.report)
             except KeyboardInterrupt:
                 reason = "interrupted"
             except Exception:
@@ -513,7 +649,9 @@ def main(argv=None) -> int:
                     if row["selected"] and row["outcome"] == "untested":
                         row["reason"] = reason
             del key
+        report["run_status"] = "completed"
     report["budget"]["calls_attempted"] = budget.attempted
+    report["usage"] = usage_summary(budget.usage)
     return write_report(report, args.report)
 
 
