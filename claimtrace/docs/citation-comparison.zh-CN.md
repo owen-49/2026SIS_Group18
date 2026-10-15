@@ -491,8 +491,11 @@ interface CitationComparisonResponse {
    需要先定并发上限和超时，否则会被 LLM 配额拖死。
 6. **【P3】`SOURCE_NOT_PARSED` 单列一个状态** —— 现在"文献匹配上了但 PDF 没解析完"
    和"根本没上传 PDF"都折叠成 `SOURCE_NOT_AVAILABLE`。分成两个状态前端能给出更准的提示。
-7. **【P3】`k` 的实际语义** —— `k` 只控制返回几段证据，送进 LLM 的永远是前 3 段
-   （`top_n=3`，硬编码）。如果想让它可调，要把它也传进 `verify_with_retrieval`。
+7. **【已修】`k` 的实际语义** —— 原先 `k` 只控制返回几段证据，送进 LLM 的永远是前 3 段
+   （`top_n=3`，硬编码）：响应发 5 段、模型读 3 段，而 `message` 照 5 段写。
+   现在取 `top_n=len(evidence)`，模型读到的段数就是响应发出的段数；引擎的
+   `VerificationResult.passages_used` 记录实际送出的段落，`message` 的数字由它数出
+   （空白段不占 `top_n` 名额，也不计入这个数字）。
 
 ---
 

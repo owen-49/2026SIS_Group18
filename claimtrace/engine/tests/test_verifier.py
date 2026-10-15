@@ -189,6 +189,34 @@ class TestPromptPlumbing:
         assert result.source_text_used == "[Passage 1, similarity=0.900]\n" + ALPHA
         assert result.source_text_used in client.prompt
 
+    def test_passages_used_is_the_set_the_context_was_built_from(self):
+        client = FakeLLM()
+        results = [result_at(1, ALPHA), result_at(2, BETA), result_at(3, "GAMMA-X")]
+
+        result = Verifier().verify_with_retrieval(CLAIM, results, client=client, top_n=2)
+
+        # The structured twin of source_text_used: a caller can attribute the
+        # verdict to these passages without re-deriving the top_n slice.
+        assert [r.passage for r in result.passages_used] == [ALPHA, BETA]
+        assert result.best_match is result.passages_used[0]
+
+    def test_passages_used_skips_blanks_exactly_as_the_context_does(self):
+        client = FakeLLM()
+        results = [result_at(1, "   "), result_at(2, ALPHA)]
+
+        result = Verifier().verify_with_retrieval("claim", results, client=client, top_n=2)
+
+        # The blank took a rank, not a slot, so a caller counting the passages
+        # the model was shown must not count it.
+        assert [r.passage for r in result.passages_used] == [ALPHA]
+        assert ALPHA in result.source_text_used
+
+    def test_passages_used_is_empty_when_nothing_was_sent(self):
+        result = Verifier().verify_with_retrieval("claim", [], client=FakeLLM())
+
+        assert result.status is VerificationStatus.NO_EVIDENCE
+        assert result.passages_used == ()
+
     def test_prompt_is_built_correctly(self, verifier):
         prompt = verifier._build_prompt("Claim text", "Source text")
         for text in ("Claim text", "Source text", "SUPPORT", "PARTIAL", "CONTRADICT",
