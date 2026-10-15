@@ -9,15 +9,18 @@ extraction needed by BibTeX verification.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 import fitz
-from parser.markdown_converter import convert_pdf_to_markdown
+from parser.markdown_converter import HybridBackendError, convert_pdf_to_markdown
 
 from ..config import get_settings
 from ..models import ParsedDocument, ParsedParagraph
+
+logger = logging.getLogger(__name__)
 
 
 class ParserAdapterError(RuntimeError):
@@ -470,6 +473,30 @@ def _extract_metadata(
     )
 
 
+def _convert_markdown_with_fallback(file_path: Path, *, markdown_dir: Path, settings) -> str:
+    """Convert via the configured hybrid backend, falling back to local Java
+    processing when the hybrid service is unreachable."""
+    try:
+        return convert_pdf_to_markdown(
+            file_path,
+            output_dir=markdown_dir,
+            hybrid=settings.parser_hybrid,
+            hybrid_mode=settings.parser_hybrid_mode,
+            hybrid_url=(settings.parser_hybrid_url if settings.parser_hybrid != "off" else None),
+            use_struct_tree=settings.parser_use_struct_tree,
+        )
+    except HybridBackendError as exc:
+        logger.warning(
+            "Hybrid backend unreachable (%s); falling back to local Java processing.", exc
+        )
+        return convert_pdf_to_markdown(
+            file_path,
+            output_dir=markdown_dir,
+            hybrid="off",
+            use_struct_tree=settings.parser_use_struct_tree,
+        )
+
+
 def parse_document(
     paper_id: str,
     file_path: Path,
@@ -507,14 +534,7 @@ def parse_document(
         raise ParserAdapterError(f"Unable to parse PDF metadata: {file_path.name}") from exc
 
     try:
-        markdown = convert_pdf_to_markdown(
-            file_path,
-            output_dir=markdown_dir,
-            hybrid=settings.parser_hybrid,
-            hybrid_mode=settings.parser_hybrid_mode,
-            hybrid_url=(settings.parser_hybrid_url if settings.parser_hybrid != "off" else None),
-            use_struct_tree=settings.parser_use_struct_tree,
-        )
+        markdown = _convert_markdown_with_fallback(file_path, markdown_dir=markdown_dir, settings=settings)
     except Exception as exc:
         raise ParserAdapterError(f"Unable to convert PDF with Yi's Parser: {exc}") from exc
 
