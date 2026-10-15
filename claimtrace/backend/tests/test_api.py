@@ -563,3 +563,84 @@ def test_claims_resolve_bib_key_to_matching_local_pdf(client, storage_paths):
     assert claim["cited_source"]["source_paper_id"] == source.paper_id
     assert claim["cited_source"]["citation_key"] == "attention2024"
     assert claim["source_document"]["total_pages"] == 1
+
+
+def _completed_paper(storage_paths, paper_id: str):
+    """Persist a finished PDF paper with its parsed document."""
+    document = ParsedDocument(
+        paper_id=paper_id,
+        title="Example Paper",
+        pages=1,
+        paragraphs=[ParsedParagraph(text="A paragraph.", page_start=1, page_end=1)],
+    )
+    return _persist_parsed_pdf(storage_paths, paper_id, "example.pdf", document)
+
+
+def _persist_markdown_artifact(record: PaperRecord, paper_id: str, markdown: str, images: dict[str, bytes]):
+    """Write the Parser's Markdown artifact next to a persisted paper."""
+    parsed_root = Path(record.parsed_result_path).parent
+    markdown_dir = parsed_root / "markdown"
+    markdown_dir.mkdir(parents=True, exist_ok=True)
+    (markdown_dir / f"{paper_id}.md").write_text(markdown, encoding="utf-8")
+    images_dir = markdown_dir / f"{paper_id}_images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    for name, content in images.items():
+        (images_dir / name).write_bytes(content)
+
+
+def test_paper_markdown_returns_parser_artifact(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    record = _completed_paper(storage_paths, paper_id)
+    _persist_markdown_artifact(record, paper_id, "# Title\n\n$$x^2$$\n", {})
+
+    response = client.get(f"/api/papers/{paper_id}/markdown")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["paper_id"] == paper_id
+    assert body["markdown"] == "# Title\n\n$$x^2$$\n"
+
+
+def test_paper_markdown_missing_artifact_returns_404(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    _completed_paper(storage_paths, paper_id)
+
+    response = client.get(f"/api/papers/{paper_id}/markdown")
+
+    assert response.status_code == 404
+
+
+def test_paper_markdown_unknown_paper_returns_404(client, storage_paths):
+    response = client.get(f"/api/papers/{uuid.uuid4()}/markdown")
+
+    assert response.status_code == 404
+
+
+def test_paper_image_serves_extracted_figure(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    record = _completed_paper(storage_paths, paper_id)
+    _persist_markdown_artifact(record, paper_id, "![fig](<fig.png>)", {"fig.png": b"\x89PNG\r\n\x1a\n"})
+
+    response = client.get(f"/api/papers/{paper_id}/images/fig.png")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content == b"\x89PNG\r\n\x1a\n"
+
+
+def test_paper_image_rejects_path_traversal(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    record = _completed_paper(storage_paths, paper_id)
+    _persist_markdown_artifact(record, paper_id, "", {})
+    parsed_root = Path(record.parsed_result_path).parent
+    (parsed_root / "secret.txt").write_text("secret", encoding="utf-8")
+
+    response = client.get(f"/api/papers/{paper_id}/images/..%2Fsecret.txt")
+
+    assert response.status_code == 404
+
+
+def test_paper_image_unknown_paper_returns_404(client, storage_paths):
+    response = client.get(f"/api/papers/{uuid.uuid4()}/images/fig.png")
+
+    assert response.status_code == 404

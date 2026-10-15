@@ -1,9 +1,18 @@
 """Endpoints for listing persisted paper metadata."""
 
-from fastapi import APIRouter, HTTPException, Response, status
-from fastapi.responses import JSONResponse
+import mimetypes
+from pathlib import Path
 
-from ..models import PaperClaimsResponse, PaperListItem, PaperListResponse, PaperScope
+from fastapi import APIRouter, HTTPException, Response, status
+from fastapi.responses import FileResponse, JSONResponse
+
+from ..models import (
+    PaperClaimsResponse,
+    PaperListItem,
+    PaperListResponse,
+    PaperMarkdownResponse,
+    PaperScope,
+)
 from ..services.analysis_service import (
     AnalysisPaperNotFoundError,
     AnalysisServiceError,
@@ -16,7 +25,7 @@ from ..services.paper_deletion_service import (
     PaperDeletionOutcome,
     delete_uploaded_paper,
 )
-from ..storage.paper_store import PaperStoreError, list_papers
+from ..storage.paper_store import PaperStoreError, get_paper, list_papers
 
 router = APIRouter()
 
@@ -69,3 +78,43 @@ def get_claims(paper_id: str, bib_paper_id: str | None = None):
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except AnalysisServiceError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/papers/{paper_id}/markdown", response_model=PaperMarkdownResponse)
+def get_markdown(paper_id: str):
+    """Return the Parser's enhanced Markdown artifact for a paper."""
+    record = get_paper(paper_id)
+    if record is None or not record.parsed_result_path:
+        raise HTTPException(status_code=404, detail="No parsed document for this paper.")
+    markdown_path = (
+        Path(record.parsed_result_path).parent / "markdown" / f"{paper_id}.md"
+    )
+    if not markdown_path.is_file():
+        raise HTTPException(
+            status_code=404, detail="Markdown is not available for this paper."
+        )
+    try:
+        markdown = markdown_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise HTTPException(
+            status_code=500, detail="Unable to read the Markdown artifact."
+        ) from exc
+    return PaperMarkdownResponse(paper_id=paper_id, markdown=markdown)
+
+
+@router.get("/papers/{paper_id}/images/{filename}")
+def get_paper_image(paper_id: str, filename: str):
+    """Serve an image extracted from a parsed paper."""
+    # Reject path separators so callers cannot escape the images directory.
+    if not filename or Path(filename).name != filename:
+        raise HTTPException(status_code=404, detail="Image not found.")
+    record = get_paper(paper_id)
+    if record is None or not record.parsed_result_path:
+        raise HTTPException(status_code=404, detail="Image not found.")
+    image_path = (
+        Path(record.parsed_result_path).parent / "markdown" / f"{paper_id}_images" / filename
+    )
+    if not image_path.is_file():
+        raise HTTPException(status_code=404, detail="Image not found.")
+    media_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    return FileResponse(image_path, media_type=media_type)
