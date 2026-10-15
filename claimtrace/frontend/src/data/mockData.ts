@@ -437,3 +437,39 @@ export function demoCitationComparison(request: import("../types/api").CitationC
     evidence: judged ? sample.matches.map((match, rank) => ({ passage_text: match.passage_text, similarity: match.similarity, rank, page: claim?.source_document?.matched_location?.page || 1 })) : [],
   };
 }
+
+
+export const demoManuscriptMarkdown = String.raw`# Attention Is All You Need
+
+Pre-trained language models construct token representations from
+surrounding context. The attention mechanism weights each context token
+by a learned compatibility score.
+
+## Scaled dot-product attention
+
+For a query matrix $Q$, key matrix $K$ and value matrix $V$, attention is
+
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$
+
+where $d_k$ is the key dimension. Multi-head attention projects the
+input $h$ times and concatenates the results:
+
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)W^O
+$$
+
+## Model configurations
+
+<table>
+<thead><tr><th>Model</th><th>Layers</th><th>$d_{model}$</th><th>Heads</th></tr></thead>
+<tbody>
+<tr><td>base</td><td>6</td><td>512</td><td>8</td></tr>
+<tr><td>big</td><td>6</td><td>1024</td><td>16</td></tr>
+</tbody>
+</table>
+
+The demo Markdown includes an inline formula $E = mc^2$ and a table so
+the rich view can be previewed without a backend.
+`;

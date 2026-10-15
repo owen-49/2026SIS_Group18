@@ -1,0 +1,148 @@
+/* Rich Markdown manuscript view.
+   Imported last in main.tsx so it wins over index/workspace/editorial. */
+
+.markdown-view {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+}
+
+.markdown-view h1,
+.markdown-view h2,
+.markdown-view h3,
+.markdown-view h4,
+.markdown-view h5,
+.markdown-view h6 {
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 1.4em 0 0.6em;
+  color: var(--ink);
+}
+
+.markdown-view h1 { font-size: 1.6em; }
+.markdown-view h2 { font-size: 1.35em; }
+.markdown-view h3 { font-size: 1.15em; }
+.markdown-view h4,
+.markdown-view h5,
+.markdown-view h6 { font-size: 1em; }
+
+.markdown-view p { margin: 0.9em 0; }
+
+.markdown-view img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.2em auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.markdown-view table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: 13px;
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown-view th,
+.markdown-view td {
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown-view th {
+  background: var(--brand-soft);
+  font-weight: 600;
+}
+
+.markdown-view blockquote {
+  margin: 1em 0;
+  padding: 0.2em 1em;
+  border-left: 3px solid var(--brand);
+  color: var(--muted);
+}
+
+.markdown-view code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--brand-soft);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+}
+
+.markdown-view pre {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-view pre code { background: none; padding: 0; }
+
+.markdown-view ul,
+.markdown-view ol { padding-left: 1.6em; margin: 0.8em 0; }
+.markdown-view li { margin: 0.25em 0; }
+
+.markdown-view hr { border: none; border-top: 1px solid var(--line); margin: 1.5em 0; }
+
+/* View toggle in the manuscript toolbar. */
+.manuscript-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.manuscript-toolbar-actions > span {
+  padding: 6px 8px;
+  color: var(--warning);
+  background: var(--brand-soft);
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.manuscript-view-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.manuscript-view-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--paper);
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.manuscript-view-switch button + button { border-left: 1px solid var(--line); }
+.manuscript-view-switch button:hover { background: var(--brand-soft); }
+.manuscript-view-switch button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+.manuscript-view-switch button[aria-pressed="true"]:hover { background: var(--brand-dark); }
+
+/* The rich sheet keeps the paper-sheet look while markdown flows naturally. */
+.manuscript-markdown-sheet { text-align: left; }
+
+/* Wide formulas must scroll inside the sheet instead of overflowing it. */
+.markdown-view .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.3em 0;
+}

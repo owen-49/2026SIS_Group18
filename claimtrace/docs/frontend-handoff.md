@@ -50,6 +50,13 @@ preserve the user's selected text and echo the returned `claim_id`, `manuscript_
 single `citation_marker`. A selected bibliography is passed as `bib_paper_id` to both
 endpoints.
 
+The Manuscript panel has a **Text / Rich** view toggle. Text is the default and keeps the
+selectable `data-selectable-paragraph` structure that claim matching depends on. Rich view
+loads the Parser's enhanced Markdown from `GET /api/papers/{paper_id}/markdown` and renders
+it with react-markdown + KaTeX; image references are resolved through
+`GET /api/papers/{paper_id}/images/{filename}`. Rich view is read-only — claim selection
+stays in the Text view.
+
 The page also supports a manual source PDF for the selected claim. The file is uploaded
 with `POST /api/verify/sources`, listed with `GET /api/verify/sources`, and sent as
 `source_paper_id` to `POST /api/verify/citation`. Verify-only source PDFs are stored in a

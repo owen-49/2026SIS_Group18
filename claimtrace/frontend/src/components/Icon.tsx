@@ -10,6 +10,7 @@ export type IconName =
   | "chevron"
   | "document"
   | "external"
+  | "image"
   | "library"
   | "menu"
   | "search"
@@ -35,6 +36,7 @@ export function Icon({ name, size = 20, ...props }: IconProps) {
     chevron: <path d="m6 9 6 6 6-6" />,
     document: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></>,
     external: <><path d="M15 3h6v6M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></>,
+    image: <><rect width="18" height="18" x="3" y="3" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.5-3.5L7 22" /></>,
     library: <><path d="m16 6 4 14M12 6v14M8 8v12M4 4v16" /><path d="M2 20h20" /></>,
     menu: <><path d="M4 6h16M4 12h16M4 18h16" /></>,
     search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
