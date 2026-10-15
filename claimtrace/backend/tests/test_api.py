@@ -576,7 +576,9 @@ def _completed_paper(storage_paths, paper_id: str):
     return _persist_parsed_pdf(storage_paths, paper_id, "example.pdf", document)
 
 
-def _persist_markdown_artifact(record: PaperRecord, paper_id: str, markdown: str, images: dict[str, bytes]):
+def _persist_markdown_artifact(
+    record: PaperRecord, paper_id: str, markdown: str, images: dict[str, bytes]
+):
     """Write the Parser's Markdown artifact next to a persisted paper."""
     parsed_root = Path(record.parsed_result_path).parent
     markdown_dir = parsed_root / "markdown"
@@ -619,7 +621,9 @@ def test_paper_markdown_unknown_paper_returns_404(client, storage_paths):
 def test_paper_image_serves_extracted_figure(client, storage_paths):
     paper_id = str(uuid.uuid4())
     record = _completed_paper(storage_paths, paper_id)
-    _persist_markdown_artifact(record, paper_id, "![fig](<fig.png>)", {"fig.png": b"\x89PNG\r\n\x1a\n"})
+    _persist_markdown_artifact(
+        record, paper_id, "![fig](<fig.png>)", {"fig.png": b"\x89PNG\r\n\x1a\n"}
+    )
 
     response = client.get(f"/api/papers/{paper_id}/images/fig.png")
 

@@ -7,6 +7,7 @@ import fitz
 from backend.src.services import parser_adapter
 from backend.tests.pdf_fixtures import make_test_pdf
 from parser import pdf_parser
+from parser.markdown_converter import HybridBackendError
 
 
 def _make_two_page_pdf(path: Path) -> None:
@@ -64,6 +65,43 @@ def test_parse_document_adapts_converted_markdown(monkeypatch, tmp_path):
         (1, 1),
         (2, 2),
         (2, 2),
+    ]
+
+
+def test_parse_document_falls_back_to_local_when_hybrid_unreachable(monkeypatch, tmp_path):
+    pdf_path = tmp_path / "paper.pdf"
+    output_dir = tmp_path / "markdown"
+    _make_two_page_pdf(pdf_path)
+
+    calls = []
+
+    def fake_convert(_pdf_path, output_dir=None, **kwargs):
+        calls.append(kwargs)
+        if kwargs.get("hybrid") != "off":
+            raise HybridBackendError("Hybrid backend is not reachable at http://localhost:5002.")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "paper.md").write_text(
+            "# Local title\n\nLocal passage.\n\n", encoding="utf-8"
+        )
+        return "# Local title\n\nLocal passage.\n\n"
+
+    fake_settings = SimpleNamespace(
+        parsed_dir=tmp_path,
+        parser_hybrid="docling-fast",
+        parser_hybrid_mode="full",
+        parser_hybrid_url="http://localhost:5002",
+        parser_use_struct_tree=False,
+    )
+    monkeypatch.setattr(parser_adapter, "get_settings", lambda: fake_settings)
+    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", fake_convert)
+
+    document = parser_adapter.parse_document("paper-id", pdf_path, output_dir=output_dir)
+
+    assert [call["hybrid"] for call in calls] == ["docling-fast", "off"]
+    assert document.title == "Local title"
+    assert [paragraph.text for paragraph in document.paragraphs] == [
+        "Local title",
+        "Local passage.",
     ]
 
 
