@@ -168,7 +168,7 @@ by the rule that retrieval results are always shown rather than summarised.
 | ID | Story (abridged) | Priority | In the product today |
 | --- | --- | --- | --- |
 | US-01 | Upload a source paper PDF and have it parsed into structured paragraphs | P0 | Shipped |
-| US-02 | Hover a citation in Overleaf and see the source passage it points to | P0 — core differentiator | Shipped (extension 0.4.0) |
+| US-02 | Hover a citation in Overleaf and see the source passage it points to | P0 — core differentiator | Partially shipped — hover shows the citation, its bibliography entry and its location, marked "Not checked"; the passage card shipped on 18 September and was disabled on 19 September, when the extension was made Audit-only |
 | US-03 | Submit a claim and get a support verdict against its cited source | P0 | Shipped |
 | US-04 | Upload a `.bib` and cross-check it against the source PDFs | P0 | Shipped (checks the `.bib` against user-supplied PDFs; explicitly not existence proof) |
 | US-05 | Check a manuscript's bibliography against external publication records | P1 | Shipped — Batch audit, five states |
@@ -183,7 +183,7 @@ by the rule that retrieval results are always shown rather than summarised.
 | Stage | Without ClaimTrace | With ClaimTrace |
 | --- | --- | --- |
 | Notice a doubtful claim | Open a mental "to check" list that never gets checked | Hover the `\cite{}` in Overleaf |
-| Check the source | Find the PDF, download it, Ctrl+F, read around the hit — minutes per citation | The card shows the citation, the matched source passage and a support badge; local, no network |
+| Check the source | Find the PDF, download it, Ctrl+F, read around the hit — minutes per citation | The Verify workspace shows the cited passage with a four-way verdict on it; in Overleaf the card identifies the citation and its entry, marked not checked |
 | Decide | Gut feel; usually "let it slide" | A four-way verdict with the passage beside it — the researcher still decides |
 | Whole bibliography | Never checked at all | Batch audit against OpenAlex, then Crossref; five states with a findings list |
 | Before submission | Hope | The short list of references that genuinely need a human |
@@ -211,9 +211,10 @@ Four working parts, all in one repository:
    — the manuscript and the cited article side by side, select a cited sentence, and get the
    matched evidence and verdict. A help page, and a five-step guide for loading the extension.
 2. **Chrome extension** (Manifest V3, version 0.4.0). Reads the `.bib` from Overleaf, uploads it,
-   and runs the batch audit; the hover card on a `\cite{}` shows the citation with its source
-   passage and times itself locally. A side panel lists citations and papers with "Check
-   references" and "Check a manuscript instead".
+   and runs the batch audit; the hover card on a `\cite{}` shows the citation, its bibliography
+   entry and its location, marked not checked — the extension is Audit-only — and times itself
+   locally. A side panel lists citations and papers with "Check references" and "Check a
+   manuscript instead".
 3. **Backend API** (FastAPI). Document parsing for PDF and `.bib` uploads, a paper library,
    citation-claim extraction, the Verify routes, the `.bib`-vs-PDF cross-check, and the Audit route
    that persists its reports (`contract_version: 2`).
@@ -231,7 +232,7 @@ and diffed, and the parse output doubles as test fixtures.
 | When | What changed |
 | --- | --- |
 | W4–W9 | Mock pipeline first (the dashboard still ships a demo mode with sample data and a "Mock API active" pill), then the real parser and real HTTP integration across four groups |
-| 19 September 2026 | End-to-end acceptance on the real Overleaf with the real extension and a real backend — passed. This is the milestone where the hover card started showing the retrieved source passage, not just a label |
+| 19 September 2026 | End-to-end acceptance on the real Overleaf with the real extension and a real backend — passed: the plugin's external reference lookups, and the citation display (a citation on its own line showed its surrounding sentence, not only `\cite{}`). The extension was made Audit-only the same day, disabling the hover card's source passage, which had shipped on 18 September |
 | Late September | The metadata provider chain replaced the earlier Google Scholar lookup, giving the audit an OpenAlex-first, Crossref-fallback design that needs no key |
 | October | Researchers bring their own AI provider credentials (17 providers, keys held only for the lifetime of the request); the provider expansion (PR #60) removed the last feature that would have implied a shared team key |
 | October | Measurement: the audit and verify benchmark harnesses that produce the numbers in Section 5 |
@@ -246,7 +247,8 @@ and diffed, and the parse output doubles as test fixtures.
 > manuscript, the cited article beside it, the verdict badge and the matched source passage.
 
 > **[Screenshot 3 — Overleaf hover card]** *To capture:* the real Overleaf editor with a hover card
-> open on a `\cite{}`, showing the citation and the source passage.
+> open on a `\cite{}`, showing the citation, its bibliography entry and the "Not checked" badge —
+> the extension is Audit-only and shows no source passage.
 
 > **[Screenshot 4 — Extension side panel]** *To capture:* the side panel open on a loaded project:
 > the Citations tab with a "Check references" result.
