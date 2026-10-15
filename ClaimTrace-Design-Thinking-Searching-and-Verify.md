@@ -318,7 +318,8 @@ the reason the confident verdicts can be trusted.
 
 Every design claim in this document is traceable to a merged pull request. The PR numbers below were
 read from the repository's merged pull requests on 15 October 2026; each names the PR that
-introduced or established the evidence, not merely the last one to touch the file.
+introduced or established the evidence, not merely the last one to touch the file. The document
+itself was delivered as **pull request #62** (`engine/design-thinking-searching-and-verify`).
 
 | Claim in this document | Where to check it | Backing PR |
 | --- | --- | --- |
