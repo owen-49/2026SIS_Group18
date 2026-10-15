@@ -55,7 +55,7 @@ other groups. A design that only considers the end user forgets that an enum is 
 | Backend audit path | Persists each reference's state and its lookup attempts; its own validator rejects `not_found` unless every attempt is itself `not_found` | The engine's rule must be the same rule, applied where the attempts are made — not a second, weaker copy |
 | Backend Verify path | Maps the verdict onto `VerdictEnum`; returns non-judged outcomes as HTTP 200 with a null judgement | The verdict set is closed; "not judged" must never arrive dressed as a verdict |
 | Dashboard (`VerdictBadge.tsx`, `types/api.ts`) | Indexes a label map with no runtime guard | A fifth verdict would render `undefined` and a bogus CSS class — silently |
-| Extension | Renders the hover card from the same payload | Evidence has to be in the payload, not fetched later |
+| Extension (Overleaf hover) | Renders the hover card and the audit panel from `/api/parse` and `/api/audit`; it does not call `/api/verify` | The card is built from local data with no request on hover — so if Verify is wired back into it, the evidence must already be in the payload |
 | Parser | Supplies the passages and the reference text that both subsystems consume | The engine may depend on the parser's *output*, never on its package |
 
 ### An honest note on method
