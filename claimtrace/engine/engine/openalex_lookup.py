@@ -147,9 +147,46 @@ def identifier_filter(query: ReferenceQuery) -> str:
     return doi_filter_value(query.doi) or doi_filter_value(arxiv_doi(query.arxiv_id))
 
 
+# Characters OpenAlex's filter grammar reads as grammar rather than as text.
+# Measured against the live API one character at a time: ``,`` and ``?`` are
+# rejected at the edge with HTTP 400 (``title.search:Hello, world`` and
+# ``title.search:Attention Is All You Need?``), ``|`` ORs the value with a
+# second search (``title.search:Hello|world`` answers 1,067,153 results against
+# 477 for ``Hello world``) and ``!`` negates it (``title.search:!Hello``
+# answers 326,984,483 -- every work whose title does not contain the word). The
+# last two answer 200, so they would otherwise fail silently. Quoting does not
+# escape any of them: ``title.search:"Hello|world"`` still ORs, and
+# ``title.search:"Hello?"`` is still a 400.
+#
+# Replaced with a space rather than deleted, which keeps the words either side
+# of a word-separating comma searchable -- the title search ignores punctuation
+# when matching, so the measured cost is nothing. A comma *inside a number* is
+# lost either way: ``100,000`` in a title is not matched by ``100 000`` or by
+# ``100000`` (both answer zero), so such a title has to be found by its words,
+# which it is (``Questions for Machine Comprehension of Text`` finds the SQuAD
+# paper whose full title the filter cannot carry).
+#
+# A title is translated; a DOI is refused instead (``DOI_FILTER_UNSAFE`` in
+# ``metadata_lookup``, which the identifier filters below use). The two are
+# deliberately separate: a title has words to fall back on, so mangling its
+# punctuation costs a match at worst, while a mangled DOI asks about a
+# different work -- which is why an unsafe one is never asked for by
+# identifier at all.
+_FILTER_GRAMMAR = str.maketrans({",": " ", "?": " ", "|": " ", "!": " "})
+
+
+def _search_text(title: str) -> str:
+    """Return the title as a value the filter grammar cannot misread.
+
+    Stripped after translating rather than before, so a title that ends in a
+    replaced character does not leave a trailing space in the query.
+    """
+    return title.translate(_FILTER_GRAMMAR).strip()
+
+
 def build_url(query: ReferenceQuery, limit: int) -> str:
     """Return the OpenAlex request URL that asks a reference by title."""
-    return _url(f"title.search:{query.title.strip()}", limit)
+    return _url(f"title.search:{_search_text(query.title)}", limit)
 
 
 def build_identifier_url(query: ReferenceQuery, limit: int) -> str:
