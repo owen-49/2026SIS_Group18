@@ -233,8 +233,12 @@ def compare_claim_to_cited_paper(
         model=ai_runtime.model if ai_runtime is not None else settings.llm_model_name
     )
     try:
+        # The response ships every retrieved passage as evidence, so the model
+        # is asked for exactly as many as the payload carries. The two were
+        # separate numbers -- five shipped, three read -- which let the message
+        # claim a comparison of passages the model never saw.
         result = verifier.verify_with_retrieval(
-            clean_claim, resolved.retrieval, client=client, top_n=3
+            clean_claim, resolved.retrieval, client=client, top_n=len(evidence)
         )
         if ai_runtime is not None:
             ai_runtime.raise_if_failed()
@@ -275,9 +279,11 @@ def compare_claim_to_cited_paper(
 
     return CitationComparisonResponse(
         status=ComparisonStatus.COMPARED,
+        # Counted from what the model was shown, not from what was retrieved: a
+        # blank passage is dropped before sending and is not a passage compared.
         message=(
-            f"Compared the claim against {len(evidence)} passage(s) retrieved "
-            f"from '{resolved.title or lookup.citation_key}'."
+            f"Compared the claim against {len(result.passages_used)} passage(s) "
+            f"retrieved from '{resolved.title or lookup.citation_key}'."
         ),
         source_document=source_document,
         evidence=evidence,

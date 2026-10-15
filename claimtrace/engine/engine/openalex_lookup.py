@@ -101,10 +101,40 @@ def auth_headers() -> dict[str, str]:
     return {"Authorization": f"Bearer {key}"} if key else {}
 
 
+# Characters OpenAlex's filter grammar reads as grammar rather than as text.
+# Measured against the live API one character at a time: ``,`` and ``?`` are
+# rejected at the edge with HTTP 400 (``title.search:Hello, world`` and
+# ``title.search:Attention Is All You Need?``), ``|`` ORs the value with a
+# second search (``title.search:Hello|world`` answers 1,067,153 results against
+# 477 for ``Hello world``) and ``!`` negates it (``title.search:!Hello``
+# answers 326,984,483 -- every work whose title does not contain the word). The
+# last two answer 200, so they would otherwise fail silently. Quoting does not
+# escape any of them: ``title.search:"Hello|world"`` still ORs, and
+# ``title.search:"Hello?"`` is still a 400.
+#
+# Replaced with a space rather than deleted, which keeps the words either side
+# of a word-separating comma searchable -- the title search ignores punctuation
+# when matching, so the measured cost is nothing. A comma *inside a number* is
+# lost either way: ``100,000`` in a title is not matched by ``100 000`` or by
+# ``100000`` (both answer zero), so such a title has to be found by its words,
+# which it is (``Questions for Machine Comprehension of Text`` finds the SQuAD
+# paper whose full title the filter cannot carry).
+_FILTER_GRAMMAR = str.maketrans({",": " ", "?": " ", "|": " ", "!": " "})
+
+
+def _search_text(title: str) -> str:
+    """Return the title as a value the filter grammar cannot misread.
+
+    Stripped after translating rather than before, so a title that ends in a
+    replaced character does not leave a trailing space in the query.
+    """
+    return title.translate(_FILTER_GRAMMAR).strip()
+
+
 def build_url(query: ReferenceQuery, limit: int) -> str:
     """Return the OpenAlex request URL for a reference."""
     params = {
-        "filter": f"title.search:{query.title.strip()}",
+        "filter": f"title.search:{_search_text(query.title)}",
         "per-page": str(limit),
     }
     contact = os.getenv(CONTACT_ENV_VAR, "").strip()

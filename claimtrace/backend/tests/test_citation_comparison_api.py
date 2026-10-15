@@ -251,6 +251,18 @@ def test_compared_claim_returns_a_real_verdict(client, seeded, wired):
     assert body["cited_source"]["title"] == "Retrieval with citations"
 
 
+def test_the_message_counts_the_passages_the_model_was_shown(client, seeded, wired):
+    """The count in the message is the verifier's, not the payload's.
+
+    The payload ships every retrieved passage while the verifier reads only the
+    top few; when those were two different numbers the message claimed a
+    comparison the model never made. This fails if they drift apart again.
+    """
+    body = post(client).json()
+
+    assert f"against {len(body['evidence'])} passage(s)" in body["message"]
+
+
 def test_evidence_carries_page_and_display_location(client, seeded, wired):
     body = post(client).json()
     evidence = body["evidence"]
