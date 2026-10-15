@@ -5,10 +5,29 @@ conference papers that Crossref covers thinly or not at all, which is where
 several references in the manuscript set actually live.
 
 Design notes:
-- The query carries the title only. Measured: sending the author name as well
-  pushes the correct record out of the first six results, degrading the search
-  to a bag-of-words match. Crossref wants the opposite, so the two providers
-  build their queries differently and neither inherits the other's rule.
+- A reference carrying an identifier is asked for by identifier first; the
+  title query runs only when that request completed and identified nothing.
+  Measured: ``filter=doi:10.18653/v1/n19-1423`` returns the one record for that
+  paper, and so does ``doi:10.48550/arxiv.1502.03167`` for a reference whose
+  only identifier is an arXiv one. An exact lookup beats ranking on a phrase.
+- An identifier the index does not hold is not evidence that the work is
+  absent, so it does not end the search: the title query still runs. A failure
+  does end it, because asking twice into a throttle spends the budget twice and
+  learns nothing.
+- What the fallback turns on is the provider's emptiness, not identity's
+  verdict: a page of records the identity rules then reject is still this
+  provider's answer about that identifier, and the title query is not asked on
+  top of it. Identity is the layer above this one, and a provider that
+  second-guessed it would be deciding whether a reference is the work -- the
+  division this package is built on. Measured on the hijacked "Attention Is All
+  You Need": the identifier query for that preprint's DOI returns one record,
+  which the rules reject, and the title query returns that same record among
+  ten, so asking both would spend two requests to be told the same thing.
+- The title query carries the title only. Measured: sending the author name as
+  well pushes the correct record out of the first six results, degrading the
+  search to a bag-of-words match. Crossref wants the opposite, so the two
+  providers build their queries differently and neither inherits the other's
+  rule.
 - The venue is read from ``primary_location``: ``source.display_name`` first and
   ``raw_source_name`` second. Both are required. The correct record for one
   reference has a null ``source`` and its venue only in ``raw_source_name``, so
@@ -38,7 +57,9 @@ from .identity import PublicationCandidate, ReferenceQuery
 from .metadata_lookup import (
     CONTACT_ENV_VAR,
     ProviderResponse,
+    arxiv_doi,
     default_user_agent,
+    doi_filter_value,
     http_get_json,
     provider_response_for_failure,
 )
@@ -76,10 +97,24 @@ class OpenAlexLookup:
         timeout_seconds: float = 10,
     ) -> ProviderResponse:
         """Return OpenAlex's records for a reference. Never raises."""
-        if not query.title.strip():
+        identifier = identifier_filter(query)
+        title = query.title.strip()
+        if not identifier and not title:
             return ProviderResponse(status="ok", candidates=[])
+        if identifier:
+            response = self._ask(build_identifier_url(query, limit), timeout_seconds)
+            # Only an identifier request that completed and found nothing goes
+            # on to the title query. A failure returns as it is: it is already
+            # no evidence, and a second request into a throttle would only
+            # spend the budget again.
+            if response.candidates or response.status != "ok" or not title:
+                return response
+        return self._ask(build_url(query, limit), timeout_seconds)
+
+    def _ask(self, url: str, timeout_seconds: float) -> ProviderResponse:
+        """Return what one request to OpenAlex yielded. Never raises."""
         result = http_get_json(
-            build_url(query, limit),
+            url,
             timeout_seconds=timeout_seconds,
             user_agent=default_user_agent(),
             headers=auth_headers(),
@@ -101,6 +136,17 @@ def auth_headers() -> dict[str, str]:
     return {"Authorization": f"Bearer {key}"} if key else {}
 
 
+def identifier_filter(query: ReferenceQuery) -> str:
+    """Return the ``doi:`` filter for a reference that carries an identifier.
+
+    The reference's own DOI when it has one, and otherwise the DOI arXiv
+    registers for its arXiv identifier, which OpenAlex holds records under.
+    Empty when the reference carries no identifier, or carries a DOI the filter
+    grammar would misread.
+    """
+    return doi_filter_value(query.doi) or doi_filter_value(arxiv_doi(query.arxiv_id))
+
+
 # Characters OpenAlex's filter grammar reads as grammar rather than as text.
 # Measured against the live API one character at a time: ``,`` and ``?`` are
 # rejected at the edge with HTTP 400 (``title.search:Hello, world`` and
@@ -119,6 +165,13 @@ def auth_headers() -> dict[str, str]:
 # ``100000`` (both answer zero), so such a title has to be found by its words,
 # which it is (``Questions for Machine Comprehension of Text`` finds the SQuAD
 # paper whose full title the filter cannot carry).
+#
+# A title is translated; a DOI is refused instead (``DOI_FILTER_UNSAFE`` in
+# ``metadata_lookup``, which the identifier filters below use). The two are
+# deliberately separate: a title has words to fall back on, so mangling its
+# punctuation costs a match at worst, while a mangled DOI asks about a
+# different work -- which is why an unsafe one is never asked for by
+# identifier at all.
 _FILTER_GRAMMAR = str.maketrans({",": " ", "?": " ", "|": " ", "!": " "})
 
 
@@ -132,11 +185,17 @@ def _search_text(title: str) -> str:
 
 
 def build_url(query: ReferenceQuery, limit: int) -> str:
-    """Return the OpenAlex request URL for a reference."""
-    params = {
-        "filter": f"title.search:{_search_text(query.title)}",
-        "per-page": str(limit),
-    }
+    """Return the OpenAlex request URL that asks a reference by title."""
+    return _url(f"title.search:{_search_text(query.title)}", limit)
+
+
+def build_identifier_url(query: ReferenceQuery, limit: int) -> str:
+    """Return the OpenAlex request URL that asks a reference by identifier."""
+    return _url(identifier_filter(query), limit)
+
+
+def _url(filter_value: str, limit: int) -> str:
+    params = {"filter": filter_value, "per-page": str(limit)}
     contact = os.getenv(CONTACT_ENV_VAR, "").strip()
     if contact:
         # OpenAlex routes requests carrying a contact address to its polite

@@ -8,7 +8,16 @@ year drift and the list-valued fields are the real ones.
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
-from engine.crossref_lookup import NAME, CrossrefLookup, build_url, map_item, map_items
+from engine.crossref_lookup import (
+    NAME,
+    SELECT,
+    CrossrefLookup,
+    build_identifier_url,
+    build_url,
+    identifier_filter,
+    map_item,
+    map_items,
+)
 from engine.identity import ReferenceQuery, select_identity
 from engine.metadata_lookup import HttpResult
 
@@ -55,10 +64,15 @@ def _http(body=None, status_code=200, error=""):
     return HttpResult(status_code=status_code, body=body, error=error)
 
 
-def _search(body, **kwargs):
+def _search(body, query=None, **kwargs):
     with patch("engine.crossref_lookup.http_get_json", return_value=_http(body)) as call:
-        response = CrossrefLookup().search(_QUERY, **kwargs)
+        response = CrossrefLookup().search(query or _QUERY, **kwargs)
     return response, call
+
+
+def _filter_params(url):
+    """Return the decoded filter of a request URL, for readability."""
+    return parse_qs(urlsplit(url).query)["filter"][0]
 
 
 # --- Field mapping ------------------------------------------------------------
@@ -156,6 +170,33 @@ def test_build_url_omits_the_surname_when_the_reference_has_no_authors():
     assert params["query.bibliographic"] == ["K-sparse autoencoders"]
 
 
+def test_build_identifier_url_asks_by_doi():
+    params = parse_qs(urlsplit(build_identifier_url(
+        ReferenceQuery(title="The inverted multi-index", doi="10.1109/TPAMI.2014.2361319"), 10
+    )).query)
+    assert params["filter"] == ["doi:10.1109/tpami.2014.2361319"]
+    assert params["rows"] == ["10"]
+    assert params["select"] == [SELECT]
+
+
+def test_identifier_filter_is_empty_for_an_arxiv_doi():
+    # arXiv's DOIs are registered with DataCite, not Crossref. Measured:
+    # ``filter=doi:10.48550/arxiv.1502.03167`` answers 200 with
+    # ``total-results: 0`` -- so asking would spend a request on an answer that
+    # cannot come, and the title query is the only one worth making.
+    assert identifier_filter(ReferenceQuery(
+        title="Batch Normalization", doi="10.48550/arXiv.1502.03167"
+    )) == ""
+    assert identifier_filter(ReferenceQuery(
+        title="Batch Normalization", arxiv_id="1502.03167"
+    )) == ""
+
+
+def test_identifier_filter_is_empty_without_a_doi():
+    assert identifier_filter(ReferenceQuery(title="K-sparse autoencoders")) == ""
+    assert identifier_filter(ReferenceQuery(title="x", doi="10.1234/a|b")) == ""
+
+
 # --- Transport ----------------------------------------------------------------
 
 
@@ -181,6 +222,63 @@ def test_search_without_a_title_does_not_make_a_request():
     assert response.status == "ok"
     assert response.candidates == []
     assert call.called is False
+
+
+def test_search_asks_a_reference_with_a_doi_by_doi():
+    response, call = _search(
+        {"message": {"items": [_ITEM]}},
+        query=ReferenceQuery(title="The inverted multi-index", doi="10.1109/tpami.2014.2361319"),
+    )
+    assert [candidate.record_id for candidate in response.candidates] == [
+        "10.1109/tpami.2014.2361319"
+    ]
+    assert call.call_count == 1
+    assert _filter_params(call.call_args.args[0]) == "doi:10.1109/tpami.2014.2361319"
+
+
+def test_search_does_not_ask_crossref_for_an_arxiv_doi():
+    # The identifier picks nothing here, so the one request is the title query:
+    # a DataCite DOI is never spent against the wrong registration agency.
+    response, call = _search(
+        {"message": {"items": [_ITEM]}},
+        query=ReferenceQuery(title="The inverted multi-index", doi="10.48550/arxiv.1502.03167"),
+    )
+    assert response.status == "ok"
+    assert call.call_count == 1
+    assert "filter" not in parse_qs(urlsplit(call.call_args.args[0]).query)
+
+
+def test_search_falls_back_to_the_title_when_the_identifier_finds_nothing():
+    with patch(
+        "engine.crossref_lookup.http_get_json",
+        side_effect=[
+            _http({"message": {"items": [], "total-results": 0}}),
+            _http({"message": {"items": [_ITEM]}}),
+        ],
+    ) as call:
+        response = CrossrefLookup().search(ReferenceQuery(
+            title="The inverted multi-index",
+            authors=["Artem Babenko"],
+            doi="10.9999/not-indexed",
+        ))
+    assert [candidate.record_id for candidate in response.candidates] == [
+        "10.1109/tpami.2014.2361319"
+    ]
+    assert call.call_count == 2
+    assert _filter_params(call.call_args_list[0].args[0]) == "doi:10.9999/not-indexed"
+    assert "query.bibliographic" in parse_qs(urlsplit(call.call_args_list[1].args[0]).query)
+
+
+def test_search_does_not_fall_back_when_the_identifier_request_fails():
+    with patch(
+        "engine.crossref_lookup.http_get_json",
+        return_value=_http(status_code=429, error="HTTP 429 Too Many Requests"),
+    ) as call:
+        response = CrossrefLookup().search(ReferenceQuery(
+            title="The inverted multi-index", doi="10.9999/not-indexed"
+        ))
+    assert response.status == "rate_limited"
+    assert call.call_count == 1
 
 
 def test_search_maps_a_throttle():

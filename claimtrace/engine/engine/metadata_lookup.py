@@ -29,13 +29,20 @@ Design notes:
   ``backend/src/services/provider_chain_lookup.py`` maps it to
   ``outcome="failed"`` with an uppercase ``error_code``, so a throttle is never
   reported as an absent publication.
-- Bounded worst case: each provider makes **one** request -- there is no retry
-  loop, because neither API has a punitive backoff to wait out -- and
-  ``timeout_seconds`` bounds each socket operation. It does not bound the whole
-  exchange: a server that dribbles bytes can outlast it. The bibliography
-  adapter that calls this therefore documents the bound -- one request per
-  provider, so about two socket operations per reference -- rather than
-  pretending to enforce a ceiling it cannot.
+- A provider asks by identifier when the reference carries one, and falls back
+  to the title only when that identifier request completed and identified
+  nothing, so a reference with a DOI costs one request and one that the index
+  does not hold still gets the search it would have had before. A request that
+  did not complete is returned as it is -- asking twice into a throttle spends
+  the budget twice and learns nothing.
+- Bounded worst case: each provider makes **two** requests -- the identifier
+  query and the title query -- and there is no retry loop, because neither API
+  has a punitive backoff to wait out. ``timeout_seconds`` bounds each socket
+  operation. It does not bound the whole exchange: a server that dribbles bytes
+  can outlast it. The bibliography adapter that calls this therefore documents
+  the bound -- at most two requests per provider, so about four socket
+  operations per reference that has an identifier -- rather than pretending to
+  enforce a ceiling it cannot.
 - A provider that raises is caught here rather than trusted to return a status,
   so one broken provider cannot take the audit down with it.
 """
@@ -54,6 +61,7 @@ from .identity import (
     ReferenceQuery,
     select_identity,
 )
+from .title_matching import normalize_doi
 
 # Measured, not a default: the correct record for one reference in the
 # manuscript set appeared at rank 9 of the provider's ranking, so a smaller page
@@ -71,6 +79,44 @@ MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 # the repository. Crossref and OpenAlex both serve requests carrying a contact
 # address from a faster, more reliable pool.
 CONTACT_ENV_VAR = "CLAIMTRACE_CONTACT_MAILTO"
+
+# The DOI prefix arXiv registers its preprints under. Measured: OpenAlex holds
+# records under it, so an arXiv identifier can be spent as a DOI there.
+ARXIV_DOI_PREFIX = "10.48550/"
+
+# Characters a provider's ``filter`` grammar reads as syntax rather than as part
+# of a value. Both APIs take comma-separated filters, and OpenAlex was measured
+# treating ``|`` as OR and ``!`` as negation -- still answering 200, so the
+# misreading would be silent -- while ``,`` and ``?`` make the request a 400. A
+# DOI carrying one of them is therefore not asked for by identifier; the title
+# query is used instead, which is what happened before any of this existed.
+DOI_FILTER_UNSAFE = ",?|!"
+
+
+def doi_filter_value(doi: str) -> str:
+    """Return the ``doi:`` filter value for a DOI a provider can be asked for.
+
+    Empty for an empty DOI or one carrying a character the filter grammar would
+    misread, so the caller falls back to the title query rather than sending a
+    request that cannot mean what it says.
+    """
+    value = normalize_doi(doi)
+    if not value or any(character in value for character in DOI_FILTER_UNSAFE):
+        return ""
+    return f"doi:{value}"
+
+
+def arxiv_doi(arxiv_id: str) -> str:
+    """Return the DOI arXiv registers for a preprint, or "" without one.
+
+    Measured: OpenAlex answers ``doi:10.48550/arxiv.1502.03167`` with the record
+    for that preprint, so an arXiv identifier is asked for as the DOI rather
+    than through a filter of its own.
+    """
+    identifier = (arxiv_id or "").strip()
+    if not identifier:
+        return ""
+    return f"{ARXIV_DOI_PREFIX}arxiv.{identifier}"
 
 
 @dataclass

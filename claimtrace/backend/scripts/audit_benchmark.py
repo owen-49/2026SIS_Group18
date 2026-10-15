@@ -1214,7 +1214,11 @@ MAX_SIZE = 200
 # from the contract rather than measured from a run, because this is the claim
 # the tier exists to test: the chain short-circuits at the first provider that
 # settles a reference, so a reference OpenAlex resolves costs one request and a
-# reference it cannot resolve costs two. Asserting the total alone would pass on
+# reference it cannot resolve costs two. None of these shapes carries a DOI, so
+# the identifier query changes none of the counts: a reference resolved by its
+# identifier is one request, exactly as one resolved by title is, and a
+# reference with an identifier that finds nothing spends its fallback and then
+# costs the two it always did. Asserting the total alone would pass on
 # a chain that asked both providers every time and a fixture that happened to
 # have two answers for everything, so each entry's own attempt list is checked.
 SHAPES = {
@@ -1609,9 +1613,14 @@ def main(argv: list[str] | None = None) -> int:
             print(render_live(report_live))
             if args.report:
                 args.report.parent.mkdir(parents=True, exist_ok=True)
-                payload = payload_live(report_live, args)
+                # Named apart from the module-level ``payload``: binding that
+                # name here would make it a local of ``main``, and the replay
+                # path below would then raise UnboundLocalError instead of
+                # writing its report.
+                live_payload = payload_live(report_live, args)
                 args.report.write_text(
-                    json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+                    json.dumps(live_payload, indent=2, ensure_ascii=False) + "\n",
+                    encoding="utf-8",
                 )
                 print(f"\nwrote {args.report}")
             return 1 if report_live.budget_exhausted else 0

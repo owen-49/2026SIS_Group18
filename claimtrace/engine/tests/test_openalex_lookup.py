@@ -14,7 +14,15 @@ import pytest
 
 from engine.identity import ReferenceQuery, select_identity
 from engine.metadata_lookup import HttpResult
-from engine.openalex_lookup import NAME, OpenAlexLookup, build_url, map_item, map_items
+from engine.openalex_lookup import (
+    NAME,
+    OpenAlexLookup,
+    build_identifier_url,
+    build_url,
+    identifier_filter,
+    map_item,
+    map_items,
+)
 from engine.title_matching import extract_arxiv_id
 
 _ACL_2017 = (
@@ -231,6 +239,41 @@ def test_build_url_never_carries_the_api_key():
     assert "api_key" not in url
 
 
+def test_identifier_filter_asks_by_the_reference_doi():
+    assert identifier_filter(ReferenceQuery(doi="https://doi.org/10.18653/v1/P17-1171")) == (
+        "doi:10.18653/v1/p17-1171"
+    )
+
+
+def test_identifier_filter_uses_the_doi_arxiv_registers_for_a_preprint():
+    # Measured: ``filter=doi:10.48550/arxiv.1502.03167`` returns the one record
+    # for that preprint, so an arXiv identifier is spendable here as a DOI.
+    assert identifier_filter(ReferenceQuery(arxiv_id="1502.03167")) == (
+        "doi:10.48550/arxiv.1502.03167"
+    )
+
+
+def test_identifier_filter_is_empty_without_an_identifier():
+    assert identifier_filter(ReferenceQuery(title="x")) == ""
+
+
+def test_identifier_filter_refuses_a_doi_the_filter_grammar_would_misread():
+    # ``|`` is OpenAlex's OR and ``,`` splits the filter list; either would make
+    # the request mean something other than "this DOI". Measured: the request
+    # still answers 200 for ``|``, so the misreading would be silent.
+    assert identifier_filter(ReferenceQuery(doi="10.1234/a|b")) == ""
+    assert identifier_filter(ReferenceQuery(doi="10.1234/a,b")) == ""
+
+
+def test_build_identifier_url_asks_by_doi():
+    params = parse_qs(urlsplit(build_identifier_url(
+        ReferenceQuery(title="Reading Wikipedia to Answer Open-Domain Questions",
+                       doi="10.18653/v1/P17-1171"), 10
+    )).query)
+    assert params["filter"] == ["doi:10.18653/v1/p17-1171"]
+    assert params["per-page"] == ["10"]
+
+
 # --- Transport ----------------------------------------------------------------
 
 
@@ -270,12 +313,72 @@ def test_a_key_left_blank_is_no_key():
     assert call.call_args.kwargs["headers"] == {}
 
 
-def test_search_without_a_title_does_not_make_a_request():
+def test_search_without_a_title_or_identifier_does_not_make_a_request():
     with patch("engine.openalex_lookup.http_get_json") as call:
-        response = OpenAlexLookup().search(ReferenceQuery(doi="10.18653/v1/P17-1171"))
+        response = OpenAlexLookup().search(ReferenceQuery(authors=["Artem Babenko"]))
     assert response.status == "ok"
     assert response.candidates == []
     assert call.called is False
+
+
+def test_search_asks_a_doi_only_reference_by_doi():
+    # No title to fall back to, so the identifier request is the only one -- but
+    # it is made, where a title-only rule would have returned nothing at all.
+    response, call = _search({"results": [_ACL_ITEM]}, ReferenceQuery(
+        doi="10.18653/v1/P17-1171"
+    ))
+    assert [candidate.record_id for candidate in response.candidates] == ["W2963472678"]
+    assert "filter=doi" in call.call_args.args[0].replace("%3A", ":").replace("%2F", "/")
+    assert call.call_count == 1
+
+
+def test_search_stops_at_the_identifier_when_it_identifies_the_work():
+    response, call = _search({"results": [_ACL_ITEM]}, ReferenceQuery(
+        title="Reading Wikipedia to Answer Open-Domain Questions",
+        doi="10.18653/v1/P17-1171",
+    ))
+    assert [candidate.record_id for candidate in response.candidates] == ["W2963472678"]
+    assert call.call_count == 1
+
+
+def test_search_falls_back_to_the_title_when_the_identifier_finds_nothing():
+    # A DOI the index does not hold is not evidence that the work is absent.
+    # Measured: a reference can cite a DOI OpenAlex has not linked to its record.
+    with patch(
+        "engine.openalex_lookup.http_get_json",
+        side_effect=[_http({"results": []}), _http({"results": [_ACL_ITEM]})],
+    ) as call:
+        response = OpenAlexLookup().search(ReferenceQuery(
+            title="Reading Wikipedia to Answer Open-Domain Questions",
+            doi="10.9999/not-indexed",
+        ))
+    assert [candidate.record_id for candidate in response.candidates] == ["W2963472678"]
+    assert call.call_count == 2
+    assert "filter=doi" in call.call_args_list[0].args[0].replace("%3A", ":").replace("%2F", "/")
+    assert "title.search" in call.call_args_list[1].args[0]
+
+
+def test_search_does_not_fall_back_when_the_identifier_request_fails():
+    # A failed request is no evidence either way, and a second request into a
+    # throttle spends the budget twice. The failure is returned as it is.
+    with patch(
+        "engine.openalex_lookup.http_get_json",
+        return_value=_http(status_code=429, error="HTTP 429 Too Many Requests"),
+    ) as call:
+        response = OpenAlexLookup().search(ReferenceQuery(title="x", doi="10.9999/not-indexed"))
+    assert response.status == "rate_limited"
+    assert call.call_count == 1
+
+
+def test_search_does_not_fall_back_without_a_title():
+    with patch(
+        "engine.openalex_lookup.http_get_json",
+        return_value=_http({"results": []}),
+    ) as call:
+        response = OpenAlexLookup().search(ReferenceQuery(doi="10.9999/not-indexed"))
+    assert response.status == "ok"
+    assert response.candidates == []
+    assert call.call_count == 1
 
 
 def test_search_maps_a_throttle():
@@ -346,3 +449,26 @@ def test_the_hijacked_record_is_rejected_end_to_end():
     decision = select_identity(query, response.candidates)
     assert decision.status == "not_found"
     assert [item.reason for item in decision.rejected] == ["no venue"]
+
+
+def test_asking_by_identifier_does_not_let_the_hijacked_record_through():
+    # Measured 2026-10-15: `filter=doi:10.48550/arxiv.1706.03762` returns one
+    # record, and it is this hijacked preprint -- the identifier query asks
+    # exactly and OpenAlex answers with a record that carries the identifier as
+    # its location. The reference's own DOI is not that record's DOI, so the
+    # pre-pass has nothing to match, and the rules refuse it exactly as they do
+    # when the title search returns it. That is the point: the identifier
+    # changes what is asked, never what is accepted.
+    query = ReferenceQuery(
+        title="Attention is all you need",
+        authors=["Ashish Vaswani"],
+        year=2017,
+        venue="Advances in Neural Information Processing Systems",
+        doi="10.48550/arxiv.1706.03762",
+    )
+    response, call = _search({"results": [_HIJACKED_ITEM]}, query=query)
+    assert "filter=doi" in call.call_args.args[0].replace("%3A", ":")
+    assert call.call_count == 1
+    decision = select_identity(query, response.candidates)
+    assert decision.status == "not_found"
+    assert decision.rule != "doi"

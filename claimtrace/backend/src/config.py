@@ -84,11 +84,12 @@ class Settings:
 
     # ── Metadata lookup ──────────────────────────────────
     # Per-socket-operation timeout for the bibliography audit's metadata
-    # providers (OpenAlex, then Crossref). Each provider makes exactly one
-    # request with no retry loop, so one reference costs at most two socket
-    # operations and this is the only bound on a lookup -- there is no overall
-    # deadline above it, because a blocking socket call can be abandoned but
-    # not cancelled.
+    # providers (OpenAlex, then Crossref). A provider makes at most two
+    # requests with no retry loop -- the identifier query, then the title query
+    # only if that one completed and identified nothing -- so one reference
+    # costs at most four socket operations and this is the only bound on a
+    # lookup: there is no overall deadline above it, because a blocking socket
+    # call can be abandoned but not cancelled.
     metadata_lookup_timeout_seconds: float = 10.0
 
     # ── Reference metadata segmentation ──────────────────

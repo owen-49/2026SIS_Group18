@@ -6,6 +6,13 @@ secondary provider in the chain: it covers published venues well and preprints
 poorly, which is the opposite of OpenAlex.
 
 Design notes:
+- A DOI Crossref registers is asked for by identifier first, and the title query
+  runs only when that request completed and found nothing. Measured:
+  ``filter=doi:10.18653/v1/n19-1423`` returns the one record. arXiv's DOIs are
+  registered with DataCite rather than Crossref, and Crossref answers them with
+  an empty result rather than an error -- ``doi:10.48550/arxiv.1502.03167``
+  returned ``total-results: 0``, twice -- so an arXiv identifier is left to the
+  title query instead of being spent on an answer that cannot come.
 - The query is built as title plus the first author's surname. Measured:
   without the surname the cited journal record for one reference sits at rank 9
   of Crossref's relevance ordering and with it at rank 2. The surname is a
@@ -29,8 +36,10 @@ from urllib.parse import urlencode
 
 from .identity import PublicationCandidate, ReferenceQuery
 from .metadata_lookup import (
+    ARXIV_DOI_PREFIX,
     ProviderResponse,
     default_user_agent,
+    doi_filter_value,
     http_get_json,
     provider_response_for_failure,
 )
@@ -57,12 +66,26 @@ class CrossrefLookup:
         timeout_seconds: float = 10,
     ) -> ProviderResponse:
         """Return Crossref's records for a reference. Never raises."""
-        if not query.title.strip():
+        identifier = identifier_filter(query)
+        title = query.title.strip()
+        if not identifier and not title:
             # Crossref's bibliographic query is a title query; without a title
             # there is nothing to ask, and asking would return noise.
             return ProviderResponse(status="ok", candidates=[])
+        if identifier:
+            response = self._ask(build_identifier_url(query, limit), timeout_seconds)
+            # Only an identifier request that completed and found nothing goes
+            # on to the title query. A failure returns as it is: it is already
+            # no evidence, and a second request into a throttle would only
+            # spend the budget again.
+            if response.candidates or response.status != "ok" or not title:
+                return response
+        return self._ask(build_url(query, limit), timeout_seconds)
+
+    def _ask(self, url: str, timeout_seconds: float) -> ProviderResponse:
+        """Return what one request to Crossref yielded. Never raises."""
         result = http_get_json(
-            build_url(query, limit),
+            url,
             timeout_seconds=timeout_seconds,
             user_agent=default_user_agent(),
         )
@@ -71,13 +94,36 @@ class CrossrefLookup:
         return ProviderResponse(status="ok", candidates=map_items(result.body))
 
 
+def identifier_filter(query: ReferenceQuery) -> str:
+    """Return the ``doi:`` filter for a reference Crossref can be asked about.
+
+    Empty when the reference carries no DOI, when it carries one the filter
+    grammar would misread, or when that DOI is arXiv's: those are registered
+    with DataCite, and Crossref answers them with an empty result rather than
+    an error, so the title query is the only one worth making.
+    """
+    if normalize_doi(query.doi).startswith(ARXIV_DOI_PREFIX):
+        return ""
+    return doi_filter_value(query.doi)
+
+
 def build_url(query: ReferenceQuery, limit: int) -> str:
-    """Return the Crossref request URL for a reference."""
-    params = {
-        "query.bibliographic": bibliographic_query(query),
-        "rows": str(limit),
-        "select": SELECT,
-    }
+    """Return the Crossref request URL that asks a reference by title."""
+    return _url(
+        {
+            "query.bibliographic": bibliographic_query(query),
+            "rows": str(limit),
+            "select": SELECT,
+        }
+    )
+
+
+def build_identifier_url(query: ReferenceQuery, limit: int) -> str:
+    """Return the Crossref request URL that asks a reference by identifier."""
+    return _url({"filter": identifier_filter(query), "rows": str(limit), "select": SELECT})
+
+
+def _url(params: dict[str, str]) -> str:
     return f"{ENDPOINT}?{urlencode(params)}"
 
 
