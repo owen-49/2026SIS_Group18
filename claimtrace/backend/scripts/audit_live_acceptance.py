@@ -129,7 +129,15 @@ _MATCHING = "Attention Is All You Need"
 
 
 def _queried_title(url: str) -> str:
-    """Return the reference title a provider's request URL is asking about."""
+    """Return the reference title a provider's request URL is asking about.
+
+    Routes on the title text, which is every request these fixtures produce:
+    neither ``references.bib`` carries a DOI. A fixture that gained one would be
+    asked for by identifier instead -- ``filter=doi:...``, a URL carrying no
+    title -- and would land on the absent fixture below. Teach this function the
+    identifier shape before adding one, or the case reports an absence it
+    invented.
+    """
     params = parse_qs(urlsplit(url).query)
     asked = " ".join(params.get("filter", []) + params.get("query.bibliographic", []))
     for title in (_MATCHING, _ABSENT, _TIMEOUT, _FAILURE, _RATE_LIMIT):

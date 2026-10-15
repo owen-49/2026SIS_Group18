@@ -21,13 +21,15 @@ which the audit service's broad ``except`` would then flatten into
 Engine applies the same rule at the source.
 
 Design notes:
-- **Bound.** Each provider makes exactly one request with no retry loop, and
-  ``timeout_seconds`` bounds each socket operation rather than the whole
-  exchange, so one reference costs about two socket operations. That is half
-  the ceiling the deleted Scholar subprocess enforced (30s), which is why no new
-  deadline mechanism replaces it: a blocking socket call can be abandoned but
-  not cancelled, so a thread and a ``future.result(timeout=)`` would leak a
-  thread and buy nothing the socket timeout does not already give. A server that
+- **Bound.** A provider makes at most two requests with no retry loop -- the
+  identifier query when the reference carries a DOI, then the title query only
+  when that one completed and identified nothing -- and ``timeout_seconds``
+  bounds each socket operation rather than the whole exchange. One reference
+  therefore costs one socket operation per provider when an identifier settles
+  it and two when it does not. No new deadline mechanism replaces the deleted
+  Scholar subprocess's ceiling: a blocking socket call can be abandoned but not
+  cancelled, so a thread and a ``future.result(timeout=)`` would leak a thread
+  and buy nothing the socket timeout does not already give. A server that
   dribbles bytes across reads can still outlast the bound, and this is stated
   rather than hidden.
 - **No throttle.** The providers are documented REST APIs reached with a polite

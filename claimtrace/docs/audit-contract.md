@@ -236,9 +236,11 @@ list (absent), a 429 (throttled), a 500 (provider failure), and `status_code=0`
 (transport failure). None is a production provider, and **passing controlled mode is not
 evidence that live retrieval works**.
 
-**Live mode** issues the real HTTP requests: one per provider per reference, no retries,
-no spacing between references, bounded only by `METADATA_LOOKUP_TIMEOUT_SECONDS` (per
-socket operation). It needs outbound network access and reports `LOOKUP_FAILED` when
+**Live mode** issues the real HTTP requests: a provider asks by the reference's identifier
+when it has one, and asks by title when the reference has no identifier or the identifier
+query completed without identifying the work — so at most two requests per provider per
+reference, and one when the identifier settles it. No retries, no spacing between
+references, bounded only by `METADATA_LOOKUP_TIMEOUT_SECONDS` (per socket operation). It needs outbound network access and reports `LOOKUP_FAILED` when
 there is none — a failure to check, never a claim of absence.
 
 ### Reading the committed snapshots
@@ -326,6 +328,14 @@ the production comparator.  Production therefore remains unchanged.
   **zero** records, so there is no correct OpenAlex record for the title search to rank.
   The audit reports `NOT_FOUND`, names the rule that fired, and says it does not prove
   fabrication.
+
+  Asking by identifier does not rescue it. Measured 2026-10-15,
+  `filter=doi:10.48550/arxiv.1706.03762` returns **one** record, and it is the same hijacked
+  2025 preprint — the identifier query asks exactly, and the provider answers with a record
+  that carries the identifier as its location. What rejects it is the identity rules, not how
+  the question was asked, which is why they are the part not to relax. (A reference stating
+  this **DOI** is a different matter: the DOI pre-pass compares the record's own DOI, which is
+  not the one asked for, so that reference keeps the same outcome as the title-only one.)
 
   Two consequences are worth keeping straight. The loss is not only the venue rule: a record
   must be **in the returned page** before any rule can accept it, and this title has 266
