@@ -80,7 +80,9 @@ def test_parse_document_falls_back_to_local_when_hybrid_unreachable(monkeypatch,
         if kwargs.get("hybrid") != "off":
             raise HybridBackendError("Hybrid backend is not reachable at http://localhost:5002.")
         output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "paper.md").write_text("# Local title\n\nLocal passage.\n\n", encoding="utf-8")
+        (output_dir / "paper.md").write_text(
+            "# Local title\n\nLocal passage.\n\n", encoding="utf-8"
+        )
         return "# Local title\n\nLocal passage.\n\n"
 
     fake_settings = SimpleNamespace(
@@ -97,7 +99,10 @@ def test_parse_document_falls_back_to_local_when_hybrid_unreachable(monkeypatch,
 
     assert [call["hybrid"] for call in calls] == ["docling-fast", "off"]
     assert document.title == "Local title"
-    assert [paragraph.text for paragraph in document.paragraphs] == ["Local title", "Local passage."]
+    assert [paragraph.text for paragraph in document.paragraphs] == [
+        "Local title",
+        "Local passage.",
+    ]
 
 
 def test_parse_document_uses_real_parser_and_preserves_metadata(tmp_path):

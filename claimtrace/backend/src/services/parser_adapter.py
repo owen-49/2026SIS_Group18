@@ -534,7 +534,9 @@ def parse_document(
         raise ParserAdapterError(f"Unable to parse PDF metadata: {file_path.name}") from exc
 
     try:
-        markdown = _convert_markdown_with_fallback(file_path, markdown_dir=markdown_dir, settings=settings)
+        markdown = _convert_markdown_with_fallback(
+            file_path, markdown_dir=markdown_dir, settings=settings
+        )
     except Exception as exc:
         raise ParserAdapterError(f"Unable to convert PDF with Yi's Parser: {exc}") from exc
 
