@@ -10,6 +10,8 @@ its primary location does not.
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
+import pytest
+
 from engine.identity import ReferenceQuery, select_identity
 from engine.metadata_lookup import HttpResult
 from engine.openalex_lookup import (
@@ -199,6 +201,27 @@ def test_build_url_asks_by_title_and_leaves_the_author_out():
 def test_build_url_does_not_quote_the_query():
     params = parse_qs(urlsplit(build_url(ReferenceQuery(title="K-sparse autoencoders"), 10)).query)
     assert '"' not in params["filter"][0]
+
+
+@pytest.mark.parametrize(
+    ("title", "expected"),
+    [
+        # Measured against the live API: a comma and a question mark are
+        # rejected at the edge (HTTP 400), a pipe ORs and a bang negates the
+        # search while still answering 200. All four are neutralised.
+        ("Hello, world", "Hello  world"),
+        ("Attention Is All You Need?", "Attention Is All You Need"),
+        ("Hello|world", "Hello world"),
+        ("!Hello", "Hello"),
+        # A title with none of them is passed through untouched, which is what
+        # keeps the recorded fixtures replayable.
+        ("The inverted multi-index", "The inverted multi-index"),
+    ],
+)
+def test_build_url_neutralises_filter_grammar_characters(title, expected):
+    params = parse_qs(urlsplit(build_url(ReferenceQuery(title=title), 10)).query)
+
+    assert params["filter"] == [f"title.search:{expected}"]
 
 
 def test_build_url_carries_the_contact_address_when_one_is_configured():

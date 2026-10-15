@@ -103,6 +103,9 @@ class VerificationResult:
         rationale: Human-readable explanation, or the reason for the failure.
         best_match: The passage the verdict rests on. ``None`` unless judged.
         source_text_used: The exact source text the model was shown.
+        passages_used: The passages that text was built from, in rank order --
+            what ``source_text_used`` says in structured form. Empty when none
+            were sent (``top_n <= 0``, or nothing with text to send).
     """
 
     claim: str
@@ -112,6 +115,7 @@ class VerificationResult:
     rationale: str = ""
     best_match: RetrievalResult | None = None
     source_text_used: str = ""
+    passages_used: tuple[RetrievalResult, ...] = ()
 
     def __post_init__(self) -> None:
         # Also catches the old positional misuse ``VerificationResult(claim, verdict)``,
@@ -420,6 +424,11 @@ class Verifier:
 
         context = _format_passages(usable)
         result = self.verify(claim, context, client=client)
+        # Set on every outcome, not only a judged one: which passages the model
+        # was shown is true whether or not it reached a verdict, and a caller
+        # that ships passages as evidence needs to ship this set rather than
+        # re-derive it by copying the blank filter above.
+        result.passages_used = tuple(usable)
         if result.status is VerificationStatus.JUDGED:
             # best_match means "the passage the verdict rests on", so only a
             # judged result may carry one.
