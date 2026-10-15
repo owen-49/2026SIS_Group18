@@ -1,7 +1,7 @@
 import { getAISettings, requireAIConfig } from "../data/aiSettings";
-import { demoAudit, demoPaperClaims, demoVerification, demoCitationComparison } from "../data/mockData";
+import { demoAudit, demoPaperClaims, demoVerification, demoCitationComparison, demoManuscriptMarkdown } from "../data/mockData";
 import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
-import type { AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, ParsedPaper, VerifyResponse } from "../types/api";
+import type { AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, PaperMarkdownResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
@@ -208,6 +208,22 @@ export async function getPaperClaims(paperId: string, signal?: AbortSignal, bibP
   const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}/claims${query}`), { signal });
   const result = await readResponse<PaperClaimsResponse>(response);
   if (!Array.isArray(result.claims)) throw new Error("The extracted claims response is invalid.");
+  return result;
+}
+
+export function paperImageUrl(paperId: string, filename: string): string {
+  return apiUrl(`/api/papers/${encodeURIComponent(paperId)}/images/${encodeURIComponent(filename)}`);
+}
+
+export async function getPaperMarkdown(paperId: string, signal?: AbortSignal): Promise<PaperMarkdownResponse> {
+  if (usingMockApi) {
+    await wait(450);
+    return { paper_id: paperId, markdown: demoManuscriptMarkdown };
+  }
+
+  const response = await fetch(apiUrl(`/api/papers/${encodeURIComponent(paperId)}/markdown`), { signal });
+  const result = await readResponse<PaperMarkdownResponse>(response);
+  if (typeof result.markdown !== "string") throw new Error("The Markdown response is invalid.");
   return result;
 }
 

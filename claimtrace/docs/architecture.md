@@ -168,6 +168,8 @@ and the measured limits.
 | `/api/papers` | GET | 列出论文库 |
 | `/api/papers/{paper_id}` | DELETE | 永久删除一条 Library 记录及其产物（204 / 202 / 404 / 500） |
 | `/api/papers/{paper_id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
+| `/api/papers/{paper_id}/markdown` | GET | 返回 Parser 生成的增强 Markdown（含图片引用、公式、表格） |
+| `/api/papers/{paper_id}/images/{filename}` | GET | 返回从论文中提取的图片文件（单段文件名，防路径穿越） |
 | `/api/verify` | POST | 旧版单条 claim 验证；**仓库内已无调用方** |
 | `/api/verify/citation` | POST | 单条 claim 验证 + 引用定位（网页 Review 页实际调用） |
 | `/api/verify/sources` | POST / GET | 上传和列出仅用于 Verify claim 对比的源 PDF |

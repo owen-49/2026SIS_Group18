@@ -43,6 +43,11 @@ export interface PaperListResponse {
   papers: PaperRecord[];
 }
 
+export interface PaperMarkdownResponse {
+  paper_id: string;
+  markdown: string;
+}
+
 export type BibFieldStatus = "MATCH" | "MISMATCH" | "PDF_MISSING" | "BIB_MISSING" | "NOT_CHECKED";
 
 export interface BibFieldResult {

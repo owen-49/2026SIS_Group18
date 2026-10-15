@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPaperClaims, listPapers, listVerifySources, usingMockApi as configuredMockApi, verifyCitation } from "../api/client";
 import { PaperManager } from "../components/PaperManager";
+import { MarkdownView } from "../components/MarkdownView";
 import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
 import { CitationComparisonResult } from "../components/CitationComparisonResult";
@@ -65,6 +66,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [result, setResult] = useState<CitationComparisonResponse | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [readerView, setReaderView] = useState<"manuscript" | "source">("manuscript");
+  const [manuscriptView, setManuscriptView] = useState<"text" | "rich">("text");
   const sourcesDialog = useRef<HTMLDialogElement>(null);
   const manuscriptDocumentRef = useRef<HTMLDivElement>(null);
   const citedDocumentRef = useRef<HTMLDivElement>(null);
@@ -362,8 +364,19 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             <button type="button" aria-pressed={readerView === "source"} disabled={!selectedClaim || isSearching} onClick={() => setReaderView("source")}><Icon name="library" size={16} /> Cited source</button>
           </div>
           <article className="panel manuscript-panel" hidden={readerView !== "manuscript"}>
-            <header className="manuscript-toolbar"><div><h2>Original manuscript</h2><p>{selectedPaper.original_filename}</p></div><span>{analysisLoading ? "Loading manuscript…" : usingMockApi || previewReason ? `Complete demo manuscript · ${analysis?.manuscript_document?.total_pages || 0} pages` : `Parsed manuscript · ${analysis?.manuscript_document?.total_pages || selectedPaper.pages} pages`}</span></header>
+            <header className="manuscript-toolbar">
+              <div><h2>Original manuscript</h2><p>{selectedPaper.original_filename}</p></div>
+              <div className="manuscript-toolbar-actions">
+                <span>{analysisLoading ? "Loading manuscript…" : usingMockApi || previewReason ? `Complete demo manuscript · ${analysis?.manuscript_document?.total_pages || 0} pages` : `Parsed manuscript · ${analysis?.manuscript_document?.total_pages || selectedPaper.pages} pages`}</span>
+                <div className="manuscript-view-switch" role="group" aria-label="Manuscript view">
+                  <button type="button" aria-pressed={manuscriptView === "text"} onClick={() => setManuscriptView("text")}>Text</button>
+                  <button type="button" aria-pressed={manuscriptView === "rich"} onClick={() => setManuscriptView("rich")}><Icon name="image" size={14} /> Rich</button>
+                </div>
+              </div>
+            </header>
             <div className="claim-manuscript-scroll selection-manuscript" ref={manuscriptDocumentRef} onMouseUp={captureSelection} onKeyUp={captureSelection}>
+              {manuscriptView === "rich" && <section className="manuscript-sheet manuscript-markdown-sheet"><MarkdownView paperId={selectedPaper.paper_id} /></section>}
+              {manuscriptView === "text" && <>
               {analysisLoading && <div className="manuscript-loading"><span className="spinner" /><strong>Loading manuscript text…</strong></div>}
               {analysisError && !analysis && <div className="manuscript-loading error"><Icon name="x" /><strong>Original text unavailable</strong><p>{analysisError}</p><button className="button button-secondary" type="button" onClick={() => void loadAnalysis(selectedPaper)}>Try again</button></div>}
               {analysis?.manuscript_document?.pages.length ? analysis.manuscript_document.pages.map((page) => (
@@ -387,6 +400,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
                 </section>
               )}
               {!analysisLoading && !analysisError && !analysis?.manuscript_document?.pages.length && !selectedClaim && <div className="manuscript-loading"><Icon name="document" /><strong>{isProcessing ? "Waiting for parsed text…" : isFailed ? "Original text unavailable because parsing failed" : "No manuscript text was returned"}</strong></div>}
+              </>}
             </div>
           </article>
 
