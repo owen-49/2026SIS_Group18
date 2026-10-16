@@ -61,7 +61,7 @@ export function MarkdownView({ paperId }: MarkdownViewProps) {
   }
 
   return (
-    <div className="markdown-view">
+    <div className="markdown-view" data-selectable-paragraph>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeKatex]}

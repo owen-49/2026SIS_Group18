@@ -8,7 +8,7 @@ import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
 import { CitationComparisonResult } from "../components/CitationComparisonResult";
 import { demoManuscript, demoPaperClaims, demoCitationComparison } from "../data/mockData";
-import { matchSelectionClaims, singleReferenceMarkers } from "../data/selectionClaims";
+import { matchSelectionClaims, normalise, singleReferenceMarkers } from "../data/selectionClaims";
 import { getLatestUploadedPaper } from "../data/workspacePapers";
 import type { IdentifiedSource, PaperClaimsResponse, PaperRecord, CitationComparisonResponse } from "../types/api";
 
@@ -279,7 +279,25 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       return;
     }
     setSelectionError(""); setSelectedText(text);
-    const matches = matchSelectionClaims(analysis?.claims || [], text, Number(start.dataset.page), Number(start.dataset.paragraph));
+    const pageAttribute = start.getAttribute("data-page");
+    const paragraphAttribute = start.getAttribute("data-paragraph");
+    let selectedPage: number | undefined = pageAttribute != null ? Number(pageAttribute) : undefined;
+    let selectedParagraph: number | undefined = paragraphAttribute != null ? Number(paragraphAttribute) : undefined;
+    if (selectedPage === undefined) {
+      // The Rich Markdown view carries no page data; recover the location from
+      // the text view's paragraphs, which mirror the same Markdown blocks.
+      const selectedNormalised = normalise(text);
+      for (const page of analysis?.manuscript_document?.pages || []) {
+        const paragraphIndex = page.paragraphs.findIndex((paragraphText) =>
+          Boolean(selectedNormalised) && normalise(paragraphText).includes(selectedNormalised));
+        if (paragraphIndex !== -1) {
+          selectedPage = page.page;
+          selectedParagraph = paragraphIndex;
+          break;
+        }
+      }
+    }
+    const matches = matchSelectionClaims(analysis?.claims || [], text, selectedPage, selectedParagraph);
     setMatchedClaimIds(matches.map((claim) => claim.claim_id));
     if (matches.length === 1) {
       setSelectedClaimId(matches[0].claim_id);

@@ -70,3 +70,19 @@ test('rich view surfaces a backend failure with a retry button', async ({ page }
   await expect(page.locator('.manuscript-loading.error')).toContainText('Markdown is not available for this paper.');
   await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
 });
+
+test('selecting text in the rich view feeds the claim search like the text view', async ({ page }) => {
+  await page.route('**/api/papers/*/markdown', route => route.fulfill({ json: { paper_id: 'manuscript', markdown } }));
+  await routeLibrary(page);
+
+  await page.getByRole('button', { name: 'Rich', exact: true }).click();
+  await expect(page.locator('.markdown-view')).toBeVisible();
+
+  const paragraph = page.locator('.markdown-view p').first();
+  await paragraph.selectText();
+  await page.evaluate(() => {
+    document.querySelector('.selection-manuscript')?.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  });
+
+  await expect(page.locator('.selected-citation-text blockquote')).toContainText('The attention formula is');
+});
