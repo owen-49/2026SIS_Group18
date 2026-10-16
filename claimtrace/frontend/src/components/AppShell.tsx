@@ -10,6 +10,7 @@ const navigation: { to: string; label: string; icon: IconName; end?: boolean }[]
 
 export function AppShell() {
   const { pathname } = useLocation();
+  const example = pathname.endsWith("/example");
   const sectionName = pathname.startsWith("/verify") ? "Verify claims" : pathname.startsWith("/audit") ? "Batch audit" : pathname.startsWith("/docs") ? "Guide" : "Extension setup";
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -27,7 +28,7 @@ export function AppShell() {
             <NavLink
               key={item.to}
               end={item.end}
-              to={item.to}
+              to={example ? `${item.to}/example` : item.to}
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
             >
