@@ -146,3 +146,10 @@
   overflow-y: hidden;
   padding: 0.3em 0;
 }
+
+.markdown-view sup { font-size: .72em; line-height: 0; vertical-align: super; }
+
+.demo-manuscript-panel { scroll-margin-top: 80px; }
+
+.inline-paper-citation { color: #775993; text-decoration: underline; text-decoration-color: #c5afd9; text-underline-offset: 3px; border-radius: 3px; cursor: pointer; transition: color .15s, background .15s; }
+.inline-paper-citation:hover, .inline-paper-citation:focus-visible { color: #593775; background: #eee5f8; text-decoration-color: #9270ae; outline-offset: 2px; }

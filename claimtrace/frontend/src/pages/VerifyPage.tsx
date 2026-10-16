@@ -7,7 +7,7 @@ import { MarkdownView } from "../components/MarkdownView";
 import { Icon } from "../components/Icon";
 import { UploadFilesButton } from "../components/UploadFilesButton";
 import { CitationComparisonResult } from "../components/CitationComparisonResult";
-import { demoManuscript, demoPaperClaims, demoCitationComparison } from "../data/mockData";
+import { demoManuscript, demoPaperClaims, demoCitationComparison, demoOriginalPdfUrl, demoCitationGroups } from "../data/mockData";
 import { matchSelectionClaims, singleReferenceMarkers } from "../data/selectionClaims";
 import { getLatestUploadedPaper } from "../data/workspacePapers";
 import type { IdentifiedSource, PaperClaimsResponse, PaperRecord, CitationComparisonResponse } from "../types/api";
@@ -37,7 +37,7 @@ function sourceMeta(source: IdentifiedSource) {
 export function VerifyPage({ example: initialExample = false, similarExample = false }: { example?: boolean; similarExample?: boolean }) {
   const { config: aiConfig } = useAISettings();
   const [uploadedPaper] = useState(() => similarExample ? undefined : getLatestUploadedPaper("pdf"));
-  const [example, setExample] = useState(initialExample && !uploadedPaper);
+  const [example, setExample] = useState(initialExample);
   const usingMockApi = example || configuredMockApi;
   const [searchParams] = useSearchParams();
   const requestedPaperId = searchParams.get("paper_id");
@@ -66,7 +66,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const [result, setResult] = useState<CitationComparisonResponse | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [readerView, setReaderView] = useState<"manuscript" | "source">("manuscript");
-  const [manuscriptView, setManuscriptView] = useState<"text" | "rich">("text");
+  const [manuscriptView, setManuscriptView] = useState<"text" | "rich">(usingMockApi ? "rich" : "text");
   const sourcesDialog = useRef<HTMLDialogElement>(null);
   const manuscriptDocumentRef = useRef<HTMLDivElement>(null);
   const citedDocumentRef = useRef<HTMLDivElement>(null);
@@ -227,6 +227,15 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const isFailed = reviewStatus === "failed";
   const isSearching = !result && !selectedSourcePaperId && selectedClaim?.resolution_status === "searching";
 
+  const showDemoFigure = useCallback(() => {
+    const container = manuscriptDocumentRef.current;
+    const image = container?.querySelector<HTMLImageElement>(".markdown-view img");
+    if (!container || !image) return;
+    const top = image.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 20;
+    container.scrollTo({ top, behavior: "instant" });
+    container.closest(".manuscript-panel")?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, []);
+
   const scrollToManuscriptMatch = useCallback(() => {
     const container = manuscriptDocumentRef.current;
     const match = container?.querySelector<HTMLElement>("[data-manuscript-match='true']");
@@ -286,6 +295,17 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     }
   }
 
+  const pickDemoCitation = useCallback((key: string) => {
+    const group = demoCitationGroups[key];
+    if (!group || verifyBusy.current) return;
+    verifyVersion.current += 1;
+    verifyController.current?.abort();
+    setSelectedText(group.text); setSelectionError(""); setSingleMarker("");
+    setSelectedSourcePaperId(""); setResult(null); setVerifyError(null);
+    setMatchedClaimIds(group.claimIds);
+    setSelectedClaimId(group.claimIds.length === 1 ? group.claimIds[0] : "");
+  }, []);
+
   async function handleVerify() {
     if (!canVerify || !selectedClaim || verifyBusy.current) return;
     verifyBusy.current = true;
@@ -297,6 +317,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       const request = { claim: selectedText, citation_marker: citationMarker, manuscript_id: selectedPaperId,
         claim_id: selectedClaim.claim_id,
         ...(selectedSourcePaperId ? { source_paper_id: selectedSourcePaperId } : {}) };
+      if (example) await new Promise(resolve => window.setTimeout(resolve, 400));
       const response = example ? demoCitationComparison(request) : await verifyCitation(request, controller.signal);
       if (version === verifyVersion.current) setResult(response);
     } catch (error) {
@@ -313,7 +334,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
           <div className="workspace-intro-copy"><h1>Verify claims</h1><p>Highlight a cited sentence, then analyze it.</p></div>
         </div>
         <div className="audit-heading-actions">
-          <Link className="button button-secondary" to={example ? "/verify" : "/verify/example"}>{example ? "Back to my papers" : "Try example"}</Link>
+          <Link className="button button-secondary" to={example ? "/verify" : "/verify/example"}>{example ? "My papers" : "Open paper"}</Link>
           <UploadFilesButton pdfOnly disabled={verifying} onReady={async (paper) => {
             const response = await listPapers();
             setPapers(response.papers.filter((entry) => entry.file_type === "pdf"));
@@ -351,7 +372,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading completed papers from the backend.</p></section>}
       {!papersLoading && papersError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Couldn’t load uploaded manuscripts</h2><p>{papersError}</p><button className="button button-secondary" type="button" onClick={() => void loadPapers()}>Try again</button></section>}
       {!papersLoading && !papersError && papers.length === 0 && <section className="library-state panel"><span className="library-state-icon"><Icon name="document" /></span><h2>No uploaded manuscript</h2><p>No completed PDF manuscript is available from the backend.</p></section>}
-      {example && <section className="review-example-guide panel"><div><span className="eyebrow">Interactive example</span><h2>Does the cited article support this sentence?</h2><p>On page 3, highlight “Self-attention enables the model…” with your mouse. Its source, Attention Is All You Need, appears automatically. Click Analyze selection to see a sample result.</p><small>This example uses prepared text and sample results. No backend analysis is performed.</small></div><button className="button button-secondary" type="button" onClick={() => { setReaderView("manuscript"); window.setTimeout(() => manuscriptDocumentRef.current?.querySelector('[data-page="3"][data-paragraph="1"]')?.scrollIntoView({ behavior: "smooth", block: "center" }), 0); }}>Find example sentence <Icon name="arrow" size={15} /></button></section>}
+      {example && <section className="review-example-guide panel"><div><span className="eyebrow">Paper review</span><h2>Does the cited article support this sentence?</h2><p>Click a citation to inspect its reference, or highlight a cited sentence and select Analyze selection. Choose one source when a sentence cites multiple papers.</p><small>Jacob Devlin, Ming-Wei Chang, Kenton Lee and Kristina Toutanova · NAACL-HLT 2019.</small></div><button className="button button-secondary" type="button" onClick={() => { setReaderView("manuscript"); window.setTimeout(() => manuscriptDocumentRef.current?.querySelector('[data-demo-claim="true"], [data-page="3"][data-paragraph="6"]')?.scrollIntoView({ behavior: "smooth", block: "center" }), 0); }}>Find citation <Icon name="arrow" size={15} /></button></section>}
       {!papersLoading && !papersError && selectedPaper && (
         <>
         {isProcessing && <section className="audit-notice panel" role="status"><span className="spinner" /><div><strong>Manuscript is being processed</strong><p>Manuscript text will be available after parsing finishes.</p><button className="button button-secondary" type="button" onClick={() => void loadPapers()}>Refresh status</button></div></section>}
@@ -363,11 +384,12 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             <button type="button" aria-pressed={readerView === "manuscript"} onClick={() => setReaderView("manuscript")}><Icon name="document" size={16} /> Manuscript</button>
             <button type="button" aria-pressed={readerView === "source"} disabled={!selectedClaim || isSearching} onClick={() => setReaderView("source")}><Icon name="library" size={16} /> Cited source</button>
           </div>
-          <article className="panel manuscript-panel" hidden={readerView !== "manuscript"}>
+          <article className={`panel manuscript-panel${usingMockApi ? " demo-manuscript-panel" : ""}`} hidden={readerView !== "manuscript"}>
             <header className="manuscript-toolbar">
               <div><h2>Original manuscript</h2><p>{selectedPaper.original_filename}</p></div>
               <div className="manuscript-toolbar-actions">
-                <span>{analysisLoading ? "Loading manuscript…" : usingMockApi || previewReason ? `Complete demo manuscript · ${analysis?.manuscript_document?.total_pages || 0} pages` : `Parsed manuscript · ${analysis?.manuscript_document?.total_pages || selectedPaper.pages} pages`}</span>
+                {usingMockApi && <a className="text-button" href={demoOriginalPdfUrl} target="_blank" rel="noreferrer">Original PDF <Icon name="external" size={12} /></a>}
+                <span>{analysisLoading ? "Loading manuscript…" : usingMockApi || previewReason ? `Complete paper · ${analysis?.manuscript_document?.total_pages || 0} pages` : `Parsed manuscript · ${analysis?.manuscript_document?.total_pages || selectedPaper.pages} pages`}</span>
                 <div className="manuscript-view-switch" role="group" aria-label="Manuscript view">
                   <button type="button" aria-pressed={manuscriptView === "text"} onClick={() => setManuscriptView("text")}>Text</button>
                   <button type="button" aria-pressed={manuscriptView === "rich"} onClick={() => setManuscriptView("rich")}><Icon name="image" size={14} /> Rich</button>
@@ -375,7 +397,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
               </div>
             </header>
             <div className="claim-manuscript-scroll selection-manuscript" ref={manuscriptDocumentRef} onMouseUp={captureSelection} onKeyUp={captureSelection}>
-              {manuscriptView === "rich" && <section className="manuscript-sheet manuscript-markdown-sheet"><MarkdownView paperId={selectedPaper.paper_id} /></section>}
+              {manuscriptView === "rich" && <section className="manuscript-sheet manuscript-markdown-sheet"><MarkdownView paperId={selectedPaper.paper_id} example={example} onExampleReady={showDemoFigure} onCitationPick={pickDemoCitation} /></section>}
               {manuscriptView === "text" && <>
               {analysisLoading && <div className="manuscript-loading"><span className="spinner" /><strong>Loading manuscript text…</strong></div>}
               {analysisError && !analysis && <div className="manuscript-loading error"><Icon name="x" /><strong>Original text unavailable</strong><p>{analysisError}</p><button className="button button-secondary" type="button" onClick={() => void loadAnalysis(selectedPaper)}>Try again</button></div>}
@@ -409,7 +431,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
             <header className="manuscript-toolbar citation-source-toolbar">
               <div><h2>Cited article — original text</h2><p>{displayedSource?.title || "Citation article not identified"}</p></div>
               <div>
-                <span>{displayedDocument ? usingMockApi || previewReason ? "Demo cited document" : `${displayedDocument.total_pages} pages` : displayedSource ? "Original text unavailable" : "Source not found"}</span>
+                <span>{displayedDocument ? `${displayedDocument.total_pages} pages` : displayedSource ? "Original text unavailable" : "Source not found"}</span>
                 {displayedDocument?.matched_location && <button className="button button-secondary" type="button" onClick={scrollToCitedMatch}><Icon name="search" size={14} /> Jump to matched passage</button>}
               </div>
             </header>

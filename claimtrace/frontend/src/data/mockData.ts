@@ -1,19 +1,23 @@
+import { createDemoCitations, createDemoAudit } from "./demoCitations";
+import bertFullMarkdown from "../assets/demo/bert-full.md?raw";
+import bertOriginalPdf from "../assets/demo/bert-naacl2019.pdf";
+import { fullBertDocument, fullBertClaimLocation } from "../assets/demo/bert-document";
 import type { AuditResponse, LibraryPaper, PaperClaimsResponse, PaperRecord, SourceDocument, VerifyResponse } from "../types/api";
 
 export const demoManuscript: PaperRecord = {
-  paper_id: "paper-manuscript",
-  original_filename: "transformer-literature-review.pdf",
-  file_type: "pdf",
-  scope: "library",
-  file_size: 1_640_000,
-  status: "completed",
-  pages: 12,
-  paragraph_count: 146,
-  entry_count: 0,
-  title: "Transformer Literature Review",
-  error_message: null,
-  created_at: "2026-08-16T04:30:00.000Z",
-  updated_at: "2026-08-16T04:30:00.000Z",
+  "paper_id": "paper-manuscript",
+  "original_filename": "BERT-Devlin-et-al-NAACL-2019.pdf",
+  "file_type": "pdf",
+  "scope": "library",
+  "file_size": 786279,
+  "status": "completed",
+  "pages": 16,
+  "paragraph_count": 9,
+  "entry_count": 0,
+  "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+  "error_message": null,
+  "created_at": "2026-10-16T01:00:00.000Z",
+  "updated_at": "2026-10-16T01:00:00.000Z"
 };
 
 export const libraryPapers: LibraryPaper[] = [
@@ -60,111 +64,92 @@ export const libraryPapers: LibraryPaper[] = [
 ];
 
 export const demoPaperClaims: PaperClaimsResponse = {
-  manuscript_id: demoManuscript.paper_id,
-  status: "completed",
-  error_message: null,
-  claims: [
+  "manuscript_id": "paper-manuscript",
+  "status": "completed",
+  "error_message": null,
+  "claims": [
     {
-      claim_id: "claim-attention",
-      text: "Self-attention enables the model to relate information from different positions in a sequence without recurrence.",
-      page: 3,
-      citation_marker: "[1]",
-      resolution_status: "identified",
-      cited_source: {
-        source_paper_id: "paper-attention",
-        citation_key: "vaswani2017attention",
-        title: "Attention Is All You Need",
-        authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar", "et al."],
-        venue: "NeurIPS",
-        year: 2017,
-        doi: null,
-        url: "https://arxiv.org/abs/1706.03762",
-        database: "Semantic Scholar",
+      "claim_id": "claim-attention",
+      "text": "BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.",
+      "page": 3,
+      "citation_marker": "Vaswani et al. (2017)",
+      "resolution_status": "identified",
+      "cited_source": {
+        "source_paper_id": "paper-attention",
+        "citation_key": "vaswani2017attention",
+        "title": "Attention Is All You Need",
+        "authors": [
+          "Ashish Vaswani",
+          "Noam Shazeer",
+          "Niki Parmar",
+          "Jakob Uszkoreit",
+          "Llion Jones",
+          "Aidan N. Gomez",
+          "Łukasz Kaiser",
+          "Illia Polosukhin"
+        ],
+        "venue": "NeurIPS",
+        "year": 2017,
+        "doi": null,
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "database": "NeurIPS proceedings"
       },
-    },
-    {
-      claim_id: "claim-bert",
-      text: "Bidirectional pre-training allows language models to use both left and right context when representing each token.",
-      page: 5,
-      citation_marker: "[2]",
-      resolution_status: "identified",
-      cited_source: {
-        source_paper_id: "paper-bert",
-        citation_key: "devlin2019bert",
-        title: "BERT: Pre-training of Deep Bidirectional Transformers",
-        authors: ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
-        venue: "NAACL",
-        year: 2019,
-        doi: "10.18653/v1/N19-1423",
-        url: "https://aclanthology.org/N19-1423",
-        database: "Semantic Scholar",
+      "source_document": {
+        "total_pages": 11,
+        "matched_location": {
+          "page": 2,
+          "paragraph_index": 0
+        },
+        "pages": [
+          {
+            "page": 2,
+            "heading": "3.1 Encoder and Decoder Stacks · selected excerpt",
+            "paragraphs": [
+              "The encoder is composed of a stack of N = 6 identical layers."
+            ]
+          }
+        ]
       },
-    },
-    {
-      claim_id: "claim-missing",
-      text: "Citation-aware review eliminates most referencing errors before peer review.",
-      page: 9,
-      citation_marker: "[8]",
-      resolution_status: "not_found",
-      cited_source: null,
-      similar_sources: [
-        {
-          source_paper_id: "candidate-citation-checking",
-          citation_key: "wright2024citation",
-          title: "Automatic Citation Checking in Scientific Documents",
-          authors: ["Daniel Wright", "Mina Chen"],
-          venue: "Information Processing & Management",
-          year: 2024,
-          doi: "10.1016/j.ipm.2024.103765",
-          url: "https://doi.org/10.1016/j.ipm.2024.103765",
-          database: "Crossref",
-          similarity: 0.88,
-        },
-        {
-          source_paper_id: "candidate-reference-quality",
-          citation_key: "lee2023reference",
-          title: "Reference Quality Assessment for Scholarly Writing",
-          authors: ["Sora Lee", "Nikhil Rao", "Emma Davis"],
-          venue: "Scientometrics",
-          year: 2023,
-          doi: null,
-          url: null,
-          database: "Semantic Scholar",
-          similarity: 0.79,
-        },
-      ],
-    },
-  ],
+      "manuscript_location": {
+        "page": 3,
+        "paragraph_index": 1
+      }
+    }
+  ]
 };
 
 export const demoVerification: VerifyResponse = {
-  claim:
-    "Self-attention enables the model to relate information from different positions in a sequence without recurrence.",
-  verdict: "SUPPORT",
-  confidence: 0.94,
-  rationale:
-    "The source directly describes the Transformer as relying entirely on attention mechanisms and dispensing with recurrence and convolutions.",
-  matches: [
+  "claim": "BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.",
+  "verdict": "PARTIAL",
+  "confidence": 0.86,
+  "rationale": "The source supports a stacked encoder architecture. This short excerpt does not establish every detail of BERT’s bidirectional implementation or its use of tensor2tensor; those details need further review.",
+  "matches": [
     {
-      passage_text:
-        "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.",
-      similarity: 0.91,
-      entailment_label: "SUPPORT",
-      confidence: 0.94,
-    },
-  ],
+      "passage_text": "The encoder is composed of a stack of N = 6 identical layers.",
+      "similarity": 0.91,
+      "entailment_label": "PARTIAL",
+      "confidence": 0.86
+    }
+  ]
 };
 
 const demoSourceDocuments: Record<string, SourceDocument> = {
   attention: {
-    total_pages: 3,
-    matched_location: { page: 3, paragraph_index: 1 },
-    pages: [
-      { page: 1, heading: "Abstract", paragraphs: ["A sequence transduction architecture is introduced that replaces recurrence with attention, allowing training to be parallelised across token positions.", "The approach is evaluated on translation tasks and provides a simpler path for modelling long-range dependencies."] },
-      { page: 2, heading: "1. Introduction", paragraphs: ["Recurrent models process tokens in order, which limits parallel computation within a sequence.", "Attention mechanisms provide a way to connect positions directly and reduce the path length between related tokens."] },
-      { page: 3, heading: "2. Model Architecture", paragraphs: ["The encoder and decoder are composed from stacked attention and feed-forward layers.", "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.", "Residual connections and normalisation are applied around each sub-layer."] },
-    ],
+  "total_pages": 11,
+  "matched_location": {
+    "page": 2,
+    "paragraph_index": 0
   },
+  "pages": [
+    {
+      "page": 2,
+      "heading": "3.1 Encoder and Decoder Stacks · selected excerpt",
+      "paragraphs": [
+        "The encoder is composed of a stack of N = 6 identical layers."
+      ]
+    }
+  ]
+},
   bert: {
     total_pages: 3,
     matched_location: { page: 3, paragraph_index: 1 },
@@ -194,32 +179,14 @@ const demoSourceDocuments: Record<string, SourceDocument> = {
   },
 };
 
-const demoReviewManuscriptDocument: SourceDocument = {
-  total_pages: 12,
-  matched_location: null,
-  pages: [
-    { page: 1, heading: "AI in Scientific Discovery", paragraphs: ["A citation-aware review of language models, retrieval systems, and evidence validation.", "Abstract — Artificial intelligence increasingly supports literature discovery, hypothesis generation, and scientific writing. This paper reviews recent systems and examines how accurately their claims remain connected to published evidence.", "Keywords: scientific discovery, language models, citation verification, retrieval-augmented generation."] },
-    { page: 2, heading: "1. Introduction", paragraphs: ["Scientific knowledge is growing faster than any individual researcher can read. Machine-assisted discovery tools help organise this literature and surface connections between distant fields.", "Reliable citation practice remains essential. A fluent sentence may overstate, misread, or cite a source that does not contain the claimed evidence.", "We study a workflow that connects every cited claim to its source passage and presents questionable citations for human review."] },
-    { page: 3, heading: "2. Attention-based Models", paragraphs: ["Sequence modelling has traditionally relied on recurrent or convolutional architectures to represent dependencies between tokens.", "Self-attention enables the model to relate information from different positions in a sequence without recurrence. [1]", "This architecture makes it possible to model long-range relationships while allowing substantially more parallel computation."] },
-    { page: 4, heading: "3. Retrieval-Augmented Models", paragraphs: ["Retrieval-augmented generation combines parametric and non-parametric memory and allows a model to consult external documents during generation.", "Retrieved passages are combined with the model state before each response, allowing external evidence to contribute facts without permanently changing model parameters.", "Evidence provenance remains necessary because retrieval alone does not guarantee that a generated statement accurately reflects its source."] },
-    { page: 5, heading: "4. Contextual Representation", paragraphs: ["Pre-trained language models differ in how much surrounding context is available when a token representation is constructed.", "Bidirectional pre-training allows language models to use both left and right context when representing each token. [2]", "The resulting representations can then be fine-tuned for a wide range of downstream language understanding tasks."] },
-    { page: 6, heading: "5. Methodology", paragraphs: ["The review pipeline separates manuscript parsing, citation extraction, source retrieval, and evidence comparison into independent stages.", "Each manuscript sentence is associated with its citation marker and page location. Candidate evidence passages are retrieved from the identified source document.", "The final interface preserves manuscript context so researchers can inspect a result without losing their place in the paper."] },
-    { page: 7, heading: "6. Experimental Setup", paragraphs: ["We evaluate the workflow on a small collection of academic manuscripts containing supported, partially supported, contradictory, and missing-source examples.", "Reviewers label each claim using the cited paper and record whether the system identifies the correct manuscript location.", "Interface measurements include time to locate a citation, correction accuracy, and agreement between reviewers."] },
-    { page: 8, heading: "7. Results", paragraphs: ["Context-preserving review reduced the time required to locate flagged claims. Reviewers moved directly from a finding to the corresponding sentence.", "Supported claims were typically resolved quickly, while partially supported claims required closer inspection of scope and qualifications.", "Missing documents remained the most common reason that a citation could not be fully assessed."] },
-    { page: 9, heading: "8. Limitations", paragraphs: ["Automated checking may help authors discover mismatched references before a manuscript is submitted.", "Citation-aware review eliminates most referencing errors before peer review.", "However, the cited record must first be confirmed before this statement can be treated as evidence-backed."] },
-    { page: 10, heading: "9. Discussion", paragraphs: ["Citation verification should support scholarly judgement rather than replace it. Automated signals are most useful when they reveal evidence and preserve uncertainty.", "Showing the original manuscript is essential because a claim can only be interpreted correctly within its surrounding argument.", "A practical system should distinguish model-generated signals from verified bibliographic facts."] },
-    { page: 11, heading: "10. Conclusion", paragraphs: ["Evidence-aware citation review can make scholarly writing more transparent and easier to audit.", "The most useful interface links each finding to the exact sentence, citation marker, source document, and supporting passage.", "Future work will evaluate the complete pipeline on larger, expert-reviewed datasets."] },
-    { page: 12, heading: "References", paragraphs: ["[1] Vaswani, A. et al. Attention Is All You Need. NeurIPS, 2017.", "[2] Devlin, J. et al. BERT: Pre-training of Deep Bidirectional Transformers. NAACL, 2019.", "[3] Lewis, P. et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS, 2020."] },
-  ],
-};
+export const demoReviewManuscriptDocument: SourceDocument = fullBertDocument;
 
 demoPaperClaims.manuscript_document = demoReviewManuscriptDocument;
-demoPaperClaims.claims[0].source_document = demoSourceDocuments.attention;
-demoPaperClaims.claims[0].manuscript_location = { page: 3, paragraph_index: 1 };
-demoPaperClaims.claims[1].source_document = demoSourceDocuments.bert;
-demoPaperClaims.claims[1].manuscript_location = { page: 5, paragraph_index: 1 };
-demoPaperClaims.claims[2].source_document = null;
-demoPaperClaims.claims[2].manuscript_location = { page: 9, paragraph_index: 1 };
+demoPaperClaims.claims[0].manuscript_location = fullBertClaimLocation;
+demoManuscript.paragraph_count = fullBertDocument.pages.reduce((count, page) => count + page.paragraphs.length, 0);
+const citationDemo = createDemoCitations(demoPaperClaims.claims[0]);
+demoPaperClaims.claims = citationDemo.claims;
+export const demoCitationGroups = citationDemo.groups;
 
 export const demoClaimAudit = {
   manuscript_id: "transformer-survey.pdf",
@@ -364,73 +331,77 @@ export const demoClaimAudit = {
   ],
 };
 
-export const demoAudit: AuditResponse = {
-  contract_version: 2,
-  audit_id: "demo-audit",
-  input_paper_id: "transformer-survey.pdf",
-  input_type: "pdf",
-  checked_at: "2026-08-16T04:30:00Z",
-  status: "needs_review",
-  total_entries: 4,
-  counts: { VERIFIED: 1, METADATA_MISMATCH: 1, NEEDS_REVIEW: 1, NOT_FOUND: 1, LOOKUP_FAILED: 0 },
-  warnings: [],
-  results: [
-    {
-      entry: { entry_id: "vaswani2017attention", number: 1, page_start: 12, page_end: 12, metadata: { key: "vaswani2017attention", title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
-      status: "VERIFIED", reason: "A matching publication record was found and its metadata agrees.",
-      field_checks: [{ field_name: "title", input_value: "Attention Is All You Need", source_value: "Attention Is All You Need", status: "MATCH", detail: "Exact normalized title match." }],
-      matched_record: { provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } },
-      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
-    },
-    {
-      entry: { entry_id: "devlin2019bert", number: 2, page_start: 12, page_end: 12, metadata: { key: "devlin2019bert", title: "BERT Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2018, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
-      status: "METADATA_MISMATCH", reason: "The publication was found, but the input year differs from the source record.",
-      field_checks: [{ field_name: "year", input_value: "2018", source_value: "2019", status: "MISMATCH", detail: "Publication year differs." }],
-      matched_record: { provider: "Demo Scholar", record_id: "N19-1423", url: "https://aclanthology.org/N19-1423", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "BERT: Pre-training of Deep Bidirectional Transformers", authors: ["Jacob Devlin"], year: 2019, venue: "NAACL", doi: "10.18653/v1/N19-1423" } },
-      candidates: [], lookup_attempts: [{ provider: "Demo Scholar", outcome: "found", error_code: null, detail: "Demo lookup." }],
-    },
-    {
-      entry: { entry_id: "smith2024survey", number: 3, page_start: 12, page_end: 12, metadata: { key: "smith2024survey", title: "Citation Errors in Scientific Manuscripts", authors: ["Alex Smith"], year: 2024, venue: "", doi: "" } },
-      status: "NOT_FOUND", reason: "No acceptable publication record was found after all configured lookup paths completed.",
-      field_checks: [], matched_record: null, candidates: [],
-      lookup_attempts: [{ provider: "Demo Scholar", outcome: "not_found", error_code: null, detail: "No matching record." }],
-    },
-    {
-      entry: { entry_id: "attention-incomplete", number: 4, page_start: 12, page_end: 12, metadata: { key: "attention-incomplete", title: "Attention Is All You Need for Translation", authors: [], year: null, venue: "", doi: "" } },
-      status: "NEEDS_REVIEW",
-      reason: "Example: the exact citation is unconfirmed. A similar title was found, but missing author and year details require review.",
-      field_checks: [], matched_record: null,
-      candidates: [{ provider: "Demo Scholar", record_id: "1706.03762", url: "https://arxiv.org/abs/1706.03762", retrieved_at: "2026-08-16T04:30:00Z", metadata: { title: "Attention Is All You Need", authors: ["Ashish Vaswani", "Noam Shazeer"], year: 2017, venue: "NeurIPS", doi: "10.48550/arXiv.1706.03762" } }],
-      lookup_attempts: [{ provider: "Demo Scholar", outcome: "ambiguous", error_code: null, detail: "Sample candidate only; the original citation has not been identified." }],
-    },
-  ],
-};
-
+export const demoAudit: AuditResponse = createDemoAudit();
 
 export function demoSelectionVerification(claimId: string, selectedText: string): VerifyResponse {
   if (claimId === "claim-attention") return { ...demoVerification, claim: selectedText };
-  if (claimId === "claim-bert") return {
-    claim: selectedText, verdict: "SUPPORT", confidence: 0.92,
-    rationale: "Example result: the prepared BERT source passage describes learning token representations from both left and right context, supporting this claim. This score is illustrative.",
-    matches: [{ passage_text: "In this example, bidirectional pre-training learns token representations using context on both sides.", similarity: 0.92, entailment_label: "SUPPORT", confidence: 0.92 }],
-  };
-  return {
-    claim: selectedText, verdict: "NOT_FOUND", confidence: 0,
-    rationale: "Example result: the selected candidate does not provide confirmed evidence for this claim. The original citation remains unverified; this is a prepared demonstration, not a live analysis.",
-    matches: [],
-  };
+  const claim = demoPaperClaims.claims.find(item => item.claim_id === claimId);
+  const passage = claim?.source_document?.pages[0]?.paragraphs[0];
+  if (passage) {
+    // These cases are tied to the published sentences and source excerpts.
+    // A source abstract cannot establish BERT's comparative results or training details.
+    const title = claim.cited_source!.title.toLowerCase();
+    const text = claim.text;
+    const sentences = passage.split(/(?<=[.!?])\s+(?=[A-Z])/);
+    let verdict: "SUPPORT" | "PARTIAL" = "PARTIAL";
+    let confidence = .82;
+    let rationale = "The passage describes the cited work, but does not establish every comparison or implementation detail in this sentence.";
+    let evidence = sentences.slice(0, 2).join(" ");
+    if (title.includes("contextualized word")) {
+      evidence = sentences.slice(1, 3).join(" ");
+      if (/^Language model pre-training|^The feature-based approach|^When integrating contextual/.test(text)) {
+        verdict = "SUPPORT"; confidence = .94;
+        rationale = "The source explains that pre-trained contextual representations can be added to existing models and improve six NLP tasks, supporting the claim about ELMo.";
+      } else {
+        rationale = "The source describes a pre-trained bidirectional language model. This abstract does not establish the stated architectural comparison with BERT or the exact concatenation procedure.";
+      }
+    } else if (title.includes("universal language")) {
+      evidence = sentences.slice(1, 3).join(" ");
+      if (/^Language model pre-training|^More recently/.test(text)) {
+        verdict = "SUPPORT"; confidence = .92;
+        rationale = "ULMFiT is presented as language-model fine-tuning for downstream tasks, with improvements across six text-classification datasets.";
+      } else {
+        rationale = "The source supports language-model fine-tuning, but the quoted abstract does not describe the auto-encoder objectives mentioned in this sentence.";
+      }
+    } else if (title.includes("squad:")) {
+      evidence = sentences[0];
+      if (/^The Stanford Question Answering Dataset/.test(text)) {
+        verdict = "SUPPORT"; confidence = .96;
+        rationale = "The source explicitly describes more than 100,000 crowdworker questions on Wikipedia, with answers taken as text spans from the passage.";
+      } else {
+        confidence = .87;
+        rationale = "The source confirms the SQuAD reading-comprehension dataset and answer-span format. It does not establish the other datasets, model scores or QNLI conversion mentioned here.";
+      }
+    } else if (title.includes("glue:")) {
+      evidence = sentences.find(sentence => sentence.startsWith("To facilitate research")) || sentences[0];
+      if (/^The General Language Understanding Evaluation/.test(text)) {
+        verdict = "SUPPORT"; confidence = .95;
+        rationale = "The source explicitly defines GLUE as a benchmark of nine diverse natural language understanding tasks.";
+      } else {
+        confidence = .85;
+        rationale = "The passage confirms GLUE's benchmark and task coverage. Exact GPT rankings and individual dataset conversions need the corresponding results or task descriptions.";
+      }
+    } else if (title.includes("glove:")) {
+      evidence = sentences.slice(0, 3).join(" ");
+      confidence = .89;
+      rationale = "GloVe is described as a word-representation model. The wider historical claim also cites several other methods, which require their own source checks.";
+    }
+    return { claim: selectedText, verdict, confidence, rationale,
+      matches: [{ passage_text: evidence, similarity: verdict === "SUPPORT" ? .94 : .88, entailment_label: verdict, confidence }],
+    };
+  }
+  return { claim: selectedText, verdict: "NOT_FOUND", confidence: 0, rationale: "The source text is unavailable for comparison.", matches: [] };
 }
-
 
 export function demoCitationComparison(request: import("../types/api").CitationComparisonRequest): import("../types/api").CitationComparisonResponse {
   const claim = demoPaperClaims.claims.find((entry) => entry.claim_id === request.claim_id);
-  const judged = Boolean(claim?.cited_source?.source_paper_id);
+  const judged = Boolean(claim?.source_document?.pages.length);
   const sample = demoSelectionVerification(request.claim_id, request.claim);
   return {
     claim: request.claim, claim_id: request.claim_id, citation_marker: request.citation_marker,
     citation_key: claim?.cited_source?.citation_key || null,
-    status: judged ? "COMPARED" : "SOURCE_NOT_AVAILABLE",
-    message: judged ? "Prepared example comparison; no backend analysis was performed." : "Example: no source PDF is associated with this citation. The claim was not judged.",
+    status: judged ? "COMPARED" : claim?.cited_source ? "SOURCE_NOT_AVAILABLE" : "REFERENCE_NOT_FOUND",
+    message: judged ? "The selected claim has been compared with the cited source passage." : claim?.cited_source ? "Reference identified. Add the source PDF to compare this claim against its text." : "This citation could not be linked to an entry in the extracted bibliography. Review the reference details.",
     cited_source: claim?.cited_source || null, source_paper_id: claim?.cited_source?.source_paper_id || null,
     source_document: claim?.source_document || null,
     judgement: judged ? { verdict: sample.verdict, confidence: sample.confidence, rationale: sample.rationale } : null,
@@ -439,37 +410,16 @@ export function demoCitationComparison(request: import("../types/api").CitationC
 }
 
 
-export const demoManuscriptMarkdown = String.raw`# Attention Is All You Need
+const fullBertImages = import.meta.glob<string>("../assets/demo/*.png", { eager: true, query: "?url", import: "default" });
+export const demoManuscriptImages: Record<string, string> = Object.fromEntries(
+  Object.entries(fullBertImages).map(([path, url]) => [path.split("/").pop()!, url]),
+);
+export const demoOriginalPdfUrl = bertOriginalPdf;
+export const demoRichParagraphLocations = citationDemo.locations;
 
-Pre-trained language models construct token representations from
-surrounding context. The attention mechanism weights each context token
-by a learned compatibility score.
-
-## Scaled dot-product attention
-
-For a query matrix $Q$, key matrix $K$ and value matrix $V$, attention is
-
-$$
-\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
-$$
-
-where $d_k$ is the key dimension. Multi-head attention projects the
-input $h$ times and concatenates the results:
-
-$$
-\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)W^O
-$$
-
-## Model configurations
-
-<table>
-<thead><tr><th>Model</th><th>Layers</th><th>$d_{model}$</th><th>Heads</th></tr></thead>
-<tbody>
-<tr><td>base</td><td>6</td><td>512</td><td>8</td></tr>
-<tr><td>big</td><td>6</td><td>1024</td><td>16</td></tr>
-</tbody>
-</table>
-
-The demo Markdown includes an inline formula $E = mc^2$ and a table so
-the rich view can be previewed without a backend.
-`;
+export const demoManuscriptMarkdown = [
+  `# ${demoManuscript.title}`,
+  `[Open original PDF](${bertOriginalPdf}) · [Publication record](https://aclanthology.org/N19-1423/)`,
+  citationDemo.decorate(bertFullMarkdown),
+  "Text and figures: Devlin et al., 2019 / Association for Computational Linguistics. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Full text converted locally; figure and table regions cropped from the original PDF. Consult the original PDF for exact typography.",
+].join("\n\n");

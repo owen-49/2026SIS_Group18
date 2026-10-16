@@ -3,8 +3,8 @@ import { VerdictBadge } from "./VerdictBadge";
 
 export function CitationComparisonResult({ result, demo }: { result: CitationComparisonResponse; demo: boolean }) {
   const judgement = result.status === "COMPARED" ? result.judgement : null;
-  return <section className="claim-comparison-result" aria-label="Citation comparison result">
-    <div className="comparison-result-heading"><span><small>{demo ? "Example comparison · sample result" : "Citation comparison"}</small>
+  return <section className="claim-comparison-result" aria-label="Citation comparison result" data-demo={demo || undefined}>
+    <div className="comparison-result-heading"><span><small>Citation comparison</small>
       {judgement ? <VerdictBadge verdict={judgement.verdict} /> : <strong>Not judged</strong>}
     </span>{judgement && <strong>{Math.round(judgement.confidence * 100)}%</strong>}</div>
     <p role="status">{result.message}</p>

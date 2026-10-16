@@ -33,7 +33,7 @@ function meta(result: AuditResult) {
 
 export function AuditPage({ example: initialExample = false, similarExample = false }: { example?: boolean; similarExample?: boolean }) {
   const [uploadedPaper] = useState(() => similarExample ? undefined : getLatestUploadedPaper());
-  const [example, setExample] = useState(initialExample && !uploadedPaper);
+  const [example, setExample] = useState(initialExample);
   const usingMockApi = example || configuredMockApi;
   const location = useLocation();
   const locationState = location.state as AuditLocationState | null;
@@ -45,8 +45,8 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
     created_at: String(paper.uploadedAt || ""), updated_at: String(paper.uploadedAt || ""),
   })), [example]);
   const [papers, setPapers] = useState<PaperRecord[]>(usingMockApi ? demoPapers : []);
-  const [paperId, setPaperId] = useState(locationState?.paperId || uploadedPaper?.paperId || (usingMockApi ? demoPapers[0]?.paper_id || "" : ""));
-  const [audit, setAudit] = useState<AuditResponse | null>(usingMockApi ? demoAudit : null);
+  const [paperId, setPaperId] = useState((example ? demoManuscript.paper_id : locationState?.paperId || uploadedPaper?.paperId) || (usingMockApi ? demoPapers[0]?.paper_id || "" : ""));
+  const [audit, setAudit] = useState<AuditResponse | null>(usingMockApi && !example ? demoAudit : null);
   const [selectedId, setSelectedId] = useState(usingMockApi ? similarExample ? "attention-incomplete" : demoAudit.results[0]?.entry.entry_id || "" : "");
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
@@ -88,8 +88,9 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
     if (!currentPaper) return;
     setLoading(true); setAuditError(null);
     try {
+      if (example) await new Promise((resolve) => window.setTimeout(resolve, 650));
       const response = example ? demoAudit : await runAudit(currentPaper.paper_id, currentPaper.file_type);
-      setAudit(response); setSelectedId(response.results[0]?.entry.entry_id || "");
+      setAudit(response); setSelectedId(example ? "vaswani2017attention" : response.results[0]?.entry.entry_id || "");
     } catch (error) {
       setAuditError(error instanceof Error ? error.message : "Unable to run the bibliography audit.");
     } finally { setLoading(false); }
