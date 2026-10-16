@@ -473,16 +473,23 @@ def _extract_metadata(
     )
 
 
-def _convert_markdown_with_fallback(file_path: Path, *, markdown_dir: Path, settings) -> str:
+def _convert_markdown_with_fallback(
+    file_path: Path,
+    *,
+    markdown_dir: Path,
+    settings,
+    hybrid_override: str | None = None,
+) -> str:
     """Convert via the configured hybrid backend, falling back to local Java
     processing when the hybrid service is unreachable."""
+    hybrid = hybrid_override if hybrid_override is not None else settings.parser_hybrid
     try:
         return convert_pdf_to_markdown(
             file_path,
             output_dir=markdown_dir,
-            hybrid=settings.parser_hybrid,
-            hybrid_mode=settings.parser_hybrid_mode,
-            hybrid_url=(settings.parser_hybrid_url if settings.parser_hybrid != "off" else None),
+            hybrid=hybrid,
+            hybrid_mode=settings.parser_hybrid_mode if hybrid != "off" else None,
+            hybrid_url=(settings.parser_hybrid_url if hybrid != "off" else None),
             use_struct_tree=settings.parser_use_struct_tree,
         )
     except HybridBackendError as exc:
@@ -503,8 +510,14 @@ def parse_document(
     *,
     title: str | None = None,
     output_dir: Path | None = None,
+    hybrid: str | None = None,
 ) -> ParsedDocument:
-    """Convert an uploaded PDF with Yi's Parser and return backend output."""
+    """Convert an uploaded PDF with Yi's Parser and return backend output.
+
+    ``hybrid`` overrides the configured hybrid backend selection. Pass
+    ``"off"`` for uploads that only need paragraph text and page numbers
+    (Verify source PDFs) so they never reach the slow AI backend.
+    """
     if not file_path.is_file():
         raise ParserAdapterError(f"Uploaded file not found: {file_path}")
     if file_path.suffix.lower() != ".pdf":
@@ -535,7 +548,10 @@ def parse_document(
 
     try:
         markdown = _convert_markdown_with_fallback(
-            file_path, markdown_dir=markdown_dir, settings=settings
+            file_path,
+            markdown_dir=markdown_dir,
+            settings=settings,
+            hybrid_override=hybrid,
         )
     except Exception as exc:
         raise ParserAdapterError(f"Unable to convert PDF with Yi's Parser: {exc}") from exc
