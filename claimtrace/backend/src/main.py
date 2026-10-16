@@ -8,6 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .routes import audit, bib, health, papers, parse, verify, verify_sources
 
+# ── Logging ─────────────────────────────────────────────────
+# No logger configuration would leave the root logger on Python's fallback
+# handler, which only emits WARNING and above.  Parse progress logs (scan
+# escalation, per-paper timings) are INFO, so configure them explicitly.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+
 # ── Load configuration ─────────────────────────────────────
 settings = get_settings()
 

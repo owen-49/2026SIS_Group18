@@ -7,10 +7,10 @@ from backend.src.services.parser_adapter import parse_document as real_parse_doc
 from backend.src.storage.paper_store import get_paper
 
 
-def test_verify_source_upload_skips_hybrid_parsing(
+def test_verify_source_upload_requests_local_parsing(
     client, sample_pdf_bytes, monkeypatch
 ):
-    """Source PDFs parse locally; only manuscripts use the hybrid backend."""
+    """Source PDFs request the local fast path; manuscripts use the config."""
     calls = []
 
     def spy_parse_document(paper_id, file_path, *, title=None, output_dir=None, hybrid=None):

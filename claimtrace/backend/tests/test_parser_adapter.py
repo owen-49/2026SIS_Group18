@@ -1,9 +1,11 @@
 """Tests for the PDF Parser-to-backend adapter."""
 
+import logging
 from pathlib import Path
 from types import SimpleNamespace
 
 import fitz
+import pytest
 from backend.src.services import parser_adapter
 from backend.tests.pdf_fixtures import make_test_pdf
 from parser import pdf_parser
@@ -213,42 +215,128 @@ def test_parse_document_falls_back_to_local_when_hybrid_unreachable(monkeypatch,
     ]
 
 
-def test_parse_document_can_force_local_parsing(monkeypatch, tmp_path):
+def _fake_settings(parsed_dir, *, hybrid, mode):
+    return SimpleNamespace(
+        parsed_dir=parsed_dir,
+        parser_hybrid=hybrid,
+        parser_hybrid_mode=mode,
+        parser_hybrid_url="http://localhost:5002",
+        parser_use_struct_tree=False,
+    )
+
+
+def _fake_convert(calls, markdown="# Local title\n\nLocal passage.\n\n"):
+    def fake_convert(_pdf_path, output_dir=None, **kwargs):
+        calls.append(kwargs)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "paper.md").write_text(markdown, encoding="utf-8")
+        return markdown
+
+    return fake_convert
+
+
+def test_scanned_source_pdf_escalates_to_hybrid_full(monkeypatch, tmp_path, caplog):
+    pdf_path = tmp_path / "paper.pdf"
+    output_dir = tmp_path / "markdown"
+    _make_two_page_pdf(pdf_path)  # short text pages count as low-text -> scan
+
+    calls = []
+    monkeypatch.setattr(
+        parser_adapter,
+        "get_settings",
+        lambda: _fake_settings(tmp_path, hybrid="docling-fast", mode="full"),
+    )
+    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", _fake_convert(calls))
+
+    with caplog.at_level(logging.INFO):
+        document = parser_adapter.parse_document(
+            "paper-id", pdf_path, output_dir=output_dir, hybrid="off"
+        )
+
+    # The local-only request is escalated to the configured backend for OCR.
+    assert calls[0]["hybrid"] == "docling-fast"
+    assert calls[0]["hybrid_mode"] == "full"
+    assert calls[0]["hybrid_url"] == "http://localhost:5002"
+    assert "looks scanned" in caplog.text
+    assert document.pages == 2
+    assert document.paragraphs
+
+
+def test_text_source_pdf_stays_local_when_hybrid_configured(monkeypatch, tmp_path):
+    output_dir = tmp_path / "markdown"
+
+    calls = []
+    monkeypatch.setattr(
+        parser_adapter,
+        "get_settings",
+        lambda: _fake_settings(tmp_path, hybrid="docling-fast", mode="full"),
+    )
+    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", _fake_convert(calls))
+
+    # A one-page PDF with a full paragraph of text is not a scan, so the
+    # source fast path stays local even though a hybrid backend is configured.
+    text_path = tmp_path / "text.pdf"
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_textbox(
+        fitz.Rect(72, 72, 520, 750),
+        "A full paragraph of extracted text. " * 20,
+        fontsize=11,
+    )
+    document.save(str(text_path))
+    document.close()
+
+    parser_adapter.parse_document("paper-id", text_path, output_dir=output_dir, hybrid="off")
+
+    assert calls[0]["hybrid"] == "off"
+    assert calls[0]["hybrid_mode"] is None
+    assert calls[0]["hybrid_url"] is None
+
+
+def test_manuscript_keeps_configured_hybrid_and_mode(monkeypatch, tmp_path):
     pdf_path = tmp_path / "paper.pdf"
     output_dir = tmp_path / "markdown"
     _make_two_page_pdf(pdf_path)
 
     calls = []
+    monkeypatch.setattr(
+        parser_adapter,
+        "get_settings",
+        lambda: _fake_settings(tmp_path, hybrid="docling-fast", mode="full"),
+    )
+    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", _fake_convert(calls))
 
-    def fake_convert(_pdf_path, output_dir=None, **kwargs):
-        calls.append(kwargs)
-        if kwargs.get("hybrid") != "off":
-            raise HybridBackendError("Hybrid backend is not reachable at http://localhost:5002.")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "paper.md").write_text(
-            "# Local title\n\nLocal passage.\n\n", encoding="utf-8"
+    document = parser_adapter.parse_document("paper-id", pdf_path, output_dir=output_dir)
+
+    # Manuscripts keep every page on the configured backend — no mode downgrade.
+    assert calls[0]["hybrid"] == "docling-fast"
+    assert calls[0]["hybrid_mode"] == "full"
+    assert document.paragraphs
+
+
+def test_parse_document_raises_user_message_when_no_paragraphs(monkeypatch, tmp_path):
+    pdf_path = tmp_path / "paper.pdf"
+    output_dir = tmp_path / "markdown"
+    _make_two_page_pdf(pdf_path)
+
+    monkeypatch.setattr(
+        parser_adapter, "get_settings", lambda: _fake_settings(tmp_path, hybrid="off", mode=None)
+    )
+    # Image-only Markdown yields no paragraph text.
+    monkeypatch.setattr(
+        parser_adapter, "convert_pdf_to_markdown", _fake_convert([], markdown="![](figure.png)\n\n")
+    )
+
+    with pytest.raises(parser_adapter.ParserAdapterError) as exc_info:
+        parser_adapter.parse_document(
+            "paper-id", pdf_path, output_dir=output_dir, hybrid="off"
         )
-        return "# Local title\n\nLocal passage.\n\n"
 
-    fake_settings = SimpleNamespace(
-        parsed_dir=tmp_path,
-        parser_hybrid="docling-fast",
-        parser_hybrid_mode="full",
-        parser_hybrid_url="http://localhost:5002",
-        parser_use_struct_tree=False,
+    assert exc_info.value.user_message == (
+        "No text could be extracted from this PDF. If it is a scanned document, "
+        "start the hybrid OCR service and upload it again."
     )
-    monkeypatch.setattr(parser_adapter, "get_settings", lambda: fake_settings)
-    monkeypatch.setattr(parser_adapter, "convert_pdf_to_markdown", fake_convert)
-
-    document = parser_adapter.parse_document(
-        "paper-id", pdf_path, output_dir=output_dir, hybrid="off"
-    )
-
-    # The override skips the hybrid attempt and its triage/URL parameters.
-    assert [call["hybrid"] for call in calls] == ["off"]
-    assert calls[0]["hybrid_mode"] is None
-    assert calls[0]["hybrid_url"] is None
-    assert document.title == "Local title"
+    assert str(exc_info.value) != exc_info.value.user_message
 
 
 def test_parse_document_uses_real_parser_and_preserves_metadata(tmp_path):
