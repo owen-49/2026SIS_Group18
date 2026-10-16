@@ -603,6 +603,18 @@ def test_paper_markdown_returns_parser_artifact(client, storage_paths):
     assert body["markdown"] == "# Title\n\n$$x^2$$\n"
 
 
+def test_paper_markdown_keeps_invisible_page_anchor_comments(client, storage_paths):
+    paper_id = str(uuid.uuid4())
+    record = _completed_paper(storage_paths, paper_id)
+    markdown = "<!-- ct-page %1% -->\n\n# Title\n"
+    _persist_markdown_artifact(record, paper_id, markdown, {})
+
+    response = client.get(f"/api/papers/{paper_id}/markdown")
+
+    assert response.status_code == 200
+    assert response.json()["markdown"] == markdown
+
+
 def test_paper_markdown_missing_artifact_returns_404(client, storage_paths):
     paper_id = str(uuid.uuid4())
     _completed_paper(storage_paths, paper_id)

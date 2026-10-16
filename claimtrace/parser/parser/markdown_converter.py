@@ -37,6 +37,7 @@ import opendataloader_pdf
 DEFAULT_HYBRID_BACKEND = "docling-fast"
 DEFAULT_HYBRID_URL = "http://localhost:5002"
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "generated_markdown"
+MARKDOWN_PAGE_SEPARATOR = "\n\n<!-- ct-page %%page-number%% -->\n\n"
 _HEALTH_CHECK_TIMEOUT_SECONDS = 2.0
 
 # Matches `![](path)` and `![](<path>)` image references.
@@ -213,6 +214,7 @@ def convert_pdf_to_markdown(
                 hybrid_mode=hybrid_mode,
                 hybrid_url=hybrid_url,
                 use_struct_tree=use_struct_tree,
+                markdown_page_separator=MARKDOWN_PAGE_SEPARATOR,
                 quiet=quiet,
             )
             markdown_path = Path(work_dir) / f"{pdf_path.stem}.md"

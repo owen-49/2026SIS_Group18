@@ -29,6 +29,11 @@ class ParserAdapterError(RuntimeError):
 
 _IMAGE_REF_RE = re.compile(r"!\[[^\]]*\]\((?:<[^>]+>|[^)\s]+)\)")
 _HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+(.+?)\s*$")
+# opendataloader-pdf 2.5.x renders ``%%page-number%%`` as ``%1%``.  The
+# optional percent signs keep the reader compatible with older/newer output
+# that may render the placeholder as a bare page number instead.
+_PAGE_MARKER_RE = re.compile(r"<!--\s*ct-page\s+%*(\d+)%*\s*-->")
+_SENTENCE_END_RE = re.compile(r"[.!?。！？…][\"'”’)\]}]*$")
 _DOI_PATTERN = re.compile(
     r"\b10\.\d{4,9}/[-._;()/:A-Z0-9]+",
     re.IGNORECASE,
@@ -104,7 +109,7 @@ def _clean_markdown_block(block: str) -> str:
 
 def _page_for_block(
     text: str,
-    page_texts: list[str],
+    normalised_page_texts: list[str],
     fallback_page: int,
 ) -> int:
     """Estimate the PDF page containing a converted Markdown block."""
@@ -116,8 +121,7 @@ def _page_for_block(
     best_page = fallback_page
     best_score = 0.0
 
-    for index, page_text in enumerate(page_texts, start=1):
-        page = _normalise_for_matching(page_text)
+    for index, page in enumerate(normalised_page_texts, start=1):
         if not page:
             continue
         if target in page:
@@ -132,17 +136,90 @@ def _page_for_block(
     return best_page if best_score > 0 else fallback_page
 
 
+def _markdown_blocks(markdown: str) -> list[str]:
+    """Return cleaned, non-empty paragraph blocks from one Markdown slice."""
+    return [
+        text
+        for block in re.split(r"\n\s*\n+", markdown.strip())
+        if (text := _clean_markdown_block(block))
+    ]
+
+
+def _continues_on_next_page(previous: str, following: str) -> bool:
+    """Return whether two blocks look like one paragraph split by a page."""
+    return bool(
+        previous
+        and following
+        and not _SENTENCE_END_RE.search(previous.rstrip())
+        and following[0].islower()
+    )
+
+
+def _append_page_blocks(
+    paragraphs: list[ParsedParagraph],
+    blocks: list[str],
+    page: int,
+) -> None:
+    """Append one page's blocks, joining a paragraph split across the boundary."""
+    if paragraphs and blocks and _continues_on_next_page(paragraphs[-1].text, blocks[0]):
+        previous = paragraphs[-1]
+        previous_text = previous.text.rstrip()
+        following_text = blocks.pop(0).lstrip()
+        if previous_text.endswith("-"):
+            merged_text = f"{previous_text[:-1]}{following_text}"
+        else:
+            merged_text = f"{previous_text} {following_text}"
+        paragraphs[-1] = ParsedParagraph(
+            text=merged_text,
+            page_start=previous.page_start,
+            page_end=page,
+        )
+
+    paragraphs.extend(ParsedParagraph(text=text, page_start=page, page_end=page) for text in blocks)
+
+
+def _anchored_markdown_to_paragraphs(markdown: str) -> list[ParsedParagraph] | None:
+    """Parse page-anchored Markdown, or return ``None`` when anchors are absent."""
+    matches = list(_PAGE_MARKER_RE.finditer(markdown))
+    if not matches:
+        return None
+
+    paragraphs: list[ParsedParagraph] = []
+    preamble = markdown[: matches[0].start()]
+    if preamble.strip():
+        # Some converter versions may put the first marker between pages rather
+        # than before page 1.  Attribute any preamble to the preceding page.
+        first_page = max(int(matches[0].group(1)) - 1, 1)
+        _append_page_blocks(paragraphs, _markdown_blocks(preamble), first_page)
+
+    for index, match in enumerate(matches):
+        content_start = match.end()
+        content_end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
+        page = int(match.group(1))
+        _append_page_blocks(
+            paragraphs,
+            _markdown_blocks(markdown[content_start:content_end]),
+            page,
+        )
+
+    return paragraphs
+
+
 def _markdown_to_paragraphs(markdown: str, page_texts: list[str]) -> list[ParsedParagraph]:
     """Convert Markdown blocks into the backend's stable paragraph contract."""
+    anchored_paragraphs = _anchored_markdown_to_paragraphs(markdown)
+    if anchored_paragraphs is not None:
+        return anchored_paragraphs
+
+    # Compatibility path for already-generated Markdown and converter versions
+    # that ignore markdown_page_separator.  Normalise each PDF page once rather
+    # than once for every Markdown block.
+    normalised_page_texts = [_normalise_for_matching(text) for text in page_texts]
     paragraphs: list[ParsedParagraph] = []
     fallback_page = 1
 
-    for block in re.split(r"\n\s*\n+", markdown.strip()):
-        text = _clean_markdown_block(block)
-        if not text:
-            continue
-
-        page = _page_for_block(text, page_texts, fallback_page)
+    for text in _markdown_blocks(markdown):
+        page = _page_for_block(text, normalised_page_texts, fallback_page)
         fallback_page = page
         paragraphs.append(ParsedParagraph(text=text, page_start=page, page_end=page))
 

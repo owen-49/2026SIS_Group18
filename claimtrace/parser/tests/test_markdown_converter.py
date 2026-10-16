@@ -1,5 +1,6 @@
 """Tests for markdown_converter.py."""
 
+import re
 from pathlib import Path
 
 import fitz  # PyMuPDF
@@ -7,6 +8,7 @@ import pytest
 
 from parser import markdown_converter as md_module
 from parser.markdown_converter import (
+    MARKDOWN_PAGE_SEPARATOR,
     HybridBackendError,
     _deduplicate_image_references,
     convert_pdf_to_markdown,
@@ -98,6 +100,23 @@ class TestImageDeduplication:
 
 
 class TestLocalMode:
+    def test_passes_page_separator_to_converter(
+        self, sample_pdf: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        captured: dict[str, object] = {}
+
+        def fake_convert(**kwargs):
+            captured.update(kwargs)
+            output_dir = Path(str(kwargs["output_dir"]))
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / "sample.md").write_text("# Sample\n", encoding="utf-8")
+
+        monkeypatch.setattr(md_module.opendataloader_pdf, "convert", fake_convert)
+
+        convert_pdf_to_markdown(sample_pdf, output_dir=tmp_path / "md", hybrid="off")
+
+        assert captured["markdown_page_separator"] == MARKDOWN_PAGE_SEPARATOR
+
     def test_converts_and_returns_text(
         self, sample_pdf: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ):
@@ -107,6 +126,7 @@ class TestLocalMode:
         text = convert_pdf_to_markdown(sample_pdf, hybrid="off")
         assert "Introduction" in text
         assert "test paragraph" in text
+        assert re.match(r"<!--\s*ct-page\s+%*1%*\s*-->", text)
 
     def test_output_file_kept_when_dir_given(self, sample_pdf: Path, tmp_path: Path):
         out_dir = tmp_path / "md"
@@ -124,3 +144,4 @@ class TestHybridMode:
         text = convert_pdf_to_markdown(sample_pdf)
         assert "Introduction" in text
         assert "test paragraph" in text
+        assert re.match(r"<!--\s*ct-page\s+%*1%*\s*-->", text)
