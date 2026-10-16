@@ -35,6 +35,7 @@ Design notes:
 
 from engine.identity import ReferenceQuery
 from engine.reference_text import parse_reference_text
+from engine.title_matching import extract_arxiv_id
 
 from ..audit_models import ReferenceEntry
 
@@ -67,15 +68,21 @@ def reference_query_for(entry: ReferenceEntry) -> ReferenceQuery:
 def _build(entry: ReferenceEntry) -> ReferenceQuery:
     metadata = entry.metadata
     parsed = _parsed(metadata.raw_text or "")
+    venue = (metadata.venue or "").strip() or parsed.venue
+    doi = (metadata.doi or "").strip() or parsed.doi
     return ReferenceQuery(
         title=(metadata.title or "").strip() or parsed.title,
         authors=list(metadata.authors) or parsed.authors,
         year=metadata.year if metadata.year is not None else parsed.year,
-        venue=(metadata.venue or "").strip() or parsed.venue,
-        doi=(metadata.doi or "").strip() or parsed.doi,
-        # BibEntryRecord has no arXiv field, so an identifier of that kind can
-        # only ever come from the raw text.
-        arxiv_id=parsed.arxiv_id,
+        venue=venue,
+        doi=doi,
+        # BibEntryRecord has no arXiv field, and a BibTeX block's raw text is
+        # deliberately never parsed, so the identifier is also read from where
+        # BibTeX carries it: ``journal={arXiv preprint arXiv:2010.11929}`` or an
+        # arXiv DOI. Without this an arXiv-only BibTeX entry never reaches the
+        # identifier pre-pass and is left ambiguous between the preprint and a
+        # later conference version that shares its title.
+        arxiv_id=parsed.arxiv_id or extract_arxiv_id(venue) or extract_arxiv_id(doi),
     )
 
 

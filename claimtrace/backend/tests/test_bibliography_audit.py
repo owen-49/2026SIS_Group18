@@ -1012,3 +1012,55 @@ def test_author_agreement_does_not_require_a_matching_partner_to_be_adjacent():
         ["Wei, Jason", "Tay, Yi", "Brown, Tom"],
         ["Brown, Tom", "Wei, Jason", "Tay, Yi"],
     )
+
+
+def test_a_bibtex_venue_named_differently_by_the_record_agrees(client, monkeypatch):
+    # One venue, two spellings: the BibTeX booktitle and the record's
+    # proceedings title. Not a difference in the reference.
+    bib = BIB.replace(
+        b"journal={Journal of Retrieval}",
+        b"booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and "
+        b"Pattern Recognition}",
+    )
+    record = external_record(
+        venue="2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)"
+    )
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", FakeLookup(lookup_result(records=[record])), raising=False
+    )
+    row = client.post("/api/audit", json={"bib_paper_id": upload_bib(client, bib)}).json()
+    row = row["results"][0]
+    venue = next(check for check in row["field_checks"] if check["field_name"] == "venue")
+    assert venue["status"] == "MATCH"
+    assert row["status"] == "VERIFIED"
+
+
+def test_a_bibtex_venue_that_differs_asks_for_review_not_mismatch(client, monkeypatch):
+    # A conference paper indexed under its book series. Shown as a difference,
+    # but it withholds VERIFIED rather than asserting the reference is wrong.
+    bib = BIB.replace(
+        b"journal={Journal of Retrieval}", b"booktitle={European Conference on Computer Vision}"
+    )
+    record = external_record(venue="Lecture Notes in Computer Science")
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", FakeLookup(lookup_result(records=[record])), raising=False
+    )
+    row = client.post("/api/audit", json={"bib_paper_id": upload_bib(client, bib)}).json()
+    row = row["results"][0]
+    venue = next(check for check in row["field_checks"] if check["field_name"] == "venue")
+    assert venue["status"] == "MISMATCH"
+    assert "named differently" in venue["detail"]
+    assert row["status"] == "NEEDS_REVIEW"
+
+
+def test_arxiv_venue_spellings_agree(client, monkeypatch):
+    bib = BIB.replace(
+        b"journal={Journal of Retrieval}", b"journal={arXiv preprint arXiv:2010.11929}"
+    )
+    record = external_record(venue="arXiv (Cornell University)")
+    monkeypatch.setattr(
+        app.state, "bibliography_lookup", FakeLookup(lookup_result(records=[record])), raising=False
+    )
+    row = client.post("/api/audit", json={"bib_paper_id": upload_bib(client, bib)}).json()
+    venue = next(c for c in row["results"][0]["field_checks"] if c["field_name"] == "venue")
+    assert venue["status"] == "MATCH"
