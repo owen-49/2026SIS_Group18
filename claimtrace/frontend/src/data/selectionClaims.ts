@@ -1,17 +1,24 @@
 import type { ExtractedClaim } from "../types/api";
 
-function normalise(text: string) {
+export function normalise(text: string) {
   return text.normalize("NFKC").replace(/\s+/g, " ").trim();
 }
 
-/** Associate selected text with returned claims without guessing a source by title. */
-export function matchSelectionClaims(claims: ExtractedClaim[], text: string, page: number, paragraph: number) {
+/** Associate selected text with returned claims without guessing a source by title.
+ *
+ * ``page`` and ``paragraph`` may be omitted (the Rich Markdown view carries no
+ * page data); only the dimensions that are known are used to filter claims.
+ */
+export function matchSelectionClaims(claims: ExtractedClaim[], text: string, page?: number, paragraph?: number) {
   const selected = normalise(text);
   if (!selected) return [];
   const matches = claims.filter((claim) => {
-    if (claim.manuscript_location && (claim.manuscript_location.page !== page
-      || claim.manuscript_location.paragraph_index !== paragraph)) return false;
-    if (!claim.manuscript_location && claim.page != null && claim.page !== page) return false;
+    if (claim.manuscript_location) {
+      if (page !== undefined && claim.manuscript_location.page !== page) return false;
+      if (paragraph !== undefined && claim.manuscript_location.paragraph_index !== paragraph) return false;
+    } else if (claim.page != null && page !== undefined && claim.page !== page) {
+      return false;
+    }
     const sentence = normalise(claim.text);
     return sentence && (sentence.includes(selected) || selected.includes(sentence));
   });
