@@ -77,16 +77,18 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setResult(null); setVerifyError(null);
   }, [aiConfig]);
 
-  const loadPapers = useCallback(async (signal?: AbortSignal) => {
+  const loadPapers = useCallback(async (signal?: AbortSignal, options?: { silent?: boolean }) => {
     if (example) {
       setPapers([demoManuscript]);
       setSelectedPaperId(demoManuscript.paper_id);
-      setPapersLoading(false);
+      if (!options?.silent) setPapersLoading(false);
       return;
     }
-    setPapersLoading(true);
-    setPapersError(null);
-    setPaperPreviewReason(null);
+    if (!options?.silent) {
+      setPapersLoading(true);
+      setPapersError(null);
+      setPaperPreviewReason(null);
+    }
     try {
       const response = await listPapers(signal);
       if (signal?.aborted) return;
@@ -102,7 +104,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       const message = error instanceof Error ? error.message : "Unable to load uploaded papers.";
       setPapersError(message);
     } finally {
-      if (!signal?.aborted) setPapersLoading(false);
+      if (!signal?.aborted && !options?.silent) setPapersLoading(false);
     }
   }, [requestedPaperId, example]);
 
@@ -224,6 +226,18 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
   const manuscriptContext = usingMockApi && selectedClaim ? demoClaimContext[selectedClaim.claim_id] : null;
   const reviewStatus = analysis?.status || selectedPaper?.status;
   const isProcessing = reviewStatus === "pending" || reviewStatus === "processing";
+
+  useEffect(() => {
+    if (!isProcessing || !selectedPaperId) return;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof window.setTimeout>;
+    const poll = async () => {
+      await loadPapers(controller.signal, { silent: true });
+      if (!controller.signal.aborted) timer = window.setTimeout(() => void poll(), 4000);
+    };
+    timer = window.setTimeout(() => void poll(), 4000);
+    return () => { controller.abort(); window.clearTimeout(timer); };
+  }, [isProcessing, selectedPaperId, loadPapers]);
   const isFailed = reviewStatus === "failed";
   const isSearching = !result && !selectedSourcePaperId && selectedClaim?.resolution_status === "searching";
 
@@ -363,7 +377,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       </dialog>
 
       <section className="review-document-controls" aria-label="Review documents">
-        <div className="review-document-choice"><span className="review-document-icon"><Icon name="document" size={20} /></span><label className="manuscript-picker"><span>Manuscript PDF</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.length === 0 && <option value="">{papersLoading ? "Loading manuscripts…" : "Upload a PDF to get started"}</option>}{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}</option>)}</select></label></div>
+        <div className="review-document-choice"><span className="review-document-icon"><Icon name="document" size={20} /></span><label className="manuscript-picker"><span>Manuscript PDF</span><select value={selectedPaperId} disabled={verifying || papersLoading || Boolean(papersError) || papers.length === 0} onChange={(event) => setSelectedPaperId(event.target.value)}>{papers.length === 0 && <option value="">{papersLoading ? "Loading manuscripts…" : "Upload a PDF to get started"}</option>}{papers.map((paper) => <option value={paper.paper_id} key={paper.paper_id}>{paper.title || paper.original_filename}{paper.status === "failed" ? " · failed" : paper.status !== "completed" ? " · processing" : ""}</option>)}</select></label></div>
       </section>
 
       {papersLoading && <section className="library-state panel" role="status"><span className="library-state-icon"><span className="spinner" /></span><h2>Loading uploaded manuscripts</h2><p>Reading completed papers from the backend.</p></section>}

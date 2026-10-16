@@ -91,3 +91,17 @@ Only a successful final `status: passed` proves the container/round-trip checks.
 Rebuild without `--skip-build` after changing the source or image dependencies.
 GitHub CI execution, Hongyang's BYOK integration, semantic model warm-up, capacity
 measurement and public-launch security/access decisions remain separate work.
+
+
+## Background parsing smoke update
+
+2026-10-16 (Australia/Sydney): the smoke script now accepts an initial PDF upload
+status of `pending`, `processing` or `completed`, then polls the parse endpoint
+until `completed` before checking paragraphs and persisted data. Failed parsing
+reports the returned `error_message`; the default polling deadline is 180 seconds.
+BibTeX upload and the later `check_data()` assertions are unchanged. Deployment
+continues to use background parsing by default.
+
+This update is checked locally with Ruff and Python compilation. The Docker
+rehearsal for this revision is left to CI; the historical container results above
+refer to their original revisions.

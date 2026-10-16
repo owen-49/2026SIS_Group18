@@ -10,6 +10,7 @@ import pytest
 # CORS_ORIGINS would otherwise be baked into the app under test. This must run
 # at collection time, not in a fixture.
 os.environ["CLAIMTRACE_ENV_FILE"] = os.devnull
+os.environ["PARSE_IN_BACKGROUND"] = "false"
 
 from backend.src.config import get_settings  # noqa: E402
 from backend.src.main import app  # noqa: E402

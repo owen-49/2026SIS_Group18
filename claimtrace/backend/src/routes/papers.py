@@ -12,6 +12,7 @@ from ..models import (
     PaperListResponse,
     PaperMarkdownResponse,
     PaperScope,
+    ParseStatus,
 )
 from ..services.analysis_service import (
     AnalysisPaperNotFoundError,
@@ -33,7 +34,7 @@ _INTERNAL_FIELDS = {"stored_filename", "file_path", "parsed_result_path"}
 
 
 @router.get("/papers", response_model=PaperListResponse)
-async def get_papers():
+def get_papers():
     """Return uploaded papers ordered from newest to oldest."""
     try:
         records = [record for record in list_papers() if record.scope is PaperScope.LIBRARY]
@@ -50,6 +51,15 @@ async def get_papers():
 @router.delete("/papers/{paper_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_paper(paper_id: str) -> Response:
     """Delete one uploaded paper and all of its local artifacts."""
+    try:
+        record = get_paper(paper_id)
+    except PaperStoreError as exc:
+        raise HTTPException(status_code=500, detail="Unable to read paper metadata.") from exc
+    if record is not None and record.status in {ParseStatus.PENDING, ParseStatus.PROCESSING}:
+        raise HTTPException(
+            status_code=409,
+            detail="The paper is still being parsed. Try again after parsing finishes.",
+        )
     try:
         outcome = delete_uploaded_paper(paper_id)
     except PaperDeletionNotFoundError as exc:

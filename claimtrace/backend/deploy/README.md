@@ -109,6 +109,12 @@ only its own test containers/data/cache volumes and temporary backup fixtures.
 It does not use the real deployment's volumes. Choose another unused port with
 `--port 18081` if necessary.
 
+PDF uploads return `pending` immediately with background parsing enabled by
+default. The rehearsal polls `GET /api/parse/{paper_id}` every two seconds until
+`completed`, allowing up to 180 seconds, and reports `error_message` if parsing
+fails. Only then does it check parsed paragraphs and continue the persistence
+checks. BibTeX uploads still return their completed result synchronously.
+
 ## Backup and restore
 
 Backups contain uploaded research documents. Keep archives private and copy

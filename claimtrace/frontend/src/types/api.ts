@@ -11,6 +11,7 @@ export type ParseStatus = "pending" | "processing" | "completed" | "failed";
 export type PaperScope = "library" | "verify_source";
 
 export interface ParsedPaper {
+  error_message?: string | null;
   paper_id: string;
   status: ParseStatus;
   scope: PaperScope;

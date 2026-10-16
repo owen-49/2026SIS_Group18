@@ -76,6 +76,19 @@ def _wait_ready(base: str) -> None:
     raise RuntimeError("Backend did not become ready within 120 seconds.")
 
 
+def _wait_parsed(base: str, paper_id: str, timeout: float = 180) -> dict:
+    """Wait for an uploaded PDF to reach a terminal parse status."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        parsed = _http(base, f"/api/parse/{paper_id}")
+        if parsed["status"] == "completed":
+            return parsed
+        if parsed["status"] == "failed":
+            raise RuntimeError(f"PDF parsing failed: {parsed.get('error_message')}")
+        time.sleep(2)
+    raise RuntimeError(f"PDF parsing did not finish within {timeout} seconds.")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skip-build", action="store_true", help="Use the existing local image.")
@@ -130,8 +143,11 @@ def main() -> None:
             owned_projects.append(project)
             compose(project, "up", "-d", "--no-build", "backend")
             _wait_ready(base)
-            pdf = _http(base, "/api/parse", file=("acceptance.pdf", _pdf()))
-            if pdf["status"] != "completed" or pdf["paragraph_count"] < 1:
+            uploaded = _http(base, "/api/parse", file=("acceptance.pdf", _pdf()))
+            if uploaded["status"] not in {"pending", "processing", "completed"}:
+                raise RuntimeError(f"PDF upload failed: {uploaded.get('error_message')}")
+            pdf = _wait_parsed(base, uploaded["paper_id"])
+            if pdf["paragraph_count"] < 1:
                 raise RuntimeError("The genuine PDF did not produce parsed paragraphs.")
             bib = _http(base, "/api/parse", file=(
                 "acceptance.bib", b"@article{test,title={Deployment acceptance},year={2026}}",
