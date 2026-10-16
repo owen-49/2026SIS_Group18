@@ -71,12 +71,18 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
         ParserAdapterError,
         OSError,
     ) as exc:
+        user_message = getattr(exc, "user_message", None)
+        error_message = (
+            user_message
+            if isinstance(user_message, str) and user_message.strip()
+            else "Unable to prepare the uploaded PDF for verification."
+        )
         try:
             update_paper(
                 paper_id,
                 {
                     "status": ParseStatus.FAILED,
-                    "error_message": "Unable to prepare the uploaded PDF for verification.",
+                    "error_message": error_message,
                 },
             )
         except PaperStoreError:

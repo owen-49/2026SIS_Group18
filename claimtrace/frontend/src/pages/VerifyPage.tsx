@@ -77,16 +77,18 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     setResult(null); setVerifyError(null);
   }, [aiConfig]);
 
-  const loadPapers = useCallback(async (signal?: AbortSignal) => {
+  const loadPapers = useCallback(async (signal?: AbortSignal, options?: { silent?: boolean }) => {
     if (example) {
       setPapers([demoManuscript]);
       setSelectedPaperId(demoManuscript.paper_id);
-      setPapersLoading(false);
+      if (!options?.silent) setPapersLoading(false);
       return;
     }
-    setPapersLoading(true);
-    setPapersError(null);
-    setPaperPreviewReason(null);
+    if (!options?.silent) {
+      setPapersLoading(true);
+      setPapersError(null);
+      setPaperPreviewReason(null);
+    }
     try {
       const response = await listPapers(signal);
       if (signal?.aborted) return;
@@ -102,7 +104,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
       const message = error instanceof Error ? error.message : "Unable to load uploaded papers.";
       setPapersError(message);
     } finally {
-      if (!signal?.aborted) setPapersLoading(false);
+      if (!signal?.aborted && !options?.silent) setPapersLoading(false);
     }
   }, [requestedPaperId, example]);
 
@@ -230,7 +232,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
     const controller = new AbortController();
     let timer: ReturnType<typeof window.setTimeout>;
     const poll = async () => {
-      await loadPapers(controller.signal);
+      await loadPapers(controller.signal, { silent: true });
       if (!controller.signal.aborted) timer = window.setTimeout(() => void poll(), 4000);
     };
     timer = window.setTimeout(() => void poll(), 4000);

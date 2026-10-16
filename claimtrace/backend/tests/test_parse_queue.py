@@ -162,3 +162,28 @@ def test_startup_recovers_and_status_exposes_reason(storage_paths, caplog):
             "Parsing was interrupted by a server restart. Please upload the file again."
         )
     assert "Recovered 1 interrupted PDF parses" in caplog.text
+
+
+@pytest.mark.parametrize(
+    "user_message", ["The PDF is encrypted. Please upload an unlocked copy.", None, "", "   ", 123]
+)
+def test_parser_user_message_is_preserved_safely(storage_paths, monkeypatch, user_message):
+    paper_id = str(uuid4())
+    persist(storage_paths, paper_id, ParseStatus.PENDING)
+    error = pipeline_service.ParserAdapterError("Internal path: E:/private/paper.pdf")
+    error.user_message = user_message
+
+    def fail(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(pipeline_service, "parse_document", fail)
+    with pytest.raises(pipeline_service.PipelineError):
+        pipeline_service.process_uploaded_paper(paper_id)
+    record = get_paper(paper_id)
+    assert record.status is ParseStatus.FAILED
+    assert record.error_message == (
+        user_message
+        if isinstance(user_message, str) and user_message.strip()
+        else "Unable to prepare the uploaded PDF for verification."
+    )
+    assert "E:/private" not in record.error_message
