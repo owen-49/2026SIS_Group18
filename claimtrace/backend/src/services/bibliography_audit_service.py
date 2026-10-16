@@ -8,7 +8,8 @@ from uuid import uuid4
 
 from engine.bib_parser import BibEntry, author_surnames
 from engine.bib_verifier import PdfMetadata, verify_bib_against_pdf
-from engine.identity import ReferenceQuery
+from engine.identity import VENUE_MIN_MATCH_SHARE, ReferenceQuery
+from engine.title_matching import venue_match_share
 
 from ..audit_models import (
     AuditFieldCheck,
@@ -22,6 +23,7 @@ from ..audit_models import (
 )
 from ..models import AuditRequest
 from .bibliography_lookup import BibliographyLookup
+from .field_comparison import compare_authors
 from .reference_input_service import load_audit_references
 from .reference_query import reference_query_for
 
@@ -96,6 +98,29 @@ def _authors_agree(left: list[str], right: list[str]) -> bool:
         else:
             return False
     return True
+
+
+def _is_arxiv_venue(value: str) -> bool:
+    return "arxiv" in _normalise(value).split()
+
+
+def _venues_agree(reference: str, record: str) -> bool:
+    """Whether two venue strings name the same venue.
+
+    Sources name one venue in several ways: a BibTeX ``booktitle`` of
+    "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+    Recognition" and a record's "2019 IEEE/CVF Conference on Computer Vision and
+    Pattern Recognition (CVPR)" are one venue, as are "arXiv preprint
+    arXiv:2010.11929" and "arXiv (Cornell University)". The share test is the
+    one identity selection already uses to tell venues apart.
+    """
+    if not reference.strip() or not record.strip():
+        return False
+    if _normalise(reference) == _normalise(record):
+        return True
+    if _is_arxiv_venue(reference) and _is_arxiv_venue(record):
+        return True
+    return venue_match_share(reference, record) >= VENUE_MIN_MATCH_SHARE
 
 
 def _recovered_fields(entry: ReferenceEntry, query: ReferenceQuery) -> dict[str, bool]:
@@ -178,11 +203,22 @@ def compare_external_metadata(
         "not carry this field.",
     }
     checks = []
+    review_only: set[str] = set()
     for result in compared.fields:
         status = status_map.get(result.status.value, result.status.value)
         detail = details[status]
         if recovered.get(result.field_name):
             detail = recovered_details.get(status, detail)
+        if result.field_name == "authors" and status in {"MATCH", "MISMATCH"}:
+            # The Engine reads surnames alone and tolerates a short list; see
+            # field_comparison for what that rule gets wrong in both directions.
+            authors = compare_authors(list(query.authors), list(source.authors))
+            if authors is not None:
+                status, detail = authors.status, authors.detail
+                if recovered.get("authors"):
+                    detail = recovered_details.get(status, detail)
+                elif not authors.decisive:
+                    review_only.add("authors")
         checks.append(
             AuditFieldCheck(
                 field_name=result.field_name,
@@ -192,6 +228,18 @@ def compare_external_metadata(
                 detail=detail,
             )
         )
+    for check in checks:
+        if check.field_name != "venue" or check.status != "MISMATCH":
+            continue
+        if _venues_agree(check.input_value, check.source_value):
+            check.status = "MATCH"
+            check.detail = "The two venue names refer to the same venue."
+        elif not recovered.get("venue"):
+            check.detail = (
+                "The venue is named differently. Indexes often record a conference "
+                "paper under its book series (e.g. Lecture Notes in Computer Science) "
+                "or a later published version; review whether this is the same venue."
+            )
     for field in ("venue", "doi"):
         if not any(check.field_name == field for check in checks):
             checks.append(
@@ -209,7 +257,18 @@ def compare_external_metadata(
     # reference is wrong: measured over the 91 stored matched records, venue
     # differs in 50 of them and nearly every one is the reference abbreviating a
     # venue the record spells out, as "ACL" against the full proceedings name.
-    if any(check.status == "MISMATCH" and not recovered.get(check.field_name) for check in checks):
+    # The same holds for a venue the reference does state: measured on this
+    # repository's demo bibliography, every venue difference left after
+    # _venues_agree was a naming difference (a proceedings title against its
+    # book series, a preprint against its later venue), not a wrong venue. It
+    # withholds VERIFIED and asks for review; it does not assert an error.
+    if any(
+        check.status == "MISMATCH"
+        and not recovered.get(check.field_name)
+        and check.field_name != "venue"
+        and check.field_name not in review_only
+        for check in checks
+    ):
         return AuditStatus.METADATA_MISMATCH, checks, "Identified record has field differences."
     required = {"title", "authors", "year", "venue"}
     complete = all(check.status == "MATCH" for check in checks if check.field_name in required)
@@ -219,8 +278,7 @@ def compare_external_metadata(
     # names both sides state, so a shared surname is not on its own agreement.
     exact = (
         _normalise(query.title) == _normalise(source.title)
-        and _authors_agree(list(query.authors), list(source.authors))
-        and _normalise(query.venue) == _normalise(source.venue)
+        and _venues_agree(query.venue, source.venue)
     )
     if complete and exact:
         return AuditStatus.VERIFIED, checks, "External record identified; required metadata agrees."
