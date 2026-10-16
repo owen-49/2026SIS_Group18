@@ -22,6 +22,98 @@ def _make_two_page_pdf(path: Path) -> None:
     document.close()
 
 
+def test_markdown_page_anchors_assign_exact_pages():
+    markdown = (
+        "<!-- ct-page %1% -->\n\n"
+        "# Shared heading\n\n"
+        "First-page body.\n\n"
+        "<!-- ct-page %2% -->\n\n"
+        "# Shared heading\n\n"
+        "Second-page body.\n"
+    )
+
+    paragraphs = parser_adapter._markdown_to_paragraphs(
+        markdown,
+        ["Shared heading First-page body.", "Shared heading Second-page body."],
+    )
+
+    assert [paragraph.text for paragraph in paragraphs] == [
+        "Shared heading",
+        "First-page body.",
+        "Shared heading",
+        "Second-page body.",
+    ]
+    assert [(paragraph.page_start, paragraph.page_end) for paragraph in paragraphs] == [
+        (1, 1),
+        (1, 1),
+        (2, 2),
+        (2, 2),
+    ]
+
+
+def test_markdown_page_anchors_merge_paragraph_split_across_pages():
+    markdown = (
+        "<!-- ct-page %4% -->\n\n"
+        "A paragraph continues without terminal punctuation\n\n"
+        "<!-- ct-page %5% -->\n\n"
+        "on the next page and ends here.\n\n"
+        "A separate paragraph.\n"
+    )
+
+    paragraphs = parser_adapter._markdown_to_paragraphs(markdown, [])
+
+    assert [paragraph.text for paragraph in paragraphs] == [
+        "A paragraph continues without terminal punctuation on the next page and ends here.",
+        "A separate paragraph.",
+    ]
+    assert [(paragraph.page_start, paragraph.page_end) for paragraph in paragraphs] == [
+        (4, 5),
+        (5, 5),
+    ]
+
+
+def test_markdown_page_anchors_do_not_merge_complete_or_uppercase_blocks():
+    markdown = (
+        "<!-- ct-page %1% -->\n\n"
+        "A complete sentence.\n\n"
+        "<!-- ct-page %2% -->\n\n"
+        "lowercase heading after a complete sentence\n\n"
+        "<!-- ct-page %3% -->\n\n"
+        "Uppercase continuation is a separate block.\n"
+    )
+
+    paragraphs = parser_adapter._markdown_to_paragraphs(markdown, [])
+
+    actual = [(item.text, item.page_start, item.page_end) for item in paragraphs]
+    assert actual == [
+        ("A complete sentence.", 1, 1),
+        ("lowercase heading after a complete sentence", 2, 2),
+        ("Uppercase continuation is a separate block.", 3, 3),
+    ]
+
+
+def test_markdown_without_page_anchors_uses_cached_legacy_matching(monkeypatch):
+    calls: list[str] = []
+    original_normalise = parser_adapter._normalise_for_matching
+
+    def counted_normalise(text: str) -> str:
+        calls.append(text)
+        return original_normalise(text)
+
+    monkeypatch.setattr(parser_adapter, "_normalise_for_matching", counted_normalise)
+    paragraphs = parser_adapter._markdown_to_paragraphs(
+        "Repeated title\n\nUnique text from page two.",
+        ["Repeated title on page one.", "Page header. Unique text from page two."],
+    )
+
+    assert [(paragraph.page_start, paragraph.page_end) for paragraph in paragraphs] == [
+        (1, 1),
+        (2, 2),
+    ]
+    assert calls.count("Repeated title on page one.") == 1
+    assert calls.count("Page header. Unique text from page two.") == 1
+
+
 def test_parse_document_adapts_converted_markdown(monkeypatch, tmp_path):
     pdf_path = tmp_path / "paper.pdf"
     output_dir = tmp_path / "markdown"
