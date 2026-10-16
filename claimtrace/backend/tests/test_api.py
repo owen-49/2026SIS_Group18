@@ -328,6 +328,7 @@ def test_delete_refuses_file_outside_upload_storage(client, storage_paths):
             file_path=str(outside_path),
             file_type="pdf",
             file_size=outside_path.stat().st_size,
+            status=ParseStatus.COMPLETED,
             created_at=timestamp,
             updated_at=timestamp,
         )

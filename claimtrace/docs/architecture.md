@@ -84,10 +84,13 @@ sequenceDiagram
 
     U->>FE: 上传源论文 PDF
     FE->>API: POST /api/parse
-    API->>P: parse_pdf()
+    API->>API: 持久化 pending 记录并加入单线程队列
+    API-->>FE: paper_id + pending (HTTP 200)
+    API->>P: 后台 parse_document()
     P-->>API: ParsedPaper (段落 + 元数据)
-    API-->>FE: paper_id
-    API->>API: 持久化到 papers.json
+    API->>API: 持久化 completed 或 failed
+    FE->>API: GET /api/parse/{paper_id}
+    API-->>FE: status + error_message
 
     U->>FE: hover \cite{key} / 提交 claim
     FE->>API: POST /api/verify {claim, source_paper_id}
@@ -166,7 +169,7 @@ and the measured limits.
 | `/api/parse/{paper_id}` | GET | 查询解析状态 |
 | `/api/parse/{paper_id}` | PUT | 覆盖已同步 BibTeX 的内容，保留同一 Library 记录 |
 | `/api/papers` | GET | 列出论文库 |
-| `/api/papers/{paper_id}` | DELETE | 永久删除一条 Library 记录及其产物（204 / 202 / 404 / 500） |
+| `/api/papers/{paper_id}` | DELETE | 永久删除一条 Library 记录及其产物（204 / 202 / 409 / 404 / 500） |
 | `/api/papers/{paper_id}/claims` | GET | 从持久化 manuscript 中提取 claims/citation markers |
 | `/api/papers/{paper_id}/markdown` | GET | 返回 Parser 生成的增强 Markdown（含图片引用、公式、表格） |
 | `/api/papers/{paper_id}/images/{filename}` | GET | 返回从论文中提取的图片文件（单段文件名，防路径穿越） |
@@ -181,8 +184,21 @@ and the measured limits.
 
 ```
 Request:  multipart/form-data { file: PDF | .bib }
-Response: { paper_id, status, file_type, pages, paragraph_count, entry_count, title? }
+Response: { paper_id, status, file_type, scope, pages, paragraph_count, entry_count, title?, error_message? }
 ```
+
+PDF uploads default to background parsing (`PARSE_IN_BACKGROUND=true`), including
+Verify source uploads. A single worker processes the queue in order. Uploads return
+HTTP 200 with `pending`; clients poll `GET /api/parse/{paper_id}` until `completed`
+or `failed`. Setting `PARSE_IN_BACKGROUND=false` waits for parsing in a worker
+thread. BibTeX uploads also run in a worker thread and return their final result.
+Startup marks unfinished PDF records as `failed` with an interruption message.
+Deletion returns HTTP 409 while a record is `pending` or `processing`.
+
+The upload dialog can close during parsing while its mounted component continues
+polling. Polling stops after three consecutive request failures or ten minutes;
+the latter directs the user to the file list. The selected unfinished manuscript
+refreshes its paper list every four seconds until parsing completes or fails.
 
 ### POST /api/parse/bib
 

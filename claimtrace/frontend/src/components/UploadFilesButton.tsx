@@ -18,6 +18,7 @@ export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabl
   const active = useRef(true);
   const busyRef = useRef(false);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -36,21 +37,42 @@ export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabl
     }
     busyRef.current = true;
     setBusy(true);
+    setUploading(true);
     setMessage(`Uploading ${file.name}…`);
     try {
       let paper = await uploadPaper(file, purpose);
+      if (active.current) setUploading(false);
       // Mock status polling reads the local workspace record.
       saveWorkspacePaper({ paperId: paper.paper_id, fileName: file.name, fileType: paper.file_type, scope: paper.scope,
         fileSize: file.size, uploadedAt: Date.now(), status: paper.status, pages: paper.pages,
         paragraphCount: paper.paragraph_count, entryCount: paper.entry_count });
+      const started = Date.now();
+      let failures = 0;
+      const timeoutMessage = "Parsing is taking longer than expected. Check the file list for its status.";
       while (active.current && (paper.status === "pending" || paper.status === "processing")) {
-        setMessage(`${file.name} uploaded. Parsing…`);
+        if (Date.now() - started >= 10 * 60 * 1000) {
+          throw new Error(timeoutMessage);
+        }
+        setMessage(`Parsing… ${Math.floor((Date.now() - started) / 1000)}s. You can close this window; it continues in the background.`);
         await new Promise((resolve) => window.setTimeout(resolve, 2000));
         if (!active.current) return;
-        paper = await getParseStatus(paper.paper_id);
+        const remaining = 10 * 60 * 1000 - (Date.now() - started);
+        if (remaining <= 0) throw new Error(timeoutMessage);
+        const controller = new AbortController();
+        const deadline = window.setTimeout(() => controller.abort(), remaining);
+        try {
+          paper = await getParseStatus(paper.paper_id, controller.signal);
+          failures = 0;
+        } catch (cause) {
+          if (controller.signal.aborted) throw new Error(timeoutMessage);
+          failures += 1;
+          if (failures >= 3) throw cause;
+        } finally {
+          window.clearTimeout(deadline);
+        }
       }
       if (!active.current) return;
-      if (paper.status === "failed") throw new Error("Parsing failed. Please check the file and try again.");
+      if (paper.status === "failed") throw new Error(paper.error_message || "Parsing failed. Please check the file and try again.");
       setMessage(`${file.name} is ready. Refreshing the file list…`);
       await onReady(paper);
       if (active.current) setMessage(`${file.name} is ready and selected. You can close this window or upload another file.`);
@@ -59,14 +81,14 @@ export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabl
     } finally {
       onSettled?.();
       busyRef.current = false;
-      if (active.current) setBusy(false);
+      if (active.current) { setBusy(false); setUploading(false); }
     }
   }
 
   return <>
     <button className="button button-secondary upload-trigger" type="button" disabled={disabled} onClick={() => dialog.current?.showModal()}><Icon name="upload" size={17} /> {verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</button>
-    <dialog className="direct-upload-dialog" aria-labelledby={titleId} ref={dialog} onCancel={(event) => { if (busy) event.preventDefault(); }}>
-      <header><div className="upload-heading"><span className="upload-heading-icon"><Icon name="upload" size={24} /></span><div><h2 id={titleId}>{verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</h2></div></div><button className="icon-button" type="button" aria-label="Close upload window" disabled={busy} onClick={() => dialog.current?.close()}><Icon name="x" /></button></header>
+    <dialog className="direct-upload-dialog" aria-labelledby={titleId} ref={dialog} onCancel={(event) => { if (uploading) event.preventDefault(); }}>
+      <header><div className="upload-heading"><span className="upload-heading-icon"><Icon name="upload" size={24} /></span><div><h2 id={titleId}>{verifySourceOnly ? "Upload source PDF" : `Upload ${pdfOnly ? "PDF" : "file"}`}</h2></div></div><button className="icon-button" type="button" aria-label="Close upload window" disabled={uploading} onClick={() => dialog.current?.close()}><Icon name="x" /></button></header>
       <p className="upload-description">{verifySourceOnly ? "This PDF is stored separately and can only be used for the selected claim comparison." : pdfOnly ? "Add a manuscript to start reviewing its claims." : "Add a manuscript or bibliography to check your references."}</p>
       {usingMockApi && <p>Demo mode: files are simulated and are not saved to the backend.</p>}
       <label className={`direct-upload-input${dragging ? " is-dragging" : ""}${busy ? " is-busy" : ""}`} onDragOver={(event) => { event.preventDefault(); if (!busy) setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => {
@@ -84,7 +106,7 @@ export function UploadFilesButton({ pdfOnly = false, purpose = "library", disabl
       }} /></label>
       {message && <p className="upload-feedback" role="status">{busy ? <span className="spinner" /> : <Icon name="check" size={18} />} <span>{message}</span></p>}
       {error && <p className="upload-feedback upload-feedback-error" role="alert"><Icon name="x" size={18} /><span>{error}</span></p>}
-      <footer className="upload-dialog-footer"><span><Icon name="document" size={16} /> Ready files are selected automatically</span><button className="button button-primary" type="button" disabled={busy} onClick={() => dialog.current?.close()}>{busy ? "Processing…" : "Done"}</button></footer>
+      <footer className="upload-dialog-footer"><span><Icon name="document" size={16} /> Ready files are selected automatically</span><button className="button button-primary" type="button" disabled={uploading} onClick={() => dialog.current?.close()}>{busy ? "Processing…" : "Done"}</button></footer>
     </dialog>
   </>;
 }

@@ -1,10 +1,12 @@
-"""Synchronous upload-to-Parser orchestration for the local MVP."""
+"""Upload parsing and the single worker background queue."""
 
+import logging
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from ..models import PaperRecord, PaperScope, ParseStatus
 from ..storage import parsed_document_store
-from ..storage.paper_store import PaperStoreError, get_paper, update_paper
+from ..storage.paper_store import PaperStoreError, get_paper, list_papers, update_paper
 from ..storage.parsed_document_store import (
     ParsedDocumentStoreError,
     save_parsed_document,
@@ -80,3 +82,58 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
         except PaperStoreError:
             pass
         raise PipelineError("Unable to process the uploaded PDF.") from exc
+
+
+logger = logging.getLogger(__name__)
+executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="parse")
+
+
+def _run_parse(paper_id: str) -> None:
+    """Keep unexpected worker failures visible and persist a terminal status."""
+    try:
+        process_uploaded_paper(paper_id)
+    except Exception:
+        logger.exception("Background parsing failed for paper_id=%s", paper_id)
+        try:
+            record = get_paper(paper_id)
+            if record is not None and record.status is not ParseStatus.FAILED:
+                update_paper(
+                    paper_id,
+                    {
+                        "status": ParseStatus.FAILED,
+                        "error_message": "Unable to prepare the uploaded PDF for verification.",
+                    },
+                )
+        except Exception:
+            logger.exception("Unable to persist parse failure for paper_id=%s", paper_id)
+
+
+def submit_parse(paper_id: str) -> None:
+    """Enqueue a persisted PDF without waiting for parsing."""
+    executor.submit(_run_parse, paper_id)
+
+
+def shutdown_parse_queue() -> None:
+    """Cancel queued work when the server stops."""
+    executor.shutdown(wait=False, cancel_futures=True)
+
+
+def recover_interrupted_parses() -> int:
+    """Mark unfinished PDFs from the previous process as failed."""
+    count = 0
+    for record in list_papers():
+        if record.file_type == "pdf" and record.status in {
+            ParseStatus.PENDING,
+            ParseStatus.PROCESSING,
+        }:
+            update_paper(
+                record.paper_id,
+                {
+                    "status": ParseStatus.FAILED,
+                    "error_message": (
+                        "Parsing was interrupted by a server restart. Please upload the file again."
+                    ),
+                },
+            )
+            count += 1
+    return count

@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from starlette.concurrency import run_in_threadpool
 
 from ..config import get_settings
 from ..models import PaperRecord, PaperScope, ParseResponse
@@ -14,7 +15,7 @@ from ..services.bib_service import (
     InvalidBibPaperError,
     process_uploaded_bib,
 )
-from ..services.pipeline_service import PipelineError, process_uploaded_paper
+from ..services.pipeline_service import PipelineError, process_uploaded_paper, submit_parse
 from ..storage.paper_store import PaperStoreError, create_paper, get_paper, update_paper
 
 router = APIRouter()
@@ -89,6 +90,7 @@ def _to_parse_response(record: PaperRecord) -> ParseResponse:
         paragraph_count=record.paragraph_count,
         entry_count=record.entry_count,
         title=record.title,
+        error_message=record.error_message,
     )
 
 
@@ -145,7 +147,10 @@ async def _persist_upload(
 
         if record.file_type == "pdf":
             try:
-                record = process_uploaded_paper(record.paper_id)
+                if settings.parse_in_background:
+                    submit_parse(record.paper_id)
+                else:
+                    record = await run_in_threadpool(process_uploaded_paper, record.paper_id)
             except PipelineError as exc:
                 raise HTTPException(
                     status_code=500,
@@ -153,7 +158,7 @@ async def _persist_upload(
                 ) from exc
         else:
             try:
-                record = process_uploaded_bib(record.paper_id)
+                record = await run_in_threadpool(process_uploaded_bib, record.paper_id)
             except InvalidBibPaperError as exc:
                 raise HTTPException(status_code=422, detail=str(exc)) from exc
             except BibProcessingError as exc:
@@ -227,7 +232,7 @@ async def replace_bib(paper_id: str, file: UploadFile = File(...)):
             raise HTTPException(status_code=404, detail="Paper not found.")
 
         try:
-            updated = process_uploaded_bib(paper_id)
+            updated = await run_in_threadpool(process_uploaded_bib, paper_id)
         except InvalidBibPaperError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         except BibPaperNotFoundError as exc:
@@ -250,7 +255,7 @@ async def replace_bib(paper_id: str, file: UploadFile = File(...)):
 
 
 @router.get("/parse/{paper_id}", response_model=ParseResponse)
-async def get_parse_status(paper_id: str):
+def get_parse_status(paper_id: str):
     """Return persisted metadata for a previously uploaded paper."""
     try:
         paper = get_paper(paper_id)

@@ -33,7 +33,7 @@ router = APIRouter()
 
 
 @router.post("/parse/bib", response_model=BibParseResponse)
-async def parse_bib(request: BibParseRequest):
+def parse_bib(request: BibParseRequest):
     """Reprocess an uploaded .bib file and return its persisted entries.
 
     POST /api/parse already parses and persists BibTeX uploads. This endpoint
@@ -73,7 +73,7 @@ async def parse_bib(request: BibParseRequest):
 
 
 @router.post("/verify/bib", response_model=BibVerifyResponse)
-async def verify_bib(request: BibVerifyRequest):
+def verify_bib(request: BibVerifyRequest):
     """Cross-verify .bib entries against source PDF metadata.
 
     For each bib entry, compares title, year, authors, venue, and DOI

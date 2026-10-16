@@ -146,6 +146,7 @@ class ParsedDocument(BaseModel):
 
 
 class ParseResponse(BaseModel):
+    error_message: str | None = None
     paper_id: str
     status: ParseStatus
     file_type: str = "pdf"  # "pdf" | "bib"

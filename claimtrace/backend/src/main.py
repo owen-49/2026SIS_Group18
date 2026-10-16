@@ -1,5 +1,7 @@
 """ClaimTrace FastAPI application entry point."""
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -60,6 +62,12 @@ async def startup():
             "could not be recovered."
         )
 
+    from .services.pipeline_service import recover_interrupted_parses
+
+    interrupted = recover_interrupted_parses()
+    if interrupted:
+        logging.getLogger(__name__).warning("Recovered %d interrupted PDF parses", interrupted)
+
     # Build LLM client from configured provider
     from engine.llm_client import build_llm_client
 
@@ -100,3 +108,11 @@ async def startup():
             "reference metadata keeps its Parser/raw-text fallback, and "
             "Bibliography Audit still uses the OpenAlex/Crossref metadata chain."
         )
+
+
+@app.on_event("shutdown")
+def shutdown():
+    """Stop accepting background parse work."""
+    from .services.pipeline_service import shutdown_parse_queue
+
+    shutdown_parse_queue()
