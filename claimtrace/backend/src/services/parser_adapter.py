@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -26,6 +27,12 @@ logger = logging.getLogger(__name__)
 class ParserAdapterError(RuntimeError):
     """Raised when an uploaded file cannot be prepared for parsing."""
 
+    def __init__(self, message: str, *, user_message: str | None = None):
+        super().__init__(message)
+        # Optional user-facing explanation, surfaced by the parse queue.
+        # Never include file paths — it is shown to users directly.
+        self.user_message = user_message
+
 
 _IMAGE_REF_RE = re.compile(r"!\[[^\]]*\]\((?:<[^>]+>|[^)\s]+)\)")
 _HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+(.+?)\s*$")
@@ -34,6 +41,11 @@ _HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+(.+?)\s*$")
 # that may render the placeholder as a bare page number instead.
 _PAGE_MARKER_RE = re.compile(r"<!--\s*ct-page\s+%*(\d+)%*\s*-->")
 _SENTENCE_END_RE = re.compile(r"[.!?。！？…][\"'”’)\]}]*$")
+# A page with less than this much text contributes no paragraph content and
+# counts as low-text; when at least this share of pages is low-text the
+# document is treated as a scan that needs OCR on the hybrid backend.
+_LOW_TEXT_PAGE_CHARS = 200
+_SCANNED_PAGE_RATIO = 0.3
 _DOI_PATTERN = re.compile(
     r"\b10\.\d{4,9}/[-._;()/:A-Z0-9]+",
     re.IGNORECASE,
@@ -555,17 +567,17 @@ def _convert_markdown_with_fallback(
     *,
     markdown_dir: Path,
     settings,
-    hybrid_override: str | None = None,
+    hybrid: str,
+    hybrid_mode: str | None,
 ) -> str:
-    """Convert via the configured hybrid backend, falling back to local Java
+    """Convert with the chosen hybrid backend, falling back to local Java
     processing when the hybrid service is unreachable."""
-    hybrid = hybrid_override if hybrid_override is not None else settings.parser_hybrid
     try:
         return convert_pdf_to_markdown(
             file_path,
             output_dir=markdown_dir,
             hybrid=hybrid,
-            hybrid_mode=settings.parser_hybrid_mode if hybrid != "off" else None,
+            hybrid_mode=hybrid_mode,
             hybrid_url=(settings.parser_hybrid_url if hybrid != "off" else None),
             use_struct_tree=settings.parser_use_struct_tree,
         )
@@ -591,9 +603,11 @@ def parse_document(
 ) -> ParsedDocument:
     """Convert an uploaded PDF with Yi's Parser and return backend output.
 
-    ``hybrid`` overrides the configured hybrid backend selection. Pass
-    ``"off"`` for uploads that only need paragraph text and page numbers
-    (Verify source PDFs) so they never reach the slow AI backend.
+    ``hybrid`` overrides the configured backend selection: source PDFs pass
+    ``"off"`` because they only need paragraph text and page numbers.  Scanned
+    documents are escalated to the configured hybrid backend in full mode so
+    OCR can extract their text; manuscripts use the configured backend
+    unchanged.
     """
     if not file_path.is_file():
         raise ParserAdapterError(f"Uploaded file not found: {file_path}")
@@ -603,15 +617,39 @@ def parse_document(
     settings = get_settings()
     markdown_dir = output_dir or settings.parsed_dir / "markdown"
 
+    started = time.perf_counter()
     try:
         with fitz.open(file_path) as document:
             page_texts = [page.get_text("text") for page in document]
             page_count = document.page_count
     except Exception as exc:
         raise ParserAdapterError(f"Unable to inspect PDF: {file_path.name}") from exc
+    pymupdf_seconds = time.perf_counter() - started
 
     if page_count < 1:
         raise ParserAdapterError("The PDF contains no pages.")
+
+    low_text_pages = sum(
+        1 for text in page_texts if len(text.strip()) < _LOW_TEXT_PAGE_CHARS
+    )
+    is_scanned = low_text_pages / page_count >= _SCANNED_PAGE_RATIO
+
+    # Choose the hybrid backend and page-routing mode.  Source PDFs request
+    # "off" for fast local parsing, but a scanned source has no text layer,
+    # so OCR on the hybrid backend is the only way to read it.
+    hybrid_name = hybrid if hybrid is not None else settings.parser_hybrid
+    hybrid_mode = settings.parser_hybrid_mode if hybrid is None else None
+    if hybrid == "off" and is_scanned and settings.parser_hybrid != "off":
+        hybrid_name = settings.parser_hybrid
+        hybrid_mode = "full"
+        logger.info(
+            "Source PDF %s looks scanned (%d/%d low-text pages); "
+            "escalating to hybrid %s in full mode for OCR.",
+            paper_id,
+            low_text_pages,
+            page_count,
+            hybrid_name,
+        )
 
     try:
         from parser.pdf_parser import parse_pdf
@@ -622,16 +660,19 @@ def parse_document(
         parsed_paper = parse_pdf(file_path)
     except Exception as exc:  # Parser exceptions vary by implementation and PDF library.
         raise ParserAdapterError(f"Unable to parse PDF metadata: {file_path.name}") from exc
+    metadata_seconds = time.perf_counter() - started - pymupdf_seconds
 
     try:
         markdown = _convert_markdown_with_fallback(
             file_path,
             markdown_dir=markdown_dir,
             settings=settings,
-            hybrid_override=hybrid,
+            hybrid=hybrid_name,
+            hybrid_mode=hybrid_mode,
         )
     except Exception as exc:
         raise ParserAdapterError(f"Unable to convert PDF with Yi's Parser: {exc}") from exc
+    convert_seconds = time.perf_counter() - started - pymupdf_seconds - metadata_seconds
 
     display_title = _title_from_markdown(markdown)
     metadata = _extract_metadata(
@@ -640,6 +681,28 @@ def parse_document(
         title_hint=display_title,
     )
     paragraphs = _markdown_to_paragraphs(markdown, page_texts)
+    if not paragraphs:
+        raise ParserAdapterError(
+            "The PDF produced no paragraph text.",
+            user_message=(
+                "No text could be extracted from this PDF. If it is a scanned "
+                "document, start the hybrid OCR service and upload it again."
+            ),
+        )
+
+    logger.info(
+        "Parsed paper_id=%s: pages=%d low_text_pages=%d scanned=%s hybrid=%s mode=%s "
+        "timings pymupdf=%.2fs metadata=%.2fs convert=%.2fs",
+        paper_id,
+        page_count,
+        low_text_pages,
+        is_scanned,
+        hybrid_name,
+        hybrid_mode,
+        pymupdf_seconds,
+        metadata_seconds,
+        convert_seconds,
+    )
 
     return ParsedDocument(
         paper_id=paper_id,

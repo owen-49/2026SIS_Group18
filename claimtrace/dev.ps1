@@ -3,6 +3,9 @@
 # Usage:
 #   powershell -ExecutionPolicy Bypass -File claimtrace\dev.ps1
 #
+# Environment:
+#   CLAIMTRACE_PYTHON_ENV — Python environment directory (default: .venv).
+#
 # Ctrl+C stops every service the script started. Services already running
 # (healthy endpoints) are reused instead of started twice.
 
@@ -10,8 +13,13 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ClaimDir = $PSScriptRoot
-$VenvPython = Join-Path $RepoRoot ".venv\Scripts\python.exe"
-$HybridExe = Join-Path $RepoRoot ".venv\Scripts\opendataloader-pdf-hybrid.exe"
+$PythonEnv = if ($env:CLAIMTRACE_PYTHON_ENV) {
+  $env:CLAIMTRACE_PYTHON_ENV
+} else {
+  Join-Path $RepoRoot ".venv"
+}
+$VenvPython = Join-Path $PythonEnv "Scripts\python.exe"
+$HybridExe = Join-Path $PythonEnv "Scripts\opendataloader-pdf-hybrid.exe"
 
 $children = New-Object System.Collections.ArrayList
 
@@ -47,6 +55,8 @@ function Start-IfNeeded([string]$Name, [string]$HealthUrl, [scriptblock]$Start) 
 
 # 1. Hybrid AI service (port 5002) — PYTHONUTF8=1 is required on Chinese-locale
 #    Windows, otherwise docling model loading fails with a GBK decoding error.
+#    Formula enrichment (LaTeX) is off by default; add "--enrich-formula" to
+#    enable it (slower, downloads formula models on first run).
 Start-IfNeeded "hybrid (5002)" "http://localhost:5002/health" {
   $env:PYTHONUTF8 = "1"
   $proc = Start-Process -FilePath $HybridExe -ArgumentList "--port", "5002" -WorkingDirectory $ClaimDir -PassThru
