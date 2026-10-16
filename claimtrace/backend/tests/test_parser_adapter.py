@@ -72,6 +72,22 @@ def test_markdown_page_anchors_merge_paragraph_split_across_pages():
     ]
 
 
+def test_markdown_page_anchors_remove_hyphen_when_joining_split_word():
+    markdown = (
+        "<!-- ct-page %1% -->\n\n"
+        "...when increasing it-\n\n"
+        "<!-- ct-page %2% -->\n\n"
+        "erations, and at the same time...\n"
+    )
+
+    paragraphs = parser_adapter._markdown_to_paragraphs(markdown, [])
+
+    assert len(paragraphs) == 1
+    assert "increasing iterations, and" in paragraphs[0].text
+    assert paragraphs[0].page_start == 1
+    assert paragraphs[0].page_end == 2
+
+
 def test_markdown_page_anchors_do_not_merge_complete_or_uppercase_blocks():
     markdown = (
         "<!-- ct-page %1% -->\n\n"

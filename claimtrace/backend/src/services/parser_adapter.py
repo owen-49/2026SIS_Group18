@@ -163,8 +163,14 @@ def _append_page_blocks(
     """Append one page's blocks, joining a paragraph split across the boundary."""
     if paragraphs and blocks and _continues_on_next_page(paragraphs[-1].text, blocks[0]):
         previous = paragraphs[-1]
+        previous_text = previous.text.rstrip()
+        following_text = blocks.pop(0).lstrip()
+        if previous_text.endswith("-"):
+            merged_text = f"{previous_text[:-1]}{following_text}"
+        else:
+            merged_text = f"{previous_text} {following_text}"
         paragraphs[-1] = ParsedParagraph(
-            text=f"{previous.text.rstrip()} {blocks.pop(0).lstrip()}",
+            text=merged_text,
             page_start=previous.page_start,
             page_end=page,
         )
