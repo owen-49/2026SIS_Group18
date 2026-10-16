@@ -91,9 +91,28 @@ function extractEntries(source) {
 }
 
 function readField(entry, field) {
-  const expression = new RegExp(`${field}\\s*=\\s*(?:\\{([^}]*)\\}|"([^"]*)")`, "i");
-  const match = entry.match(expression);
-  return (match?.[1] || match?.[2] || "").replace(/\s+/g, " ").trim();
+  // Read the complete value: protected words such as {BERT} may be nested
+  // inside a braced title, and booktitle is a different field from title.
+  const match = entry.match(new RegExp(`(?:^|[,\\n])\\s*${field}\\s*=\\s*`, "i"));
+  if (!match) return "";
+  const start = match.index + match[0].length;
+  const delimiter = entry[start];
+  const clean = value => value.replace(/\s+/g, " ").trim();
+  if (delimiter !== "{" && delimiter !== '"') {
+    return clean(entry.slice(start).split(/[,}\n]/, 1)[0]);
+  }
+  let depth = delimiter === "{" ? 1 : 0;
+  for (let cursor = start + 1; cursor < entry.length; cursor++) {
+    const character = entry[cursor];
+    if (character === "\\") { cursor++; continue; }
+    if (character === "{") depth++;
+    if (character === "}") {
+      depth--;
+      if (delimiter === "{" && depth === 0) return clean(entry.slice(start + 1, cursor));
+    }
+    if (delimiter === '"' && character === '"' && depth === 0) return clean(entry.slice(start + 1, cursor));
+  }
+  return "";
 }
 
 function parseBibliography(source) {
