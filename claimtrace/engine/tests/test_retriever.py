@@ -65,3 +65,37 @@ class TestRetrieverEmpty:
         ret = Retriever()
         results = ret.retrieve_with_sentences("any claim")
         assert results == []
+
+
+class TestRetrieverSkipsFragments:
+    """Formula and label fragments are never returned as evidence."""
+
+    PASSAGES = [
+        "sign(∇xJ(θ,x,y))",
+        "We refer to this as the fast gradient sign method of generating "
+        "adversarial examples.",
+        "η = sign(∇xJ(θ,x,y)).",
+        "MI-FGSM",
+        "Adversarial training with the fast gradient sign method acts as a "
+        "regularizer beyond dropout.",
+    ]
+
+    def test_is_prose(self):
+        from engine.retriever import is_prose
+
+        assert not is_prose("sign(∇xJ(θ,x,y))")
+        assert not is_prose("MI-FGSM")
+        assert is_prose(self.PASSAGES[1])
+
+    def test_fragments_not_returned_and_indices_preserved(self):
+        ret = Retriever(Embedder())
+        ret.build_index(self.PASSAGES)
+        results = ret.retrieve("FGSM applies a single gradient-sign step", k=5)
+        assert {r.passage_index for r in results} == {1, 4}
+        for r in results:
+            assert r.passage == self.PASSAGES[r.passage_index]
+
+    def test_all_fragments_falls_back_to_indexing_everything(self):
+        ret = Retriever(Embedder())
+        ret.build_index(["MI-FGSM", "sign(x)"])
+        assert len(ret.retrieve("momentum", k=5)) == 2

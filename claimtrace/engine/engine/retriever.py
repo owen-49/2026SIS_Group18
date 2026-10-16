@@ -5,12 +5,26 @@ returns the most semantically similar passages — even when the
 wording is completely different from the claim.
 """
 
+import re
 from dataclasses import dataclass
 
 import faiss
 import numpy as np
 
 from .embedder import Embedder
+
+# A passage needs at least this many words of three or more letters to be
+# indexed. PDF text extraction splits display formulas, axis labels and table
+# headers into their own "paragraphs" ("sign(∇xJ(θ,x,y))", "MI-FGSM"); they
+# carry no claim the model could judge, yet a short query embeds close to them
+# and they crowd real prose out of the top-k evidence.
+MIN_PROSE_WORDS = 4
+_WORD_RE = re.compile(r"[^\W\d_]{3,}")
+
+
+def is_prose(passage: str) -> bool:
+    """Whether a passage has enough running text to serve as evidence."""
+    return len(_WORD_RE.findall(passage)) >= MIN_PROSE_WORDS
 
 
 @dataclass
@@ -35,6 +49,8 @@ class Retriever:
         self.embedder = embedder or Embedder()
         self.index: faiss.IndexFlatIP | None = None
         self.passages: list[str] = []
+        # Positions in ``passages`` that are in the index, in index order.
+        self._indexed: list[int] = []
 
     def build_index(self, passages: list[str]) -> None:
         """Build a FAISS index from source paper passages.
@@ -48,9 +64,17 @@ class Retriever:
         self.passages = passages
         if not passages:
             self.index = None
+            self._indexed = []
             return
 
-        embeddings = self.embedder.encode(passages)
+        # Fragments are left out of the index, never out of ``passages``:
+        # ``passage_index`` must keep pointing into the caller's list, because
+        # that position is what maps evidence back to a page. If nothing reads
+        # as prose, index everything rather than return no evidence at all.
+        self._indexed = [i for i, p in enumerate(passages) if is_prose(p)] or list(
+            range(len(passages))
+        )
+        embeddings = self.embedder.encode([passages[i] for i in self._indexed])
         self.index = faiss.IndexFlatIP(embeddings.shape[1])
         self.index.add(embeddings.astype(np.float32))
 
@@ -68,18 +92,19 @@ class Retriever:
             return []
 
         query_emb = self.embedder.encode([claim]).astype(np.float32)
-        scores, indices = self.index.search(query_emb, min(k, len(self.passages)))
+        scores, indices = self.index.search(query_emb, min(k, len(self._indexed)))
 
         results: list[RetrievalResult] = []
         for rank, (score, idx) in enumerate(zip(scores[0], indices[0])):
-            if idx < 0 or idx >= len(self.passages):
+            if idx < 0 or idx >= len(self._indexed):
                 continue
+            position = self._indexed[idx]
             results.append(
                 RetrievalResult(
-                    passage=self.passages[idx],
+                    passage=self.passages[position],
                     score=float(score),
                     rank=rank + 1,
-                    passage_index=int(idx),
+                    passage_index=position,
                 )
             )
 
