@@ -2,7 +2,38 @@
 
 from pathlib import Path
 
+from backend.src.services import pipeline_service
+from backend.src.services.parser_adapter import parse_document as real_parse_document
 from backend.src.storage.paper_store import get_paper
+
+
+def test_verify_source_upload_skips_hybrid_parsing(
+    client, sample_pdf_bytes, monkeypatch
+):
+    """Source PDFs parse locally; only manuscripts use the hybrid backend."""
+    calls = []
+
+    def spy_parse_document(paper_id, file_path, *, title=None, output_dir=None, hybrid=None):
+        calls.append(hybrid)
+        return real_parse_document(
+            paper_id, file_path, title=title, output_dir=output_dir, hybrid=hybrid
+        )
+
+    monkeypatch.setattr(pipeline_service, "parse_document", spy_parse_document)
+
+    source = client.post(
+        "/api/verify/sources",
+        files={"file": ("source.pdf", sample_pdf_bytes, "application/pdf")},
+    ).json()
+    assert source["status"] == "completed"
+    assert calls[-1] == "off"
+
+    manuscript = client.post(
+        "/api/parse",
+        files={"file": ("manuscript.pdf", sample_pdf_bytes, "application/pdf")},
+    ).json()
+    assert manuscript["status"] == "completed"
+    assert calls[-1] is None
 
 
 def test_verify_source_upload_has_separate_storage_and_listing(

@@ -48,6 +48,9 @@ def process_uploaded_paper(paper_id: str) -> PaperRecord:
             Path(processing.file_path),
             title=processing.title,
             output_dir=parsed_root / "markdown",
+            # Source PDFs only need paragraph text and page numbers; the
+            # slow AI hybrid backend is reserved for manuscripts.
+            hybrid="off" if processing.scope is PaperScope.VERIFY_SOURCE else None,
         )
         parsed_path = save_parsed_document(parsed, parsed_dir=parsed_root)
         completed = update_paper(
