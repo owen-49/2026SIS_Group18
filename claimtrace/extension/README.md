@@ -93,7 +93,10 @@ only if the backend returns 404. This is the plugin's only backend workflow.
 Audit results expose identified publication links and clearly labelled
 unconfirmed candidate links. Backend errors and report warnings remain visible.
 
-The search box filters local entries. In Papers, **Search title on Google
+The search box matches reference titles across paper cards, Audit results and
+editor citation locations. Citation cards show the reference title above the cited
+sentence. Matching ignores case, repeated spaces and punctuation; protected words
+in nested BibTeX title braces are preserved. In Papers, **Search title on Google
 Scholar** opens an external search page for the entered text; entries without a
 URL offer the same title-search fallback. This is not a backend search API or
 proof of publication identity. Backend alignment and current live-check limits

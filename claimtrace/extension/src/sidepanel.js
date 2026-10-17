@@ -35,6 +35,7 @@ const auditBibButton = document.getElementById("auditBibButton");
 const searchOnline = document.getElementById("searchOnline");
 const auditStatus = document.getElementById("auditStatus");
 const auditList = document.getElementById("auditList");
+const auditEmptyState = document.getElementById("auditEmptyState");
 
 let papers = [];
 let findings = [];
@@ -72,12 +73,23 @@ function verdictClass(verdict) {
   return "danger";
 }
 
+function normaliseReferenceTitle(value) {
+  return String(value || "").normalize("NFKC").toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+function matchesReferenceTitle(title, query) {
+  return normaliseReferenceTitle(title).includes(query);
+}
+
+function referenceTitles(finding) {
+  return papers.filter(paper => paper.citationKey === finding.citationKey)
+    .map(paper => paper.title).filter(Boolean);
+}
+
 function renderPapers() {
-  const query = searchInput.value.trim().toLowerCase();
-  const visible = papers.filter((paper) =>
-    [paper.title, paper.authors, paper.venue, paper.year, paper.citationKey]
-      .some((value) => String(value || "").toLowerCase().includes(query)),
-  );
+  const query = normaliseReferenceTitle(searchInput.value);
+  const visible = papers.filter(paper => matchesReferenceTitle(paper.title, query));
 
   searchOnline.hidden = !query;
   searchOnline.href = `https://scholar.google.com/scholar?q=${encodeURIComponent(searchInput.value.trim())}`;
@@ -114,11 +126,9 @@ function renderCandidates(finding) {
 }
 
 function renderFindings() {
-  const query = searchInput.value.trim().toLowerCase();
-  const visible = findings.filter((finding) =>
-    [finding.claim, finding.citationKey, finding.label, finding.annotation]
-      .some((value) => String(value || "").toLowerCase().includes(query)),
-  );
+  const query = normaliseReferenceTitle(searchInput.value);
+  const visible = findings.filter(finding => !query || referenceTitles(finding)
+    .some(title => matchesReferenceTitle(title, query)));
 
   citationCount.textContent = String(visible.length);
   citationTabCount.textContent = String(findings.length);
@@ -126,7 +136,8 @@ function renderFindings() {
   citationList.hidden = visible.length === 0;
   citationList.innerHTML = visible.map((finding) => `<button class="citation-card tone-${verdictClass(finding.verdict)}" type="button" data-location-id="${escapeHtml(finding.id)}" data-citation-key="${escapeHtml(finding.citationKey)}">
     <span class="citation-card-top"><span class="citation-verdict">${escapeHtml(finding.label)}</span><span class="citation-line">Editor location</span></span>
-    <strong>${escapeHtml(finding.claim)}</strong>
+    <strong>${escapeHtml(referenceTitles(finding).join(" · ") || finding.citationKey)}</strong>
+    <span class="citation-claim">${escapeHtml(finding.claim)}</span>
     <span class="citation-card-meta"><code>\\cite{${escapeHtml(finding.citationKey)}}</code><span>Locate in editor →</span></span>
     <small>${escapeHtml(finding.annotation)} · not checked in the extension</small>
   </button>`).join("");
@@ -150,8 +161,13 @@ function renderAudit() {
   auditBibButton.disabled = Boolean(auditState.running);
   auditStatus.textContent = [bibSyncError ? `Bibliography: ${bibSyncError}` : "", auditState.message || (bibSyncError ? "" : "No Audit has been run yet."), paperListWarning, ...(audit?.warnings || [])].filter(Boolean).join(" · ");
   auditStatus.classList.toggle("running", Boolean(auditState.running));
-  auditList.hidden = !audit?.results?.length;
-  auditList.innerHTML = (audit?.results || []).map((result) => {
+  const query = normaliseReferenceTitle(searchInput.value);
+  const results = audit?.results || [];
+  const visible = results.filter(result => matchesReferenceTitle(
+    result.entry?.metadata?.title || result.matched_record?.metadata?.title, query));
+  auditList.hidden = !visible.length;
+  auditEmptyState.hidden = !results.length || !query || visible.length > 0;
+  auditList.innerHTML = visible.map((result) => {
     const metadata = result.entry?.metadata || {};
     const title = metadata.title || metadata.key || result.entry?.entry_id || "Untitled reference";
     const differences = (result.field_checks || []).filter((field) => field.status !== "MATCH" && field.status !== "NOT_CHECKED");
@@ -176,7 +192,7 @@ function setView(view, chosen = true) {
   papersTab.classList.toggle("active", !showingCitations);
   citationsTab.setAttribute("aria-selected", String(showingCitations));
   papersTab.setAttribute("aria-selected", String(!showingCitations));
-  searchInput.placeholder = showingCitations ? "Search cited claims…" : "Search papers…";
+  searchInput.placeholder = "Search reference titles…";
   if (chosen) searchInput.value = "";
   renderPapers();
   renderFindings();
@@ -243,7 +259,11 @@ async function refreshAuditPapers() {
   }
 }
 
-searchInput.addEventListener("input", () => activeView === "citations" ? renderFindings() : renderPapers());
+searchInput.addEventListener("input", () => {
+  renderPapers();
+  renderFindings();
+  renderAudit();
+});
 citationsTab.addEventListener("click", () => setView("citations"));
 papersTab.addEventListener("click", () => setView("papers"));
 syncButton.addEventListener("click", async () => {

@@ -75,3 +75,94 @@ test("a previous Bib parse error does not hide a subsequent PDF Audit status", (
   assert.match(elements.get("auditStatus").textContent, /Bibliography: Invalid BibTeX/);
   assert.match(elements.get("auditStatus").textContent, /Audit complete/);
 });
+
+test("reference-title search filters paper cards, Audit records and their citation locations", () => {
+  const { context, elements } = panelContext();
+  vm.runInContext(`
+    papers = [
+      {citationKey: 'bert2019', title: 'BERT: Pre-training of Deep Bidirectional Transformers', authors: 'Devlin', venue: 'NAACL', year: '2019'},
+      {citationKey: 'attention2017', title: 'Attention Is All You Need', authors: 'Vaswani', venue: 'NeurIPS', year: '2017'}
+    ];
+    findings = [
+      {id: 'bert-first', citationKey: 'bert2019', claim: 'Context improves representations.', label: 'Not checked'},
+      {id: 'bert-second', citationKey: 'bert2019', claim: 'Another contextual claim.', label: 'Not checked'},
+      {id: 'attention-first', citationKey: 'attention2017', claim: 'Self-attention replaces recurrence.', label: 'Not checked'}
+    ];
+    audit = {results: papers.map(paper => ({entry: {metadata: {title: paper.title}}, status: 'VERIFIED'}))};
+  `, context);
+  elements.get('searchInput').value = '  PRE training of deep  ';
+  vm.runInContext('renderPapers(); renderFindings(); renderAudit()', context);
+  assert.equal(elements.get('paperCount').textContent, '1');
+  assert.equal(elements.get('citationCount').textContent, '2');
+  assert.match(elements.get('citationList').innerHTML, /BERT: Pre-training/);
+  assert.doesNotMatch(elements.get('citationList').innerHTML, /attention-first/);
+  assert.match(elements.get('auditList').innerHTML, /BERT: Pre-training/);
+  assert.doesNotMatch(elements.get('auditList').innerHTML, /Attention Is All You Need/);
+  assert.equal(elements.get('auditEmptyState').hidden, true);
+  elements.get('searchInput').value = '';
+  vm.runInContext('renderPapers(); renderFindings(); renderAudit()', context);
+  assert.equal(elements.get('paperCount').textContent, '2');
+  assert.equal(elements.get('citationCount').textContent, '3');
+  assert.match(elements.get('auditList').innerHTML, /Attention Is All You Need/);
+});
+
+test("reference search does not match a claim, author, citation key or Audit reason instead of a title", () => {
+  const { context, elements } = panelContext();
+  vm.runInContext(`
+    papers = [{citationKey: 'metadata-token', title: 'Attention Is All You Need', authors: 'Metadata-token', venue: 'Metadata-token', year: '2017'}];
+    findings = [{id: 'one', citationKey: 'metadata-token', claim: 'Metadata-token improves prediction.', label: 'Metadata-token', annotation: 'Metadata-token'}];
+    audit = {results: [{entry: {metadata: {title: 'Attention Is All You Need'}}, status: 'NEEDS_REVIEW', reason: 'Metadata-token'}]};
+  `, context);
+  elements.get('searchInput').value = 'metadata-token';
+  vm.runInContext('renderPapers(); renderFindings(); renderAudit()', context);
+  assert.equal(elements.get('paperCount').textContent, '0');
+  assert.equal(elements.get('citationCount').textContent, '0');
+  assert.equal(elements.get('citationEmptyState').hidden, false);
+  assert.equal(elements.get('auditList').hidden, true);
+  assert.equal(elements.get('auditEmptyState').hidden, false);
+});
+
+test("duplicate citation keys retain every reference title as searchable text", () => {
+  const { context, elements } = panelContext();
+  vm.runInContext(`papers = [{citationKey: 'shared', title: 'First Paper'}, {citationKey: 'shared', title: 'Second Paper'}];
+    findings = [{id: 'location', citationKey: 'shared', claim: 'The sentence cites a shared key.'}];`, context);
+  elements.get('searchInput').value = 'second paper';
+  vm.runInContext('renderFindings()', context);
+  assert.equal(elements.get('citationCount').textContent, '1');
+  assert.match(elements.get('citationList').innerHTML, /Second Paper/);
+});
+
+test("nested BibTeX title braces preserve the full reference name and do not select booktitle", () => {
+  const { createDom } = require('./fake-dom.cjs');
+  const dom = createDom({lines: [
+    '@inproceedings{devlin2019bert,',
+    ' booktitle = {Proceedings of NAACL},',
+    ' title = {{BERT}: Pre-training of Deep {Bidirectional} Transformers for Language Understanding},',
+    ' author = {Devlin, Jacob and Chang, Ming-Wei},',
+    ' year = 2019',
+    '}'
+  ]});
+  vm.createContext(dom);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, 'src/content.js'), 'utf8'), dom);
+  const [paper] = dom.reports('bibliography_detected').at(-1).papers;
+  assert.equal(paper.title, 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding');
+  assert.equal(paper.venue, 'Proceedings of NAACL');
+  assert.equal(paper.year, '2019');
+  assert.equal(paper.authorList.length, 2);
+});
+
+test("quoted multiline BibTeX titles preserve protected words and escaped quotes", () => {
+  const { createDom } = require('./fake-dom.cjs');
+  const dom = createDom({lines: [
+    '@article{quoted,',
+    ' title = "Understanding {NLP}:',
+    ' A \\"quoted\\" study",',
+    ' year = "2020"',
+    '}'
+  ]});
+  vm.createContext(dom);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, 'src/content.js'), 'utf8'), dom);
+  const [paper] = dom.reports('bibliography_detected').at(-1).papers;
+  assert.equal(paper.title, 'Understanding NLP: A \\"quoted\\" study');
+  assert.equal(paper.year, '2020');
+});

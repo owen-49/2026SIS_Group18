@@ -25,8 +25,8 @@
 
       <label class="search-box">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-        <span class="sr-only">Filter citations or papers</span>
-        <input id="searchInput" type="search" placeholder="Search citations…" autocomplete="off" />
+        <span class="sr-only">Search reference titles</span>
+        <input id="searchInput" type="search" placeholder="Search reference titles…" autocomplete="off" />
       </label>
 
       <section id="citationsView">
@@ -34,7 +34,7 @@
           <button id="syncButton" class="sync-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"></path><path d="M20 2l-4 4a8 8 0 1 0 2 9"></path></svg>Sync</button>
         </div>
         <section id="citationList" class="citation-list" aria-live="polite"></section>
-        <section id="citationEmptyState" class="empty-state" hidden><span>⌕</span><h2>No cited claims detected</h2><p>Open a <code>.tex</code> file containing <code>\cite{...}</code>.</p></section>
+        <section id="citationEmptyState" class="empty-state" hidden><span>⌕</span><h2>No matching citations</h2><p>Open a <code>.tex</code> file containing <code>\cite{...}</code>, or search for another reference title.</p></section>
       </section>
 
       <section id="papersView" hidden>
@@ -54,6 +54,7 @@
         </section>
         <section id="auditStatus" class="audit-status">No Audit has been run yet.</section>
         <section id="auditList" class="audit-list" aria-live="polite" hidden></section>
+        <p id="auditEmptyState" class="section-note" role="status" hidden>No Audit results match this reference title.</p>
         <div class="library-heading"><div><span class="eyebrow">Paper library</span><h1>Sources <span id="paperCount">0</span></h1></div></div>
         <a id="searchOnline" target="_blank" rel="noreferrer" hidden>Search title on Google Scholar ↗</a>
         <section id="paperList" class="paper-list" aria-live="polite"></section>

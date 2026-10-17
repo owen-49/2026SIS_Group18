@@ -431,6 +431,12 @@ main {
   font-weight: 500;
   overflow-wrap: anywhere;
 }
+.citation-claim {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
 .citation-card-meta > span {
   font-size: 10px;
   color: var(--brand);
