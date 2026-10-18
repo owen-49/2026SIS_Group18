@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimTrace rotating poster</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root { --face-w: 480px; --face-h: 640px; --depth: 240px; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; overflow: hidden;
+    background:
+      radial-gradient(1100px 700px at 50% 34%, #262a32 0%, #171a20 52%, #0e1013 100%);
+    color: var(--paper);
+    display: grid; grid-template-rows: 1fr auto;
+  }
+  .stage {
+    position: relative;
+    display: grid; place-items: center;
+    min-height: 0;
+    perspective: 1700px;
+    perspective-origin: 50% 42%;
+  }
+  .prism {
+    width: var(--face-w); height: var(--face-h);
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(-5deg) rotateY(0deg);
+    transition: transform .9s cubic-bezier(.2,.75,.2,1);
+    cursor: grab;
+    will-change: transform;
+  }
+  .prism.dragging { transition: none; cursor: grabbing; }
+
+  .face {
+    position: absolute; inset: 0;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid #2c3038;
+    box-shadow: 0 40px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.35);
+    padding: 38px 40px 34px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+  .face::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(105deg, rgba(0,0,0,.10), rgba(0,0,0,0) 34%);
+    pointer-events: none;
+  }
+  .front { transform: translateZ(var(--depth)); }
+  .right { transform: rotateY(90deg) translateZ(var(--depth)); }
+  .back  { transform: rotateY(180deg) translateZ(var(--depth)); }
+  .left  { transform: rotateY(-90deg) translateZ(var(--depth)); }
+
+  .floor {
+    position: absolute; left: 50%; bottom: 4%;
+    width: 620px; height: 90px; transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.55), rgba(0,0,0,0) 68%);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+
+  .tag { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--verified); }
+  .mark { margin-top: auto; }
+  .mark h1 { font-family: var(--serif); font-weight: 500; font-size: 86px; line-height: .95; letter-spacing: -.03em; }
+  .mark h1 .dot { color: var(--verified); }
+  .mark .tagline { font-family: var(--serif); font-style: italic; font-size: 25px; color: var(--ink-soft); margin-top: 14px; line-height: 1.3; }
+  .mark .meta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .corner { position: absolute; right: 40px; top: 38px; text-align: right; font-family: var(--mono); font-size: 9px; line-height: 1.8; letter-spacing: .1em; color: var(--rule-strong); }
+
+  .face h2 { font-family: var(--serif); font-weight: 500; font-size: 34px; line-height: 1.1; letter-spacing: -.01em; margin-top: 20px; }
+  .face h2 em { font-style: italic; color: var(--verified); }
+  .body { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
+  .row { display: flex; gap: 16px; align-items: flex-start; }
+  .row .n { font-family: var(--mono); font-size: 10px; color: var(--verified); padding-top: 4px; }
+  .row h3 { font-family: var(--serif); font-size: 18px; font-weight: 500; line-height: 1.2; }
+  .row p { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 4px; }
+
+  .states { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .state { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .state .n { margin-left: auto; font-family: var(--serif); font-size: 22px; color: var(--ink); }
+  .state .pct { font-family: var(--mono); font-size: 10px; color: var(--muted); width: 44px; text-align: right; }
+  .note { margin-top: auto; font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.4; color: var(--ink-soft); border-left: 3px solid var(--verified); padding-left: 14px; }
+
+  .claim { font-family: var(--serif); font-size: 22px; line-height: 1.32; margin-top: 24px; }
+  .passage { font-size: 13px; line-height: 1.55; color: var(--ink-soft); border-left: 3px solid var(--verified); padding-left: 14px; margin-top: 16px; }
+  .second { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--rule); display: flex; gap: 12px; align-items: flex-start; }
+  .second p { font-family: var(--serif); font-size: 15px; line-height: 1.35; color: var(--ink-soft); }
+  .verdict { margin-top: auto; display: flex; align-items: center; gap: 12px; }
+  .verdict .why { font-size: 10.5px; line-height: 1.4; color: var(--muted); }
+  .face .chip { font-size: 9px; }
+
+  nav {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 6px 0 34px;
+  }
+  nav button {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid #4a505b; background: transparent; color: #c9ccd2;
+    font-size: 15px; cursor: pointer;
+  }
+  nav button:hover { border-color: var(--verified); color: #fff; }
+  .dots { display: flex; gap: 8px; margin: 0 12px; }
+  .dots span { width: 7px; height: 7px; border-radius: 50%; background: #4a505b; transition: background .3s; }
+  .dots span.on { background: var(--verified); }
+  .hint { text-align: center; padding: 0 0 20px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #6b717c; }
+
+  @media (max-width: 620px) {
+    :root { --face-w: 320px; --face-h: 590px; --depth: 160px; }
+    .face { padding: 24px 24px; }
+    .mark h1 { font-size: 56px; }
+    .mark .tagline { font-size: 19px; }
+    .corner { right: 24px; top: 26px; }
+    .face h2 { font-size: 25px; margin-top: 14px; }
+    .claim { font-size: 16px; margin-top: 18px; }
+    .passage { font-size: 12px; margin-top: 12px; }
+    .second { margin-top: 16px; padding-top: 14px; }
+    .second p { font-size: 13.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prism { transition-duration: .001ms; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="floor"></div>
+    <div class="prism" id="prism" tabindex="0" aria-label="Rotating ClaimTrace poster. Use left and right arrows to turn it.">
+
+      <section class="face front" aria-label="Cover">
+        <div class="tag">Software Innovation Studio · Group 18</div>
+        <div class="corner">CLAIMTRACE<br>2026</div>
+        <div class="mark">
+          <h1>ClaimTrace<span class="dot">.</span></h1>
+          <p class="tagline">Check what your citations actually say.</p>
+          <div class="meta"><span>Web</span><span>Overleaf</span><span>Parser</span><span>Engine</span></div>
+        </div>
+      </section>
+
+      <section class="face right" aria-label="The problem">
+        <div class="tag">01 / The problem</div>
+        <div class="corner">WHY</div>
+        <h2>The last 48 hours go into checking citations, <em>not writing.</em></h2>
+        <div class="body">
+          <div class="row"><span class="n">01</span><div><h3>Untrusted</h3><p>Co-authors’ references are taken on faith. Nobody opened them.</p></div></div>
+          <div class="row"><span class="n">02</span><div><h3>Interrupted</h3><p>Overleaf → Zotero → PDF reader → back. The click is cheap; the context switch is not.</p></div></div>
+          <div class="row"><span class="n">03</span><div><h3>Fabricated</h3><p>Machine-written references look real — wrong venue, wrong year, or a DOI pointing at another paper.</p></div></div>
+        </div>
+        <p class="note">“I want the evidence, not just the conclusion.”<br><span style="font-family:var(--mono);font-style:normal;font-size:9px;color:var(--muted)">— supervisor persona</span></p>
+      </section>
+
+      <section class="face back" aria-label="Audit states">
+        <div class="tag">02 / Audit</div>
+        <div class="corner">31 CONTROLLED<br>BIB CASES</div>
+        <h2>A reference is either checked, or it is <em>visibly not checked.</em></h2>
+        <div class="states">
+          <div class="state"><span class="chip chip-verified">Verified</span><span class="n">7</span><span class="pct">22.6%</span></div>
+          <div class="state"><span class="chip chip-mismatch">Metadata mismatch</span><span class="n">12</span><span class="pct">38.7%</span></div>
+          <div class="state"><span class="chip chip-review">Needs review</span><span class="n">9</span><span class="pct">29.0%</span></div>
+          <div class="state"><span class="chip chip-missing">Not found</span><span class="n">1</span><span class="pct">3.2%</span></div>
+          <div class="state"><span class="chip chip-failed">Lookup failed</span><span class="n">2</span><span class="pct">6.5%</span></div>
+        </div>
+        <p class="note">Status accuracy 1.00 · macro-F1 1.00. A failed lookup is never reported as “not found”.</p>
+      </section>
+
+      <section class="face left" aria-label="Verify">
+        <div class="tag">03 / Verify</div>
+        <div class="corner">CLAIM ×<br>SOURCE</div>
+        <h2>The verdict is only the headline. <em>The passage is the argument.</em></h2>
+        <p class="claim">“Self-attention relates different positions of a single sequence.”</p>
+        <p class="passage">“Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.”</p>
+        <div class="second">
+          <span class="chip chip-missing">Not found</span>
+          <p>“The paper reports that the method reduced carbon emissions by forty percent.”</p>
+        </div>
+        <div class="second">
+          <span class="chip chip-mismatch">Partial</span>
+          <p>“Self-attention has been demonstrated to work successfully on every possible task.”</p>
+        </div>
+        <div class="verdict">
+          <span class="chip chip-verified">Support</span>
+          <span class="why">Retrieved from the cited paper · quoted verbatim.</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <nav>
+    <button type="button" id="prev" aria-label="Previous side">←</button>
+    <div class="dots" id="dots"><span class="on"></span><span></span><span></span><span></span></div>
+    <button type="button" id="next" aria-label="Next side">→</button>
+  </nav>
+  <div class="hint">Drag to rotate · arrows to turn</div>
+
+<script>
+  const prism = document.getElementById('prism');
+  const dots = Array.from(document.getElementById('dots').children);
+  let angle = 0;
+  let dragging = false;
+  let startX = 0;
+  let startAngle = 0;
+  let timer = null;
+
+  function apply() {
+    prism.style.transform = `rotateX(-5deg) rotateY(${angle}deg)`;
+    const index = ((Math.round(-angle / 90) % 4) + 4) % 4;
+    dots.forEach((d, i) => d.classList.toggle('on', i === index));
+  }
+  function turn(step) {
+    angle -= step * 90;
+    apply();
+    const face = ((Math.round(-angle / 90) % 4) + 4) % 4;
+    history.replaceState(null, '', `#${face + 1}`);
+  }
+  function restart() {
+    clearInterval(timer);
+    timer = setInterval(() => turn(1), 6500);
+  }
+
+  document.getElementById('next').addEventListener('click', () => { turn(1); restart(); });
+  document.getElementById('prev').addEventListener('click', () => { turn(-1); restart(); });
+
+  prism.addEventListener('pointerdown', (event) => {
+    dragging = true;
+    startX = event.clientX;
+    startAngle = angle;
+    prism.classList.add('dragging');
+    prism.setPointerCapture(event.pointerId);
+    clearInterval(timer);
+  });
+  prism.addEventListener('pointermove', (event) => {
+    if (!dragging) return;
+    angle = startAngle + (event.clientX - startX) * 0.45;
+    apply();
+  });
+  prism.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    prism.classList.remove('dragging');
+    angle = Math.round(angle / 90) * 90;
+    apply();
+    restart();
+  });
+  prism.addEventListener('pointercancel', () => {
+    dragging = false;
+    prism.classList.remove('dragging');
+    angle = Math.round(angle / 90) * 90;
+    apply();
+    restart();
+  });
+
+  prism.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') { event.preventDefault(); turn(1); restart(); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); turn(-1); restart(); }
+  });
+  prism.addEventListener('mouseenter', () => clearInterval(timer));
+  prism.addEventListener('mouseleave', () => { if (!dragging) restart(); });
+
+  apply();
+  restart();
+
+  const fromHash = Number(location.hash.slice(1));
+  if (fromHash >= 1 && fromHash <= 4) {
+    angle = -(fromHash - 1) * 90;
+    apply();
+  }
+</script>
+</body>
+</html>

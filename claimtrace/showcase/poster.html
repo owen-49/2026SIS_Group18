@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimTrace poster — A1</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  html, body { background: #16181d; height: 100%; overflow: hidden; }
+  body { margin: 0; }
+
+  #view { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+
+  .poster {
+    width: 594mm; height: 841mm;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 30mm 32mm 24mm;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .poster::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7mm;
+    background: var(--verified);
+  }
+
+  .eyebrow-lg { font-family: var(--mono); font-size: 11pt; letter-spacing: .2em; text-transform: uppercase; color: var(--verified); }
+  .head { display: grid; grid-template-columns: 1fr 150mm; gap: 22mm; align-items: end; height: 132mm; }
+  .head h1 { font-family: var(--serif); font-weight: 500; font-size: 152pt; line-height: .92; letter-spacing: -.03em; margin-top: 9mm; }
+  .head h1 .dot { color: var(--verified); }
+  .head .tag { font-family: var(--serif); font-style: italic; font-size: 30pt; color: var(--ink-soft); margin-top: 4mm; }
+  .head .quote { border-left: 2.2mm solid var(--verified); padding-left: 8mm; }
+  .head .quote p { font-family: var(--serif); font-style: italic; font-size: 19pt; line-height: 1.45; color: var(--ink-soft); }
+  .head .quote span { display: block; font-family: var(--mono); font-size: 9pt; color: var(--muted); margin-top: 5mm; letter-spacing: .04em; }
+  .head .meta { display: flex; gap: 8mm; margin-top: 10mm; font-family: var(--mono); font-size: 9.5pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+  .rule { height: 0; border-top: .5mm solid var(--ink); margin: 10mm 0 9mm; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6mm; }
+  .section-head h2 { font-family: var(--serif); font-weight: 500; font-size: 27pt; letter-spacing: -.01em; }
+  .section-head .n { font-family: var(--mono); font-size: 9.5pt; letter-spacing: .16em; color: var(--verified); }
+
+  /* three checks */
+  .checks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9mm; }
+  .check { background: var(--paper-2); padding: 9mm 7.5mm; }
+  .check .k { font-family: var(--mono); font-size: 9pt; letter-spacing: .14em; color: var(--muted); }
+  .check h3 { font-family: var(--serif); font-size: 30pt; font-weight: 500; margin: 2mm 0 1mm; }
+  .check .sub { font-family: var(--mono); font-size: 9pt; color: var(--verified); letter-spacing: .04em; }
+  .check p { font-size: 13pt; line-height: 1.52; color: var(--ink-soft); margin-top: 4mm; }
+
+  /* audit */
+  .audit { }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-family: var(--mono); font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 4mm 3mm; border-bottom: .45mm solid var(--rule-strong); font-weight: 400; }
+  td { padding: 6.2mm 4mm; border-bottom: .3mm solid var(--rule); vertical-align: top; font-size: 13pt; line-height: 1.42; }
+  td.ref { font-family: var(--mono); font-size: 10.5pt; color: var(--ink-soft); }
+  td.ref small { display: block; color: var(--muted); font-size: 9pt; margin-top: 1mm; }
+  td .why { display: block; font-family: var(--mono); font-size: 8.5pt; color: var(--muted); margin-top: 1.6mm; letter-spacing: .02em; }
+  .states { display: flex; align-items: center; gap: 4mm; margin-top: 6mm; }
+  .states .lab { font-family: var(--mono); font-size: 8.5pt; letter-spacing: .14em; color: var(--muted); }
+  .states .note { margin-left: auto; font-size: 11pt; color: var(--muted); }
+  .poster .chip { font-size: 8pt; padding: .3em .55em .32em; }
+
+  /* verify */
+  .versus { display: grid; grid-template-columns: 1fr 1fr; border: .4mm solid var(--rule-strong); min-height: 96mm; }
+  .versus > div { padding: 7mm 8mm; display: flex; flex-direction: column; }
+  .versus > div + div { border-left: .4mm solid var(--rule-strong); background: var(--paper-2); }
+  .versus .lab { font-family: var(--mono); font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .versus .claim { font-family: var(--serif); font-size: 19pt; line-height: 1.32; margin-top: 4mm; }
+  .versus .passage { font-size: 13pt; line-height: 1.52; color: var(--ink-soft); border-left: 1.6mm solid var(--verified); padding-left: 5mm; margin-top: 4mm; }
+  .versus .bottom { margin-top: auto; display: flex; gap: 4mm; align-items: flex-start; }
+  .versus .bottom .why { font-size: 10.5pt; line-height: 1.4; color: var(--muted); }
+
+  /* how it works */
+  .chain { display: flex; align-items: stretch; gap: 4mm; }
+  .node { flex: 1; border: .35mm solid var(--rule-strong); padding: 5.5mm 5.5mm; background: #fff; }
+  .node.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .node .t { display: block; font-family: var(--mono); font-size: 7.5pt; letter-spacing: .13em; color: var(--muted); }
+  .node.dark .t { color: #9fa4ae; }
+  .node b { display: block; font-weight: 400; font-size: 12pt; margin-top: 1.5mm; line-height: 1.35; }
+  .arrow { align-self: center; font-family: var(--mono); color: var(--rule-strong); font-size: 14pt; }
+  .invariant { margin-top: 5mm; background: var(--verified-bg); color: var(--verified); font-family: var(--serif); font-size: 14.5pt; padding: 5mm 6mm; }
+
+  /* evidence */
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9mm; }
+  .fig { border-top: .7mm solid var(--ink); padding-top: 4mm; }
+  .fig .big { font-family: var(--serif); font-size: 56pt; line-height: 1; letter-spacing: -.02em; }
+  .fig .cap { font-family: var(--mono); font-size: 8.5pt; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; margin-top: 3mm; line-height: 1.5; }
+  .fine { margin-top: 8mm; font-size: 9.5pt; line-height: 1.5; color: var(--muted); max-width: 470mm; }
+
+  .foot { display: flex; justify-content: space-between; align-items: baseline; border-top: .3mm solid var(--rule); padding-top: 4mm; font-family: var(--mono); font-size: 8.5pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+  @media print {
+    @page { size: 594mm 841mm; margin: 0; }
+    html, body { background: #fff; height: auto; overflow: visible; }
+    #view { position: static; transform: none !important; }
+    .poster { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div id="view">
+  <article class="poster">
+    <header class="head">
+      <div>
+        <div class="eyebrow-lg">Software Innovation Studio · Group 18</div>
+        <h1>ClaimTrace<span class="dot">.</span></h1>
+        <p class="tag">Check what your citations actually say.</p>
+        <div class="meta"><span>Web workspace</span><span>Overleaf extension</span><span>PDF parser</span><span>Verification engine</span></div>
+      </div>
+      <div class="quote">
+        <p>“I want the evidence, not just the conclusion — so I can tell the student exactly what to fix.”</p>
+        <span>Supervisor persona · translated from user research</span>
+      </div>
+    </header>
+
+    <div class="rule"></div>
+
+    <section>
+      <div class="section-head"><h2>Three checks, in the place you already write.</h2><span class="n">01 / WHAT IT DOES</span></div>
+      <div class="checks">
+        <article class="check">
+          <div class="k">01 / AUDIT</div>
+          <h3>Audit</h3>
+          <div class="sub">every reference, every field</div>
+          <p>Every bibliography entry is checked against OpenAlex, then Crossref. Title, authors, year and venue are compared field by field — and a lookup that failed stays visibly failed.</p>
+        </article>
+        <article class="check">
+          <div class="k">02 / VERIFY</div>
+          <h3>Verify</h3>
+          <div class="sub">claim vs. what the paper says</div>
+          <p>A selected sentence is matched to the cited paper. The relevant passages are retrieved and every verdict ships with the passage, its rank and its similarity score.</p>
+        </article>
+        <article class="check">
+          <div class="k">03 / READ</div>
+          <h3>Read</h3>
+          <div class="sub">the paper as it was written</div>
+          <p>PDFs become structured Markdown — formulas, tables and figures preserved — and render inside the review pane, next to the manuscript.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="audit">
+      <div class="section-head"><h2>A reference is either checked, or it is visibly not checked.</h2><span class="n">02 / AUDIT</span></div>
+      <table>
+        <thead><tr><th style="width:27%">Reference</th><th style="width:19%">State</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="ref">bert-exact<small>Devlin et al., 2019</small></td>
+            <td><span class="chip chip-verified">Verified</span></td>
+            <td>All four fields match the OpenAlex record. One lookup; Crossref is never asked.<span class="why">title · authors · year · venue → MATCH</span></td>
+          </tr>
+          <tr>
+            <td class="ref">bert-year-plus-one<small>year stated one late</small></td>
+            <td><span class="chip chip-mismatch">Metadata mismatch</span></td>
+            <td>The record stays eligible inside the one-year tolerance, so the difference is reported field by field.<span class="why">year → MISMATCH, and the rest of the record is still checked</span></td>
+          </tr>
+          <tr>
+            <td class="ref">dialoguernn-year-minus-five<small>year stated five early</small></td>
+            <td><span class="chip chip-missing">Not found</span></td>
+            <td>A five-year gap rejects every record both providers return, so the report carries <span class="mono">field_checks: []</span> rather than a fabricated mismatch.<span class="why">no acceptable record → nothing to compare</span></td>
+          </tr>
+          <tr>
+            <td class="ref">provider-500<small>one provider errors</small></td>
+            <td><span class="chip chip-failed">Lookup failed</span></td>
+            <td>Crossref’s search is negative and OpenAlex cannot answer. The reference stays visibly unchecked — never reported as “not found”.<span class="why">an unread reference is not a missing reference</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="states">
+        <span class="lab">FIVE STATES</span>
+        <span class="chip chip-verified">Verified</span>
+        <span class="chip chip-mismatch">Metadata mismatch</span>
+        <span class="chip chip-review">Needs review</span>
+        <span class="chip chip-missing">Not found</span>
+        <span class="chip chip-failed">Lookup failed</span>
+        <span class="note">“Lookup failed” is a state, not a missing reference.</span>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="verify">
+      <div class="section-head"><h2>The verdict is only the headline. The passage is the argument.</h2><span class="n">03 / VERIFY</span></div>
+      <div class="versus">
+        <div>
+          <div class="lab">Claim 01</div>
+          <p class="claim">“The paper reports that the method reduced carbon emissions by forty percent.”</p>
+          <div class="bottom">
+            <span class="chip chip-missing">Not found</span>
+            <span class="why">The source was read and does not contain this claim. That is different from failing to read it.</span>
+          </div>
+        </div>
+        <div>
+          <div class="lab">Claim 02</div>
+          <p class="claim">“Self-attention relates different positions of a single sequence.”</p>
+          <p class="passage">“Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.”</p>
+          <div class="bottom">
+            <span class="chip chip-verified">Support</span>
+            <span class="why">Retrieved from the cited paper · quoted verbatim.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="how">
+      <div class="section-head"><h2>One process, two outbound boundaries.</h2><span class="n">04 / HOW IT WORKS</span></div>
+      <div class="chain">
+        <div class="node"><span class="t">CLIENT</span><b>React web workspace</b></div>
+        <div class="node"><span class="t">CLIENT</span><b>Overleaf extension</b></div>
+        <div class="arrow">→</div>
+        <div class="node dark"><span class="t">BACKEND</span><b>FastAPI · /api/*</b></div>
+        <div class="arrow">→</div>
+        <div class="node"><span class="t">IN-PROCESS</span><b>Engine + Parser</b></div>
+        <div class="arrow">→</div>
+        <div class="node"><span class="t">OUTBOUND</span><b>OpenAlex · Crossref<br>your own model key</b></div>
+      </div>
+      <p class="invariant">A failed lookup is never reported as “not found”. In Verify, only <span class="mono">COMPARED</span> carries a verdict.</p>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="evidence">
+      <div class="section-head"><h2>Measured, not claimed.</h2><span class="n">05 / EVIDENCE</span></div>
+      <div class="figures">
+        <div class="fig"><div class="big">1,130</div><div class="cap">automated tests<br>across five suites</div></div>
+        <div class="fig"><div class="big">34/34</div><div class="cap">controlled audit cases<br>exact · macro-F1 1.00</div></div>
+        <div class="fig"><div class="big">12/12</div><div class="cap">live verify cases<br>DeepSeek · 12 calls</div></div>
+        <div class="fig"><div class="big">0.055<span style="font-size:26pt"> s</span></div><div class="cap">per audit request<br>linear scaling</div></div>
+      </div>
+      <p class="fine">Audit measured on 31 .bib and 3 PDF fixtures with pinned provider responses (generated 2026-10-08): state accuracy 1.00, every field check exact. Verify measured on six manually labelled claims in two modes; labels are fixture labels, not independent expert annotation. Test count at local main e171fb3.</p>
+    </section>
+
+    <footer class="foot">
+      <span>ClaimTrace · Software Innovation Studio 41129 · 2026</span>
+      <span>Group 18 · A1 portrait · 594 × 841 mm</span>
+    </footer>
+  </article>
+</div>
+<script>
+  const view = document.getElementById('view');
+  const MM = 96 / 25.4;
+  const WIDTH = 594 * MM, HEIGHT = 841 * MM;
+  function fit() {
+    const scale = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
+    const x = (window.innerWidth - WIDTH * scale) / 2;
+    const y = (window.innerHeight - HEIGHT * scale) / 2;
+    view.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+  }
+  addEventListener('resize', fit);
+  fit();
+</script>
+</body>
+</html>

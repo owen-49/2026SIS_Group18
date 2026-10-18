@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimTrace — 5 minute showcase</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  html, body { height: 100%; overflow: hidden; background: #101216; }
+  body { display: grid; place-items: center; }
+
+  .stage {
+    width: 1600px; height: 900px;
+    position: relative; overflow: hidden;
+    background: var(--paper);
+    transform-origin: center center;
+    box-shadow: 0 40px 120px rgba(0,0,0,.5);
+  }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 74px 92px 64px;
+    display: none;
+    flex-direction: column;
+  }
+  .slide.active { display: flex; }
+  .slide.active .rise { animation: rise .55s cubic-bezier(.2,.7,.2,1) both; }
+  .slide.active .rise:nth-child(2) { animation-delay: .06s; }
+  .slide.active .rise:nth-child(3) { animation-delay: .12s; }
+  .slide.active .rise:nth-child(4) { animation-delay: .18s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  .topline { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  .topline .left { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .topline .right { font-family: var(--mono); font-size: 13px; color: var(--rule-strong); }
+
+  h1.display { font-family: var(--serif); font-weight: 500; letter-spacing: -.02em; line-height: 1.02; }
+  h2.headline { font-family: var(--serif); font-weight: 500; font-size: 62px; line-height: 1.08; letter-spacing: -.015em; margin-top: 44px; max-width: 1180px; }
+  h2.headline em { font-style: italic; color: var(--verified); }
+  .lede { font-size: 25px; line-height: 1.45; color: var(--ink-soft); max-width: 980px; margin-top: 26px; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  /* 01 title */
+  .title-slide { justify-content: center; padding-left: 120px; }
+  .title-slide .mark { font-family: var(--mono); font-size: 15px; letter-spacing: .22em; color: var(--verified); text-transform: uppercase; }
+  .title-slide h1 { font-size: 168px; margin: 18px 0 10px; }
+  .title-slide h1 .dot { color: var(--verified); }
+  .title-slide .tag { font-family: var(--serif); font-size: 44px; font-style: italic; color: var(--ink-soft); }
+  .title-slide .meta { display: flex; gap: 34px; margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--rule); width: 1180px; font-family: var(--mono); font-size: 14px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .title-slide .margin-note { position: absolute; right: 96px; top: 120px; width: 300px; text-align: right; }
+  .title-slide .margin-note .num { font-family: var(--mono); font-size: 13px; color: var(--rule-strong); letter-spacing: .12em; }
+  .title-slide .margin-note .quote { font-family: var(--serif); font-size: 22px; font-style: italic; line-height: 1.45; color: var(--ink-soft); margin-top: 14px; }
+  .title-slide .margin-note .by { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 12px; letter-spacing: .06em; }
+
+  /* 02 problem */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 52px; }
+  .card { border-top: 2px solid var(--ink); padding-top: 20px; }
+  .card .k { font-family: var(--mono); font-size: 13px; letter-spacing: .14em; color: var(--verified); }
+  .card h3 { font-family: var(--serif); font-weight: 500; font-size: 31px; line-height: 1.16; margin: 12px 0 12px; }
+  .card p { font-size: 18px; line-height: 1.5; color: var(--muted); }
+  .pullquote { margin-top: auto; display: flex; gap: 26px; align-items: flex-start; border-left: 3px solid var(--verified); padding: 8px 0 8px 26px; max-width: 1120px; }
+  .pullquote p { font-family: var(--serif); font-size: 27px; font-style: italic; line-height: 1.4; color: var(--ink); }
+  .pullquote span { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; padding-top: 9px; }
+
+  /* 03 pillars */
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 46px; align-items: start; }
+  .pillar { background: var(--paper-2); border-radius: 4px; padding: 34px 30px; display: flex; flex-direction: column; }
+  .pillar .n { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; color: var(--muted); }
+  .pillar h3 { font-family: var(--serif); font-size: 40px; font-weight: 500; margin: 10px 0 4px; }
+  .pillar .sub { font-family: var(--mono); font-size: 13px; color: var(--verified); letter-spacing: .06em; }
+  .pillar p { font-size: 18px; line-height: 1.55; color: var(--ink-soft); margin-top: 20px; }
+  .pillar ul { margin: 18px 0 0; padding: 0; list-style: none; font-size: 16px; line-height: 1.9; color: var(--muted); }
+  .pillar ul li::before { content: "—"; color: var(--rule-strong); margin-right: 10px; }
+
+  /* 04 architecture */
+  .arch { display: grid; grid-template-columns: 300px 340px 1fr; gap: 34px; align-items: center; margin-top: 40px; flex: 1; }
+  .arch .col { display: flex; flex-direction: column; gap: 14px; }
+  .arch .node { border: 1px solid var(--rule-strong); border-radius: 3px; padding: 14px 16px; background: #fff; }
+  .arch .node .t { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .arch .node .d { font-size: 17px; margin-top: 4px; line-height: 1.35; }
+  .arch .node.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .arch .node.dark .t { color: #9fa4ae; }
+  .arch .arrow { text-align: center; color: var(--rule-strong); font-family: var(--mono); font-size: 20px; }
+  .arch .out { display: flex; flex-direction: column; gap: 14px; }
+  .arch .out .node { border-left: 3px solid var(--verified); }
+  .invariant { margin-top: 26px; background: var(--verified-bg); border-radius: 4px; padding: 18px 24px; font-family: var(--serif); font-size: 24px; color: var(--verified); }
+  .invariant b { font-weight: 600; }
+
+  /* 05 audit table */
+  .audit-table { margin-top: 34px; width: 100%; border-collapse: collapse; }
+  .audit-table th { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 14px 12px; border-bottom: 1px solid var(--rule-strong); font-weight: 500; }
+  .audit-table td { padding: 17px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; font-size: 17px; }
+  .audit-table td.ref { font-family: var(--mono); font-size: 15px; color: var(--ink-soft); }
+  .audit-table td .why { display: block; font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .states { display: flex; gap: 10px; margin-top: 26px; align-items: center; flex-wrap: wrap; }
+  .states .lab { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .1em; margin-right: 6px; }
+  .states .note { font-size: 16px; color: var(--muted); margin-left: auto; }
+
+  /* 06 verify */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 34px; border: 1px solid var(--rule-strong); border-radius: 4px; overflow: hidden; flex: 1; }
+  .compare .side { padding: 30px 34px; display: flex; flex-direction: column; }
+  .compare .side + .side { border-left: 1px solid var(--rule-strong); background: var(--paper-2); }
+  .compare .label { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .compare .claim { font-family: var(--serif); font-size: 28px; line-height: 1.35; margin-top: 14px; }
+  .compare .passage { font-size: 19px; line-height: 1.62; color: var(--ink-soft); margin-top: 14px; border-left: 3px solid var(--verified); padding-left: 18px; }
+  .compare .verdict { margin-top: auto; padding-top: 24px; display: flex; align-items: center; gap: 14px; }
+  .compare .verdict .why { font-size: 15px; color: var(--muted); line-height: 1.4; }
+
+  /* 07 numbers */
+  .numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 54px; }
+  .num-card { border-top: 2px solid var(--ink); padding-top: 18px; }
+  .num-card .big { font-family: var(--serif); font-size: 74px; line-height: 1; letter-spacing: -.03em; }
+  .num-card .big small { font-size: 34px; color: var(--muted); }
+  .num-card .what { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; color: var(--muted); margin-top: 10px; line-height: 1.5; text-transform: uppercase; }
+  .footnote { margin-top: auto; font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 1240px; border-top: 1px solid var(--rule); padding-top: 18px; }
+
+  .dist { margin-top: 58px; }
+  .dist .cap { display: flex; align-items: baseline; justify-content: space-between; }
+  .dist .cap .t { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .dist .cap .r { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--verified); }
+  .dist .bar { display: flex; height: 44px; margin-top: 14px; border-radius: 3px; overflow: hidden; }
+  .dist .bar span { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; color: #fff; }
+  .dist .legend { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+  /* 08 close */
+  .close { justify-content: center; }
+  .close h2 { font-family: var(--serif); font-size: 82px; font-weight: 500; line-height: 1.05; letter-spacing: -.02em; max-width: 1200px; }
+  .close h2 em { color: var(--verified); font-style: italic; }
+  .close .next { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 58px; max-width: 1240px; }
+  .close .next div { border-top: 1px solid var(--rule-strong); padding-top: 16px; }
+  .close .next .k { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .close .next p { font-size: 19px; line-height: 1.45; margin-top: 8px; color: var(--ink-soft); }
+  .close .sig { margin-top: 62px; font-family: var(--mono); font-size: 13px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+
+  /* chrome */
+  .progress { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 9px; z-index: 20; }
+  .progress button { width: 9px; height: 9px; padding: 0; border-radius: 50%; border: 1px solid #575d68; background: transparent; cursor: pointer; }
+  .progress button.on { background: var(--verified); border-color: var(--verified); }
+  .hint { position: fixed; right: 22px; bottom: 20px; color: #6b717c; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; z-index: 20; }
+  .counter { position: fixed; left: 22px; bottom: 20px; color: #6b717c; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; z-index: 20; }
+
+  @media print {
+    html, body { overflow: visible; background: #fff; display: block; }
+    .stage { width: 1600px; height: auto; transform: none !important; box-shadow: none; }
+    .slide { display: flex !important; position: relative; height: 900px; page-break-after: always; break-after: page; }
+    .progress, .hint, .counter { display: none; }
+    .slide .rise { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main class="stage" id="stage">
+
+  <!-- 01 -->
+  <section class="slide title-slide active">
+    <div class="mark rise">Software Innovation Studio · Group 18</div>
+    <h1 class="display rise">ClaimTrace<span class="dot">.</span></h1>
+    <p class="tag rise">Check what your citations actually say.</p>
+    <div class="meta rise">
+      <span>Web workspace</span><span>Overleaf extension</span><span>PDF parser</span><span>Verification engine</span>
+    </div>
+    <aside class="margin-note">
+      <div class="num">[P2]</div>
+      <p class="quote">“I want the evidence, not just the conclusion — so I can tell the student exactly what to fix.”</p>
+      <div class="by">— supervisor persona · translated from user research</div>
+    </aside>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide">
+    <div class="topline"><span class="left">02 · The problem</span><span class="right">ClaimTrace</span></div>
+    <h2 class="headline rise">The last 48 hours go into checking citations, <em>not writing the paper.</em></h2>
+    <div class="cards">
+      <article class="card rise">
+        <div class="k">Untrusted</div>
+        <h3>Co-authors’ references are taken on faith.</h3>
+        <p>A Related Work section written by three people contains references nobody has opened.</p>
+      </article>
+      <article class="card rise">
+        <div class="k">Interrupted</div>
+        <h3>Every check means leaving the editor.</h3>
+        <p>Overleaf → Zotero → a PDF reader → back. The cost is not the click, it is the context switch.</p>
+      </article>
+      <article class="card rise">
+        <div class="k">Fabricated</div>
+        <h3>Machine-written references look real.</h3>
+        <p>Wrong venue, wrong year, or a DOI that resolves to a different paper entirely.</p>
+      </article>
+    </div>
+    <div class="pullquote rise">
+      <p>All three personas asked for the same thing: the original evidence, not just a conclusion.</p>
+      <span>user-research/personas.md</span>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide">
+    <div class="topline"><span class="left">03 · What it does</span><span class="right">Three surfaces, one evidence trail</span></div>
+    <h2 class="headline rise">Three checks, in the place<br>you already write.</h2>
+    <div class="pillars">
+      <article class="pillar rise">
+        <div class="n">01 / AUDIT</div>
+        <h3>Audit</h3>
+        <div class="sub">every reference, every field</div>
+        <p>Each bibliography entry is checked against OpenAlex, then Crossref. Title, authors, year and venue are compared field by field.</p>
+        <ul><li>Identifier first, title only as fallback</li><li>Five states — never a silent “not found”</li><li>Works on .bib files and whole PDFs</li></ul>
+      </article>
+      <article class="pillar rise">
+        <div class="n">02 / VERIFY</div>
+        <h3>Verify</h3>
+        <div class="sub">claim vs. what the paper says</div>
+        <p>A selected sentence is matched to the cited paper, the relevant passages are retrieved, and the judgement ships with its evidence.</p>
+        <ul><li>Four verdicts, every one evidenced</li><li>Every verdict carries the passage</li><li>Bring your own model — no server key</li></ul>
+      </article>
+      <article class="pillar rise">
+        <div class="n">03 / READ</div>
+        <h3>Read</h3>
+        <div class="sub">the paper as it was written</div>
+        <p>PDFs become structured Markdown — formulas, tables and figures preserved — and render inside the review pane.</p>
+        <ul><li>Hybrid parsing, local fallback</li><li>Page-anchored paragraphs</li><li>Hover a citation in Overleaf</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="slide">
+    <div class="topline"><span class="left">04 · How it works</span><span class="right">One process, two outbound boundaries</span></div>
+    <h2 class="headline rise">The engine decides identity. The product never guesses.</h2>
+    <div class="arch">
+      <div class="col rise">
+        <div class="node"><div class="t">Client</div><div class="d">React web workspace</div></div>
+        <div class="node"><div class="t">Client</div><div class="d">Overleaf extension<br><span class="mono" style="font-size:13px;color:var(--muted)">Manifest V3 · hover</span></div></div>
+      </div>
+      <div class="col rise">
+        <div class="node dark"><div class="t">Backend</div><div class="d">FastAPI<br>REST <span class="mono" style="font-size:13px;color:#9fa4ae">/api/*</span></div></div>
+        <div class="arrow">↓ in-process</div>
+        <div class="node"><div class="t">Engine + Parser</div><div class="d">Identity rules · retrieval · PDF → Markdown</div></div>
+      </div>
+      <div class="out rise">
+        <div class="node"><div class="t">Outbound · public metadata</div><div class="d">OpenAlex → Crossref — identifier first, title second</div></div>
+        <div class="node"><div class="t">Outbound · user-owned model</div><div class="d">17 providers · the key travels in the request, never in the server</div></div>
+      </div>
+    </div>
+    <div class="invariant rise"><b>A failed lookup is never reported as “not found”.</b> &nbsp;Five states in Audit, and in Verify only <span class="mono">COMPARED</span> carries a verdict.</div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide">
+    <div class="topline"><span class="left">05 · Audit</span><span class="right">What the user sees</span></div>
+    <h2 class="headline rise">A reference is either checked, or it is visibly not checked.</h2>
+    <table class="audit-table">
+      <thead><tr><th style="width:30%">Reference</th><th style="width:22%">State</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="ref">bert-exact<br><span style="color:var(--muted)">Devlin et al., 2019</span></td>
+          <td><span class="chip chip-verified">Verified</span></td>
+          <td>All four fields match the OpenAlex record. One lookup; Crossref is never asked.<span class="why">title · authors · year · venue → MATCH</span></td>
+        </tr>
+        <tr>
+          <td class="ref">bert-year-plus-one<br><span style="color:var(--muted)">year stated one late</span></td>
+          <td><span class="chip chip-mismatch">Metadata mismatch</span></td>
+          <td>The record stays eligible inside the one-year tolerance, so the difference is reported field by field instead of the record being rejected.<span class="why">year → MISMATCH, and the rest of the record is still checked</span></td>
+        </tr>
+        <tr>
+          <td class="ref">dialoguernn-year-minus-five<br><span style="color:var(--muted)">year stated five early</span></td>
+          <td><span class="chip chip-missing">Not found</span></td>
+          <td>A five-year gap rejects every record both providers return, so the report carries <span class="mono">field_checks: []</span> rather than a fabricated mismatch.<span class="why">no acceptable record → nothing to compare</span></td>
+        </tr>
+        <tr>
+          <td class="ref">provider-500<br><span style="color:var(--muted)">one provider errors</span></td>
+          <td><span class="chip chip-failed">Lookup failed</span></td>
+          <td>Crossref’s search is negative and OpenAlex cannot answer. The reference stays visibly unchecked — never reported as “not found”.<span class="why">an unread reference is not a missing reference</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="states rise">
+      <span class="lab">FIVE STATES</span>
+      <span class="chip chip-verified">Verified</span>
+      <span class="chip chip-mismatch">Metadata mismatch</span>
+      <span class="chip chip-review">Needs review</span>
+      <span class="chip chip-missing">Not found</span>
+      <span class="chip chip-failed">Lookup failed</span>
+      <span class="note">“Lookup failed” is a state, not a missing reference.</span>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="slide">
+    <div class="topline"><span class="left">06 · Verify</span><span class="right">Claim × cited source</span></div>
+    <h2 class="headline rise">The verdict is only the headline.<br>The passage is the argument.</h2>
+    <div class="compare">
+      <div class="side rise">
+        <div class="label">Claim 01</div>
+        <p class="claim">“The paper reports that the method reduced carbon emissions by forty percent.”</p>
+        <div class="verdict">
+          <span class="chip chip-missing">Not found</span>
+          <span class="why">The source was read and does not contain this claim. That is different from failing to read it.</span>
+        </div>
+      </div>
+      <div class="side rise">
+        <div class="label">Claim 02</div>
+        <p class="claim">“Self-attention relates different positions of a single sequence.”</p>
+        <p class="passage">“Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.”</p>
+        <div class="verdict">
+          <span class="chip chip-verified">Support</span>
+          <span class="why">Retrieved from the cited paper · quoted verbatim.</span>
+        </div>
+      </div>
+    </div>
+    <p class="lede" style="margin-top:22px;font-size:19px">Every comparison ships the retrieved passages, their rank and similarity score, and the page the passage came from when the parser recorded one. A model that ran is not a model that judged — <span class="mono">COMPARED</span> is the only status that carries a verdict.</p>
+  </section>
+
+  <!-- 07 -->
+  <section class="slide">
+    <div class="topline"><span class="left">07 · Evidence</span><span class="right">Measured, not claimed</span></div>
+    <h2 class="headline rise">What we can defend with a number.</h2>
+    <div class="numbers">
+      <div class="num-card rise"><div class="big">1,130</div><div class="what">automated tests<br>across five suites</div></div>
+      <div class="num-card rise"><div class="big">34/34</div><div class="what">controlled audit cases<br>exact · macro-F1 1.00</div></div>
+      <div class="num-card rise"><div class="big">12/12</div><div class="what">live verify cases<br>DeepSeek · 12 calls</div></div>
+      <div class="num-card rise"><div class="big">0</div><div class="what">server-side model keys<br>bring your own</div></div>
+    </div>
+    <div class="dist rise">
+      <div class="cap">
+        <span class="t">Where the 31 controlled .bib cases land</span>
+        <span class="r">STATUS ACCURACY 1.00 · MACRO-F1 1.00</span>
+      </div>
+      <div class="bar" role="img" aria-label="Verified 7, metadata mismatch 12, needs review 9, not found 1, lookup failed 2">
+        <span style="width:22.58%;background:var(--verified)">7</span>
+        <span style="width:38.71%;background:var(--mismatch)">12</span>
+        <span style="width:29.03%;background:var(--review)">9</span>
+        <span style="width:3.23%;background:var(--missing)">1</span>
+        <span style="width:6.45%;background:var(--failed)">2</span>
+      </div>
+      <div class="legend">
+        <span class="chip chip-verified">Verified 7</span>
+        <span class="chip chip-mismatch">Metadata mismatch 12</span>
+        <span class="chip chip-review">Needs review 9</span>
+        <span class="chip chip-missing">Not found 1</span>
+        <span class="chip chip-failed">Lookup failed 2</span>
+      </div>
+    </div>
+    <p class="footnote rise">
+      Audit measured on 31 .bib and 3 PDF fixtures with pinned provider responses (generated 2026-10-08):
+      state accuracy 1.00, every field check exact. Verify measured on six manually labelled claims in two modes
+      against a seeded excerpt of <i>Attention Is All You Need</i>; labels are fixture labels, not independent expert annotation.
+      Test count at local main <span class="mono">e171fb3</span>; overhead is linear at 0.055 s per audit request in-process.
+    </p>
+  </section>
+
+  <!-- 08 -->
+  <section class="slide close">
+    <div class="topline"><span class="left">08 · Close</span><span class="right">Group 18</span></div>
+    <h2 style="margin-top:56px">Every citation, checked —<br><em>with the evidence.</em></h2>
+    <div class="next">
+      <div><div class="k">Next · 01</div><p>Live verification at corpus scale, with the annotation set the team is still labelling.</p></div>
+      <div><div class="k">Next · 02</div><p>In-editor selection and verdicts without leaving Overleaf.</p></div>
+      <div><div class="k">Next · 03</div><p>Deployment hardening: one worker, file-backed storage, a documented restore path.</p></div>
+    </div>
+    <div class="sig">ClaimTrace · Software Innovation Studio 41129 · 2026</div>
+  </section>
+
+</main>
+
+<nav class="progress" id="progress" aria-label="Slides"></nav>
+<div class="counter" id="counter">01 / 08</div>
+<div class="hint">← → to navigate · P to print</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  let index = 0;
+
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', `Slide ${i + 1}`);
+    b.addEventListener('click', () => go(i));
+    progress.appendChild(b);
+  });
+
+  function fit() {
+    const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    stage.style.transform = `scale(${scale})`;
+  }
+
+  function go(next) {
+    index = Math.max(0, Math.min(slides.length - 1, next));
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    Array.from(progress.children).forEach((b, i) => b.classList.toggle('on', i === index));
+    counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    history.replaceState(null, '', `#${index + 1}`);
+  }
+
+  addEventListener('resize', fit);
+  addEventListener('keydown', (event) => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(event.key)) { event.preventDefault(); go(index + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); go(index - 1); }
+    if (event.key === 'Home') go(0);
+    if (event.key === 'End') go(slides.length - 1);
+    if (event.key === 'p' || event.key === 'P') { event.preventDefault(); print(); }
+  });
+  addEventListener('click', (event) => {
+    if (event.target.closest('button, a')) return;
+    go(event.clientX > innerWidth / 2 ? index + 1 : index - 1);
+  });
+
+  fit();
+  const fromHash = Number(location.hash.slice(1));
+  go(Number.isFinite(fromHash) && fromHash >= 1 ? fromHash - 1 : 0);
+</script>
+</body>
+</html>

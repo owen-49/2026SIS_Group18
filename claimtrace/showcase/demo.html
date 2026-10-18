@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimTrace core feature demo</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root { --bg: #f4f3ee; }
+  html, body { background: var(--bg); }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--ink); color: var(--paper);
+    padding: 0 28px;
+    display: flex; align-items: center; gap: 18px; height: 58px;
+  }
+  .wordmark { font-family: var(--serif); font-size: 23px; letter-spacing: -.01em; }
+  .wordmark span { color: #4cbf8a; }
+  .topbar .what { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #a9aeb8; }
+  .topbar .badge { margin-left: auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: #cfe3d8; background: #234334; padding: 5px 10px; border-radius: 3px; }
+
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 26px 22px 48px; }
+
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--rule-strong); margin-bottom: 22px; }
+  .tab {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted); padding: 12px 16px 13px; border-bottom: 2px solid transparent;
+  }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--verified); }
+  .tab .k { color: var(--rule-strong); margin-right: 8px; }
+
+  .panel { display: none; }
+  .panel.on { display: block; }
+
+  .demo-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+  .demo-head h1 { font-family: var(--serif); font-size: 34px; font-weight: 500; letter-spacing: -.01em; }
+  .demo-head p { font-size: 14px; line-height: 1.5; color: var(--muted); margin-top: 6px; max-width: 720px; }
+  .btn {
+    appearance: none; cursor: pointer; border: 1px solid var(--ink); background: var(--ink); color: #fff;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 11px 18px; border-radius: 3px; white-space: nowrap;
+  }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule-strong); }
+
+  .runbar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .runbar .progress { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .05em; }
+
+  .tablewrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  th { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); font-weight: 400; }
+  td { padding: 15px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; font-size: 13px; line-height: 1.45; }
+  tr:last-child td { border-bottom: 0; }
+  td.ref { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); }
+  td.ref small { display: block; color: var(--muted); margin-top: 3px; font-size: 10.5px; }
+  td.ev .why { display: block; font-family: var(--mono); font-size: 9.5px; color: var(--muted); margin-top: 5px; }
+  td.ev { color: var(--ink-soft); }
+  .muted { color: var(--muted); }
+  .pending { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--rule-strong); }
+
+  .chip-checking { color: var(--muted); background: var(--paper-2); }
+  .spin { width: .55em; height: .55em; border: 1.5px solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .poster .chip, .chip { font-size: 8.5pt; }
+
+  .footnote { margin-top: 16px; font-size: 12px; line-height: 1.55; color: var(--muted); display: flex; gap: 12px; align-items: flex-start; }
+  .footnote .mark { flex: none; width: 3px; align-self: stretch; background: var(--verified); border-radius: 2px; }
+
+  /* verify */
+  .verify-grid { display: grid; grid-template-columns: 400px 1fr; gap: 18px; align-items: start; }
+  .manuscript { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 4px; padding: 20px 20px 14px; }
+  .manuscript .src { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .manuscript h2 { font-family: var(--serif); font-size: 24px; font-weight: 500; line-height: 1.15; margin-top: 8px; }
+  .manuscript .hintline { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+  .claim-list { margin-top: 16px; display: flex; flex-direction: column; }
+  .claim {
+    appearance: none; text-align: left; cursor: pointer; background: transparent;
+    border: 0; border-top: 1px solid var(--rule); padding: 13px 4px 13px 2px;
+    display: flex; gap: 11px; align-items: flex-start; color: var(--ink-soft);
+    font-family: var(--serif); font-size: 15px; line-height: 1.42;
+  }
+  .claim:hover { background: var(--paper-2); }
+  .claim .no { font-family: var(--mono); font-size: 9px; color: var(--rule-strong); padding-top: 4px; flex: none; }
+  .claim .dot { margin-left: auto; flex: none; width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; background: var(--rule); }
+  .claim.seen .dot.verified { background: var(--verified); }
+  .claim.seen .dot.mismatch { background: var(--mismatch); }
+  .claim.seen .dot.missing { background: var(--missing); }
+  .claim.seen .dot.failed { background: var(--failed); }
+  .claim.active { background: var(--paper-2); color: var(--ink); }
+
+  .evidence { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 4px; min-height: 520px; padding: 24px 26px; }
+  .empty { height: 470px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--muted); }
+  .empty .glyph { font-family: var(--serif); font-size: 46px; color: var(--rule-strong); }
+  .empty p { font-size: 14px; max-width: 340px; line-height: 1.6; margin-top: 14px; }
+
+  .ev-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .ev-head .src { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .ev-title { font-family: var(--serif); font-size: 21px; margin-top: 5px; }
+  .ev-title span { font-style: italic; color: var(--muted); font-size: 15px; }
+  .claim-quote { font-family: var(--serif); font-size: 22px; line-height: 1.34; margin-top: 18px; }
+  .verdict-line { display: flex; align-items: center; gap: 14px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .verdict-line .why { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+  .passage { margin-top: 18px; border-left: 3px solid var(--verified); padding: 2px 0 2px 16px; font-size: 14px; line-height: 1.62; color: var(--ink-soft); }
+  .passage .lbl { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .absent { margin-top: 18px; border: 1px dashed var(--rule-strong); border-radius: 3px; padding: 16px 18px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+  .absent b { color: var(--ink-soft); font-weight: 600; }
+  details.retrieved { margin-top: 18px; }
+  details.retrieved summary { cursor: pointer; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .retrieved-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .retrieved-list p { font-size: 12px; line-height: 1.5; color: var(--rule-strong); padding: 7px 12px; border-left: 2px solid var(--rule); }
+  .retrieved-list p.hit { color: var(--ink-soft); background: var(--verified-bg); border-left-color: var(--verified); }
+  .retrieved-list .tag { font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--verified); display: block; margin-bottom: 4px; }
+  .route { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 9.5px; color: var(--rule-strong); letter-spacing: .04em; }
+
+  /* read */
+  .read-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .pane { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 4px; overflow: hidden; }
+  .pane .bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .pane .bar .file { color: var(--rule-strong); letter-spacing: .04em; text-transform: none; }
+  pre.md { margin: 0; padding: 20px 18px; font-family: var(--mono); font-size: 11.5px; line-height: 1.65; color: var(--ink-soft); overflow-x: auto; white-space: pre; }
+  .md .h { color: var(--verified); }
+  .md .math { color: var(--mismatch); }
+  .rendered { padding: 22px 26px 26px; }
+  .rendered h3 { font-family: var(--serif); font-weight: 500; font-size: 22px; margin-bottom: 12px; }
+  .rendered p { font-size: 14px; line-height: 1.62; color: var(--ink-soft); margin-bottom: 12px; }
+  .rendered p em { font-family: var(--serif); }
+  .formula { margin: 18px 0 20px; padding: 16px 18px; background: var(--paper-2); border-radius: 3px; font-family: var(--serif); font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 3px; }
+  .frac .num { border-bottom: 1px solid var(--ink); padding: 0 6px 2px; }
+  .frac .den { padding: 2px 6px 0; }
+  .sqrt { border-top: 1px solid var(--ink); padding: 0 4px; margin-left: 1px; }
+  table.dims { min-width: 0; width: 100%; border: 1px solid var(--rule-strong); border-radius: 3px; margin: 8px 0 20px; }
+  table.dims th, table.dims td { font-size: 12px; padding: 8px 12px; }
+  table.dims th { font-family: var(--mono); font-size: 8.5px; }
+  .figure { border: 1px solid var(--rule); border-radius: 3px; padding: 12px; background: var(--paper-2); }
+  .figure .frame { height: 150px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+  .figure .box { border: 1px solid var(--rule-strong); background: var(--paper); font-family: var(--mono); font-size: 9px; letter-spacing: .08em; padding: 10px 8px; text-align: center; color: var(--muted); width: 86px; }
+  .figure .box.dark { background: var(--ink); color: #d7dbe2; border-color: var(--ink); }
+  .figure .stack { display: flex; flex-direction: column; gap: 6px; }
+  .figure .cap { margin-top: 10px; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+  .figure .cap b { color: var(--ink-soft); font-weight: 600; }
+  .img-route { margin-top: 12px; font-family: var(--mono); font-size: 9px; color: var(--rule-strong); }
+
+  @media (max-width: 620px) {
+    .topbar { padding: 0 16px; gap: 10px; }
+    .topbar .badge { display: none; }
+    .wrap { padding: 20px 16px 40px; }
+    .tab { padding: 10px 10px 12px; }
+    .figure .frame { gap: 10px; }
+    .figure .box { width: 68px; padding: 8px 4px; }
+    .formula { font-size: 14px; padding: 14px 10px; }
+  }
+
+  @media (max-width: 980px) {
+    .verify-grid, .read-grid { grid-template-columns: 1fr; }
+    .evidence { min-height: 0; }
+    .empty { height: 260px; }
+    .demo-head { flex-direction: column; align-items: flex-start; }
+    .topbar .what { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wordmark">ClaimTrace<span>.</span></div>
+  <div class="what">Core feature demo</div>
+  <div class="badge">Recorded fixtures · no network calls</div>
+</header>
+
+<main class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Demo sections">
+    <button class="tab" role="tab" aria-selected="true" data-panel="audit"><span class="k">01</span>Audit</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="verify"><span class="k">02</span>Verify</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="read"><span class="k">03</span>Read</button>
+  </nav>
+
+  <!-- AUDIT -->
+  <section class="panel on" id="panel-audit" role="tabpanel">
+    <div class="demo-head">
+      <div>
+        <h1>Audit a bibliography</h1>
+        <p>Four references from the controlled fixture set, each one pinned to the provider response it was measured against. Run the audit and watch the state machine resolve — including the cases where it refuses to guess.</p>
+      </div>
+      <button class="btn" id="run-audit">Run audit</button>
+    </div>
+    <div class="runbar">
+      <span class="progress" id="audit-progress">0 / 4 checked</span>
+      <button class="btn ghost" id="reset-audit">Reset</button>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:28%">Reference</th><th style="width:18%">State</th><th>Evidence</th></tr></thead>
+        <tbody id="audit-body">
+          <tr data-case="0"><td class="ref">bert-exact<small>Devlin et al., 2019</small></td><td class="state"><span class="pending">Queued</span></td><td class="ev"><span class="muted">Not checked yet.</span></td></tr>
+          <tr data-case="1"><td class="ref">bert-year-plus-one<small>year stated one late</small></td><td class="state"><span class="pending">Queued</span></td><td class="ev"><span class="muted">Not checked yet.</span></td></tr>
+          <tr data-case="2"><td class="ref">dialoguernn-year-minus-five<small>year stated five early</small></td><td class="state"><span class="pending">Queued</span></td><td class="ev"><span class="muted">Not checked yet.</span></td></tr>
+          <tr data-case="3"><td class="ref">provider-500<small>one provider errors</small></td><td class="state"><span class="pending">Queued</span></td><td class="ev"><span class="muted">Not checked yet.</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footnote">
+      <div class="mark"></div>
+      <p><b>The invariant this demo is built around:</b> a failed lookup is never reported as “not found”, and a record rejected before field comparison carries <span class="mono">field_checks: []</span> rather than a fabricated mismatch. The provider responses are pinned; the state machine is the one in the product.</p>
+    </div>
+  </section>
+
+  <!-- VERIFY -->
+  <section class="panel" id="panel-verify" role="tabpanel">
+    <div class="demo-head">
+      <div>
+        <h1>Compare a claim with its source</h1>
+        <p>Six claims written against <i>Attention Is All You Need</i>. Select one to see the verdict, the explanation and the passage it rests on. The labels are the fixture labels, not an independent expert annotation.</p>
+      </div>
+      <button class="btn ghost" id="reset-verify">Clear selection</button>
+    </div>
+    <div class="verify-grid">
+      <aside class="manuscript">
+        <div class="src">Manuscript · Related Work</div>
+        <h2>Attention Is All You Need</h2>
+        <p class="hintline">Vaswani et al., 2017 · registered as a verify source</p>
+        <div class="claim-list" id="claim-list"></div>
+      </aside>
+      <section class="evidence" id="evidence-panel" aria-live="polite">
+        <div class="empty">
+          <div class="glyph">↤</div>
+          <p>Select a claim on the left. The comparison shows the verdict first — and the retrieved passage underneath it.</p>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- READ -->
+  <section class="panel" id="panel-read" role="tabpanel">
+    <div class="demo-head">
+      <div>
+        <h1>Read the paper inside the review pane</h1>
+        <p>A short excerpt in the shape the parser returns: headings, inline mathematics, a display formula, a table and a figure artifact. The excerpt is illustrative; the rendering path is the product's.</p>
+      </div>
+    </div>
+    <div class="read-grid">
+      <section class="pane">
+        <div class="bar"><span>Parsed Markdown</span><span class="file">section-3.2.1.md</span></div>
+<pre class="md"><span class="h">## 3.2.1  Scaled Dot-Product Attention</span>
+
+We call our particular attention “Scaled
+Dot-Product Attention”. The input consists
+of queries and keys of dimension <span class="math">$d_k$</span>, and
+values of dimension <span class="math">$d_v$</span>.
+
+<span class="math">$$
+\mathrm{Attention}(Q,K,V) =
+\mathrm{softmax}\left(
+  \frac{QK^{T}}{\sqrt{d_k}}
+\right)V
+$$</span>
+
+| Component        | Dimension |
+|------------------|-----------|
+| queries, keys    | d_k       |
+| values           | d_v       |
+| output           | d_v       |
+
+<span class="math">![Figure 2](images/figure-2.png)</span></pre>
+      </section>
+      <section class="pane">
+        <div class="bar"><span>Rendered · review pane</span><span class="file">react-markdown + KaTeX + image route</span></div>
+        <div class="rendered">
+          <h3>3.2.1&nbsp; Scaled Dot-Product Attention</h3>
+          <p>We call our particular attention “Scaled Dot-Product Attention”. The input consists of queries and keys of dimension <em>d<sub>k</sub></em>, and values of dimension <em>d<sub>v</sub></em>.</p>
+          <div class="formula">
+            <span>Attention(Q, K, V) = softmax</span>
+            <span style="font-size:26px;line-height:1">(</span>
+            <span class="frac"><span class="num">QK<sup>T</sup></span><span class="den">√<span class="sqrt">d<sub>k</sub></span></span></span>
+            <span style="font-size:26px;line-height:1">)</span>
+            <span>V</span>
+          </div>
+          <table class="dims">
+            <thead><tr><th>Component</th><th>Dimension</th></tr></thead>
+            <tbody>
+              <tr><td>queries, keys</td><td class="mono">d_k</td></tr>
+              <tr><td>values</td><td class="mono">d_v</td></tr>
+              <tr><td>output</td><td class="mono">d_v</td></tr>
+            </tbody>
+          </table>
+          <div class="figure">
+            <div class="frame">
+              <div class="stack"><div class="box">Multi-Head<br>Attention</div><div class="box">Add &amp; Norm</div></div>
+              <div class="stack"><div class="box dark">Encoder<br>× 6</div></div>
+              <div class="stack"><div class="box dark">Decoder<br>× 6</div></div>
+              <div class="stack"><div class="box">Feed<br>Forward</div><div class="box">Add &amp; Norm</div></div>
+            </div>
+            <div class="cap"><b>Figure 2.</b> The Transformer — model architecture. The image is served from the paper's image route; this schematic stands in for the extracted file in the demo.</div>
+          </div>
+          <div class="img-route">GET /api/papers/{paper_id}/images/figure-2.png</div>
+        </div>
+      </section>
+    </div>
+    <div class="footnote">
+      <div class="mark"></div>
+      <p>Formulas, tables and images survive the parse because the Markdown is sanitised and rendered with <span class="mono">rehype-raw</span>, <span class="mono">rehype-sanitize</span> and <span class="mono">rehype-katex</span>, in that order. Images keep their basename and resolve through the paper-scoped image route.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ---- tabs ---------------------------------------------------------------
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  function showPanel(name) {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.panel === name)));
+    document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('on', p.id === 'panel-' + name));
+    history.replaceState(null, '', '#' + name);
+  }
+  tabs.forEach((tab) => tab.addEventListener('click', () => showPanel(tab.dataset.panel)));
+
+  // ---- audit --------------------------------------------------------------
+  const AUDIT = [
+    { status: 'VERIFIED', cls: 'chip-verified', label: 'Verified',
+      evidence: 'All four fields match the OpenAlex record. One lookup; Crossref is never asked.',
+      why: 'title · authors · year · venue → MATCH' },
+    { status: 'METADATA_MISMATCH', cls: 'chip-mismatch', label: 'Metadata mismatch',
+      evidence: 'The record stays eligible inside the one-year tolerance, so the difference is reported field by field.',
+      why: 'year → MISMATCH, and the rest of the record is still checked' },
+    { status: 'NOT_FOUND', cls: 'chip-missing', label: 'Not found',
+      evidence: 'A five-year gap rejects every record both providers return, so the report carries field_checks: [] rather than a fabricated mismatch.',
+      why: 'no acceptable record → nothing to compare' },
+    { status: 'LOOKUP_FAILED', cls: 'chip-failed', label: 'Lookup failed',
+      evidence: 'Crossref’s search is negative and OpenAlex cannot answer. The reference stays visibly unchecked — never reported as “not found”.',
+      why: 'an unread reference is not a missing reference' },
+  ];
+  const body = document.getElementById('audit-body');
+  const progress = document.getElementById('audit-progress');
+  const runBtn = document.getElementById('run-audit');
+  const resetBtn = document.getElementById('reset-audit');
+  let running = false;
+
+  function resetAudit() {
+    Array.from(body.rows).forEach((row) => {
+      row.querySelector('.state').innerHTML = '<span class="pending">Queued</span>';
+      row.querySelector('.ev').innerHTML = '<span class="muted">Not checked yet.</span>';
+    });
+    progress.textContent = '0 / 4 checked';
+  }
+  function resolveRow(i) {
+    const row = body.rows[i];
+    const item = AUDIT[i];
+    row.querySelector('.state').innerHTML = `<span class="chip ${item.cls}">${item.label}</span>`;
+    row.querySelector('.ev').innerHTML = `${item.evidence}<span class="why">${item.why}</span>`;
+  }
+  function resolveAll() {
+    AUDIT.forEach((_, i) => resolveRow(i));
+    progress.textContent = '4 / 4 checked · 0 reported as missing without a lookup';
+  }
+  function wait(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
+
+  runBtn.addEventListener('click', async () => {
+    if (running) return;
+    running = true; runBtn.disabled = true; resetBtn.disabled = true;
+    resetAudit();
+    for (let i = 0; i < AUDIT.length; i++) {
+      const row = body.rows[i];
+      row.querySelector('.state').innerHTML = '<span class="chip chip-checking"><span class="spin"></span>Checking</span>';
+      progress.textContent = `${i} / 4 checked · checking ${row.querySelector('.ref').childNodes[0].textContent}`;
+      await wait(700);
+      resolveRow(i);
+      progress.textContent = `${i + 1} / 4 checked`;
+      await wait(180);
+    }
+    progress.textContent = '4 / 4 checked · 0 reported as missing without a lookup';
+    running = false; runBtn.disabled = false; resetBtn.disabled = false;
+  });
+  resetBtn.addEventListener('click', () => { if (!running) resetAudit(); });
+  resolveAll();
+
+  // ---- verify -------------------------------------------------------------
+  const SOURCE_PARAGRAPHS = [
+    'We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.',
+    'We call our particular attention “Scaled Dot-Product Attention”. The input consists of queries and keys of dimension dk, and values of dimension dv.',
+    'Self-attention, sometimes called intra-attention, is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Self-attention has been used successfully in a variety of tasks including reading comprehension and summarization.',
+    'The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder.',
+    'We trained the base model for 100,000 steps or 12 hours on 8 NVIDIA P100 GPUs.',
+  ];
+  const CLAIMS = [
+    {
+      claim: 'Self-attention is an attention mechanism that relates different positions of a single sequence in order to compute a representation of that sequence.',
+      verdict: 'SUPPORT', cls: 'chip-verified', tone: 'verified',
+      why: 'The claim restates the paper’s own definition of self-attention.',
+      deciding: 2,
+      explain: 'The retrieved passage defines self-attention in almost exactly the claim’s terms. The only difference is grammatical (“relating” vs “that relates”).',
+    },
+    {
+      claim: 'The paper’s self-attention mechanism depends on recurrence to relate different positions of a single sequence.',
+      verdict: 'CONTRADICT', cls: 'chip-missing', tone: 'missing',
+      why: 'The paper dispenses with recurrence entirely; the claim asserts dependence on it.',
+      deciding: 0,
+      explain: 'The source says the architecture is “based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.” The claim states the opposite.',
+    },
+    {
+      claim: 'The paper reports that the method reduced carbon emissions by forty percent.',
+      verdict: 'NOT_FOUND', cls: 'chip-failed', tone: 'failed',
+      why: 'The source was read and does not contain this claim. That is a finding, not a failure to read.',
+      deciding: -1,
+      explain: 'None of the retrieved passages discuss carbon emissions. The comparison ran; the claim is simply not in the source.',
+    },
+    {
+      claim: 'Self-attention relates positions within a single sequence and has been demonstrated to work successfully on every possible task.',
+      verdict: 'PARTIAL', cls: 'chip-mismatch', tone: 'mismatch',
+      why: '“A variety of tasks” is not “every possible task” — the claim drops the paper’s qualifier.',
+      deciding: 2,
+      explain: 'The first half is supported. The second half overstates the source: the paper says self-attention “has been used successfully in a variety of tasks including reading comprehension and summarization,” not on every possible task.',
+    },
+    {
+      claim: 'The paper establishes that using self-attention causes a forty percent reduction in carbon emissions compared with recurrent networks.',
+      verdict: 'NOT_FOUND', cls: 'chip-failed', tone: 'failed',
+      why: 'No passage connects self-attention to carbon emissions.',
+      deciding: -1,
+      explain: 'The causal claim has no anchor in the source. The retrieval ran over all five passages and the comparison found nothing to support it.',
+    },
+    {
+      claim: 'The authors trained the base Transformer for 100,000 steps on only one NVIDIA P100 GPU rather than eight GPUs.',
+      verdict: 'CONTRADICT', cls: 'chip-missing', tone: 'missing',
+      why: 'The paper trained on eight P100 GPUs; the claim says one.',
+      deciding: 4,
+      explain: 'The source is explicit: “100,000 steps or 12 hours on 8 NVIDIA P100 GPUs.” The step count matches; the hardware count does not.',
+    },
+  ];
+
+  const claimList = document.getElementById('claim-list');
+  const evidencePanel = document.getElementById('evidence-panel');
+
+  CLAIMS.forEach((item, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'claim';
+    button.innerHTML = `<span class="no">${String(index + 1).padStart(2, '0')}</span><span>“${item.claim}”</span><span class="dot ${item.tone}"></span>`;
+    button.addEventListener('click', () => selectClaim(index));
+    claimList.appendChild(button);
+  });
+
+  function passageList(item) {
+    return SOURCE_PARAGRAPHS.map((text, i) => {
+      const hit = i === item.deciding;
+      return `<p class="${hit ? 'hit' : ''}">${hit ? '<span class="tag">Deciding passage</span>' : ''}${text}</p>`;
+    }).join('');
+  }
+
+  function selectClaim(index) {
+    const item = CLAIMS[index];
+    Array.from(claimList.children).forEach((button, i) => {
+      button.classList.toggle('active', i === index);
+      if (i === index) button.classList.add('seen');
+    });
+    const hasPassage = item.deciding >= 0;
+    evidencePanel.innerHTML = `
+      <div class="ev-head">
+        <div>
+          <div class="src">Source · registered paper</div>
+          <div class="ev-title">Attention Is All You Need <span>Vaswani et al., 2017</span></div>
+        </div>
+      </div>
+      <p class="claim-quote">“${item.claim}”</p>
+      <div class="verdict-line">
+        <span class="chip ${item.cls}">${item.verdict}</span>
+        <span class="why">${item.why}</span>
+      </div>
+      <p style="margin-top:16px;font-size:14px;line-height:1.6;color:var(--ink-soft)">${item.explain}</p>
+      ${hasPassage
+        ? `<div class="passage"><span class="lbl">Retrieved passage · quoted verbatim</span>“${SOURCE_PARAGRAPHS[item.deciding]}”</div>`
+        : `<div class="absent"><b>No supporting passage.</b> The source was read and the comparison ran. A negative result is reported as a finding — never as a failed check.</div>`}
+      <details class="retrieved">
+        <summary>Retrieved passages · ${SOURCE_PARAGRAPHS.length}</summary>
+        <div class="retrieved-list">${passageList(item)}</div>
+      </details>
+      <div class="route">source_paper_id · retrieval (k = 5) · comparison → COMPARED</div>
+    `;
+  }
+
+  document.getElementById('reset-verify').addEventListener('click', () => {
+    Array.from(claimList.children).forEach((b) => b.classList.remove('active', 'seen'));
+    evidencePanel.innerHTML = `<div class="empty"><div class="glyph">↤</div><p>Select a claim on the left. The comparison shows the verdict first — and the retrieved passage underneath it.</p></div>`;
+  });
+
+  selectClaim(0);
+
+  const initialPanel = location.hash.slice(1);
+  if (['audit', 'verify', 'read'].includes(initialPanel)) showPanel(initialPanel);
+</script>
+</body>
+</html>
