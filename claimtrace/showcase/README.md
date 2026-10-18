@@ -3,6 +3,8 @@
 Materials for a five-minute project presentation: a slide deck in two formats, an A1 poster in two
 formats, and an interactive demo of the three core features.
 
+> 中文版：[README.zh.md](README.zh.md)
+
 | File | What it is | How to use it |
 |---|---|---|
 | `slides.html` | Eight-slide 16:9 deck, designed for the browser | Open in Chrome. `←` `→` navigate, `P` prints, click the left/right half of the slide |
