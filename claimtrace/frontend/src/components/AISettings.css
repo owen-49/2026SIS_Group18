@@ -49,3 +49,10 @@
 @media (prefers-reduced-motion: reduce) { .ai-settings-dialog.ai-settings-panel, .ai-settings-dialog.ai-settings-panel::backdrop, .ai-settings-panel *, .ai-settings-panel *::before { animation: none !important; transition: none !important; } }
 .ai-settings-panel .field > small { text-align: left; }
 .ai-settings-footer { position: sticky; bottom: 0; z-index: 1; background: #fcfbfef5; backdrop-filter: blur(8px); }
+
+.ai-untested-dot { background: #bd8b36; box-shadow: 0 0 0 3px #bd8b3618; }
+.ai-connection-success { color: #39674c; font-size: 12px; }
+.ai-model-actions { margin: -5px 0 12px; }
+.ai-model-hint { font-size: 11px; color: #766781; }
+.ai-settings-footer > div { flex-wrap: wrap; justify-content: flex-end; }
+.ai-settings-panel button:disabled { cursor: wait; opacity: .65; }

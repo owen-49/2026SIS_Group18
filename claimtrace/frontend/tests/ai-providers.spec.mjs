@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { configureAI } from "./ai-helpers.mjs";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/ai/test", route => route.fulfill({ json: { ok: true, model: route.request().postDataJSON().model, latency_ms: 12 } }));
+});
+
 test("all providers can be saved without the removed Audit switch", async ({
   page,
 }) => {
@@ -73,6 +77,7 @@ test("changing provider or region clears credentials and preserves region in req
     .getByLabel("Qwen workspace ID", { exact: true })
     .fill("workspace123");
   await dialog.getByRole("button", { name: "Save configuration" }).click();
+  await expect(dialog).not.toBeVisible();
   let body;
   await page.route("**/api/audit", (route) => {
     body = route.request().postDataJSON();

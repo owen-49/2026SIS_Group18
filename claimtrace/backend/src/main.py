@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routes import audit, bib, health, papers, parse, verify, verify_sources
+from .routes import ai, audit, bib, health, papers, parse, verify, verify_sources
 
 # ── Logging ─────────────────────────────────────────────────
 # No logger configuration would leave the root logger on Python's fallback
@@ -37,6 +37,7 @@ app.add_middleware(
 )
 
 # Mount routers
+app.include_router(ai.router, prefix="/api", tags=["ai"])
 app.include_router(health.router, tags=["health"])
 app.include_router(parse.router, prefix="/api", tags=["parse"])
 app.include_router(papers.router, prefix="/api", tags=["papers"])

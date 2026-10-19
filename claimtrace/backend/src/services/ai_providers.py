@@ -96,22 +96,26 @@ def prepare_completion(provider, model, kwargs):
     return params
 
 
+class ModelIncompatibleError(ValueError):
+    """The completion cannot satisfy the local JSON response contract."""
+
+
 def normalize_completion(provider, result):
     """Reject partial generations before downstream code can accept valid-looking JSON."""
     choices = getattr(result, "choices", None)
     if not choices:
-        raise ValueError("The provider returned no completion.")
+        raise ModelIncompatibleError("The provider returned no completion.")
     choice = choices[0]
     finish = getattr(choice, "finish_reason", None)
     if finish is not None and finish != "stop":
-        raise ValueError("The provider did not finish a text completion.")
+        raise ModelIncompatibleError("The provider did not finish a text completion.")
     if provider == "minimax":
         content = choice.message.content
         if isinstance(content, str):
             # M2.x embeds reasoning before the answer. Do not alter JSON string values.
             content = re.sub(r"^\s*<think>.*?</think>\s*", "", content, flags=re.DOTALL)
             if content.lstrip().startswith("<think>"):
-                raise ValueError("The provider returned incomplete reasoning.")
+                raise ModelIncompatibleError("The provider returned incomplete reasoning.")
             choice.message.content = content
     return result
 
@@ -131,6 +135,11 @@ class AnthropicMessagesClient:
     def chat(self):
         return SimpleNamespace(completions=self)
 
+    def list_models(self):
+        response = self._http.get("models", params={"limit": 500}, timeout=30.0)
+        response.raise_for_status()
+        return response.json().get("data", [])
+
     def create(self, **kwargs):
         messages = kwargs["messages"]
         system = [m["content"] for m in messages if m["role"] in {"system", "developer"}]
@@ -147,13 +156,17 @@ class AnthropicMessagesClient:
         response.raise_for_status()
         payload = response.json()
         if payload.get("stop_reason") != "end_turn":
-            raise ValueError("The provider did not complete a text response.")
+            raise ModelIncompatibleError("The provider did not complete a text response.")
         content = "".join(
             block["text"] for block in payload.get("content", []) if block.get("type") == "text"
         )
         if not content:
-            raise ValueError("The provider returned no text.")
-        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))])
+            raise ModelIncompatibleError("The provider returned no text.")
+        return SimpleNamespace(
+            choices=[
+                SimpleNamespace(finish_reason="stop", message=SimpleNamespace(content=content))
+            ]
+        )
 
     def close(self):
         self._http.close()

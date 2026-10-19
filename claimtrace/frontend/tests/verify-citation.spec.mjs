@@ -177,7 +177,7 @@ test('Verify requires configuration, clears stale results and forgets keys on re
   await page.reload(); await highlight(page); await expect(analyze(page)).toBeDisabled();
 });
 
-for (const [status, code] of [[422,'AI_CONFIG_REQUIRED'],[422,'INVALID_REQUEST'],[422,'AI_CONFIG_INVALID'],[401,'AI_AUTH_FAILED'],[403,'AI_ACCESS_DENIED'],[429,'AI_QUOTA_EXCEEDED'],[429,'AI_RATE_LIMITED'],[422,'AI_MODEL_UNAVAILABLE'],[504,'AI_TIMEOUT'],[502,'AI_PROVIDER_FAILED']]) {
+for (const [status, code] of [[422,'AI_CONFIG_REQUIRED'],[422,'INVALID_REQUEST'],[422,'AI_CONFIG_INVALID'],[401,'AI_AUTH_FAILED'],[403,'AI_ACCESS_DENIED'],[429,'AI_QUOTA_EXCEEDED'],[429,'AI_RATE_LIMITED'],[422,'AI_MODEL_UNAVAILABLE'],[422,'AI_MODEL_INCOMPATIBLE'],[422,'AI_REQUEST_REJECTED'],[504,'AI_TIMEOUT'],[502,'AI_PROVIDER_FAILED']]) {
   test(`${code} clears the verdict and allows an explicit retry`, async ({ page }) => {
     await setup(page); await highlight(page); await analyze(page).click();
     await expect(output(page)).toBeVisible();
@@ -188,6 +188,10 @@ for (const [status, code] of [[422,'AI_CONFIG_REQUIRED'],[422,'INVALID_REQUEST']
     await expect(output(page)).toHaveCount(0);
     await expect(analyze(page)).toBeEnabled();
     expect(calls).toBe(1);
+    if (code.startsWith('AI_')) {
+      await page.getByRole('button', { name: 'Open AI settings', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'AI settings', exact: true })).toBeVisible();
+    }
   });
 }
 
@@ -226,4 +230,17 @@ test('sanitized validation errors retain their code without exposing request val
   await expect(page.getByRole('alert')).toContainText('INVALID_REQUEST');
   await expect(page.getByRole('alert')).toContainText('AI settings');
   await expect(analyze(page)).toBeEnabled();
+});
+
+
+test('Audit AI errors explain the next step and open settings directly', async ({ page }) => {
+  await setup(page);
+  await page.route('**/api/audit', route => route.fulfill({ status: 401, json: { detail: { code: 'AI_AUTH_FAILED', message: 'Safe error' } } }));
+  await page.getByRole('link', { name: 'Batch audit', exact: true }).click();
+  await page.getByRole('button', { name: 'Manage papers', exact: true }).click();
+  await page.getByRole('button', { name: 'Select manuscript.pdf for audit', exact: true }).click();
+  await page.getByRole('button', { name: 'Run audit', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('Copy a valid key');
+  await page.getByRole('button', { name: 'Open AI settings', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'AI settings', exact: true })).toBeVisible();
 });
