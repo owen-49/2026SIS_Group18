@@ -12,7 +12,7 @@ from .services.ai_providers import AIProvider, AnthropicMessagesClient, endpoint
 from .services.user_ai_runtime import UserAIError, UserAIRuntime
 
 
-class UserAIConfig(BaseModel):
+class UserAIConnectionConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     provider: AIProvider
@@ -20,20 +20,12 @@ class UserAIConfig(BaseModel):
     workspace: str | None = Field(
         default=None, pattern=r"^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"
     )
-    model: str = Field(min_length=1, max_length=200)
     api_key: SecretStr = Field(min_length=1, max_length=4096)
 
     @model_validator(mode="after")
     def valid_destination(self):
         endpoint_for(self.provider, self.region, self.workspace)
         return self
-
-    @field_validator("model")
-    @classmethod
-    def model_has_text(cls, value):
-        if not value.strip() or any(ord(char) < 32 for char in value):
-            raise ValueError("Provide a nonempty model without control characters.")
-        return value.strip()
 
     @field_validator("api_key")
     @classmethod
@@ -44,8 +36,19 @@ class UserAIConfig(BaseModel):
         return value
 
 
+class UserAIConfig(UserAIConnectionConfig):
+    model: str = Field(min_length=1, max_length=200)
+
+    @field_validator("model")
+    @classmethod
+    def model_has_text(cls, value):
+        if not value.strip() or any(ord(char) < 32 for char in value):
+            raise ValueError("Provide a nonempty model without control characters.")
+        return value.strip()
+
+
 @contextmanager
-def user_ai_session(config: UserAIConfig | None, *, required=False):
+def user_ai_session(config: UserAIConnectionConfig | None, *, required=False):
     if config is None:
         if required:
             raise UserAIError("AI_CONFIG_REQUIRED", "Supply your own ai_config for this operation.")
@@ -69,7 +72,7 @@ def user_ai_session(config: UserAIConfig | None, *, required=False):
             )
     except Exception:
         raise UserAIError("AI_CONFIG_INVALID", "Unable to initialise the user AI client.") from None
-    runtime = UserAIRuntime(client, config.model, provider=config.provider)
+    runtime = UserAIRuntime(client, getattr(config, "model", ""), provider=config.provider)
     try:
         yield runtime
     finally:
@@ -100,6 +103,8 @@ class UserAIRoute(APIRoute):
                     "AI_QUOTA_EXCEEDED": 429,
                     "AI_RATE_LIMITED": 429,
                     "AI_MODEL_UNAVAILABLE": 422,
+                    "AI_MODEL_INCOMPATIBLE": 422,
+                    "AI_REQUEST_REJECTED": 422,
                     "AI_TIMEOUT": 504,
                 }.get(exc.code, 502)
                 raise HTTPException(

@@ -1,3 +1,4 @@
+import { AIErrorMessage } from "../components/AIErrorMessage";
 import { useAISettings } from "../data/aiSettings";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -510,7 +511,7 @@ export function VerifyPage({ example: initialExample = false, similarExample = f
               {Boolean(selectedClaim.similar_sources?.length) && <section className="similar-source-section"><h3>Possible sources</h3><p>These candidates are unconfirmed. Choose a Verify source PDF above when you want to compare against an uploaded document.</p>{selectedClaim.similar_sources?.map((source) => <div className="database-source-card" key={source.citation_key}><strong>{source.title}</strong><p>{sourceMeta(source)}</p>{source.url && <a href={source.url} target="_blank" rel="noreferrer">Open candidate record</a>}</div>)}</section>}
             </>}
 
-            {verifyError && <div className="inline-error" role="alert">{verifyError}</div>}
+            {verifyError && <div className="inline-error" role="alert"><AIErrorMessage message={verifyError} /></div>}
             <button className="button button-primary full-button" type="button" disabled={!canVerify || verifying} aria-describedby={verifyDisabledReason ? "verify-disabled-reason" : undefined} onClick={() => void handleVerify()}>{verifying ? <><span className="spinner" /> Analyzing…</> : <><Icon name="verify" size={17} /> Analyze selection</>}</button>
 
             {verifyDisabledReason && <p className="verify-action-hint" id="verify-disabled-reason" role="status">{verifyDisabledReason}</p>}

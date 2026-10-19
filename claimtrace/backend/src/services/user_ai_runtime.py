@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 
-from .ai_providers import normalize_completion, prepare_completion
+from .ai_providers import ModelIncompatibleError, normalize_completion, prepare_completion
 
 
 class UserAIError(RuntimeError):
@@ -21,6 +21,37 @@ def safe_provider_error(exc: Exception) -> UserAIError:
     status = getattr(exc, "status_code", None)
     if status is None and isinstance(exc, httpx.HTTPStatusError):
         status = exc.response.status_code
+    body = getattr(exc, "body", None)
+    if isinstance(exc, httpx.HTTPStatusError):
+        try:
+            body = exc.response.json()
+        except ValueError:
+            body = None
+    error = body.get("error", body) if isinstance(body, dict) else None
+    codes = [error.get(key) for key in ("code", "type")] if isinstance(error, dict) else []
+    # Never inspect free text messages, which may contain credentials or private data.
+    model_codes = {
+        "model_not_found",
+        "modelnotfound",
+        "model_not_exist",
+        "model_not_exists",
+        "invalid_model",
+        "model_not_available",
+        "model_not_supported",
+    }
+    if status in {400, 404} and any(
+        isinstance(code, str) and code.lower() in model_codes for code in codes
+    ):
+        return UserAIError(
+            "AI_MODEL_UNAVAILABLE",
+            "The requested AI model is unavailable. Check its ID and access permissions.",
+        )
+    if status == 400:
+        return UserAIError(
+            "AI_REQUEST_REJECTED",
+            "The provider rejected the request. Check the model ID "
+            "or choose a model that supports this request.",
+        )
     name = type(exc).__name__
     if status == 401:
         return UserAIError("AI_AUTH_FAILED", "The user's AI credentials were rejected.")
@@ -29,13 +60,11 @@ def safe_provider_error(exc: Exception) -> UserAIError:
     if status == 402:
         return UserAIError("AI_QUOTA_EXCEEDED", "The user's AI balance is exhausted.")
     if status == 429:
-        # Inspect only the structured code; never expose the provider's body.
-        body = getattr(exc, "body", None)
-        if isinstance(body, dict):
-            error = body.get("error", body)
-            code = error.get("code") if isinstance(error, dict) else None
-            if code in {"insufficient_quota", "quota_exceeded"}:
-                return UserAIError("AI_QUOTA_EXCEEDED", "The user's AI quota is exhausted.")
+        if any(
+            isinstance(code, str) and code in {"insufficient_quota", "quota_exceeded"}
+            for code in codes
+        ):
+            return UserAIError("AI_QUOTA_EXCEEDED", "The user's AI quota is exhausted.")
         return UserAIError("AI_RATE_LIMITED", "The user's AI provider rate limited the request.")
     if status == 404:
         return UserAIError("AI_MODEL_UNAVAILABLE", "The requested AI model is unavailable.")
@@ -59,6 +88,8 @@ class UserAIRuntime:
     provider: str = "openai"
     failure: UserAIError | None = field(default=None, init=False, repr=False)
 
+    incompatible_completion: bool = field(default=False, init=False)
+
     @property
     def chat(self):
         return SimpleNamespace(completions=self)
@@ -75,6 +106,7 @@ class UserAIRuntime:
                 return normalize_completion(self.provider, result)
             return result
         except Exception as exc:
+            self.incompatible_completion = isinstance(exc, ModelIncompatibleError)
             self.failure = safe_provider_error(exc)
             raise self.failure from None
 

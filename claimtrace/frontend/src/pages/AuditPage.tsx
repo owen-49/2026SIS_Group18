@@ -1,3 +1,4 @@
+import { AIErrorMessage } from "../components/AIErrorMessage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { listPapers, runAudit, usingMockApi as configuredMockApi } from "../api/client";
@@ -141,7 +142,7 @@ export function AuditPage({ example: initialExample = false, similarExample = fa
         setAudit(null); setSelectedId(""); setExample(false);
       }} />
     </dialog>
-    {auditError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Audit could not be completed</h2><p>{auditError}</p></section>}
+    {auditError && <section className="library-state library-error panel" role="alert"><span className="library-state-icon"><Icon name="x" /></span><h2>Audit could not be completed</h2><p><AIErrorMessage message={auditError} /></p></section>}
 
     {audit && <>
       {audit.warnings.map((warning) => <section className="audit-notice panel" key={warning}><Icon name="document" size={17} /><div><strong>Audit warning</strong><p>{warning}</p></div></section>)}

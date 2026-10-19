@@ -1,33 +1,21 @@
 import { test, expect } from "@playwright/test";
 import { configureAI } from "./ai-helpers.mjs";
 
-test("all providers can be saved without the removed Audit switch", async ({
-  page,
-}) => {
-  await page.route("**/api/papers", (route) =>
-    route.fulfill({ json: { total: 0, papers: [] } }),
-  );
-  await page.goto("/audit");
-  const providers = [
-    "openai",
-    "deepseek",
-    "anthropic",
-    "gemini",
-    "xai",
-    "mistral",
-    "cohere",
-    "qwen",
-    "moonshot",
-    "zhipu",
-    "minimax",
-    "doubao",
-    "groq",
-    "together",
-    "fireworks",
-    "siliconflow",
-    "openrouter",
-  ];
-  for (const provider of providers) {
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/ai/test", route => route.fulfill({ json: { ok: true, model: route.request().postDataJSON().model, latency_ms: 12 } }));
+});
+
+// Give each provider an independent timeout and failure report.
+for (const provider of [
+  "openai", "deepseek", "anthropic", "gemini", "xai", "mistral", "cohere", "qwen",
+  "moonshot", "zhipu", "minimax", "doubao", "groq", "together", "fireworks",
+  "siliconflow", "openrouter",
+]) {
+  test(`${provider} can be saved without the removed Audit switch`, async ({ page }) => {
+    await page.route("**/api/papers", route =>
+      route.fulfill({ json: { total: 0, papers: [] } }),
+    );
+    await page.goto("/audit");
     await configureAI(page, {
       provider,
       model: "account-model",
@@ -38,15 +26,13 @@ test("all providers can be saved without the removed Audit switch", async ({
     );
     expect(saved.config.provider).toBe(provider);
     expect(saved).not.toHaveProperty("auditEnabled");
-  }
-  await page.getByRole("button", { name: /^AI settings/ }).click();
-  const dialog = page.getByRole("dialog", { name: "AI settings", exact: true });
-  await expect(dialog.getByRole("checkbox")).toHaveCount(0);
-  const storage = await page.evaluate(() =>
-    JSON.stringify([localStorage, sessionStorage]),
-  );
-  expect(storage).not.toContain("offline-test-key");
-});
+    await page.getByRole("button", { name: /^AI settings/ }).click();
+    const dialog = page.getByRole("dialog", { name: "AI settings", exact: true });
+    await expect(dialog.getByRole("checkbox")).toHaveCount(0);
+    const storage = await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]));
+    expect(storage).not.toContain("offline-test-key");
+  });
+}
 
 test("changing provider or region clears credentials and preserves region in requests", async ({
   page,
@@ -73,6 +59,7 @@ test("changing provider or region clears credentials and preserves region in req
     .getByLabel("Qwen workspace ID", { exact: true })
     .fill("workspace123");
   await dialog.getByRole("button", { name: "Save configuration" }).click();
+  await expect(dialog).not.toBeVisible();
   let body;
   await page.route("**/api/audit", (route) => {
     body = route.request().postDataJSON();

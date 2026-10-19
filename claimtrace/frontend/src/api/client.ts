@@ -1,7 +1,7 @@
 import { getAISettings, requireAIConfig } from "../data/aiSettings";
 import { demoAudit, demoPaperClaims, demoVerification, demoCitationComparison, demoManuscriptMarkdown } from "../data/mockData";
 import { getWorkspacePapers, removeWorkspacePaper } from "../data/workspacePapers";
-import type { AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, PaperMarkdownResponse, ParsedPaper, VerifyResponse } from "../types/api";
+import type { AIConfig, AuditResponse, BibVerifyResponse, CitationComparisonRequest, CitationComparisonResponse, PaperClaimsResponse, PaperListResponse, PaperMarkdownResponse, ParsedPaper, VerifyResponse } from "../types/api";
 
 const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 export const usingMockApi = import.meta.env.VITE_USE_MOCK_API === "true";
@@ -287,4 +287,16 @@ export async function verifyCitation(request: CitationComparisonRequest, signal?
     throw new Error("The comparison returned no valid judgement. Please try again.");
   }
   return result;
+}
+
+export interface AIConnectionResult { ok: true; model: string; latency_ms: number }
+export async function listAIModels(config: Omit<AIConfig, "model">, signal?: AbortSignal): Promise<{ supported: boolean; models: { id: string }[] }> {
+  return readResponse(await fetch(apiUrl("/api/ai/models"), {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config), signal,
+  }));
+}
+export async function testAIConnection(config: AIConfig, signal?: AbortSignal): Promise<AIConnectionResult> {
+  return readResponse(await fetch(apiUrl("/api/ai/test"), {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config), signal,
+  }));
 }

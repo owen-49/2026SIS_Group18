@@ -1,9 +1,11 @@
 export const testAI = { provider: 'openai', model: 'test-model', api_key: 'fake-key-for-offline-tests' };
 export async function configureAI(page, { provider = testAI.provider, model = testAI.model, key = testAI.api_key } = {}) {
+  await page.route('**/api/ai/test', route => route.fulfill({ json: { ok: true, model: route.request().postDataJSON().model, latency_ms: 12 } }));
   await page.getByRole('button', { name: /^AI settings/ }).click();
   const dialog = page.getByRole('dialog', { name: 'AI settings', exact: true });
   await dialog.getByLabel('Provider', { exact: true }).selectOption(provider);
   await dialog.getByLabel('Model', { exact: true }).fill(model);
   await dialog.getByLabel('API key', { exact: true }).fill(key);
   await dialog.getByRole('button', { name: 'Save configuration' }).click();
+  await dialog.waitFor({ state: 'hidden' });
 }
