@@ -81,8 +81,8 @@ backend suite passes: 661 tests, including 89 new connection tests. Existing
 backend assertions were retained. Backend ruff check passes. Frontend build
 (TypeScript plus Vite) and lint pass.
 
-The complete Edge Playwright suite reports 75 passed and 3 failed. All 20 new
-browser cases pass. The same three failures reproduce on an unmodified archive
+The complete Edge Playwright suite reports 91 passed and 3 failed. Connection and provider
+browser cases all pass. The same three failures reproduce on an unmodified archive
 of main at 4f5a011, using the same dependencies and browser:
 
 | Existing demo test | Failure |
@@ -90,6 +90,10 @@ of main at 4f5a011, using the same dependencies and browser:
 | citations throughout the complete Rich paper respond to pointer clicks | No data-citation-group elements |
 | SQuAD and ELMo selections use their own source passages and clear stale results | No matching Rajpurkar citation link; click times out |
 | a grouped author-year citation requires a source choice and missing source text stays unjudged | No matching grouped ELMo citation link; click times out |
+
+Provider settings coverage runs as 17 independent cases. This preserves every
+provider assertion while giving each flow its own timeout and browser context;
+the earlier combined flow could exceed the default 30 second budget.
 
 The baseline archive and its test results are in
 E:\cache\tmp\claimtrace-ai-baseline-20261019. Existing FastAPI startup/shutdown
@@ -117,7 +121,7 @@ Paths below are relative to claimtrace/.
 | frontend/src/pages/VerifyPage.tsx | Use shared AI error explanations and settings access. |
 | frontend/src/pages/AuditPage.tsx | Use the same shared error presentation. |
 | frontend/tests/ai-helpers.mjs | Mock connection checks when existing tests configure AI. |
-| frontend/tests/ai-providers.spec.mjs | Adapt existing settings coverage to tested saving. |
+| frontend/tests/ai-providers.spec.mjs | Adapt settings coverage to tested saving and isolate each provider case. |
 | frontend/tests/ai-connection.spec.mjs | Cover model discovery, field errors, stale responses, memory state and invalidation. |
 | frontend/tests/verify-citation.spec.mjs | Cover new model errors and opening settings from Verify and Audit. |
 | docs/ai-connection-test.md | Record protocol findings, official sources, behavior and validation results. |
