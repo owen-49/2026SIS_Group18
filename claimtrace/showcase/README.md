@@ -1,7 +1,7 @@
 # ClaimTrace showcase package
 
 Materials for a five-minute project presentation: a slide deck in two formats, an A1 poster in two
-formats, and an interactive demo of the three core features.
+formats, an interactive demo of the three core features, and a complete Q&A preparation document.
 
 > 中文版：[README.zh.md](README.zh.md)
 
@@ -13,6 +13,7 @@ formats, and an interactive demo of the three core features.
 | `ClaimTrace-Poster-A1.pdf` | The same poster as a ready-to-print PDF, 594.1 × 841.0 mm | Send to a print shop or open in Preview; no setup needed |
 | `rotating-poster.html` | Four-face 3D poster for a screen | Open in a browser. Drag to rotate, arrow keys turn it, it advances every 6.5 s. Deep-link a face with `#1`–`#4` |
 | `demo.html` | Interactive demo of Audit, Verify and Read | Open in a browser. Tabs deep-link with `#audit`, `#verify`, `#read` |
+| `tutor-qa.zh.md` | Complete Q&A prep, weighted by the rubric (scope 25 / functions 50 / UI 15 / scalability 10) | Chinese notes with a speakable **English answer for every question**; 37 likely tutor questions, evidence paths, a numbers cheat sheet, demo risks and a pre-demo checklist |
 | `theme.css` | Shared colour, type and chip tokens | Linked by the three HTML pages |
 | `build_pptx.py` | Regenerates the `.pptx` from scratch | `python3 build_pptx.py` (needs `python-pptx`) |
 

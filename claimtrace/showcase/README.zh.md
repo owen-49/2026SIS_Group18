@@ -1,6 +1,6 @@
 # ClaimTrace 展示材料
 
-用于五分钟项目汇报的材料：两种格式的幻灯片、两种格式的 A1 海报，以及三个核心功能的交互演示。
+用于五分钟项目汇报的材料：两种格式的幻灯片、两种格式的 A1 海报、三个核心功能的交互演示，以及一份完整的 QA 文档。
 
 > English version: [README.md](README.md)
 
@@ -12,6 +12,7 @@
 | `ClaimTrace-Poster-A1.pdf` | 同一张海报的成品 PDF，594.1 × 841.0 mm | 直接送印，或在预览中打开；无需任何设置 |
 | `rotating-poster.html` | 用于屏幕展示的四面 3D 海报 | 用浏览器打开。拖拽旋转，方向键翻面，每 6.5 秒自动切换；`#1`–`#4` 可直达某一面 |
 | `demo.html` | Audit、Verify、Read 三个功能的交互演示 | 用浏览器打开；标签页可用 `#audit`、`#verify`、`#read` 直达 |
+| `tutor-qa.zh.md` | 按评分权重整理的完整 QA 文档（scope 25 / functions 50 / UI 15 / scalability 10） | 中文说明 + **每题可直接照读的英文回答**；37 个可能提问、证据路径、数字速查表、演示风险与检查清单 |
 | `theme.css` | 共用的颜色、字体和标签样式变量 | 被三个 HTML 页面引用 |
 | `build_pptx.py` | 从头重新生成 `.pptx` | `python3 build_pptx.py`（需要 `python-pptx`） |
 
